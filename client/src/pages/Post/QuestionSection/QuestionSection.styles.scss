@@ -1,0 +1,10 @@
+@import '../../../styles/colours';
+
+.question {
+  .post-layout {
+    display: grid;
+    margin-bottom: 32px;
+    grid-template-columns: max-content 1fr;
+    color: #242729;
+  }
+}

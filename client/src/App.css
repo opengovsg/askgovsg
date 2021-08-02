@@ -1,0 +1,34 @@
+:root {
+  --yellow-200: #675c37;
+  --yellow-050: #464236;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: content-box;
+  font-family: 'Inter', Helvetica, sans-serif;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+body {
+  background-color: #ffffff;
+  padding-top: 0 !important;
+}
+
+a {
+  text-decoration: none !important;
+}
+
+button {
+  margin: 3px;
+}
+
+.main-content {
+  flex: 1 0 auto;
+}

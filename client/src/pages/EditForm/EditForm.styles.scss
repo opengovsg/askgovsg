@@ -1,0 +1,58 @@
+@import '../../styles/text';
+@import '../../styles/colours';
+
+.back-to-home {
+  max-width: calc(793px + 48px * 2);
+}
+
+.edit-form-container {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(793px + 48px * 2);
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  flex: 1 0 auto;
+  color: #242729;
+  padding: 0 48px;
+
+  .edit-form-content {
+    min-height: 750px;
+    overflow: visible;
+    width: 100%;
+    margin: 0;
+    background-color: transparent;
+    padding-top: 0;
+
+    .edit-form-header {
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      margin-bottom: 36px;
+
+      .edit-form-headline {
+        @include h2;
+        color: $pri-500;
+      }
+    }
+
+    .edit-form-section {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      color: #242729;
+
+      aside {
+        flex-shrink: 0;
+        color: #242729;
+
+        .right-panel {
+          width: 300px;
+          margin-left: 24px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+@import '../../styles/text';
+@import '../../styles/colours';
+@import '../../styles/misc';
+@import '../../styles/sizes';
+
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 32px;
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+
+    @media (max-width: $mobile-m) {
+    }
+
+    .form-label {
+      @include subhead-1;
+      padding-bottom: 8px;
+    }
+
+    .form-input {
+      @include body-1;
+      padding: 4px 8px;
+      border: 2px solid $neutral-400;
+    }
+    
+    .form-input + .form-label {
+      margin-top: 16px;
+    }
+
+    .form-input::placeholder {
+      color: $neutral-500;
+    }
+
+    #submit-button {
+      @include body-1;
+      background-color: $pri-500;
+      border: 0;
+      border-radius: $btn-radius;
+      color: $white;
+      padding: 8px 8px;
+      cursor: pointer;
+    }
+
+    .form-input + #submit-button {
+      margin-top: 16px;
+    }
+  }
+}

@@ -1,0 +1,41 @@
+@import '../../styles/colours';
+
+.rdw-editor-wrapper {
+  .rdw-link-decorator-wrapper {
+    a {
+      span[data-text=true] {
+        text-decoration: underline !important;
+      }
+    }
+    &:not(:hover) {
+      color: $pri-500;
+      > ::after {
+        background: transparent url(../../assets/link-hint.svg) 0 0 no-repeat;
+        text-decoration: none !important;
+        display: inline-block;
+        margin-left: 4px;
+        background-size: 12px;
+        width: 12px;
+        height: 12px;
+        content: "";
+      }
+    }
+    &:focus {
+      border-width: 2px;
+      border-color: $pri-500;
+    }
+    &:hover {
+      color: $pri-600;
+      > ::after {
+        background: transparent url(../../assets/link-hint-hover.svg) 0 0 no-repeat;
+        text-decoration: none !important;
+        display: inline-block;
+        margin-left: 4px;
+        background-size: 12px;
+        width: 12px;
+        height: 12px;
+        content: "";
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+@import '../../styles/sizes';
+@import '../../styles/colours';
+@import '../../styles/text';
+
+.officer-dashboard {
+  padding: 0 48px;
+
+  @media not all and (min-width: $tablet) {
+    padding: 0 16px;
+  }
+
+  @media not all and (max-width: $laptop-l) {
+    max-width: $laptop-l;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+  }
+  
+  .dashboard-tabs {
+    .tab-list {
+      display: flex;
+      list-style-type: none;
+
+      .dashboard-tab {
+        @include subhead-3;
+        cursor: pointer;
+        padding: 4px 16px;
+
+        &.react-tabs__tab--selected {
+          color: $pri-500;
+          border-bottom: 2px solid $pri-500;
+        }
+      }
+    }
+  }
+}

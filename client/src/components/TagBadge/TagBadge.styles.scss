@@ -1,0 +1,14 @@
+@import '../../styles/colours';
+@import '../../styles/text';
+
+.tag-badge {
+  @include caption-2;
+  background-color: $pri-200;
+  color: $sec-600;
+  height: 100%;
+  padding: 4px 8px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-right: 10px;
+  white-space: nowrap;
+}

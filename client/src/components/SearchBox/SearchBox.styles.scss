@@ -1,0 +1,68 @@
+@import '../../styles/colours';
+@import '../../styles/misc';
+@import '../../styles/text';
+
+.search-container {
+  height: 100%;
+  width: 100%;
+
+  .search-form {
+    display: flex;
+    flex-direction: row;
+    // make height responsive
+    height: 100%;
+
+    .search-autocomplete {
+      position: relative;
+      flex: 1;
+
+      .search-box {
+        color: $neutral-900;
+        background-color: $white;
+        border: 1px solid $neutral-300;
+        border-radius: 4px;
+        width: 100%;
+        height: 100%;
+      }
+      
+      .search-box .search-input {
+        @include searchfont;
+      }
+
+      .search-box .search-input::placeholder{
+        color: $neutral-500
+      }
+
+      .search-results {
+        position: absolute;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+        max-height: 20rem;
+        width: 100%;
+  
+        z-index: 50;
+        // copied box-shadow from chakra UI shadow 2xl
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border-radius: $btn-radius; 
+      }
+      
+      .search-item {
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        height: 50px;
+        box-sizing: border-box;
+        width: 100%;
+
+        .search-item-text {
+          color: $neutral-800;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+      }
+    }
+
+  }
+}

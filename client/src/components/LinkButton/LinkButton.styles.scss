@@ -1,0 +1,19 @@
+@import '../../styles/colours';
+@import '../../styles/text';
+@import '../../styles/misc';
+
+.link-button {
+  @include body-1;
+  background-color: $pri-500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+  color: $white;
+  border: 0;
+  border-radius: $btn-radius;
+  cursor: pointer;
+  box-icon {
+    margin-right: 10px;
+  }
+}

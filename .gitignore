@@ -1,0 +1,9 @@
+**/node_modules
+/.idea
+/.vscode
+.env
+.env.*
+!.env.example
+**/build
+
+**/.DS_Store

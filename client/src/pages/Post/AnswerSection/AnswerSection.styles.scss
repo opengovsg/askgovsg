@@ -1,0 +1,26 @@
+@import '../../../styles/colours';
+@import '../../../styles/text';
+
+.answer-section {
+  width: auto;
+  float: none;
+  
+  clear: both;
+
+  .answer-header {
+    width: 100%;
+    border-top: 1px solid $neutral-300;
+    margin: 16px 0;
+
+    h2 {
+      @include h2;
+      color: $pri-800;
+    }
+  }
+
+  .answers {
+    width: 100%;
+    margin-bottom: 16px;
+    color: #242729;
+  }
+}
