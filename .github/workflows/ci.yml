@@ -1,0 +1,158 @@
+name: ci
+on:
+  push:
+  pull_request:
+    types: [opened, reopened]
+env:
+  PRODUCTION_BRANCH: refs/heads/release
+  STAGING_BRANCH: refs/heads/staging
+jobs:
+  ci:
+    name: Lint
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+            ${{ runner.OS }}-
+      - run: npm ci
+      - run: npx lockfile-lint --type npm --path client/package-lock.json --validate-https --allowed-hosts npm
+      - run: npx lockfile-lint --type npm --path server/package-lock.json --validate-https --allowed-hosts npm
+      - run: npm run lint-ci
+      - run: npm run --prefix server build -- --noEmit
+  # test:
+  #   name: Test
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: '12.x'
+  #     - name: Cache Node.js modules
+  #       uses: actions/cache@v2
+  #       with:
+  #         # npm cache files are stored in `~/.npm` on Linux/macOS
+  #         path: ~/.npm
+  #         key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+  #         restore-keys: |
+  #           ${{ runner.OS }}-node-
+  #           ${{ runner.OS }}-
+  #     - run: npm ci
+  #     - run: npm run test
+  gatekeep:
+    name: Determine if Build & Deploy is needed
+    outputs:
+      proceed: ${{ steps.determine_proceed.outputs.proceed }}
+    runs-on: ubuntu-18.04
+    if: github.event_name == 'push'
+    steps:
+      - id: determine_proceed
+        run: |
+          if [[ -z "${AWS_ACCESS_KEY_ID}" || -z "${AWS_SECRET_ACCESS_KEY}"  ]]; then
+            echo '::set-output name=proceed::false';
+          elif [[ -z "${ECR_REPO}" || -z "${ECR_URL}"  ]]; then
+            echo '::set-output name=proceed::false';
+          elif [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
+            echo '::set-output name=proceed::true';
+          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH ]]; then
+            echo '::set-output name=proceed::true';
+          else
+            echo '::set-output name=proceed::false';
+          fi
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ECR_REPO: ${{ secrets.ECR_REPO }}
+          ECR_URL: ${{ secrets.ECR_URL }}
+
+  build:
+    name: Build and push
+    runs-on: ubuntu-18.04
+    needs: [gatekeep]
+    if: needs.gatekeep.outputs.proceed == 'true'
+    outputs:
+      branch: ${{ steps.extract_branch.outputs.branch }}
+      tag: ${{steps.extract_tag.outputs.tag}}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Extract ECR tag
+        shell: bash
+        run: echo "##[set-output name=tag;]$(echo ghactions-${BRANCH}-${SHA})"
+        id: extract_tag
+        env:
+          BRANCH: ${{ steps.extract_branch.outputs.branch }}
+          SHA: ${{ github.sha }}
+      - run: docker build -t ${{ steps.extract_tag.outputs.tag }} -f Dockerfile .
+      - name: Push to ECR
+        if: needs.gatekeep.outputs.proceed == 'true'
+        uses: opengovsg/gh-ecr-push@v1
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ap-southeast-1
+          local-image: ${{ steps.extract_tag.outputs.tag }}
+          image: ${{ secrets.ECR_REPO }}:${{ steps.extract_tag.outputs.tag }}
+  deploy:
+    name: Deploy to Elastic Beanstalk
+    runs-on: ubuntu-18.04
+    # needs: [ci, test, gatekeep, build]
+    needs: [ci, gatekeep, build]
+    if: needs.gatekeep.outputs.proceed == 'true'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Package Dockerrun.aws.json
+        run: |
+          sed -i -e "s|@REPO|$REPO|g" Dockerrun.aws.json
+          sed -i -e "s|@TAG|$TAG|g" Dockerrun.aws.json
+          zip -r "deploy.zip" Dockerrun.aws.json
+        env:
+          REPO: ${{secrets.ECR_URL}}/${{secrets.ECR_REPO}}
+          TAG: ${{ needs.build.outputs.tag }}
+      - name: Get timestamp
+        shell: bash
+        run: echo "##[set-output name=timestamp;]$(env TZ=Asia/Singapore date '+%Y%m%d%H%M%S')"
+        id: get_timestamp
+      - name: Get Elastic Beanstalk label
+        shell: bash
+        run: echo "##[set-output name=label;]$(echo ${TAG}-${TIMESTAMP})"
+        id: get_label
+        env:
+          TAG: ${{ needs.build.outputs.tag }}
+          TIMESTAMP: ${{ steps.get_timestamp.outputs.timestamp }}
+      - name: Select Elastic Beanstalk variables
+        run: |
+          if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
+            echo EB_APP=${{ secrets.EB_APP_STAGING }} >> $GITHUB_ENV;
+            echo EB_ENV=${{ secrets.EB_ENV_STAGING }} >> $GITHUB_ENV;
+          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH ]]; then
+            echo EB_APP=${{ secrets.EB_APP_PRODUCTION }} >> $GITHUB_ENV;
+            echo EB_ENV=${{ secrets.EB_ENV_PRODUCTION }} >> $GITHUB_ENV;
+          fi
+        id: select_eb_vars
+      - name: Deploy to EB
+        uses: opengovsg/beanstalk-deploy@v11
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: ${{ env.EB_APP }}
+          environment_name: ${{ env.EB_ENV }}
+          version_label: ${{ steps.get_label.outputs.label }}
+          region: ap-southeast-1
+          deployment_package: deploy.zip
+          wait_for_deployment: false
+          wait_for_environment_recovery: false
