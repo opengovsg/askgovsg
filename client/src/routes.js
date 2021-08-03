@@ -13,27 +13,27 @@ import { CitizenTerms, AgencyTerms, Privacy } from './components/PrivacyTerms/'
 
 const HomePageComponent = withPageTitle({
   component: HomePage,
-  title: 'HelpGov',
+  title: 'AskGov',
 })
 
 const SearchResultsComponent = withPageTitle({
   component: SearchResults,
-  title: 'All Questions - HelpGov',
+  title: 'All Questions - AskGov',
 })
 
 const LoginComponent = withPageTitle({
   component: Login,
-  title: 'Log In - HelpGov',
+  title: 'Log In - AskGov',
 })
 
 const PostFormComponent = withPageTitle({
   component: PostForm,
-  title: 'Ask a Question - HelpGov',
+  title: 'Ask a Question - AskGov',
 })
 
 const EditFormComponent = withPageTitle({
   component: EditForm,
-  title: 'Edit Question - HelpGov',
+  title: 'Edit Question - AskGov',
 })
 
 const NotFoundComponent = withPageTitle({

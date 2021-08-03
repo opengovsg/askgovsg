@@ -33,7 +33,7 @@ const SearchResults = () => {
   ) : (
     <Fragment>
       {searchQuery ? (
-        <PageTitle title={`Search Results for ${searchQuery} - HelpGov`} />
+        <PageTitle title={`Search Results for ${searchQuery} - AskGov`} />
       ) : (
         ''
       )}
