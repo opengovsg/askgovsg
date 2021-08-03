@@ -20,7 +20,7 @@ export class MailService {
     return this.transport.sendMail({
       to: email,
       from: this.mailFromEmail,
-      subject: `One-Time Password for HelpGov`,
+      subject: `One-Time Password for AskGov`,
       html: renderLoginOtpBody(otp),
     })
   }

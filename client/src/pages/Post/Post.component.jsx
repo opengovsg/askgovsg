@@ -69,7 +69,7 @@ const Post = () => {
     <Spinner type="page" width="75px" height="200px" />
   ) : (
     <>
-      <PageTitle title={`${post.title} - HelpGov`} />
+      <PageTitle title={`${post.title} - AskGov`} />
       <div className="post-page">
         <Flex pb="14px" align="center">
           <BackButtonForPostDetail agencyShortName={agencyShortName} />
