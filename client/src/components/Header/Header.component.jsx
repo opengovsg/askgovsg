@@ -56,7 +56,7 @@ const Header = () => {
           className="navbar-brand"
           to={agency ? `/agency/${agency.shortname}` : '/'}
         >
-          <Logo className="helpgov-name" />
+          <Logo className="askgov-name" />
           {agency ? (
             <>
               <Text
