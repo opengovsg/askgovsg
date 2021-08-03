@@ -23,12 +23,6 @@ export const helmetOptions = {
         'https://*.google.com',
         'https://www.gstatic.com',
         'https://edge.fullstory.com',
-        // TODO: Remove this by removing script entries in index.html
-        'https://code.jquery.com',
-        'https://cdnjs.cloudflare.com',
-        'https://maxcdn.bootstrapcdn.com',
-        // TODO: Remove this by removing stack-icons and boxicons
-        'https://unpkg.com',
       ],
       connectSrc: [
         "'self'",
@@ -36,8 +30,6 @@ export const helmetOptions = {
         'https://ssl.google-analytics.com/',
         'https://www.googletagmanager.com/',
         'https://rs.fullstory.com',
-        // TODO: Remove this by removing stack-icons and boxicons
-        'https://unpkg.com',
       ],
       frameAncestors: ["'self'"],
       upgradeInsecureRequests: [],
