@@ -222,11 +222,7 @@ const HomePage = ({ match }) => {
         </Box>
       </Flex>
       <Spacer />
-      <CitizenRequest
-        className="citizen-request"
-        email={agency?.email}
-        longName={agency?.longname}
-      />
+      <CitizenRequest className="citizen-request" agency={agency} />
     </Flex>
   )
 }
