@@ -14,6 +14,7 @@
     "postinstall": "npm --prefix server install && npm --prefix client install",
     "auditDep": "npm audit fix && npm --prefix server audit fix && npm --client server audit fix",
     "prepare": "husky install",
+    "test": "npm --prefix server test && CI=true npm --prefix client test -- --passWithNoTests",
     "lint": "npm run --prefix server lint && npm run --prefix client lint",
     "lint-ci": "npm run --prefix server lint-ci && npm run --prefix client lint-ci"
   },

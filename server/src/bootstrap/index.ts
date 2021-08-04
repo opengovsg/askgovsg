@@ -6,7 +6,7 @@ import path from 'path'
 
 import express from 'express'
 
-import { emailValidator } from './email-validator'
+import { createTransport } from 'nodemailer'
 
 import { api } from '../routes'
 import { EnvController } from '../modules/environment/env.controller'
@@ -32,6 +32,7 @@ import { mailConfig } from './config/mail'
 import { requestLoggingMiddleware } from './logging'
 
 import { helmetOptions } from './helmet-options'
+import { emailValidator } from './email-validator'
 
 export { sequelize } from './sequelize'
 export const app = express()
@@ -64,11 +65,12 @@ const mailOptions = {
   ...mailConfig.smtpConfig,
   ignoreTLS: baseConfig.nodeEnv !== Environment.Prod,
 }
+const transport = createTransport(mailOptions)
 
 const authService = new AuthService({ emailValidator, jwtSecret })
 const authMiddleware = new AuthMiddleware({ jwtSecret })
 const mailService = new MailService({
-  mailOptions,
+  transport,
   mailFromEmail: mailConfig.senderConfig.mailFrom,
 })
 
