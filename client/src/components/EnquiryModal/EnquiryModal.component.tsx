@@ -103,7 +103,7 @@ export const EnquiryModal = ({
                 focusBorderColor="primary.500"
                 errorBorderColor="error.500"
                 isInvalid={formErrors.senderEmail}
-                placeholder="jony_tan@gmail.com"
+                placeholder="example@email.com"
                 {...register('senderEmail', {
                   required: true,
                   pattern: /^\S+@\S+$/i,
