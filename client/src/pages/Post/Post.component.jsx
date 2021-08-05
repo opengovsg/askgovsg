@@ -128,7 +128,7 @@ const Post = () => {
             ? agency
             : {
                 id: '',
-                email: 'askgov@open.gov.sg',
+                email: 'feedback@ask.gov.sg',
                 shortname: 'AskGov',
                 longname: 'AskGov',
                 logo: '',
