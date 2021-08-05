@@ -1,15 +1,19 @@
 import React from 'react'
-import { Switch, Route } from 'react-router-dom'
-import withPageTitle from './services/withPageTitle'
-
+import { Route, Switch } from 'react-router-dom'
+import {
+  AgencyPrivacy,
+  AgencyTerms,
+  CitizenPrivacy,
+  CitizenTerms,
+} from './components/PrivacyTerms/'
+import EditForm from './pages/EditForm/EditForm.component'
 import HomePage from './pages/HomePage/HomePage.component'
-import SearchResults from './pages/SearchResults/SearchResults.component'
 import Login from './pages/Login/Login.component'
+import NotFound from './pages/NotFound/NotFound.component'
 import Post from './pages/Post/Post.component'
 import PostForm from './pages/PostForm/PostForm.component'
-import NotFound from './pages/NotFound/NotFound.component'
-import EditForm from './pages/EditForm/EditForm.component'
-import { CitizenTerms, AgencyTerms, Privacy } from './components/PrivacyTerms/'
+import SearchResults from './pages/SearchResults/SearchResults.component'
+import withPageTitle from './services/withPageTitle'
 
 const HomePageComponent = withPageTitle({
   component: HomePage,
@@ -55,9 +59,14 @@ const AgencyTermsComponent = withPageTitle({
   title: 'Terms of Use (Agency)',
 })
 
-const PrivacyComponent = withPageTitle({
-  component: Privacy,
+const CitizenPrivacyComponent = withPageTitle({
+  component: CitizenPrivacy,
   title: 'Privacy',
+})
+
+const AgencyPrivacyComponent = withPageTitle({
+  component: AgencyPrivacy,
+  title: 'Privacy (Agency)',
 })
 
 const Routes = () => {
@@ -72,7 +81,8 @@ const Routes = () => {
       <Route exact path="/edit/question/:id" component={EditFormComponent} />
       <Route exact path="/terms" component={CitizenTermsComponent} />
       <Route exact path="/agency-terms" component={AgencyTermsComponent} />
-      <Route exact path="/privacy" component={PrivacyComponent} />
+      <Route exact path="/privacy" component={CitizenPrivacyComponent} />
+      <Route exact path="/agency-privacy" component={AgencyPrivacyComponent} />
       <Route path="*" component={NotFoundComponent} />
     </Switch>
   )
