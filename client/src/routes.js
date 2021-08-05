@@ -66,7 +66,7 @@ const CitizenPrivacyComponent = withPageTitle({
 
 const AgencyPrivacyComponent = withPageTitle({
   component: AgencyPrivacy,
-  title: 'Privacy',
+  title: 'Privacy (Agency)',
 })
 
 const Routes = () => {

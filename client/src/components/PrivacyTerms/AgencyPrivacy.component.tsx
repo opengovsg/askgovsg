@@ -21,7 +21,7 @@ const AgencyPrivacy = (): JSX.Element => (
       maxW="1100px"
       m="auto"
       w="100vw"
-      py="30px"
+      py="66px"
       px={{ base: '30px', sm: '100px' }}
     >
       <li data-seq="">

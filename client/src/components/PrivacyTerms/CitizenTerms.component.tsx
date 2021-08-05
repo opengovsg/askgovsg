@@ -21,7 +21,7 @@ const CitizenTerms = (): JSX.Element => (
       maxW="1100px"
       m="auto"
       w="100vw"
-      py="30px"
+      py="66px"
       px={{ base: '30px', sm: '100px' }}
     >
       <ol>
@@ -76,10 +76,12 @@ const CitizenTerms = (): JSX.Element => (
         </li>
         <li data-seq="2" className="tou-point-header">
           <span className="tou-point-bold">Nature of this Service</span>
-          <span>
-            Please see the Schedule for more information and terms concerning
-            this Service.
-          </span>
+          <ol>
+            <li>
+              Please see the Schedule for more information and terms concerning
+              this Service.
+            </li>
+          </ol>
         </li>
         <li data-seq="3" className="tou-point-header">
           <span className="tou-point-bold">Licence Terms and Restrictions</span>
@@ -284,25 +286,30 @@ const CitizenTerms = (): JSX.Element => (
           <span className="tou-point-bold">
             Your Consent to Access Functions of Your Device
           </span>
-          <span>
-            Use of the Service may require you to allow access by the Service to
-            certain functions of your device, such as push notifications, the
-            obtaining and/or sharing of your location, or the collection of data
-            from you in connection with the Service. Please also see clause 8
-            (Privacy Policy). Your use of the Service shall constitute your
-            consent to the access by the Service of such functions of your
-            device as may be reasonably required by the Service.
-          </span>
+          <ol>
+            <li>
+              Use of the Service may require you to allow access by the Service
+              to certain functions of your device, such as push notifications,
+              the obtaining and/or sharing of your location, or the collection
+              of data from you in connection with the Service. Please also see
+              clause 8 (Privacy Policy). Your use of the Service shall
+              constitute your consent to the access by the Service of such
+              functions of your device as may be reasonably required by the
+              Service.
+            </li>
+          </ol>
         </li>
         <li data-seq="5A" className="tou-point-header">
           <span className="tou-point-bold">
             Ownership of Feedback/Requests/Suggestions
           </span>
-          <span>
-            You agree that all title and interest in any feedback, requests or
-            suggestions from you concerning the Services shall be owned by
-            GovTech.
-          </span>
+          <ol>
+            <li>
+              You agree that all title and interest in any feedback, requests or
+              suggestions from you concerning the Services shall be owned by
+              GovTech.
+            </li>
+          </ol>
         </li>
         <li data-seq="5B" className="tou-point-header">
           <span className="tou-point-bold">Confidentiality</span>
@@ -537,20 +544,24 @@ const CitizenTerms = (): JSX.Element => (
         </li>
         <li data-seq="8" className="tou-point-header">
           <span className="tou-point-bold">Privacy Policy</span>
-          <span>
-            You also agree to the terms of the Privacy Policy for this Service
-            as may be amended from time to time. The Privacy Policy will form
-            part of these Terms of Use.
-          </span>
+          <ol>
+            <li>
+              You also agree to the terms of the Privacy Policy for this Service
+              as may be amended from time to time. The Privacy Policy will form
+              part of these Terms of Use.
+            </li>
+          </ol>
         </li>
         <li data-seq="9" className="tou-point-header">
           <span className="tou-point-bold">Rights of Third Parties</span>
-          <span>
-            Subject to the rights of the Third Party, a person who is not a
-            party to this Terms of Use shall have no right under the Contract
-            (Rights of Third Parties) Act or otherwise to enforce any of its
-            terms.
-          </span>
+          <ol>
+            <li>
+              Subject to the rights of the Third Party, a person who is not a
+              party to this Terms of Use shall have no right under the Contract
+              (Rights of Third Parties) Act or otherwise to enforce any of its
+              terms.
+            </li>
+          </ol>
         </li>
         <li data-seq="10" className="tou-point-header">
           <span className="tou-point-bold">Assignment</span>
@@ -570,17 +581,19 @@ const CitizenTerms = (): JSX.Element => (
         </li>
         <li data-seq="10A" className="tou-point-header">
           <span className="tou-point-bold">Severability</span>
-          <span>
-            If any term of these Terms of Use is held by a court or tribunal of
-            competent jurisdiction to be invalid or unenforceable, then these
-            Terms of Use, including all of the remaining terms, will remain in
-            full force and effect as if such invalid or unenforceable term had
-            never been included but, to the extent permissible, such invalid or
-            unenforceable terms shall be deemed to have been replaced by terms
-            that are (a) valid and enforceable and (b) express the intention or
-            produce the result closest to the original intention of the invalid
-            or unenforceable terms.
-          </span>
+          <ol>
+            <li>
+              If any term of these Terms of Use is held by a court or tribunal
+              of competent jurisdiction to be invalid or unenforceable, then
+              these Terms of Use, including all of the remaining terms, will
+              remain in full force and effect as if such invalid or
+              unenforceable term had never been included but, to the extent
+              permissible, such invalid or unenforceable terms shall be deemed
+              to have been replaced by terms that are (a) valid and enforceable
+              and (b) express the intention or produce the result closest to the
+              original intention of the invalid or unenforceable terms.
+            </li>
+          </ol>
         </li>
         <li data-seq="11" className="tou-point-header">
           <span className="tou-point-bold">
