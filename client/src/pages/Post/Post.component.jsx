@@ -122,7 +122,19 @@ const Post = () => {
           <AnswerSection post={post} />
         </div>
       </div>
-      <CitizenRequest className="citizen-request" agency={agency} />
+      <CitizenRequest
+        agency={
+          agency
+            ? agency
+            : {
+                id: '',
+                email: 'askgov@open.gov.sg',
+                shortname: 'AskGov',
+                longname: 'AskGov',
+                logo: '',
+              }
+        }
+      />
     </>
   )
 }

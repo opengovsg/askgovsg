@@ -2,10 +2,6 @@ import { Text, Button, Flex, useDisclosure } from '@chakra-ui/react'
 import { EnquiryModal } from '../EnquiryModal/EnquiryModal.component'
 import { Agency } from '../../services/AgencyService'
 
-interface CitizenRequestProps {
-  agency?: Agency
-}
-
 // TODO: combine interface Enquiry from both client and server
 export interface Enquiry {
   questionTitle: string
@@ -13,22 +9,13 @@ export interface Enquiry {
   senderEmail: string
 }
 
-const CitizenRequest = ({
-  agency = {
-    id: '',
-    email: 'askgov@open.gov.sg',
-    shortname: 'AskGov',
-    longname: 'AskGov',
-    logo: '',
-  },
-}: CitizenRequestProps): JSX.Element => {
+const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
   const cc = agency.email === 'askgov@open.gov.sg' ? '' : 'askgov@open.gov.sg'
   const {
     onOpen: onDeleteModalOpen,
     onClose: onDeleteModalClose,
     isOpen: isDeleteModalOpen,
   } = useDisclosure()
-
   const onPostConfirm = async (enquiry: Enquiry): Promise<void> => {
     window.location.href =
       'mailto:' +
@@ -60,7 +47,6 @@ const CitizenRequest = ({
           background: 'primary.600',
         }}
         borderRadius="4px"
-        // colorScheme="blue"
         color="white"
         onClick={onDeleteModalOpen}
       >

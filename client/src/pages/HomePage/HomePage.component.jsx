@@ -222,7 +222,19 @@ const HomePage = ({ match }) => {
         </Box>
       </Flex>
       <Spacer />
-      <CitizenRequest className="citizen-request" agency={agency} />
+      <CitizenRequest
+        agency={
+          agency
+            ? agency
+            : {
+                id: '',
+                email: 'askgov@open.gov.sg',
+                shortname: 'AskGov',
+                longname: 'AskGov',
+                logo: '',
+              }
+        }
+      />
     </Flex>
   )
 }
