@@ -58,9 +58,9 @@ export const EnquiryModal = ({
           <ModalBody>
             <VStack align="left" spacing={0}>
               <Text>
-                {`This enquiry form will be sent to ${agency.longname}. Please do
-                note that we would take at least 3 working days to process your
-                enquiry. Thank you.`}
+                {`This enquiry form will generate an email to be sent to 
+                ${agency.longname}. Please note that we would take at 
+                least 3 working days to process your enquiry. Thank you.`}
               </Text>
               <Box h={4} />
               <Text textStyle="subhead-1" color="secondary.700">
