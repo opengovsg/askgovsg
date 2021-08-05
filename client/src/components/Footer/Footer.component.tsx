@@ -43,7 +43,7 @@ const Footer = (): JSX.Element => {
           direction={{ base: 'column', md: 'row' }}
           spacing={{ base: '16px', md: '22px' }}
         >
-          <RouterLink to={'/privacy'}>
+          <RouterLink to={user ? '/agency-privacy' : '/privacy'}>
             <Text
               _hover={{
                 color: 'primary.500',

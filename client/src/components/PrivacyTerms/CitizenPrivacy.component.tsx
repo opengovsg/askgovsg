@@ -1,7 +1,7 @@
 import { Box, Center, Container, Text } from '@chakra-ui/react'
 import './PrivacyTerms.styles.scss'
 
-const Privacy = (): JSX.Element => (
+const CitizenPrivacy = (): JSX.Element => (
   <>
     <Box bg="primary.500" h="174px">
       <Text
@@ -220,11 +220,10 @@ const Privacy = (): JSX.Element => (
                   User behavioural data on site, such as clicks and views
                 </li>
                 <li data-seq="b.">
-                  Questions asked by citizens through the AskGov platform (via
-                  email or when publicly posted)
+                  Personal Identifiable Information (e.g. NRIC, Name, contact
+                  information, etc.) and data contained in queries or feedback
+                  from you when filling out a support form.
                 </li>
-                <li data-seq="c.">Answers created by you.</li>
-                <li data-seq="d.">Your contact details</li>
               </ol>
             </li>
           </ol>
@@ -234,4 +233,4 @@ const Privacy = (): JSX.Element => (
   </>
 )
 
-export default Privacy
+export default CitizenPrivacy
