@@ -228,7 +228,7 @@ const HomePage = ({ match }) => {
             ? agency
             : {
                 id: '',
-                email: 'feedback@ask.gov.sg',
+                email: 'enquires@ask.gov.sg',
                 shortname: 'AskGov',
                 longname: 'AskGov',
                 logo: '',
