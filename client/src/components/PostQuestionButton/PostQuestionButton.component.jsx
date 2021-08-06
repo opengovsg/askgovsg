@@ -1,4 +1,4 @@
-import React from 'react'
+import { BiPlus } from 'react-icons/bi'
 import LinkButton from '../LinkButton/LinkButton.component'
 
 const PostQuestionButton = () => {
@@ -7,7 +7,9 @@ const PostQuestionButton = () => {
       text={'Post Question'}
       link={'/add/question'}
       type={'s-btn__primary'}
-      boxIconName={'plus'}
+      leftIcon={
+        <BiPlus size="24" color="white" style={{ marginRight: '10px' }} />
+      }
     />
   )
 }

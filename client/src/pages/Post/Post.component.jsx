@@ -1,6 +1,5 @@
 import { Flex, Spacer, Text } from '@chakra-ui/layout'
-import 'boxicons'
-import React from 'react'
+import { BiArrowBack, BiXCircle } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { useParams, useHistory } from 'react-router-dom'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
@@ -22,7 +21,6 @@ import AnswerSection from './AnswerSection/AnswerSection.component'
 import './Post.styles.scss'
 import QuestionSection from './QuestionSection/QuestionSection.component'
 import EditButton from '../../components/EditButton/EditButton.component'
-import { isUserPublicOfficer } from '../../services/user.service'
 import { useAuth } from '../../contexts/AuthContext'
 
 const Post = () => {
@@ -110,7 +108,11 @@ const Post = () => {
           </div>
           {post.status === PostStatus.Private ? (
             <div className="private-subtitle">
-              <box-icon size="sm" color="#abadb2" name="x-circle"></box-icon>
+              <BiXCircle
+                style={{ marginRight: '4px' }}
+                color="neutral.500"
+                size="24"
+              />
               <span>
                 This question remains private until an answer is posted.
               </span>
@@ -137,7 +139,7 @@ const BackButtonForPostDetail = ({ agencyShortName }) => {
   return (
     <div className="back-to-home">
       <button onClick={() => history.push(`/agency/${agencyShortName}`)}>
-        <box-icon size="sm" color="#69738E" name="arrow-back"></box-icon>
+        <BiArrowBack size="24" color="secondary.400" />
         <div className="back-text">
           Back to {agencyShortName.toUpperCase()} questions
         </div>

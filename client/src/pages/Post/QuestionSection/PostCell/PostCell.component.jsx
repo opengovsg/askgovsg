@@ -1,5 +1,3 @@
-import 'boxicons'
-import React from 'react'
 import { useQuery } from 'react-query'
 import { RichTextPreview } from '../../../../components/RichText/RichTextEditor.component'
 import {
