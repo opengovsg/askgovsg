@@ -16,6 +16,7 @@ import { PostController } from '../modules/post/post.controller'
 import { AuthController } from '../modules/auth/auth.controller'
 import { TagsController } from '../modules/tags/tags.controller'
 import { MailService } from '../modules/mail/mail.service'
+import { EnquiryController } from '../modules/enquiry/enquiry.controller'
 import { AgencyService } from '../modules/agency/agency.service'
 import { UserService } from '../modules/user/user.service'
 import { AuthService } from '../modules/auth/auth.service'
@@ -33,7 +34,8 @@ import { requestLoggingMiddleware } from './logging'
 
 import { helmetOptions } from './helmet-options'
 import { emailValidator } from './email-validator'
-
+import { EnquiryService } from '../modules/enquiry/enquiry.service'
+import { Agency as agency } from './sequelize'
 export { sequelize } from './sequelize'
 export const app = express()
 
@@ -67,15 +69,17 @@ const mailOptions = {
 }
 const transport = createTransport(mailOptions)
 
+const agencyService = new AgencyService()
 const authService = new AuthService({ emailValidator, jwtSecret })
 const authMiddleware = new AuthMiddleware({ jwtSecret })
 const mailService = new MailService({
   transport,
   mailFromEmail: mailConfig.senderConfig.mailFrom,
 })
+const enquiryService = new EnquiryService({ agency, mailService })
 
 const apiOptions = {
-  agency: new AgencyController({ agencyService: new AgencyService() }),
+  agency: new AgencyController({ agencyService }),
   answers: {
     controller: new AnswersController({
       authService,
@@ -108,6 +112,7 @@ const apiOptions = {
     }),
     authMiddleware: authMiddleware,
   },
+  enquiries: new EnquiryController({ enquiryService }),
 }
 
 app.use('/api/v1', api(apiOptions))
