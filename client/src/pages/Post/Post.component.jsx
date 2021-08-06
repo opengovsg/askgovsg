@@ -139,7 +139,11 @@ const BackButtonForPostDetail = ({ agencyShortName }) => {
   return (
     <div className="back-to-home">
       <button onClick={() => history.push(`/agency/${agencyShortName}`)}>
-        <BiArrowBack size="24" color="secondary.400" />
+        <BiArrowBack
+          style={{ marginRight: '8px' }}
+          size="24"
+          color="secondary.400"
+        />
         <div className="back-text">
           Back to {agencyShortName.toUpperCase()} questions
         </div>
