@@ -1,5 +1,4 @@
 import { Switch, Alert, AlertIcon } from '@chakra-ui/react'
-import 'boxicons'
 import React, { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useHistory } from 'react-router-dom'

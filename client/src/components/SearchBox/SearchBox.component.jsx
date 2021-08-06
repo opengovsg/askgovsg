@@ -2,7 +2,7 @@ import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input'
 import * as FullStory from '@fullstory/browser'
 import Downshift from 'downshift'
 import Fuse from 'fuse.js'
-import React from 'react'
+import { BiSearch } from 'react-icons/bi'
 import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import { Link, useHistory, useParams } from 'react-router-dom'
@@ -97,13 +97,7 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
             <div className="search-autocomplete">
               <InputGroup className="search-box">
                 <InputLeftElement
-                  children={
-                    <box-icon
-                      size="24px"
-                      color="#445072"
-                      name="search"
-                    ></box-icon>
-                  }
+                  children={<BiSearch size="24" color="secondary.500" />}
                   h="100%"
                   w="24px"
                   ml="19px"

@@ -4,7 +4,7 @@ import { Button } from '@chakra-ui/react'
 
 import './LinkButton.styles.scss'
 
-const LinkButton = ({ text, link, handleClick, boxIconName }) => {
+const LinkButton = ({ text, link, handleClick, leftIcon }) => {
   return (
     <Link onClick={handleClick} to={link}>
       <Button
@@ -16,11 +16,7 @@ const LinkButton = ({ text, link, handleClick, boxIconName }) => {
         _hover={undefined}
         _active={undefined}
         _focus={undefined}
-        leftIcon={
-          boxIconName && (
-            <box-icon size="sm" color="white" name={boxIconName}></box-icon>
-          )
-        }
+        leftIcon={leftIcon}
       >
         {text}
       </Button>

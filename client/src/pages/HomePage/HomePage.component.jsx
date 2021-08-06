@@ -10,7 +10,8 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { BiChevronUp, BiChevronDown } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { useLocation, useParams } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
@@ -156,11 +157,11 @@ const HomePage = ({ match }) => {
                       rightIcon={
                         isOpen ? (
                           <Box h="20px" textColor="secondary.500">
-                            <box-icon name="chevron-up" size="16px" />
+                            <BiChevronUp size="16" />
                           </Box>
                         ) : (
                           <Box h="20px" textColor="secondary.500">
-                            <box-icon name="chevron-down" size="16px" />
+                            <BiChevronDown size="16" />
                           </Box>
                         )
                       }

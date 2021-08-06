@@ -1,7 +1,6 @@
 import React from 'react'
 import { useQuery } from 'react-query'
-import { matchPath } from 'react-router'
-import { Link, useLocation } from 'react-router-dom'
+import { matchPath, Link, useLocation } from 'react-router-dom'
 import { ReactComponent as Logo } from '../../assets/LogoAlpha.svg'
 import {
   getAgencyByShortName,
