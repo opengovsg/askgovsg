@@ -224,9 +224,17 @@ const HomePage = ({ match }) => {
       </Flex>
       <Spacer />
       <CitizenRequest
-        className="citizen-request"
-        email={agency?.email}
-        longName={agency?.longname}
+        agency={
+          agency
+            ? agency
+            : {
+                id: '',
+                email: 'enquiries@ask.gov.sg',
+                shortname: 'AskGov',
+                longname: 'AskGov',
+                logo: '',
+              }
+        }
       />
     </Flex>
   )
