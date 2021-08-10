@@ -32,16 +32,16 @@ describe('MailService', () => {
   describe('sendEnquiryEmail', () => {
     it('sends an enquiry email', async () => {
       // Arrange
-      const agencyEmail = 'user@agency.gov.sg'
+      const agencyEmail = ['user@agency.gov.sg']
+      const ccEmail = ['cc@agency.gov.sg']
       const enquiry = {
         questionTitle: 'My question is on...',
         description: 'The description of my question is...',
         senderEmail: 'sender@email.com',
       }
-      const ccEmail = 'cc@agency.gov.sg'
 
       // Act
-      await mailService.sendEnquiry(agencyEmail, enquiry, ccEmail)
+      await mailService.sendEnquiry({ agencyEmail, ccEmail, enquiry })
 
       // Assert
       expect(transport.sendMail).toHaveBeenCalledWith({

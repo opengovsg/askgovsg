@@ -19,7 +19,7 @@ import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Agency } from '../../services/AgencyService'
 import { BiErrorCircle } from 'react-icons/bi'
-import { Enquiry } from '../CitizenRequest/CitizenRequest.component'
+import { Enquiry } from '../../services/MailService'
 
 interface EnquiryModalProps extends Pick<ModalProps, 'isOpen' | 'onClose'> {
   onConfirm: (enquiry: Enquiry) => Promise<void>
@@ -91,7 +91,7 @@ export const EnquiryModal = ({
                 })}
               />
               {formErrors.description && errorLabel('This field is required')}
-              {/* <Box h={4} />
+              <Box h={4} />
               <Text textStyle="subhead-1" color="secondary.700">
                 Sender email
               </Text>
@@ -110,7 +110,7 @@ export const EnquiryModal = ({
                 })}
               />
               {formErrors.senderEmail &&
-                errorLabel('Please enter a valid email')} */}
+                errorLabel('Please enter a valid email')}
             </VStack>
           </ModalBody>
           <ModalFooter>
