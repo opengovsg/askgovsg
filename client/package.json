@@ -33,7 +33,7 @@
     "react-tabs": "^3.1.2",
     "sass": "^1.37.5",
     "styled-components": "^5.3.0",
-    "uuid": "^7.0.3"
+    "uuid": "^8.3.2"
   },
   "scripts": {
     "start": "PORT=3000 react-scripts start",
