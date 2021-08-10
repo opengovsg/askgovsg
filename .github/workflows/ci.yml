@@ -30,6 +30,7 @@ jobs:
       - run: npx lockfile-lint --type npm --path server/package-lock.json --validate-https --allowed-hosts npm
       - run: npm run lint-ci
       - run: npm run --prefix server build -- --noEmit
+      - run: npm run --prefix client build
   test:
     name: Test
     runs-on: ubuntu-18.04
