@@ -10,7 +10,8 @@ export interface Enquiry {
 }
 
 const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
-  const cc = agency.email === 'enquires@ask.gov.sg' ? '' : 'enquires@ask.gov.sg'
+  const cc =
+    agency.email === 'enquiries@ask.gov.sg' ? '' : 'enquiries@ask.gov.sg'
   const {
     onOpen: onDeleteModalOpen,
     onClose: onDeleteModalClose,
