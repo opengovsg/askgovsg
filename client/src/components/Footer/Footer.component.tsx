@@ -1,4 +1,4 @@
-import { Linkedin, Facebook } from '@styled-icons/boxicons-logos'
+import { FaLinkedinIn, FaFacebookF } from 'react-icons/fa'
 import OGPLogo from '../../assets/ogp-logo.svg'
 import { OGP } from '../Icons'
 import { useAuth } from '../../contexts/AuthContext'
@@ -43,7 +43,7 @@ const Footer = (): JSX.Element => {
           direction={{ base: 'column', md: 'row' }}
           spacing={{ base: '16px', md: '22px' }}
         >
-          <RouterLink to={'/privacy'}>
+          <RouterLink to={user ? '/agency-privacy' : '/privacy'}>
             <Text
               _hover={{
                 color: 'primary.500',
@@ -102,7 +102,7 @@ const Footer = (): JSX.Element => {
                 color: 'primary.500',
               }}
             >
-              <Linkedin size="32" />
+              <FaLinkedinIn size="28" style={{ marginRight: '5px' }} />
             </Link>
             <Link
               href="https://www.facebook.com/opengovsg"
@@ -111,7 +111,7 @@ const Footer = (): JSX.Element => {
                 color: 'primary.500',
               }}
             >
-              <Facebook size="32" />
+              <FaFacebookF size="24" style={{ marginRight: '5px' }} />
             </Link>
             <Link
               href="https://open.gov.sg"

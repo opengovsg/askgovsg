@@ -8,8 +8,7 @@ import {
   MenuList,
   useDisclosure,
 } from '@chakra-ui/react'
-import { ChevronDown, Trash } from '@styled-icons/boxicons-regular'
-import React from 'react'
+import { BiChevronDown, BiTrash } from 'react-icons/bi'
 import { useMutation, useQueryClient } from 'react-query'
 import { Link as RouterLink, useHistory } from 'react-router-dom'
 import { getApiErrorMessage } from '../../api'
@@ -77,7 +76,7 @@ const EditButton = ({ postId, onDeleteLink }: EditButtonProps): JSX.Element => {
         <MenuButton
           as={IconButton}
           aria-label="Options"
-          icon={<Icon as={ChevronDown} color="secondary.500" />}
+          icon={<Icon as={BiChevronDown} color="secondary.500" />}
           variant="outline"
           borderRadius="3px"
           borderTopLeftRadius="0"
@@ -88,7 +87,7 @@ const EditButton = ({ postId, onDeleteLink }: EditButtonProps): JSX.Element => {
         <MenuList minW={105} color="error.500">
           <MenuItem
             onClick={onDeleteDialogOpen}
-            icon={<Icon as={Trash} w={4} h={4} color="error.500" />}
+            icon={<Icon as={BiTrash} w={4} h={4} color="error.500" />}
           >
             Delete
           </MenuItem>

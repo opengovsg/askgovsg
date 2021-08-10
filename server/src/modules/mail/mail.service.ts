@@ -1,18 +1,17 @@
-import { createTransport, Transporter } from 'nodemailer'
-import SMTPTransport from 'nodemailer/lib/smtp-transport'
+import { Transporter } from 'nodemailer'
 import { renderLoginOtpBody } from './mail.util'
 
 export class MailService {
   private mailFromEmail: string
-  private transport: Transporter
+  private transport: Pick<Transporter, 'sendMail'>
   constructor({
-    mailOptions,
+    transport,
     mailFromEmail,
   }: {
-    mailOptions: SMTPTransport.Options
+    transport: Pick<Transporter, 'sendMail'>
     mailFromEmail: string
   }) {
-    this.transport = createTransport(mailOptions)
+    this.transport = transport
     this.mailFromEmail = mailFromEmail
   }
 

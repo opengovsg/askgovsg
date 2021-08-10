@@ -1,12 +1,10 @@
-import 'boxicons'
+import { BiShow } from 'react-icons/bi'
 import './ViewCount.styles.scss'
-
-import React from 'react'
 
 const ViewCount = ({ views, className }) => {
   return (
     <div className={className}>
-      <box-icon color="#A2A8B9" name="show"></box-icon>
+      <BiShow style={{ marginRight: '10px' }} size="24" color="secondary.300" />
       <p>{views}</p>
     </div>
   )

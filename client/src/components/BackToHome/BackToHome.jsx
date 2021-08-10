@@ -1,6 +1,5 @@
-import React from 'react'
 import { useHistory } from 'react-router-dom'
-import 'boxicons'
+import { BiArrowBack } from 'react-icons/bi'
 
 import './BackToHome.scss'
 
@@ -10,7 +9,11 @@ export const BackToHome = () => {
   return (
     <div className="back-to-home">
       <button onClick={() => history.goBack()}>
-        <box-icon size="sm" color="#69738E" name="arrow-back"></box-icon>
+        <BiArrowBack
+          style={{ marginRight: '8px' }}
+          size="24"
+          color="secondary.400"
+        />
         <div className="back-text">Back</div>
       </button>
     </div>

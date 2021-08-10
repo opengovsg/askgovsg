@@ -1,7 +1,7 @@
 import { Box, Center, Container, Text } from '@chakra-ui/react'
 import './PrivacyTerms.styles.scss'
 
-const Privacy = (): JSX.Element => (
+const AgencyPrivacy = (): JSX.Element => (
   <>
     <Box bg="primary.500" h="174px">
       <Text
@@ -21,7 +21,7 @@ const Privacy = (): JSX.Element => (
       maxW="1100px"
       m="auto"
       w="100vw"
-      py="30px"
+      py="66px"
       px={{ base: '30px', sm: '100px' }}
     >
       <li data-seq="">
@@ -211,7 +211,7 @@ const Privacy = (): JSX.Element => (
         <li>
           <ol>
             <li data-seq="1">
-              <span>Name of Service: Ask.gov.sg</span>
+              <span>Name of Service: Ask.gov.sg (Agencies)</span>
             </li>
             <li data-seq="2">
               <span>Types of data requested/collected:</span>
@@ -234,4 +234,4 @@ const Privacy = (): JSX.Element => (
   </>
 )
 
-export default Privacy
+export default AgencyPrivacy

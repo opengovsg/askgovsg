@@ -1,16 +1,33 @@
-import React from 'react'
-import { Text, Button, Flex } from '@chakra-ui/react'
+import { Text, Button, Flex, useDisclosure } from '@chakra-ui/react'
+import { EnquiryModal } from '../EnquiryModal/EnquiryModal.component'
+import { Agency } from '../../services/AgencyService'
 
-interface CitizenRequestProps {
-  email?: string
-  longName?: string
+// TODO: combine interface Enquiry from both client and server
+export interface Enquiry {
+  questionTitle: string
+  description: string
+  senderEmail: string
 }
 
-const CitizenRequest = ({
-  email = 'askgov@open.gov.sg',
-  longName = '',
-}: CitizenRequestProps): JSX.Element => {
-  const cc = email === 'askgov@open.gov.sg' ? '' : 'askgov@open.gov.sg'
+const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
+  const cc = agency.email === 'enquires@ask.gov.sg' ? '' : 'enquires@ask.gov.sg'
+  const {
+    onOpen: onDeleteModalOpen,
+    onClose: onDeleteModalClose,
+    isOpen: isDeleteModalOpen,
+  } = useDisclosure()
+  const onPostConfirm = async (enquiry: Enquiry): Promise<void> => {
+    window.location.href =
+      'mailto:' +
+      agency.email +
+      '?cc=' +
+      cc +
+      '&subject=AskGov enquiry:%20' +
+      enquiry.questionTitle +
+      ' AskGov&body=' +
+      enquiry.description
+  }
+
   return (
     <Flex
       direction="column"
@@ -30,22 +47,17 @@ const CitizenRequest = ({
           background: 'primary.600',
         }}
         borderRadius="4px"
-        // colorScheme="blue"
         color="white"
-        onClick={(e) => {
-          e.preventDefault()
-          window.location.href =
-            'mailto:' +
-            email +
-            '?cc=' +
-            cc +
-            '&subject=' +
-            longName +
-            ' AskGov&body=Let%20us%20know%20how%20we%20can%20help%20below!'
-        }}
+        onClick={onDeleteModalOpen}
       >
         Submit an enquiry
       </Button>
+      <EnquiryModal
+        isOpen={isDeleteModalOpen}
+        onClose={onDeleteModalClose}
+        onConfirm={onPostConfirm}
+        agency={agency}
+      />
     </Flex>
   )
 }
