@@ -29,6 +29,7 @@ const baseSchema: Schema<BaseConfig> = {
     doc: 'Host for agency logo images',
     format: String,
     default: 'https://s3-ap-southeast-1.amazonaws.com/',
+    env: 'LOGOS_HOST',
   },
 }
 
