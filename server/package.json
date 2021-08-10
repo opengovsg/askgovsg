@@ -39,7 +39,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@types/bcrypt": "^3.0.0",
+    "@types/bcrypt": "^5.0.0",
     "@types/compression": "^1.7.0",
     "@types/convict": "^6.1.1",
     "@types/convict-format-with-validator": "^6.0.2",
