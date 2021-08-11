@@ -27,6 +27,7 @@ export const createAnswer = async (
   postId: number,
   answerData: CreateAnswerReqDto,
 ): Promise<CreateAnswerResDto> =>
-  ApiClient.post(`/posts/answers/${postId}`, answerData).then(
-    ({ data }) => data,
-  )
+  ApiClient.post<CreateAnswerResDto>(
+    `/posts/answers/${postId}`,
+    answerData,
+  ).then(({ data }) => data)
