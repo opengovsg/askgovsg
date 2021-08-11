@@ -1,5 +1,4 @@
 import { validationResult } from 'express-validator'
-import helperFunction from '../../helpers/helperFunction'
 import { AnswersService } from './answers.service'
 import { AuthService } from '../auth/auth.service'
 import { Request, Response } from 'express'
@@ -35,9 +34,7 @@ export class AnswersController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
   }
 
