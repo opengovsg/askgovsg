@@ -67,32 +67,8 @@ export class AnswersService {
     return changedRows
   }
 
-  remove = async (id: string, result: HelperResultCallback): Promise<void> => {
-    try {
-      await AnswerModel.destroy({ where: { id: id } })
-      result(
-        null,
-        helperFunction.responseHandler(true, 200, 'Answer Removed', null),
-      )
-    } catch (error) {
-      logger.error({
-        message: 'Error while deleting answer',
-        meta: {
-          function: 'deleteAnswer',
-          answerId: id,
-        },
-        error,
-      })
-      result(
-        helperFunction.responseHandler(
-          false,
-          error.statusCode,
-          error.message,
-          null,
-        ),
-        null,
-      )
-    }
+  remove = async (id: string): Promise<void> => {
+    await AnswerModel.destroy({ where: { id: id } })
   }
 
   retrieveAll = async (

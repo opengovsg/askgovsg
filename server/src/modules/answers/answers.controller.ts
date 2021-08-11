@@ -113,21 +113,8 @@ export class AnswersController {
 
   deleteAnswer = async (req: Request, res: Response): Promise<unknown> => {
     try {
-      this.answersService.remove(req.params.id, (error, data) => {
-        if (error) {
-          logger.error({
-            message: 'Error while deleting answer',
-            meta: {
-              function: 'deleteAnswer',
-              answerId: req.params.id,
-            },
-            error,
-          })
-          return res.status(error.code).json(error)
-        }
-        // Assuming that if err returned null then data is defined
-        return res.status(data!.code).json(data)
-      })
+      this.answersService.remove(req.params.id)
+      return res.status(204).end()
     } catch (error) {
       logger.error({
         message: 'Error while deleting answer',
@@ -137,9 +124,7 @@ export class AnswersController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
   }
 }
