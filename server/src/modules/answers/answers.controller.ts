@@ -83,43 +83,21 @@ export class AnswersController {
     }
   }
 
-  updateAnswer = (req: Request, res: Response): Response | undefined => {
+  updateAnswer = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response | undefined> => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json(
-          helperFunction.responseHandler(
-            false,
-            400,
-            errors.array()[0].msg,
-            null,
-          ),
-        )
+      return res.status(400).json({ message: errors.array()[0].msg })
     }
     try {
       // Update Answer in the database
-      this.answersService.update(
-        {
-          body: req.body.text,
-          id: req.params.id,
-        },
-        (error, data) => {
-          if (error) {
-            logger.error({
-              message: 'Error while updating answer',
-              meta: {
-                function: 'updateAnswer',
-                answerId: req.params.id,
-              },
-              error,
-            })
-            return res.status(error.code).json(error)
-          }
-          // Assuming that if err returned null then data is defined
-          return res.status(data!.code).json(data)
-        },
-      )
+      const data = await this.answersService.update({
+        body: req.body.text,
+        id: req.params.id,
+      })
+      return res.status(200).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while updating answer',
@@ -129,9 +107,7 @@ export class AnswersController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
   }
 
