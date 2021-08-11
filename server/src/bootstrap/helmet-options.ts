@@ -1,4 +1,5 @@
 import { baseConfig } from './config/base'
+import { fileConfig } from './config/file'
 
 export const helmetOptions = {
   contentSecurityPolicy: {
@@ -13,6 +14,7 @@ export const helmetOptions = {
         'https://www.googletagmanager.com/',
         'https://stats.g.doubleclick.net/',
         'https://secure.gravatar.com/',
+        `https://${fileConfig.fileBucketName}/`,
         baseConfig.logoHost,
       ],
       scriptSrc: [

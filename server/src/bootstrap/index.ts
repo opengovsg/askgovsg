@@ -31,6 +31,7 @@ import { googleAnalyticsConfig } from './config/googleAnalytics'
 import { authConfig } from './config/auth'
 import { fullStoryConfig } from './config/fullstory'
 import { mailConfig } from './config/mail'
+import { fileConfig } from './config/file'
 import { requestLoggingMiddleware } from './logging'
 
 import { helmetOptions } from './helmet-options'
@@ -38,6 +39,11 @@ import { emailValidator } from './email-validator'
 import { EnquiryService } from '../modules/enquiry/enquiry.service'
 import { Agency } from './sequelize'
 import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
+
+import { s3, bucket, host } from './s3'
+import { FileController } from '../modules/file/file.controller'
+import { FileService } from '../modules/file/file.service'
+
 export { sequelize } from './sequelize'
 export const app = express()
 
@@ -88,7 +94,7 @@ const apiOptions = {
       authService,
       answersService: new AnswersService(),
     }),
-    authMiddleware: authMiddleware,
+    authMiddleware,
   },
   auth: {
     controller: new AuthController({
@@ -106,14 +112,21 @@ const apiOptions = {
       authService,
       postService: new PostService(),
     }),
-    authMiddleware: authMiddleware,
+    authMiddleware,
   },
   tags: {
     controller: new TagsController({
       authService,
       tagsService: new TagsService(),
     }),
-    authMiddleware: authMiddleware,
+    authMiddleware,
+  },
+  file: {
+    controller: new FileController({
+      fileService: new FileService({ s3, bucket, host }),
+    }),
+    authMiddleware,
+    maxFileSize: fileConfig.maxFileSize,
   },
   enquiries: new EnquiryController({ enquiryService, recaptchaService }),
 }

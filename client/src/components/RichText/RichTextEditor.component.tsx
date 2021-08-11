@@ -1,5 +1,5 @@
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
-import React, { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 
 import './RichTextEditor.styles.scss'
 
@@ -12,6 +12,12 @@ import styles from './RichTextEditor.module.scss'
 import { RefCallBack } from 'react-hook-form'
 
 import { LinkControl } from './LinkControl'
+import { ApiClient, getApiErrorMessage } from '../../api'
+import { useStyledToast } from '../StyledToast/StyledToast'
+
+type UploadCallback = (
+  file: File,
+) => Promise<{ data: { link: string } } | undefined>
 
 const ExtendedEditor = (props: EditorProps) => <Editor {...props} />
 
@@ -26,6 +32,18 @@ const TOOLBAR_OPTIONS = {
     component: LinkControl,
   },
 }
+
+const toolbarWithImageUpload = (uploadCallback: UploadCallback) => {
+  return {
+    ...TOOLBAR_OPTIONS,
+    options: TOOLBAR_OPTIONS.options.concat('image'),
+    image: {
+      uploadEnabled: true,
+      uploadCallback,
+    },
+  }
+}
+
 const createEditorStateFromHTML = (value: string) => {
   const contentBlock = htmlToDraft(value)
   if (contentBlock) {
@@ -54,6 +72,7 @@ export const RichTextEditor: FC<{
   wrapperStyle = {},
   editorStyle = {},
 }) => {
+  const toast = useStyledToast()
   // usage of context in the future for subcomponents?
   const [editorState, setEditorState] = useState(() => {
     if (value) return createEditorStateFromHTML(value)
@@ -70,6 +89,20 @@ export const RichTextEditor: FC<{
     onChange(html)
   }, [editorState, onChange, value])
 
+  const uploadCallback = async (file: File) => {
+    const formData = new FormData()
+    formData.append('file', file, file.name)
+    try {
+      return ApiClient.post('/files', formData)
+    } catch (error) {
+      toast({
+        status: 'error',
+        description: getApiErrorMessage(error),
+      })
+      return undefined
+    }
+  }
+
   return (
     <ExtendedEditor
       placeholder={placeholder}
@@ -81,7 +114,7 @@ export const RichTextEditor: FC<{
       // Prop styles override CSS styles
       wrapperStyle={wrapperStyle}
       editorStyle={editorStyle}
-      toolbar={TOOLBAR_OPTIONS}
+      toolbar={toolbarWithImageUpload(uploadCallback)}
       readOnly={readOnly ? readOnly : false}
       stripPastedStyles
       editorRef={editorRef}
