@@ -366,7 +366,7 @@ export class PostService {
   }: {
     sort: SortType
     tags: string
-  }): Promise<HelperResult> => {
+  }): Promise<Post[]> => {
     // basic
     let tags_unchecked: string[] = []
 
@@ -381,15 +381,7 @@ export class PostService {
 
     // prevent search if query is invalid
     if (tagList.length != tags_unchecked.length) {
-      return [
-        helperFunction.responseHandler(
-          false,
-          422,
-          'Invalid tags used in request',
-          null,
-        ),
-        null,
-      ]
+      return Promise.reject('Invalid tags used in request')
     }
 
     const whereobj = {
@@ -416,10 +408,7 @@ export class PostService {
     })) as PostWithRelations[]
 
     if (!posts) {
-      return [
-        helperFunction.responseHandler(false, 200, 'No posts found', null),
-        null,
-      ]
+      return []
     } else {
       // TODO: Optimize to merge the 2 requests into one
       // Two queries used as when I search for specific tags, the response
@@ -467,10 +456,7 @@ export class PostService {
           ],
         ],
       })
-      return [
-        null,
-        helperFunction.responseHandler(true, 200, 'Success', returnPosts),
-      ]
+      return returnPosts
     }
   }
 }
