@@ -1,14 +1,13 @@
-import React from 'react'
 import PostCell from './PostCell/PostCell.component'
 
 import './QuestionSection.styles.scss'
 
-const QuestionSection = ({ postId }) => {
+const QuestionSection = ({ post }) => {
   return (
     <>
       <div className="question">
         <div className="post-layout">
-          <PostCell postId={postId} />
+          <PostCell post={post} />
         </div>
       </div>
     </>

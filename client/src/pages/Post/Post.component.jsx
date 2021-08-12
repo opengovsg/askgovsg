@@ -120,7 +120,7 @@ const Post = () => {
           ) : null}
         </div>
         <div className="question-main">
-          <QuestionSection postId={postId} />
+          <QuestionSection post={post} />
           <AnswerSection post={post} />
         </div>
       </div>
