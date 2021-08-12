@@ -90,11 +90,8 @@ export class PostController {
 
   getTopPosts = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const [err, data] = await this.postService.getTopPosts()
-      if (err) {
-        return res.status(err.code).json(err)
-      }
-      return res.status(data?.code || 200).json(data?.data)
+      const data = await this.postService.getTopPosts()
+      return res.status(200).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving top posts',
@@ -103,9 +100,7 @@ export class PostController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
   }
 
