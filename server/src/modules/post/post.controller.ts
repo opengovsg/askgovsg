@@ -170,31 +170,8 @@ export class PostController {
           .status(403)
           .json({ message: 'You do not have permission to delete this post.' })
       }
-    } catch (error) {
-      logger.error({
-        message: 'Error while determining permissions to delete post',
-        meta: {
-          function: 'deletePost',
-        },
-        error,
-      })
-      return res
-        .status(500)
-        .json({ message: 'Something went wrong, please try again.' })
-    }
-    try {
-      const [error, data] = await this.postService.remove(postId)
-      if (error) {
-        logger.error({
-          message: 'Error while deleting post',
-          meta: {
-            function: 'deletePost',
-          },
-          error,
-        })
-        return res.status(error.code).json(error)
-      }
-      return res.status(data?.code || 200).json(data)
+      await this.postService.remove(postId)
+      return res.sendStatus(200)
     } catch (error) {
       logger.error({
         message: 'Error while deleting post',
@@ -203,9 +180,7 @@ export class PostController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
   }
 
