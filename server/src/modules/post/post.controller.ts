@@ -107,16 +107,7 @@ export class PostController {
   addPost = async (req: Request, res: Response): Promise<Response> => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json(
-          helperFunction.responseHandler(
-            false,
-            400,
-            errors.array()[0].msg,
-            null,
-          ),
-        )
+      return res.status(400).json(errors.array()[0].msg)
     }
     if (!req.user) {
       return res.status(401).json({ message: 'User not signed in' })
@@ -132,37 +123,21 @@ export class PostController {
           ),
         )
       if (listOfDisallowedTags.length > 0) {
-        return res
-          .status(403)
-          .json(
-            helperFunction.responseHandler(
-              false,
-              403,
-              'You do not have permissions to post this question with the following tags: ' +
-                listOfDisallowedTags.map((x) => x.tagname).join(', '),
-              null,
-            ),
-          )
+        return res.status(403).json({
+          message:
+            'You do not have permissions to post this question with the following tags: ' +
+            listOfDisallowedTags.map((x) => x.tagname).join(', '),
+        })
       }
 
-      const [error, data] = await this.postService.createPostWithTag({
+      const data = await this.postService.createPostWithTag({
         title: req.body.title,
         description: req.body.description,
         userId: req.user?.id,
         tagname: req.body.tagname,
       })
 
-      if (error) {
-        logger.error({
-          message: 'Error while creating post',
-          meta: {
-            function: 'addPost',
-          },
-          error,
-        })
-        return res.status(error.code).json(error)
-      }
-      return res.status(data?.code || 200).json(data)
+      return res.status(200).json({ data: data })
     } catch (error) {
       logger.error({
         message: 'Error while creating post',
@@ -171,9 +146,7 @@ export class PostController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server error' })
     }
   }
 
