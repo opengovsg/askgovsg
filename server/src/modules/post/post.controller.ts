@@ -55,18 +55,7 @@ export class PostController {
   getSinglePost = async (req: Request, res: Response): Promise<Response> => {
     let post
     try {
-      const [error, data] = await this.postService.retrieveOne(req.params.id)
-      if (error) {
-        logger.error({
-          message: 'Error while retrieving single post',
-          meta: {
-            function: 'getSinglePost',
-          },
-          error,
-        })
-        return res.status(error.code).json(error)
-      }
-      post = data?.data
+      post = await this.postService.retrieveOne(req.params.id)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving single post',
@@ -75,18 +64,16 @@ export class PostController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
 
     try {
       await this.authService.verifyUserCanViewPost(
-        post.toJSON(),
+        post,
         req.header('x-auth-token') ?? '',
       )
     } catch (error) {
-      logger.error({
+      logger.warn({
         message: 'Error while retrieving single post',
         meta: {
           function: 'getSinglePost',
