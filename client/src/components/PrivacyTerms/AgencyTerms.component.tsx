@@ -1,8 +1,10 @@
 import { Box, Center, Container, Text } from '@chakra-ui/react'
+import { ScrollToTopOnMount } from '../ScrollToTop/ScrollToTop.component'
 import './PrivacyTerms.styles.scss'
 
 const AgencyTerms = (): JSX.Element => (
   <>
+    <ScrollToTopOnMount />
     <Box bg="primary.500" h="174px">
       <Text
         textStyle="display-2"
