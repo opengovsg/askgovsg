@@ -29,8 +29,15 @@ export class AuthMiddleware {
       jwt.verify(token, this.jwtSecret, (error, decoded) => {
         if (error) {
           return res
-            .status(400)
-            .json(helperFunction.responseHandler(false, 400, 'Try again', null))
+            .status(401)
+            .json(
+              helperFunction.responseHandler(
+                false,
+                401,
+                'Sign-in required',
+                null,
+              ),
+            )
         } else {
           req.user = (decoded as { user: Express.User }).user
           return next()
