@@ -8,5 +8,11 @@
     {
       "ContainerPort": 3000
     }
+  ],
+  "Volumes": [
+    {
+      "HostDirectory": "/var/lib/cloud/data",
+      "ContainerDirectory": "/var/lib/cloud/data"
+    }
   ]
 }

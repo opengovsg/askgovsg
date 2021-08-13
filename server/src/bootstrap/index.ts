@@ -5,6 +5,9 @@ import compression from 'compression'
 import path from 'path'
 import axios from 'axios'
 
+import connectDatadog from 'connect-datadog'
+import { StatsD } from 'hot-shots'
+
 import express from 'express'
 
 import { createTransport } from 'nodemailer'
@@ -33,7 +36,8 @@ import { fullStoryConfig } from './config/fullstory'
 import { mailConfig } from './config/mail'
 import { fileConfig } from './config/file'
 import { recaptchaConfig } from './config/recaptcha'
-import { requestLoggingMiddleware } from './logging'
+import { createLogger } from './logging'
+import { requestLoggingMiddleware } from './logging/request-logging'
 
 import { helmetOptions } from './helmet-options'
 import { emailValidator } from './email-validator'
@@ -44,6 +48,7 @@ import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
 import { s3, bucket, host } from './s3'
 import { FileController } from '../modules/file/file.controller'
 import { FileService } from '../modules/file/file.service'
+import { datadogConfig } from './config/datadog'
 
 export { sequelize } from './sequelize'
 export const app = express()
@@ -129,6 +134,30 @@ const apiOptions = {
     maxFileSize: fileConfig.maxFileSize,
   },
   enquiries: new EnquiryController({ enquiryService, recaptchaService }),
+}
+
+const moduleLogger = createLogger(module)
+
+if (baseConfig.nodeEnv === Environment.Prod) {
+  app.use(
+    connectDatadog({
+      response_code: true,
+      tags: [`service:${datadogConfig.service}`, `env:${datadogConfig.env}`],
+      path: true,
+      dogstatsd: new StatsD({
+        useDefaultRoute: true,
+        errorHandler: (error) => {
+          moduleLogger.error({
+            message: error.message,
+            meta: {
+              function: 'Datadog',
+            },
+            error,
+          })
+        },
+      }),
+    }),
+  )
 }
 
 app.use('/api/v1', api(apiOptions))
