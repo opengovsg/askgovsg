@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useMutation, UseMutationResult } from 'react-query'
 import { ApiClient } from '../api'
@@ -37,6 +38,12 @@ export const AuthProvider = ({
       .then((data) => {
         if (data) {
           setUser(data)
+        }
+      })
+      .catch((reason: AxiosError) => {
+        // Catch 401 which signals an unauthorized user, which is not an issue
+        if (!(reason.response && reason.response.status === 401)) {
+          throw reason
         }
       })
   }
