@@ -65,7 +65,7 @@
     "@types/react-select": "^4.0.16",
     "@types/styled-components": "^5.1.12",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
-    "@typescript-eslint/parser": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.2",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.1.0",
