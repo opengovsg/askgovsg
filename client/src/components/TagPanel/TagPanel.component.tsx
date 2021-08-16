@@ -76,6 +76,7 @@ const TagPanel = (): ReactElement => {
             <VStack align="left" spacing={0} marginLeft="-1px">
               {tags
                 .filter(({ tagType }) => tagType === TagType.Topic)
+                .sort((a, b) => (a.tagname > b.tagname ? 1 : -1))
                 .map((tag) => {
                   const { tagType, tagname } = tag
                   return (

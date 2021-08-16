@@ -120,7 +120,7 @@ const Post = () => {
           ) : null}
         </div>
         <div className="question-main">
-          <QuestionSection postId={postId} />
+          <QuestionSection post={post} />
           <AnswerSection post={post} />
         </div>
       </div>
@@ -146,7 +146,11 @@ const BackButtonForPostDetail = ({ agencyShortName }) => {
 
   return (
     <div className="back-to-home">
-      <button onClick={() => history.push(`/agency/${agencyShortName}`)}>
+      <button
+        onClick={() =>
+          history.push(`/agency/${encodeURIComponent(agencyShortName)}`)
+        }
+      >
         <BiArrowBack
           style={{ marginRight: '8px' }}
           size="24"

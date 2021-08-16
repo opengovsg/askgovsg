@@ -1,0 +1,19 @@
+# This docker-compose file is only for local development purposes.
+version: '3'
+services:
+  localstack:
+    image: localstack/localstack
+    ports:
+      - '4566:4566'
+    environment:
+      - SERVICES=s3
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - './.localstack:/tmp/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+
+  maildev:
+    image: maildev/maildev
+    ports:
+      - '1080:80'
+      - '1025:25'
