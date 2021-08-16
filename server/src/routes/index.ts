@@ -4,6 +4,7 @@ import { routeTags } from '../modules/tags/tags.routes'
 import { routeAnswers } from '../modules/answers/answers.routes'
 import { routeAgencies } from '../modules/agency/agency.routes'
 import { routeEnv } from '../modules/environment/env.routes'
+import { routeEnquiries } from '../modules/enquiry/enquiry.routes'
 
 import express from 'express'
 import { EnvController } from '../modules/environment/env.controller'
@@ -13,6 +14,7 @@ import { AuthController } from '../modules/auth/auth.controller'
 import { PostController } from '../modules/post/post.controller'
 import { TagsController } from '../modules/tags/tags.controller'
 import { AuthMiddleware } from '../modules/auth/auth.middleware'
+import { EnquiryController } from '../modules/enquiry/enquiry.controller'
 
 type ApiRouterOptions = {
   agency: AgencyController
@@ -33,6 +35,7 @@ type ApiRouterOptions = {
     controller: TagsController
     authMiddleware: AuthMiddleware
   }
+  enquiries: EnquiryController
 }
 
 export const api = (options: ApiRouterOptions): express.Router => {
@@ -44,5 +47,6 @@ export const api = (options: ApiRouterOptions): express.Router => {
   router.use('/environment', routeEnv({ controller: options.env }))
   router.use('/posts/answers', routeAnswers(options.answers))
   router.use('/agencies', routeAgencies({ controller: options.agency }))
+  router.use('/enquiries', routeEnquiries({ controller: options.enquiries }))
   return router
 }

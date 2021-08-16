@@ -28,4 +28,31 @@ describe('MailService', () => {
       })
     })
   })
+
+  describe('sendEnquiryEmail', () => {
+    it('sends an enquiry email', async () => {
+      // Arrange
+      const agencyEmail = ['user@agency.gov.sg']
+      const ccEmail = ['cc@agency.gov.sg']
+      const enquiry = {
+        questionTitle: 'My question is on...',
+        description: 'The description of my question is...',
+        senderEmail: 'sender@email.com',
+      }
+
+      // Act
+      await mailService.sendEnquiry({ agencyEmail, ccEmail, enquiry })
+
+      // Assert
+      expect(transport.sendMail).toHaveBeenCalledWith({
+        to: agencyEmail,
+        replyTo: enquiry.senderEmail,
+        cc: ccEmail,
+        bcc: enquiry.senderEmail,
+        from: mailFromEmail,
+        subject: enquiry.questionTitle,
+        text: enquiry.description,
+      })
+    })
+  })
 })
