@@ -18,9 +18,12 @@ export const getRedirectURL = (
   agency?: Agency,
 ): string => {
   if (tagType === TagType.Agency) {
-    return `/agency/${tagName}`
+    return `/agency/${encodeURIComponent(tagName)}`
+  } else {
+    return agency
+      ? `/agency/${encodeURIComponent(
+          agency.shortname,
+        )}?tags=${encodeURIComponent(tagName)}`
+      : `/?tags=${encodeURIComponent(tagName)}`
   }
-  return agency
-    ? `/agency/${agency.shortname}?tags=${tagName}`
-    : `/?tags=${tagName}`
 }

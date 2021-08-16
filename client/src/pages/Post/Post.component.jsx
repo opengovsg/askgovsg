@@ -146,7 +146,11 @@ const BackButtonForPostDetail = ({ agencyShortName }) => {
 
   return (
     <div className="back-to-home">
-      <button onClick={() => history.push(`/agency/${agencyShortName}`)}>
+      <button
+        onClick={() =>
+          history.push(`/agency/${encodeURIComponent(agencyShortName)}`)
+        }
+      >
         <BiArrowBack
           style={{ marginRight: '8px' }}
           size="24"
