@@ -22,12 +22,12 @@ describe('EnquiryService', () => {
     Tag,
     emailValidator,
   })
-  const agency = defineAgency(sequelize, { User })
+  const Agency = defineAgency(sequelize, { User })
   const transport = { sendMail: jest.fn() }
   const mailFromEmail = 'donotreply@mail.ask.gov.sg'
 
   const mailService = new MailService({ transport, mailFromEmail })
-  const enquiryService = new EnquiryService({ agency, mailService })
+  const enquiryService = new EnquiryService({ Agency, mailService })
 
   const enquiry: Enquiry = {
     questionTitle: 'My question',
@@ -47,14 +47,14 @@ describe('EnquiryService', () => {
     it('should send an enquiry email to two agencies', async () => {
       // Arrange
       const agencyId = ['1234', '2233']
-      const mockAgency1 = agency.build({
+      const mockAgency1 = Agency.build({
         email: 'agency1@ask.gov.sg',
       })
-      const mockAgency2 = agency.build({
+      const mockAgency2 = Agency.build({
         email: 'agency2@ask.gov.sg',
       })
       const AgencyModel = jest
-        .spyOn(agency, 'findOne')
+        .spyOn(Agency, 'findOne')
         .mockResolvedValueOnce(mockAgency1)
         .mockResolvedValueOnce(mockAgency2)
 
@@ -77,7 +77,7 @@ describe('EnquiryService', () => {
     it('should send an enquiry email to AskGov if no agency is specified', async () => {
       // Arrange
       const agencyId: string[] = []
-      const AgencyModel = jest.spyOn(agency, 'findOne')
+      const AgencyModel = jest.spyOn(Agency, 'findOne')
 
       // Act
       await enquiryService.emailEnquiry({ agencyId, enquiry })
@@ -98,7 +98,7 @@ describe('EnquiryService', () => {
     it('should return error when a agency ID is invalid', async () => {
       // Arrange
       const agencyId = ['1234']
-      jest.spyOn(agency, 'findOne').mockResolvedValueOnce(null)
+      jest.spyOn(Agency, 'findOne').mockResolvedValueOnce(null)
 
       try {
         // Act

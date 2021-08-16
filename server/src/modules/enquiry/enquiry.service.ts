@@ -4,16 +4,16 @@ import { Enquiry } from '../../types/mail-type'
 import { MailService } from '../mail/mail.service'
 
 export class EnquiryService {
-  private agency: ModelCtor<Agency>
+  private Agency: ModelCtor<Agency>
   private mailService: Public<MailService>
   constructor({
-    agency,
+    Agency,
     mailService,
   }: {
-    agency: ModelCtor<Agency>
+    Agency: ModelCtor<Agency>
     mailService: Public<MailService>
   }) {
-    this.agency = agency
+    this.Agency = Agency
     this.mailService = mailService
   }
   emailEnquiry = async ({
@@ -27,7 +27,7 @@ export class EnquiryService {
       agencyId.map(
         async (Id) =>
           (
-            await this.agency.findOne({
+            await this.Agency.findOne({
               attributes: ['email'],
               where: { Id },
             })
