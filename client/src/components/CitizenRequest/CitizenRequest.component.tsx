@@ -12,10 +12,14 @@ const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
     onClose: onDeleteModalClose,
     isOpen: isDeleteModalOpen,
   } = useDisclosure()
-  const onPostConfirm = async (enquiry: Enquiry): Promise<void> => {
+  const onPostConfirm = async (
+    enquiry: Enquiry,
+    captchaResponse: string,
+  ): Promise<void> => {
     const mail: Mail = {
       agencyId: agency.id ? [agency.id] : [],
       enquiry: enquiry,
+      captchaResponse: captchaResponse,
     }
     try {
       await postMail(mail)

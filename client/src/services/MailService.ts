@@ -10,6 +10,7 @@ export type Mail = {
   // TODO change string to number. Currently aligned with AgencyService
   agencyId: Array<string>
   enquiry: Enquiry
+  captchaResponse: string
 }
 
 export const postMail = (mail: Mail): Promise<void> => {
