@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { mocked } from 'ts-jest/utils'
+import { recaptchaConfig } from '../../../bootstrap/config/recaptcha'
 
 import { GOOGLE_RECAPTCHA_URL } from '../recaptcha.constants'
 import {
@@ -9,7 +10,7 @@ import {
 } from '../recaptcha.errors'
 import { verifyCaptchaResponse } from '../recaptcha.service'
 
-const MOCK_PRIVATE_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
+const MOCK_PRIVATE_KEY = recaptchaConfig.recaptchaSecretKey
 const MOCK_RESPONSE = 'captchaResponse'
 const MOCK_REMOTE_IP = 'remoteIp'
 jest.mock('axios')

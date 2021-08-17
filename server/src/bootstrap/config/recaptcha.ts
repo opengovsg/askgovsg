@@ -9,13 +9,13 @@ const recaptchaSchema: Schema<RecaptchaConfig> = {
   recaptchaSiteKey: {
     doc: 'Recaptcha key for client to generate user response',
     format: String,
-    default: null,
+    default: '',
     env: 'REACT_APP_RECAPTCHA_SITE_KEY',
   },
   recaptchaSecretKey: {
     doc: 'Recaptcha key for server to verify user response',
     format: String,
-    default: null,
+    default: '',
     env: 'RECAPTCHA_SECRET_KEY',
     sensitive: true,
   },
