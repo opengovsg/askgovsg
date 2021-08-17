@@ -23,9 +23,6 @@ import { Agency } from '../../services/AgencyService'
 import { BiErrorCircle } from 'react-icons/bi'
 import { Enquiry } from '../../services/MailService'
 import ReCAPTCHA from 'react-google-recaptcha'
-
-const TEST_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
-
 interface EnquiryModalProps extends Pick<ModalProps, 'isOpen' | 'onClose'> {
   onConfirm: (enquiry: Enquiry, captchaResponse: string) => Promise<void>
   agency: Agency
@@ -124,7 +121,7 @@ export const EnquiryModal = ({
           <ModalFooter>
             <Flex w="100%" align="center">
               <ReCAPTCHA
-                sitekey={TEST_SITE_KEY}
+                sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY ?? ''}
                 onChange={(token) => setCaptchaResponse(token)}
               />
               <Spacer />
