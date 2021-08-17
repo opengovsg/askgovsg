@@ -216,11 +216,11 @@ export class PostService {
     const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
 
     if (newPost.tagname.length !== tagList.length) {
-      return Promise.reject('At least one tag does not exist')
+      throw new Error('At least one tag does not exist')
     } else {
       // check if at least one agency tag exists
       if (!this.checkOneAgency(tagList)) {
-        return Promise.reject('At least one tag must be an agency tag')
+        throw new Error('At least one tag must be an agency tag')
       }
       // Only create post if tag exists
       const post = await PostModel.create({
@@ -246,7 +246,7 @@ export class PostService {
       { where: { id: id } },
     )
     if (!update) {
-      Promise.reject('Update failed')
+      throw new Error('Update failed')
     } else {
       return
     }
@@ -319,7 +319,7 @@ export class PostService {
     })) as PostWithUserRelations
 
     if (!post) {
-      return Promise.reject('No post with this id')
+      throw new Error('No post with this id')
     } else {
       return post
     }
@@ -346,7 +346,7 @@ export class PostService {
 
     // prevent search if query is invalid
     if (tagList.length != tags_unchecked.length) {
-      return Promise.reject('Invalid tags used in request')
+      throw new Error('Invalid tags used in request')
     }
 
     const whereobj = {
