@@ -6,7 +6,7 @@ import { createValidationErrMessage } from '../../util/validation-error'
 import { AuthService } from '../auth/auth.service'
 import { PostService } from './post.service'
 
-import { Message } from '../../types/error-message-type'
+import { Message } from '../../types/message-type'
 import { UpdatePostRequestDto } from '../../types/post-type'
 import { createLogger } from '../../bootstrap/logging'
 

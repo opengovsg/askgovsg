@@ -1,7 +1,7 @@
 import { AgencyService } from './agency.service'
 import { RequestHandler } from 'express'
 import { Agency } from '../../models/agencies.model'
-import { Message } from '../../types/error-message-type'
+import { Message } from '../../types/message-type'
 import { AgencyQuery } from '../../types/agency-type'
 import { createLogger } from '../../bootstrap/logging'
 
