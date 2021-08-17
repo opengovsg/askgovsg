@@ -43,21 +43,12 @@ export class PostService {
     sort: SortType
     withAnswers: boolean
     tags?: string[]
-  }): Promise<HelperResult> => {
+  }): Promise<Post[]> => {
     const user = (await UserModel.findOne({
       where: { id: userId },
     })) as UserWithRelations | null
     if (!user) {
-      // throw new Error('Unable to find user with given ID')
-      return [
-        helperFunction.responseHandler(
-          false,
-          404,
-          'Unable to find user with given ID',
-          null,
-        ),
-        null,
-      ]
+      throw new Error('Unable to find user with given ID')
     }
 
     const tagInstances = await user.getTags()
@@ -125,15 +116,9 @@ export class PostService {
     })
 
     if (!posts) {
-      return [
-        helperFunction.responseHandler(false, 404, 'No posts found', null),
-        null,
-      ]
+      return Array<Post>()
     } else if (withAnswers) {
-      return [
-        null,
-        helperFunction.responseHandler(true, 200, 'Success', returnPosts),
-      ]
+      return returnPosts
     } else {
       // posts without answers
       return this.filterPostsWithoutAnswers(posts)
@@ -142,24 +127,13 @@ export class PostService {
 
   filterPostsWithoutAnswers = async (
     data?: PostWithRelations[],
-  ): Promise<HelperResult> => {
+  ): Promise<Post[]> => {
     if (!data) {
-      return [
-        helperFunction.responseHandler(false, 404, 'No posts found', null),
-        null,
-      ]
+      return Array<Post>()
     } else {
       const answerPromises = data.map((p) => p.countAnswers())
       const answerCounts = await Promise.all(answerPromises)
-      return [
-        null,
-        helperFunction.responseHandler(
-          true,
-          200,
-          'Posts',
-          data.filter((_, index) => answerCounts[index] === 0),
-        ),
-      ]
+      return data.filter((_, index) => answerCounts[index] === 0)
     }
   }
 
