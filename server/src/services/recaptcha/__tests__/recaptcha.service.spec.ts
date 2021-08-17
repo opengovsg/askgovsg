@@ -20,16 +20,21 @@ describe('captcha.service', () => {
     beforeEach(() => jest.clearAllMocks())
 
     it('should return MissingCaptchaError when response is falsy', async () => {
+      // Act
       const result = await verifyCaptchaResponse(null, undefined)
 
+      // Assert
       expect(result._unsafeUnwrapErr()).toEqual(new MissingCaptchaError())
     })
 
     it('should return VerifyCaptchaError when captcha response is incorrect', async () => {
+      // Arrange
       MockAxios.get.mockResolvedValueOnce({ data: { success: false } })
 
+      // Act
       const result = await verifyCaptchaResponse(MOCK_RESPONSE, MOCK_REMOTE_IP)
 
+      // Assert
       expect(MockAxios.get).toHaveBeenCalledWith(GOOGLE_RECAPTCHA_URL, {
         params: {
           secret: MOCK_PRIVATE_KEY,
@@ -41,10 +46,13 @@ describe('captcha.service', () => {
     })
 
     it('should return true when captcha response is correct', async () => {
+      // Arrange
       MockAxios.get.mockResolvedValueOnce({ data: { success: true } })
 
+      // Act
       const result = await verifyCaptchaResponse(MOCK_RESPONSE, MOCK_REMOTE_IP)
 
+      // Assert
       expect(MockAxios.get).toHaveBeenCalledWith(GOOGLE_RECAPTCHA_URL, {
         params: {
           secret: MOCK_PRIVATE_KEY,
@@ -56,10 +64,13 @@ describe('captcha.service', () => {
     })
 
     it('should return CaptchaConnectionError when connection with captcha server fails', async () => {
+      // Arrange
       MockAxios.get.mockRejectedValueOnce(false)
 
+      // Act
       const result = await verifyCaptchaResponse(MOCK_RESPONSE, MOCK_REMOTE_IP)
 
+      // Assert
       expect(MockAxios.get).toHaveBeenCalledWith(GOOGLE_RECAPTCHA_URL, {
         params: {
           secret: MOCK_PRIVATE_KEY,
