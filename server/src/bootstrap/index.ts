@@ -35,7 +35,7 @@ import { requestLoggingMiddleware } from './logging'
 import { helmetOptions } from './helmet-options'
 import { emailValidator } from './email-validator'
 import { EnquiryService } from '../modules/enquiry/enquiry.service'
-import { Agency as agency } from './sequelize'
+import { Agency } from './sequelize'
 export { sequelize } from './sequelize'
 export const app = express()
 
@@ -76,7 +76,7 @@ const mailService = new MailService({
   transport,
   mailFromEmail: mailConfig.senderConfig.mailFrom,
 })
-const enquiryService = new EnquiryService({ agency, mailService })
+const enquiryService = new EnquiryService({ Agency, mailService })
 
 const apiOptions = {
   agency: new AgencyController({ agencyService }),
