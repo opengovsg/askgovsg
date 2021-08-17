@@ -2,8 +2,6 @@ import { SortType } from '../../types/sort-type'
 
 import Sequelize, { OrderItem, Op } from 'sequelize'
 import { PostStatus } from '../../types/post-status'
-import helperFunction from '../../helpers/helperFunction'
-
 import {
   User as UserModel,
   Tag as TagModel,
@@ -11,7 +9,6 @@ import {
   Post as PostModel,
   Answer as AnswerModel,
 } from '../../bootstrap/sequelize'
-import { HelperResult } from '../../types/response-handler'
 import { Post, Tag } from '../../models'
 import { PostEditType } from '../../types/post-type'
 import { PostWithRelations as PostWithUserRelations } from '../auth/auth.service'
