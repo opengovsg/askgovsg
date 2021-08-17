@@ -2,6 +2,7 @@ import { createLogger } from '../../bootstrap/logging'
 import { ControllerHandler } from '../../types/response-handler'
 import { Enquiry } from '../../types/mail-type'
 import { EnquiryService } from './enquiry.service'
+import { Message } from '../../types/message-type'
 
 const logger = createLogger(module)
 
@@ -12,7 +13,7 @@ export class EnquiryController {
   }
   postEnquiry: ControllerHandler<
     unknown,
-    unknown,
+    Message,
     {
       agencyId: Array<string>
       enquiry: Enquiry

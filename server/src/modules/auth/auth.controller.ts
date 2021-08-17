@@ -10,7 +10,7 @@ import { UserService } from '../../modules/user/user.service'
 import { Request, Response } from 'express'
 import { createLogger } from '../../bootstrap/logging'
 import { ControllerHandler } from '../../types/response-handler'
-import { Message } from '../../types/error-message-type'
+import { Message } from '../../types/message-type'
 
 const OTP_LENGTH = 6
 
