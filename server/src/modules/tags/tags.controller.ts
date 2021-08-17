@@ -22,18 +22,8 @@ export class TagsController {
   }
   getTags = async (_req: Request, res: Response): Promise<Response> => {
     try {
-      const [error, data] = await this.tagsService.retrieveAll()
-      if (error) {
-        logger.error({
-          message: 'Error while retrieving all tags',
-          meta: {
-            function: 'getTags',
-          },
-          error,
-        })
-        return res.status(error.code).json(error)
-      }
-      return res.status(data?.code || 200).json(data)
+      const data = await this.tagsService.retrieveAll()
+      return res.status(200).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving all tags',
@@ -42,9 +32,7 @@ export class TagsController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
   }
 
