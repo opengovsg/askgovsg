@@ -3,8 +3,8 @@ import { ControllerHandler } from '../../types/response-handler'
 import { Enquiry } from '../../types/mail-type'
 import { EnquiryService } from './enquiry.service'
 import { Message } from '../../types/message-type'
-import { verifyCaptchaResponse } from '../../services/captcha/captcha.service'
-import { mapRouteError } from '../../services/captcha/captcha.util'
+import { verifyCaptchaResponse } from '../../services/recaptcha/recaptcha.service'
+import { mapRouteError } from '../../services/recaptcha/recaptcha.util'
 
 const logger = createLogger(module)
 export class EnquiryController {

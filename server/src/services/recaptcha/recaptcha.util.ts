@@ -3,7 +3,7 @@ import {
   CaptchaConnectionError,
   MissingCaptchaError,
   VerifyCaptchaError,
-} from './captcha.errors'
+} from './recaptcha.errors'
 import { createLogger } from '../../bootstrap/logging'
 
 const logger = createLogger(module)

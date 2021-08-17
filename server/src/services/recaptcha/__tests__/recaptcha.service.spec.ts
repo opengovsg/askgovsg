@@ -1,13 +1,13 @@
 import axios from 'axios'
 import { mocked } from 'ts-jest/utils'
 
-import { GOOGLE_RECAPTCHA_URL } from '../captcha.constants'
+import { GOOGLE_RECAPTCHA_URL } from '../recaptcha.constants'
 import {
   CaptchaConnectionError,
   MissingCaptchaError,
   VerifyCaptchaError,
-} from '../captcha.errors'
-import { verifyCaptchaResponse } from '../captcha.service'
+} from '../recaptcha.errors'
+import { verifyCaptchaResponse } from '../recaptcha.service'
 
 const MOCK_PRIVATE_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 const MOCK_RESPONSE = 'captchaResponse'

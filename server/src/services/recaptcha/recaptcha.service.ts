@@ -1,18 +1,14 @@
 import axios from 'axios'
 import { createLogger } from '../../bootstrap/logging'
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
+import { recaptchaConfig } from '../../bootstrap/config/recaptcha'
 
-// import { captchaConfig } from '../../config/features/captcha.config'
-const captchaConfig = {
-  captchaPrivateKey: '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe',
-}
-
-import { GOOGLE_RECAPTCHA_URL } from './captcha.constants'
+import { GOOGLE_RECAPTCHA_URL } from './recaptcha.constants'
 import {
   CaptchaConnectionError,
   MissingCaptchaError,
   VerifyCaptchaError,
-} from './captcha.errors'
+} from './recaptcha.errors'
 
 const logger = createLogger(module)
 export const verifyCaptchaResponse = (
@@ -29,7 +25,7 @@ export const verifyCaptchaResponse = (
     GOOGLE_RECAPTCHA_URL,
     {
       params: {
-        secret: captchaConfig.captchaPrivateKey,
+        secret: recaptchaConfig.recaptchaSecretKey,
         response,
         remoteip,
       },
