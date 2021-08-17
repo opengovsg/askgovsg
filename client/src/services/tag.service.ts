@@ -15,7 +15,7 @@ export const fetchTags = async (): Promise<Tag[]> =>
 export const FETCH_TAGS_QUERY_KEY = 'fetchTags'
 
 export const getTagsByUser = async (): Promise<Tag[]> =>
-  ApiClient.get(`/tags/user`).then((res) => res.data)
+  ApiClient.get(`/tags/user`).then(({ data }) => data)
 export const GET_TAGS_BY_USER_QUERY_KEY = 'getTagsByUser'
 
 export const getTagsUsedByAgency = async (agencyId: string): Promise<Tag[]> =>
