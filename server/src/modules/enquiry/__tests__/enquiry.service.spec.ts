@@ -1,5 +1,4 @@
 import { EnquiryService } from '../enquiry.service'
-import { MailService } from '../../mail/mail.service'
 import { Enquiry } from '../../../types/mail-type'
 import { Sequelize } from 'sequelize'
 import {
@@ -23,10 +22,8 @@ describe('EnquiryService', () => {
     emailValidator,
   })
   const Agency = defineAgency(sequelize, { User })
-  const transport = { sendMail: jest.fn() }
-  const mailFromEmail = 'donotreply@mail.ask.gov.sg'
 
-  const mailService = new MailService({ transport, mailFromEmail })
+  const mailService = { sendEnquiry: jest.fn(), sendLoginOtp: jest.fn() }
   const enquiryService = new EnquiryService({ Agency, mailService })
 
   const enquiry: Enquiry = {
@@ -36,7 +33,7 @@ describe('EnquiryService', () => {
   }
 
   beforeEach(async () => {
-    transport.sendMail.mockReset()
+    mailService.sendEnquiry.mockReset()
   })
 
   afterEach(async () => {
@@ -63,14 +60,10 @@ describe('EnquiryService', () => {
 
       // Assert
       expect(AgencyModel).toBeCalledTimes(2)
-      expect(transport.sendMail).toHaveBeenCalledWith({
-        to: [mockAgency1.email, mockAgency2.email],
-        replyTo: enquiry.senderEmail,
-        cc: ['enquiries@ask.gov.sg'],
-        bcc: enquiry.senderEmail,
-        from: `Enquiry via AskGov <${mailFromEmail}>`,
-        subject: enquiry.questionTitle,
-        text: enquiry.description,
+      expect(mailService.sendEnquiry).toHaveBeenCalledWith({
+        agencyEmail: [mockAgency1.email, mockAgency2.email],
+        ccEmail: ['enquiries@ask.gov.sg'],
+        enquiry: enquiry,
       })
     })
 
@@ -84,14 +77,10 @@ describe('EnquiryService', () => {
 
       // Assert
       expect(AgencyModel).toBeCalledTimes(0)
-      expect(transport.sendMail).toHaveBeenCalledWith({
-        to: ['enquiries@ask.gov.sg'],
-        replyTo: enquiry.senderEmail,
-        cc: [],
-        bcc: enquiry.senderEmail,
-        from: `Enquiry via AskGov <${mailFromEmail}>`,
-        subject: enquiry.questionTitle,
-        text: enquiry.description,
+      expect(mailService.sendEnquiry).toHaveBeenCalledWith({
+        agencyEmail: ['enquiries@ask.gov.sg'],
+        ccEmail: [],
+        enquiry: enquiry,
       })
     })
 
