@@ -33,7 +33,7 @@ export class EnquiryController {
     unknown,
     Message,
     {
-      agencyId: Array<string>
+      agencyId: string[]
       enquiry: Enquiry
       captchaResponse: string
     }
@@ -42,7 +42,6 @@ export class EnquiryController {
     const captchaResult = await this.recaptchaService.verifyCaptchaResponse(
       req.body.captchaResponse,
     )
-
     if (captchaResult.isErr()) {
       logger.error({
         message: 'Error while verifying captcha',
