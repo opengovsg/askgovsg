@@ -31,6 +31,7 @@ export const helmetOptions = {
         'https://www.googletagmanager.com/',
         'https://rs.fullstory.com',
       ],
+      frameSrc: ["'self'", 'https://www.google.com'],
       frameAncestors: ["'self'"],
       upgradeInsecureRequests: [],
     },
