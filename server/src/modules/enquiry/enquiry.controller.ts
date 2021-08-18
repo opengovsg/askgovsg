@@ -3,14 +3,22 @@ import { ControllerHandler } from '../../types/response-handler'
 import { Enquiry } from '../../types/mail-type'
 import { EnquiryService } from './enquiry.service'
 import { Message } from '../../types/message-type'
-import { verifyCaptchaResponse } from '../../services/recaptcha/recaptcha.service'
+import { RecaptchaService } from '../../services/recaptcha/recaptcha.service'
 import { mapRouteError } from '../../services/recaptcha/recaptcha.util'
 
 const logger = createLogger(module)
 export class EnquiryController {
   private enquiryService: Public<EnquiryService>
-  constructor({ enquiryService }: { enquiryService: Public<EnquiryService> }) {
+  private recaptchaService: Public<RecaptchaService>
+  constructor({
+    enquiryService,
+    recaptchaService,
+  }: {
+    enquiryService: Public<EnquiryService>
+    recaptchaService: Public<RecaptchaService>
+  }) {
     this.enquiryService = enquiryService
+    this.recaptchaService = recaptchaService
   }
 
   /**
@@ -31,7 +39,9 @@ export class EnquiryController {
     }
   > = async (req, res) => {
     // Check Captcha
-    const captchaResult = await verifyCaptchaResponse(req.body.captchaResponse)
+    const captchaResult = await this.recaptchaService.verifyCaptchaResponse(
+      req.body.captchaResponse,
+    )
 
     if (captchaResult.isErr()) {
       logger.error({

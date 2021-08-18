@@ -3,6 +3,7 @@ import helmet from 'helmet'
 import cors from 'cors'
 import compression from 'compression'
 import path from 'path'
+import axios from 'axios'
 
 import express from 'express'
 
@@ -36,6 +37,7 @@ import { helmetOptions } from './helmet-options'
 import { emailValidator } from './email-validator'
 import { EnquiryService } from '../modules/enquiry/enquiry.service'
 import { Agency } from './sequelize'
+import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
 export { sequelize } from './sequelize'
 export const app = express()
 
@@ -77,6 +79,7 @@ const mailService = new MailService({
   mailFromEmail: mailConfig.senderConfig.mailFrom,
 })
 const enquiryService = new EnquiryService({ Agency, mailService })
+const recaptchaService = new RecaptchaService({ axios })
 
 const apiOptions = {
   agency: new AgencyController({ agencyService }),
@@ -112,7 +115,7 @@ const apiOptions = {
     }),
     authMiddleware: authMiddleware,
   },
-  enquiries: new EnquiryController({ enquiryService }),
+  enquiries: new EnquiryController({ enquiryService, recaptchaService }),
 }
 
 app.use('/api/v1', api(apiOptions))

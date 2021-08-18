@@ -1,4 +1,4 @@
-import axios from 'axios'
+import { AxiosStatic } from 'axios'
 import { createLogger } from '../../bootstrap/logging'
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
 import { recaptchaConfig } from '../../bootstrap/config/recaptcha'
@@ -10,45 +10,53 @@ import {
 } from './recaptcha.errors'
 
 const logger = createLogger(module)
-export const verifyCaptchaResponse = (
-  response?: unknown,
-  remoteip?: string,
-): ResultAsync<
-  true,
-  CaptchaConnectionError | VerifyCaptchaError | MissingCaptchaError
-> => {
-  if (!response || typeof response !== 'string') {
-    return errAsync(new MissingCaptchaError())
+export class RecaptchaService {
+  private axios: Public<AxiosStatic>
+
+  constructor({ axios }: { axios: Public<AxiosStatic> }) {
+    this.axios = axios
   }
-  const verifyCaptchaPromise = axios.get<{ success: boolean }>(
-    recaptchaConfig.googleRecaptchaURL,
-    {
-      params: {
-        secret: recaptchaConfig.recaptchaSecretKey,
-        response,
-        remoteip,
+
+  public verifyCaptchaResponse = (
+    response?: unknown,
+    remoteip?: string,
+  ): ResultAsync<
+    true,
+    CaptchaConnectionError | VerifyCaptchaError | MissingCaptchaError
+  > => {
+    if (!response || typeof response !== 'string') {
+      return errAsync(new MissingCaptchaError())
+    }
+    const verifyCaptchaPromise = this.axios.get<{ success: boolean }>(
+      recaptchaConfig.googleRecaptchaURL,
+      {
+        params: {
+          secret: recaptchaConfig.recaptchaSecretKey,
+          response,
+          remoteip,
+        },
       },
-    },
-  )
-  return ResultAsync.fromPromise(verifyCaptchaPromise, (error) => {
-    logger.error({
-      message: 'Error verifying captcha',
-      meta: {
-        function: 'verifyCaptchaPromise',
-      },
-      error,
-    })
-    return new CaptchaConnectionError()
-  }).andThen(({ data }) => {
-    if (!data.success) {
-      logger.warn({
-        message: 'Incorrect captcha response',
+    )
+    return ResultAsync.fromPromise(verifyCaptchaPromise, (error) => {
+      logger.error({
+        message: 'Error verifying captcha',
         meta: {
           function: 'verifyCaptchaPromise',
         },
+        error,
       })
-      return errAsync(new VerifyCaptchaError())
-    }
-    return okAsync(true)
-  })
+      return new CaptchaConnectionError()
+    }).andThen(({ data }) => {
+      if (!data.success) {
+        logger.warn({
+          message: 'Incorrect captcha response',
+          meta: {
+            function: 'verifyCaptchaPromise',
+          },
+        })
+        return errAsync(new VerifyCaptchaError())
+      }
+      return okAsync(true)
+    })
+  }
 }
