@@ -23,7 +23,6 @@ export const helmetOptions = {
         'https://*.google.com',
         'https://www.gstatic.com',
         'https://edge.fullstory.com',
-        'https://www.google.com/recaptcha/',
       ],
       connectSrc: [
         "'self'",

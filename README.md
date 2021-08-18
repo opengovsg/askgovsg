@@ -39,7 +39,7 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
   NODE_ENV=development
   JWT_SECRET=mysecrettoken
 
-  RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+  REACT_APP_RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
   RECAPTCHA_SECRET_KEY=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
 
   MAIL_PORT=1025
