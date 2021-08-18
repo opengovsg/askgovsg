@@ -34,7 +34,7 @@ export class MailService {
     enquiry: Enquiry
   }): Promise<void> => {
     await this.transport.sendMail({
-      from: this.mailFromEmail,
+      from: `Enquiry via AskGov <${this.mailFromEmail}>`,
       replyTo: enquiry.senderEmail,
       to: agencyEmail,
       cc: ccEmail,

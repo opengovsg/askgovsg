@@ -49,7 +49,7 @@ describe('MailService', () => {
         replyTo: enquiry.senderEmail,
         cc: ccEmail,
         bcc: enquiry.senderEmail,
-        from: mailFromEmail,
+        from: `Enquiry via AskGov <${mailFromEmail}>`,
         subject: enquiry.questionTitle,
         text: enquiry.description,
       })
