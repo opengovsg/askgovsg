@@ -2,6 +2,7 @@ import convict, { Schema } from 'convict'
 
 export type RecaptchaConfig = {
   recaptchaSecretKey: string
+  googleRecaptchaURL: string
 }
 
 const recaptchaSchema: Schema<RecaptchaConfig> = {
@@ -11,6 +12,11 @@ const recaptchaSchema: Schema<RecaptchaConfig> = {
     default: '',
     env: 'RECAPTCHA_SECRET_KEY',
     sensitive: true,
+  },
+  googleRecaptchaURL: {
+    doc: 'URL to verify user response',
+    format: String,
+    default: 'https://www.google.com/recaptcha/api/siteverify',
   },
 }
 

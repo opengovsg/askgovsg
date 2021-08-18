@@ -2,7 +2,6 @@ import axios from 'axios'
 import { mocked } from 'ts-jest/utils'
 import { recaptchaConfig } from '../../../bootstrap/config/recaptcha'
 
-import { GOOGLE_RECAPTCHA_URL } from '../recaptcha.constants'
 import {
   CaptchaConnectionError,
   MissingCaptchaError,
@@ -36,13 +35,16 @@ describe('captcha.service', () => {
       const result = await verifyCaptchaResponse(MOCK_RESPONSE, MOCK_REMOTE_IP)
 
       // Assert
-      expect(MockAxios.get).toHaveBeenCalledWith(GOOGLE_RECAPTCHA_URL, {
-        params: {
-          secret: MOCK_PRIVATE_KEY,
-          response: MOCK_RESPONSE,
-          remoteip: MOCK_REMOTE_IP,
+      expect(MockAxios.get).toHaveBeenCalledWith(
+        recaptchaConfig.googleRecaptchaURL,
+        {
+          params: {
+            secret: MOCK_PRIVATE_KEY,
+            response: MOCK_RESPONSE,
+            remoteip: MOCK_REMOTE_IP,
+          },
         },
-      })
+      )
       expect(result._unsafeUnwrapErr()).toEqual(new VerifyCaptchaError())
     })
 
@@ -54,13 +56,16 @@ describe('captcha.service', () => {
       const result = await verifyCaptchaResponse(MOCK_RESPONSE, MOCK_REMOTE_IP)
 
       // Assert
-      expect(MockAxios.get).toHaveBeenCalledWith(GOOGLE_RECAPTCHA_URL, {
-        params: {
-          secret: MOCK_PRIVATE_KEY,
-          response: MOCK_RESPONSE,
-          remoteip: MOCK_REMOTE_IP,
+      expect(MockAxios.get).toHaveBeenCalledWith(
+        recaptchaConfig.googleRecaptchaURL,
+        {
+          params: {
+            secret: MOCK_PRIVATE_KEY,
+            response: MOCK_RESPONSE,
+            remoteip: MOCK_REMOTE_IP,
+          },
         },
-      })
+      )
       expect(result._unsafeUnwrap()).toEqual(true)
     })
 
@@ -72,13 +77,16 @@ describe('captcha.service', () => {
       const result = await verifyCaptchaResponse(MOCK_RESPONSE, MOCK_REMOTE_IP)
 
       // Assert
-      expect(MockAxios.get).toHaveBeenCalledWith(GOOGLE_RECAPTCHA_URL, {
-        params: {
-          secret: MOCK_PRIVATE_KEY,
-          response: MOCK_RESPONSE,
-          remoteip: MOCK_REMOTE_IP,
+      expect(MockAxios.get).toHaveBeenCalledWith(
+        recaptchaConfig.googleRecaptchaURL,
+        {
+          params: {
+            secret: MOCK_PRIVATE_KEY,
+            response: MOCK_RESPONSE,
+            remoteip: MOCK_REMOTE_IP,
+          },
         },
-      })
+      )
       expect(result._unsafeUnwrapErr()).toEqual(new CaptchaConnectionError())
     })
   })

@@ -3,7 +3,6 @@ import { createLogger } from '../../bootstrap/logging'
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
 import { recaptchaConfig } from '../../bootstrap/config/recaptcha'
 
-import { GOOGLE_RECAPTCHA_URL } from './recaptcha.constants'
 import {
   CaptchaConnectionError,
   MissingCaptchaError,
@@ -22,7 +21,7 @@ export const verifyCaptchaResponse = (
     return errAsync(new MissingCaptchaError())
   }
   const verifyCaptchaPromise = axios.get<{ success: boolean }>(
-    GOOGLE_RECAPTCHA_URL,
+    recaptchaConfig.googleRecaptchaURL,
     {
       params: {
         secret: recaptchaConfig.recaptchaSecretKey,
