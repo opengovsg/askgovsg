@@ -11,9 +11,9 @@ import {
 
 const logger = createLogger(module)
 export class RecaptchaService {
-  private axios: Public<AxiosStatic>
+  private axios: Pick<AxiosStatic, 'get'>
 
-  constructor({ axios }: { axios: Public<AxiosStatic> }) {
+  constructor({ axios }: { axios: Pick<AxiosStatic, 'get'> }) {
     this.axios = axios
   }
 

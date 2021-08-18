@@ -1,5 +1,3 @@
-import axios from 'axios'
-import { mocked } from 'ts-jest/utils'
 import { recaptchaConfig } from '../../../bootstrap/config/recaptcha'
 
 import {
@@ -7,21 +5,25 @@ import {
   MissingCaptchaError,
   VerifyCaptchaError,
 } from '../recaptcha.errors'
-import { verifyCaptchaResponse } from '../recaptcha.service'
+import { RecaptchaService } from '../recaptcha.service'
 
 const MOCK_PRIVATE_KEY = ''
 const MOCK_RESPONSE = 'captchaResponse'
 const MOCK_REMOTE_IP = 'remoteIp'
-jest.mock('axios')
-const MockAxios = mocked(axios, true)
 
 describe('captcha.service', () => {
+  const axios = { get: jest.fn() }
+  const recaptchaService = new RecaptchaService({ axios })
+
   describe('verifyCaptchaResponse', () => {
     beforeEach(() => jest.clearAllMocks())
 
     it('should return MissingCaptchaError when response is falsy', async () => {
       // Act
-      const result = await verifyCaptchaResponse(null, undefined)
+      const result = await recaptchaService.verifyCaptchaResponse(
+        null,
+        undefined,
+      )
 
       // Assert
       expect(result._unsafeUnwrapErr()).toEqual(new MissingCaptchaError())
@@ -29,13 +31,16 @@ describe('captcha.service', () => {
 
     it('should return VerifyCaptchaError when captcha response is incorrect', async () => {
       // Arrange
-      MockAxios.get.mockResolvedValueOnce({ data: { success: false } })
+      axios.get.mockResolvedValueOnce({ data: { success: false } })
 
       // Act
-      const result = await verifyCaptchaResponse(MOCK_RESPONSE, MOCK_REMOTE_IP)
+      const result = await recaptchaService.verifyCaptchaResponse(
+        MOCK_RESPONSE,
+        MOCK_REMOTE_IP,
+      )
 
       // Assert
-      expect(MockAxios.get).toHaveBeenCalledWith(
+      expect(axios.get).toHaveBeenCalledWith(
         recaptchaConfig.googleRecaptchaURL,
         {
           params: {
@@ -50,13 +55,16 @@ describe('captcha.service', () => {
 
     it('should return true when captcha response is correct', async () => {
       // Arrange
-      MockAxios.get.mockResolvedValueOnce({ data: { success: true } })
+      axios.get.mockResolvedValueOnce({ data: { success: true } })
 
       // Act
-      const result = await verifyCaptchaResponse(MOCK_RESPONSE, MOCK_REMOTE_IP)
+      const result = await recaptchaService.verifyCaptchaResponse(
+        MOCK_RESPONSE,
+        MOCK_REMOTE_IP,
+      )
 
       // Assert
-      expect(MockAxios.get).toHaveBeenCalledWith(
+      expect(axios.get).toHaveBeenCalledWith(
         recaptchaConfig.googleRecaptchaURL,
         {
           params: {
@@ -71,13 +79,16 @@ describe('captcha.service', () => {
 
     it('should return CaptchaConnectionError when connection with captcha server fails', async () => {
       // Arrange
-      MockAxios.get.mockRejectedValueOnce(false)
+      axios.get.mockRejectedValueOnce(false)
 
       // Act
-      const result = await verifyCaptchaResponse(MOCK_RESPONSE, MOCK_REMOTE_IP)
+      const result = await recaptchaService.verifyCaptchaResponse(
+        MOCK_RESPONSE,
+        MOCK_REMOTE_IP,
+      )
 
       // Assert
-      expect(MockAxios.get).toHaveBeenCalledWith(
+      expect(axios.get).toHaveBeenCalledWith(
         recaptchaConfig.googleRecaptchaURL,
         {
           params: {
