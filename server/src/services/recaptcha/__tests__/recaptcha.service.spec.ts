@@ -9,7 +9,7 @@ import {
 } from '../recaptcha.errors'
 import { verifyCaptchaResponse } from '../recaptcha.service'
 
-const MOCK_PRIVATE_KEY = recaptchaConfig.recaptchaSecretKey
+const MOCK_PRIVATE_KEY = ''
 const MOCK_RESPONSE = 'captchaResponse'
 const MOCK_REMOTE_IP = 'remoteIp'
 jest.mock('axios')
