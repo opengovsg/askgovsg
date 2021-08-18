@@ -14,15 +14,17 @@ import {
   Text,
   VStack,
   Textarea,
+  Flex,
+  Spacer,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Agency } from '../../services/AgencyService'
 import { BiErrorCircle } from 'react-icons/bi'
 import { Enquiry } from '../../services/MailService'
-
+import ReCAPTCHA from 'react-google-recaptcha'
 interface EnquiryModalProps extends Pick<ModalProps, 'isOpen' | 'onClose'> {
-  onConfirm: (enquiry: Enquiry) => Promise<void>
+  onConfirm: (enquiry: Enquiry, captchaResponse: string) => Promise<void>
   agency: Agency
 }
 
@@ -35,13 +37,16 @@ export const EnquiryModal = ({
   const { register, handleSubmit, reset, formState } = useForm()
   const { errors: formErrors } = formState
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [captchaResponse, setCaptchaResponse] = useState<string | null>(null)
 
   const onSubmit: SubmitHandler<Enquiry> = async (enquiry) => {
-    setIsLoading(true)
-    await onConfirm(enquiry)
-    setIsLoading(false)
-    reset()
-    onClose()
+    if (captchaResponse) {
+      setIsLoading(true)
+      await onConfirm(enquiry, captchaResponse)
+      setIsLoading(false)
+      reset()
+      onClose()
+    }
   }
 
   return (
@@ -114,11 +119,16 @@ export const EnquiryModal = ({
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <HStack spacing={4}>
-              <Button onClick={onClose}>Cancel</Button>
+            <Flex w="100%" align="center">
+              <ReCAPTCHA
+                sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY ?? ''}
+                onChange={(token) => setCaptchaResponse(token)}
+              />
+              <Spacer />
               <Button
                 type="submit"
                 color="white"
+                disabled={!captchaResponse}
                 backgroundColor="primary.500"
                 _hover={{
                   background: 'primary.600',
@@ -127,7 +137,7 @@ export const EnquiryModal = ({
               >
                 Submit Enquiry
               </Button>
-            </HStack>
+            </Flex>
           </ModalFooter>
         </ModalContent>
       </form>
