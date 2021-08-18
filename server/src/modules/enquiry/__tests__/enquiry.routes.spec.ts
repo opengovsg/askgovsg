@@ -14,7 +14,7 @@ import { EnquiryController } from '../enquiry.controller'
 import { routeEnquiries } from '../enquiry.routes'
 import { EnquiryService } from '../enquiry.service'
 
-describe('/enquires', () => {
+describe('/enquiries', () => {
   // Set up mail
   const transport = { sendMail: jest.fn() }
   const mailFromEmail = 'donotreply@mail.ask.gov.sg'
