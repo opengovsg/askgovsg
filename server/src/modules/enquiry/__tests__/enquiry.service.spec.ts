@@ -68,7 +68,7 @@ describe('EnquiryService', () => {
         replyTo: enquiry.senderEmail,
         cc: ['enquiries@ask.gov.sg'],
         bcc: enquiry.senderEmail,
-        from: mailFromEmail,
+        from: `Enquiry via AskGov <${mailFromEmail}>`,
         subject: enquiry.questionTitle,
         text: enquiry.description,
       })
@@ -89,7 +89,7 @@ describe('EnquiryService', () => {
         replyTo: enquiry.senderEmail,
         cc: [],
         bcc: enquiry.senderEmail,
-        from: mailFromEmail,
+        from: `Enquiry via AskGov <${mailFromEmail}>`,
         subject: enquiry.questionTitle,
         text: enquiry.description,
       })
