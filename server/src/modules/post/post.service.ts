@@ -163,7 +163,7 @@ export class PostService {
     }
   }
 
-  getTopPosts = async (): Promise<HelperResult> => {
+  getTopPosts = async (): Promise<Post[]> => {
     const posts = await PostModel.findAll({
       include: [TagModel],
       order: [['views', 'DESC']],
@@ -187,12 +187,9 @@ export class PostService {
       where: { status: PostStatus.PUBLIC },
     })
     if (!posts) {
-      return [
-        helperFunction.responseHandler(false, 404, 'No posts found', null),
-        null,
-      ]
+      return []
     } else {
-      return [null, helperFunction.responseHandler(true, 200, 'Success', posts)]
+      return posts
     }
   }
 
