@@ -5,16 +5,8 @@ import {
   Answer as AnswerModel,
 } from '../../bootstrap/sequelize'
 import { PostStatus } from '../../types/post-status'
-import helperFunction from '../../helpers/helperFunction'
 import { Answer, Post } from '../../models'
-import {
-  HelperResult,
-  HelperResultCallback,
-} from '../../types/response-handler'
 import { FindOptions } from 'sequelize/types'
-import { createLogger } from '../../bootstrap/logging'
-
-const logger = createLogger(module)
 
 type AnswerWithRelations = Answer & {
   postId: string
