@@ -14,6 +14,7 @@ import {
 import { HelperResult } from '../../types/response-handler'
 import { Post, Tag } from '../../models'
 import { PostEditType } from '../../types/post-type'
+import { PostWithRelations as PostWithUserRelations } from '../auth/auth.service'
 
 export type UserWithRelations = {
   getTags: () => Tag[]
@@ -309,7 +310,7 @@ export class PostService {
     return false
   }
 
-  retrieveOne = async (postId: string): Promise<HelperResult> => {
+  retrieveOne = async (postId: string): Promise<PostWithUserRelations> => {
     await PostModel.increment(
       {
         views: +1,
@@ -321,7 +322,7 @@ export class PostService {
       },
     )
 
-    const post = await PostModel.findOne({
+    const post = (await PostModel.findOne({
       where: {
         id: postId,
       },
@@ -343,20 +344,12 @@ export class PostService {
           'answer_count',
         ],
       ],
-    })
+    })) as PostWithUserRelations
 
     if (!post) {
-      return [
-        helperFunction.responseHandler(
-          false,
-          404,
-          'No post with this id',
-          null,
-        ),
-        null,
-      ]
+      throw 'No post with this id'
     } else {
-      return [null, helperFunction.responseHandler(true, 200, 'Success', post)]
+      return post
     }
   }
 
