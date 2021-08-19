@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken'
 import { createLogger } from '../../bootstrap/logging'
-import helperFunction from '../../helpers/helperFunction'
 import { ControllerHandler } from '../../types/response-handler'
 
 const logger = createLogger(module)
@@ -17,27 +16,14 @@ export class AuthMiddleware {
 
     // Check if no token
     if (!token) {
-      return res
-        .status(401)
-        .json(
-          helperFunction.responseHandler(false, 401, 'Sign-in required', null),
-        )
+      return res.status(401).json({ message: 'Sign-in required' })
     }
 
     // Verify token
     try {
       jwt.verify(token, this.jwtSecret, (error, decoded) => {
         if (error) {
-          return res
-            .status(401)
-            .json(
-              helperFunction.responseHandler(
-                false,
-                401,
-                'Sign-in required',
-                null,
-              ),
-            )
+          return res.status(400).json({ message: 'Invalid token' })
         } else {
           req.user = (decoded as { user: Express.User }).user
           return next()
@@ -51,9 +37,7 @@ export class AuthMiddleware {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
   }
 }
