@@ -31,25 +31,24 @@ export class PostController {
     const { query } = req
     const { sort = SortType.Top, tags = '' } = query
     try {
-      const [err, data] = await this.postService.retrieveAll({
+      const data = await this.postService.retrieveAll({
         sort: sort as SortType,
         tags: tags as string,
       })
-      if (err) {
-        return res.status(err.code).json(err)
-      }
-      return res.status(data?.code || 200).json(data?.data)
+      return res.status(200).json(data)
     } catch (error) {
-      logger.error({
-        message: 'Error while listing posts',
-        meta: {
-          function: 'listPosts',
-        },
-        error,
-      })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(true, 500, 'Server Error', null))
+      if (error === 'Invalid tags used in request') {
+        return res.status(422).json({ message: error })
+      } else {
+        logger.error({
+          message: 'Error while listing posts',
+          meta: {
+            function: 'listPosts',
+          },
+          error,
+        })
+        return res.status(500).json({ message: 'Server Error' })
+      }
     }
   }
 
