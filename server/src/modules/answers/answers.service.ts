@@ -55,47 +55,16 @@ export class AnswersService {
     return answer.id
   }
 
-  update = async (
-    updatedAnswer: {
-      id: string
-      body: string
-    },
-    result: HelperResultCallback,
-  ): Promise<void> => {
-    try {
-      const res = await AnswerModel.update(
-        { body: updatedAnswer.body },
-        { where: { id: updatedAnswer.id } },
-      )
-      const changedRows = res[0]
-      result(
-        null,
-        helperFunction.responseHandler(
-          true,
-          200,
-          'Answer updated',
-          changedRows,
-        ),
-      )
-    } catch (error) {
-      logger.error({
-        message: 'Error while updating answer',
-        meta: {
-          function: 'update',
-          answerId: updatedAnswer.id,
-        },
-        error,
-      })
-      result(
-        helperFunction.responseHandler(
-          false,
-          error.statusCode,
-          error.message,
-          null,
-        ),
-        null,
-      )
-    }
+  update = async (updatedAnswer: {
+    id: string
+    body: string
+  }): Promise<number> => {
+    const res = await AnswerModel.update(
+      { body: updatedAnswer.body },
+      { where: { id: updatedAnswer.id } },
+    )
+    const changedRows = res[0]
+    return changedRows
   }
 
   remove = async (id: string, result: HelperResultCallback): Promise<void> => {
