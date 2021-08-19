@@ -1,5 +1,5 @@
 import { Box, Button, HStack, Input, Text } from '@chakra-ui/react'
-import React, { MouseEventHandler, useState } from 'react'
+import { MouseEventHandler, useState } from 'react'
 import { BiLink } from 'react-icons/bi'
 import { useStyledToast } from '../StyledToast/StyledToast'
 import styles from './RichTextEditor.module.scss'
