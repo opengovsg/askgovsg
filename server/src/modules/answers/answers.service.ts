@@ -42,7 +42,7 @@ export class AnswersService {
   }: Pick<
     AnswerWithRelations,
     'body' | 'postId' | 'userId'
-  >): Promise<HelperResult> => {
+  >): Promise<string> => {
     const answer = await AnswerModel.create({
       postId: postId,
       body: body,
@@ -52,10 +52,7 @@ export class AnswersService {
       { status: PostStatus.PUBLIC },
       { where: { id: postId } },
     )
-    return [
-      null,
-      helperFunction.responseHandler(true, 200, 'Answer Added', answer.id),
-    ]
+    return answer.id
   }
 
   update = async (
