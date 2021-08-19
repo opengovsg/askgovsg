@@ -56,7 +56,7 @@ export class EnquiryController {
 
     // Send enquiry
     try {
-      this.enquiryService.emailEnquiry({
+      await this.enquiryService.emailEnquiry({
         agencyId: req.body.agencyId,
         enquiry: req.body.enquiry,
       })

@@ -50,9 +50,7 @@ describe('EnquiryController', () => {
       // Arrange
       const errorMessage = 'One or more agency IDs are invalid'
       recaptchaService.verifyCaptchaResponse.mockReturnValue(okAsync(true))
-      enquiryService.emailEnquiry.mockImplementation(() => {
-        throw new Error(errorMessage)
-      })
+      enquiryService.emailEnquiry.mockRejectedValue(new Error(errorMessage))
 
       // Act
       const response = await request.post(path).send(data)
