@@ -212,31 +212,15 @@ export class PostService {
     description: string
     userId: string
     tagname: string[]
-  }): Promise<HelperResult> => {
+  }): Promise<string> => {
     const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
 
     if (newPost.tagname.length !== tagList.length) {
-      return [
-        helperFunction.responseHandler(
-          false,
-          400,
-          'At least one tag does not exist',
-          null,
-        ),
-        null,
-      ]
+      throw 'At least one tag does not exist'
     } else {
       // check if at least one agency tag exists
       if (!this.checkOneAgency(tagList)) {
-        return [
-          helperFunction.responseHandler(
-            false,
-            400,
-            'At least one tag must be an agency tag',
-            null,
-          ),
-          null,
-        ]
+        throw 'At least one tag must be an agency tag'
       }
       // Only create post if tag exists
       const post = await PostModel.create({
@@ -252,10 +236,7 @@ export class PostService {
           tagId: tag.id,
         })
       }
-      return [
-        null,
-        helperFunction.responseHandler(true, 200, 'Post Created', post.id),
-      ]
+      return post.id
     }
   }
 
