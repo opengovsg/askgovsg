@@ -240,21 +240,15 @@ export class PostService {
     }
   }
 
-  remove = async (id: string): Promise<HelperResult> => {
+  remove = async (id: string): Promise<void> => {
     const update = await PostModel.update(
       { status: 'ARCHIVED' },
       { where: { id: id } },
     )
     if (!update) {
-      return [
-        helperFunction.responseHandler(false, 400, 'Update failed', null),
-        null,
-      ]
+      throw 'Update failed'
     } else {
-      return [
-        null,
-        helperFunction.responseHandler(true, 200, 'Post Removed', null),
-      ]
+      return
     }
   }
 
