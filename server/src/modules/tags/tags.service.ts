@@ -14,7 +14,7 @@ import { PostWithRelations } from '../post/post.service'
 import { TagType } from '../../types/tag-type'
 
 export class TagsService {
-  retrieveAll = async (): Promise<HelperResult> => {
+  retrieveAll = async (): Promise<Tag[]> => {
     const tags = await TagModel.findAll({
       group: 'id',
       include: [{ model: PostModel, attributes: ['id'] }],
@@ -38,12 +38,9 @@ export class TagsService {
       order: [[Sequelize.literal('posts_count'), 'DESC']],
     })
     if (!tags) {
-      return [
-        helperFunction.responseHandler(false, 404, 'No tags found', null),
-        null,
-      ]
+      return Array<Tag>()
     } else {
-      return [null, helperFunction.responseHandler(true, 200, 'Success', tags)]
+      return tags
     }
   }
 

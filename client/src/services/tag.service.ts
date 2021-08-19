@@ -11,7 +11,7 @@ export interface Tag {
 }
 
 export const fetchTags = async (): Promise<Tag[]> =>
-  ApiClient.get('/tags').then((res) => res.data.data)
+  ApiClient.get('/tags').then(({ data }) => data)
 export const FETCH_TAGS_QUERY_KEY = 'fetchTags'
 
 export const getTagsByUser = async (): Promise<Tag[]> =>
