@@ -223,23 +223,13 @@ export class PostController {
 
     try {
       const { sort, withAnswers, tags } = req.query
-      const [error, data] = await this.postService.listAnswerablePosts({
+      const data = await this.postService.listAnswerablePosts({
         userId,
         sort: sort as SortType,
         withAnswers,
         tags,
       })
-      if (error) {
-        logger.error({
-          message: 'Error while retrieving answerable posts',
-          meta: {
-            function: 'listAnswerablePosts',
-          },
-          error,
-        })
-        return res.status(error.code).json(error)
-      }
-      return res.status(data?.code || 200).json(data?.data)
+      return res.status(200).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving answerable posts',
