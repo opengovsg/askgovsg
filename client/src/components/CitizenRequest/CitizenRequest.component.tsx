@@ -1,32 +1,38 @@
-import { Text, Button, Flex, useDisclosure } from '@chakra-ui/react'
-import { EnquiryModal } from '../EnquiryModal/EnquiryModal.component'
+import { Button, Flex, Text, useDisclosure } from '@chakra-ui/react'
+import { getApiErrorMessage } from '../../api'
 import { Agency } from '../../services/AgencyService'
-
-// TODO: combine interface Enquiry from both client and server
-export interface Enquiry {
-  questionTitle: string
-  description: string
-  senderEmail: string
-}
+import { Enquiry, Mail, postMail } from '../../services/MailService'
+import { EnquiryModal } from '../EnquiryModal/EnquiryModal.component'
+import { useStyledToast } from '../StyledToast/StyledToast'
 
 const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
-  const cc =
-    agency.email === 'enquiries@ask.gov.sg' ? '' : 'enquiries@ask.gov.sg'
+  const toast = useStyledToast()
   const {
     onOpen: onDeleteModalOpen,
     onClose: onDeleteModalClose,
     isOpen: isDeleteModalOpen,
   } = useDisclosure()
-  const onPostConfirm = async (enquiry: Enquiry): Promise<void> => {
-    window.location.href =
-      'mailto:' +
-      agency.email +
-      '?cc=' +
-      cc +
-      '&subject=AskGov enquiry:%20' +
-      enquiry.questionTitle +
-      ' AskGov&body=' +
-      enquiry.description
+  const onPostConfirm = async (
+    enquiry: Enquiry,
+    captchaResponse: string,
+  ): Promise<void> => {
+    const mail: Mail = {
+      agencyId: agency.id ? [agency.id] : [],
+      enquiry: enquiry,
+      captchaResponse: captchaResponse,
+    }
+    try {
+      await postMail(mail)
+      toast({
+        status: 'success',
+        description: 'Enquiry email sent',
+      })
+    } catch (error) {
+      toast({
+        status: 'error',
+        description: getApiErrorMessage(error),
+      })
+    }
   }
 
   return (

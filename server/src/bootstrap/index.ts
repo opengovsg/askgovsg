@@ -3,6 +3,7 @@ import helmet from 'helmet'
 import cors from 'cors'
 import compression from 'compression'
 import path from 'path'
+import axios from 'axios'
 
 import express from 'express'
 
@@ -16,6 +17,7 @@ import { PostController } from '../modules/post/post.controller'
 import { AuthController } from '../modules/auth/auth.controller'
 import { TagsController } from '../modules/tags/tags.controller'
 import { MailService } from '../modules/mail/mail.service'
+import { EnquiryController } from '../modules/enquiry/enquiry.controller'
 import { AgencyService } from '../modules/agency/agency.service'
 import { UserService } from '../modules/user/user.service'
 import { AuthService } from '../modules/auth/auth.service'
@@ -29,10 +31,18 @@ import { googleAnalyticsConfig } from './config/googleAnalytics'
 import { authConfig } from './config/auth'
 import { fullStoryConfig } from './config/fullstory'
 import { mailConfig } from './config/mail'
+import { fileConfig } from './config/file'
 import { requestLoggingMiddleware } from './logging'
 
 import { helmetOptions } from './helmet-options'
 import { emailValidator } from './email-validator'
+import { EnquiryService } from '../modules/enquiry/enquiry.service'
+import { Agency } from './sequelize'
+import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
+
+import { s3, bucket, host } from './s3'
+import { FileController } from '../modules/file/file.controller'
+import { FileService } from '../modules/file/file.service'
 
 export { sequelize } from './sequelize'
 export const app = express()
@@ -67,21 +77,24 @@ const mailOptions = {
 }
 const transport = createTransport(mailOptions)
 
+const agencyService = new AgencyService()
 const authService = new AuthService({ emailValidator, jwtSecret })
 const authMiddleware = new AuthMiddleware({ jwtSecret })
 const mailService = new MailService({
   transport,
   mailFromEmail: mailConfig.senderConfig.mailFrom,
 })
+const enquiryService = new EnquiryService({ Agency, mailService })
+const recaptchaService = new RecaptchaService({ axios })
 
 const apiOptions = {
-  agency: new AgencyController({ agencyService: new AgencyService() }),
+  agency: new AgencyController({ agencyService }),
   answers: {
     controller: new AnswersController({
       authService,
       answersService: new AnswersService(),
     }),
-    authMiddleware: authMiddleware,
+    authMiddleware,
   },
   auth: {
     controller: new AuthController({
@@ -99,15 +112,23 @@ const apiOptions = {
       authService,
       postService: new PostService(),
     }),
-    authMiddleware: authMiddleware,
+    authMiddleware,
   },
   tags: {
     controller: new TagsController({
       authService,
       tagsService: new TagsService(),
     }),
-    authMiddleware: authMiddleware,
+    authMiddleware,
   },
+  file: {
+    controller: new FileController({
+      fileService: new FileService({ s3, bucket, host }),
+    }),
+    authMiddleware,
+    maxFileSize: fileConfig.maxFileSize,
+  },
+  enquiries: new EnquiryController({ enquiryService, recaptchaService }),
 }
 
 app.use('/api/v1', api(apiOptions))

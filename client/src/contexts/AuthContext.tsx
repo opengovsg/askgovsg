@@ -34,8 +34,7 @@ export const AuthProvider = ({
   const whoami = () => {
     // TODO: type the response/user
     ApiClient.get<{ data: Record<string, unknown> } | null>('/auth')
-      .then((res) => res.data?.data)
-      .then((data) => {
+      .then(({ data }) => {
         if (data) {
           setUser(data)
         }

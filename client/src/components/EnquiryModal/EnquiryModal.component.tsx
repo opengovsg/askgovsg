@@ -14,15 +14,17 @@ import {
   Text,
   VStack,
   Textarea,
+  Flex,
+  Spacer,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Agency } from '../../services/AgencyService'
 import { BiErrorCircle } from 'react-icons/bi'
-import { Enquiry } from '../CitizenRequest/CitizenRequest.component'
-
+import { Enquiry } from '../../services/MailService'
+import ReCAPTCHA from 'react-google-recaptcha'
 interface EnquiryModalProps extends Pick<ModalProps, 'isOpen' | 'onClose'> {
-  onConfirm: (enquiry: Enquiry) => Promise<void>
+  onConfirm: (enquiry: Enquiry, captchaResponse: string) => Promise<void>
   agency: Agency
 }
 
@@ -35,13 +37,16 @@ export const EnquiryModal = ({
   const { register, handleSubmit, reset, formState } = useForm()
   const { errors: formErrors } = formState
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [captchaResponse, setCaptchaResponse] = useState<string | null>(null)
 
   const onSubmit: SubmitHandler<Enquiry> = async (enquiry) => {
-    setIsLoading(true)
-    await onConfirm(enquiry)
-    setIsLoading(false)
-    reset()
-    onClose()
+    if (captchaResponse) {
+      setIsLoading(true)
+      await onConfirm(enquiry, captchaResponse)
+      setIsLoading(false)
+      reset()
+      onClose()
+    }
   }
 
   return (
@@ -59,8 +64,8 @@ export const EnquiryModal = ({
             <VStack align="left" spacing={0}>
               <Text>
                 {`This enquiry form will generate an email to be sent to 
-                ${agency.longname}. Please note that we would take at 
-                least 3 working days to process your enquiry. Thank you.`}
+                ${agency.longname}. Please note that we would take within
+                3 - 14 working days to process your enquiry. Thank you.`}
               </Text>
               <Box h={4} />
               <Text textStyle="subhead-1" color="secondary.700">
@@ -91,7 +96,7 @@ export const EnquiryModal = ({
                 })}
               />
               {formErrors.description && errorLabel('This field is required')}
-              {/* <Box h={4} />
+              <Box h={4} />
               <Text textStyle="subhead-1" color="secondary.700">
                 Sender email
               </Text>
@@ -110,15 +115,20 @@ export const EnquiryModal = ({
                 })}
               />
               {formErrors.senderEmail &&
-                errorLabel('Please enter a valid email')} */}
+                errorLabel('Please enter a valid email')}
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <HStack spacing={4}>
-              <Button onClick={onClose}>Cancel</Button>
+            <Flex w="100%" align="center">
+              <ReCAPTCHA
+                sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY ?? ''}
+                onChange={(token) => setCaptchaResponse(token)}
+              />
+              <Spacer />
               <Button
                 type="submit"
                 color="white"
+                disabled={!captchaResponse}
                 backgroundColor="primary.500"
                 _hover={{
                   background: 'primary.600',
@@ -127,7 +137,7 @@ export const EnquiryModal = ({
               >
                 Submit Enquiry
               </Button>
-            </HStack>
+            </Flex>
           </ModalFooter>
         </ModalContent>
       </form>

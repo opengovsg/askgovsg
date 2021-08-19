@@ -98,7 +98,14 @@ jobs:
         env:
           BRANCH: ${{ steps.extract_branch.outputs.branch }}
           SHA: ${{ github.sha }}
-      - run: docker build -t ${{ steps.extract_tag.outputs.tag }} -f Dockerfile .
+      - name: Select reCAPTCHA site key
+        run: |
+          if [[ $GITHUB_REF == $STAGING_BRANCH ]]; then
+            echo REACT_APP_RECAPTCHA_SITE_KEY=${{ secrets.REACT_APP_RECAPTCHA_SITE_KEY_STAGING }} >> $GITHUB_ENV;
+          elif [[ $GITHUB_REF == $PRODUCTION_BRANCH ]]; then
+            echo REACT_APP_RECAPTCHA_SITE_KEY=${{ secrets.REACT_APP_RECAPTCHA_SITE_KEY_PRODUCTION }} >> $GITHUB_ENV;
+          fi
+      - run: docker build -t ${{ steps.extract_tag.outputs.tag }} -f Dockerfile --build-arg REACT_APP_RECAPTCHA_SITE_KEY=$REACT_APP_RECAPTCHA_SITE_KEY .
       - name: Push to ECR
         if: needs.gatekeep.outputs.proceed == 'true'
         uses: opengovsg/gh-ecr-push@v1

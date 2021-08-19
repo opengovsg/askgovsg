@@ -1,7 +1,7 @@
-import helperFunction from '../../helpers/helperFunction'
 import { validationResult } from 'express-validator'
 import { generateRandomDigits, hashData, verifyHash } from '../../util/hash'
 import { User, Token } from '../../bootstrap/sequelize'
+import { User as UserType } from '../../models'
 import { createValidationErrMessage } from '../../util/validation-error'
 
 import { MailService } from '../mail/mail.service'
@@ -9,6 +9,8 @@ import { AuthService } from './auth.service'
 import { UserService } from '../../modules/user/user.service'
 import { Request, Response } from 'express'
 import { createLogger } from '../../bootstrap/logging'
+import { ControllerHandler } from '../../types/response-handler'
+import { Message } from '../../types/message-type'
 
 const OTP_LENGTH = 6
 
@@ -33,27 +35,18 @@ export class AuthController {
     this.userService = userService
   }
 
-  loadUser = async (req: Request, res: Response): Promise<Response> => {
+  loadUser: ControllerHandler<unknown, UserType | null | Message> = async (
+    req,
+    res,
+  ) => {
     if (!req.user) {
       return res.status(401).json({ message: 'User not signed in' })
     }
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const [error, data] = await this.userService.loadUser(req.user?.id)
-
-      if (error) {
-        logger.error({
-          message: 'Error while loading user',
-          meta: {
-            function: 'loadUser',
-            userId: req.user?.id,
-          },
-          error,
-        })
-        return res.status(error.code).json(error)
-      }
-      return res.status(data?.code || 200).json(data)
+      const user = await this.userService.loadUser(req.user?.id)
+      return res.status(200).json(user)
     } catch (error) {
       logger.error({
         message: 'Error while loading user',
@@ -63,9 +56,7 @@ export class AuthController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
   }
 
@@ -149,13 +140,13 @@ export class AuthController {
       let jwt
       let displayname
       if (user) {
-        jwt = await this.userService.login(user.id)
+        jwt = this.userService.login(user.id)
         displayname = user.displayname
       } else {
         if (this.authService.isOfficerEmail(email)) {
           const officer = await this.userService.createOfficer(email)
           displayname = officer.displayname
-          jwt = await this.userService.login(officer.id)
+          jwt = this.userService.login(officer.id)
         }
       }
 
@@ -168,9 +159,7 @@ export class AuthController {
           function: 'handleVerifyLoginOtp',
         },
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(true, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
   }
 }

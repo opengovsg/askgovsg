@@ -39,8 +39,15 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
   NODE_ENV=development
   JWT_SECRET=mysecrettoken
 
+  REACT_APP_RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+  RECAPTCHA_SECRET_KEY=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
+  
+  FILE_BUCKET_NAME=files.ask.gov.sg
+  AWS_ACCESS_KEY_ID=localstack
+  AWS_SECRET_ACCESS_KEY=localstack
+
   MAIL_PORT=1025
-  MAIL_FROM=admin@help.gov.sg
+  MAIL_FROM=admin@ask.gov.sg
   MAIL_HOST=127.0.0.1
   ```
 
