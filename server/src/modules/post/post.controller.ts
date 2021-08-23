@@ -1,6 +1,5 @@
 import { Request, Response, RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
-import helperFunction from '../../helpers/helperFunction'
 import { SortType } from '../../types/sort-type'
 import { createValidationErrMessage } from '../../util/validation-error'
 import { AuthService } from '../auth/auth.service'

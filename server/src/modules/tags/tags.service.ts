@@ -5,9 +5,7 @@ import {
   Tag as TagModel,
   User as UserModel,
 } from '../../bootstrap/sequelize'
-import helperFunction from '../../helpers/helperFunction'
 import { PostStatus } from '../../types/post-status'
-import { HelperResult } from '../../types/response-handler'
 import { countBy, uniqBy } from 'lodash'
 import { Tag } from '../../models'
 import { PostWithRelations } from '../post/post.service'

@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import { createLogger } from '../../bootstrap/logging'
-import helperFunction from '../../helpers/helperFunction'
 import { ControllerHandler } from '../../types/response-handler'
 import { AuthService } from '../auth/auth.service'
 import { TagsService } from './tags.service'
