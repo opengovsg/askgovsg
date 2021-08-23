@@ -1,6 +1,5 @@
 import { Request, Response, RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
-import helperFunction from '../../helpers/helperFunction'
 import { SortType } from '../../types/sort-type'
 import { createValidationErrMessage } from '../../util/validation-error'
 import { AuthService } from '../auth/auth.service'
@@ -31,43 +30,31 @@ export class PostController {
     const { query } = req
     const { sort = SortType.Top, tags = '' } = query
     try {
-      const [err, data] = await this.postService.retrieveAll({
+      const data = await this.postService.retrieveAll({
         sort: sort as SortType,
         tags: tags as string,
       })
-      if (err) {
-        return res.status(err.code).json(err)
-      }
-      return res.status(data?.code || 200).json(data?.data)
+      return res.status(200).json(data)
     } catch (error) {
-      logger.error({
-        message: 'Error while listing posts',
-        meta: {
-          function: 'listPosts',
-        },
-        error,
-      })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(true, 500, 'Server Error', null))
+      if (error.message === 'Invalid tags used in request') {
+        return res.status(422).json({ message: error })
+      } else {
+        logger.error({
+          message: 'Error while listing posts',
+          meta: {
+            function: 'listPosts',
+          },
+          error,
+        })
+        return res.status(500).json({ message: 'Server Error' })
+      }
     }
   }
 
   getSinglePost = async (req: Request, res: Response): Promise<Response> => {
     let post
     try {
-      const [error, data] = await this.postService.retrieveOne(req.params.id)
-      if (error) {
-        logger.error({
-          message: 'Error while retrieving single post',
-          meta: {
-            function: 'getSinglePost',
-          },
-          error,
-        })
-        return res.status(error.code).json(error)
-      }
-      post = data?.data
+      post = await this.postService.retrieveOne(req.params.id)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving single post',
@@ -76,14 +63,12 @@ export class PostController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
 
     try {
       await this.authService.verifyUserCanViewPost(
-        post.toJSON(),
+        post,
         req.header('x-auth-token') ?? '',
       )
     } catch (error) {
@@ -104,11 +89,8 @@ export class PostController {
 
   getTopPosts = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const [err, data] = await this.postService.getTopPosts()
-      if (err) {
-        return res.status(err.code).json(err)
-      }
-      return res.status(data?.code || 200).json(data?.data)
+      const data = await this.postService.getTopPosts()
+      return res.status(200).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving top posts',
@@ -117,25 +99,14 @@ export class PostController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
   }
 
   addPost = async (req: Request, res: Response): Promise<Response> => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json(
-          helperFunction.responseHandler(
-            false,
-            400,
-            errors.array()[0].msg,
-            null,
-          ),
-        )
+      return res.status(400).json(errors.array()[0].msg)
     }
     if (!req.user) {
       return res.status(401).json({ message: 'User not signed in' })
@@ -151,37 +122,21 @@ export class PostController {
           ),
         )
       if (listOfDisallowedTags.length > 0) {
-        return res
-          .status(403)
-          .json(
-            helperFunction.responseHandler(
-              false,
-              403,
-              'You do not have permissions to post this question with the following tags: ' +
-                listOfDisallowedTags.map((x) => x.tagname).join(', '),
-              null,
-            ),
-          )
+        return res.status(403).json({
+          message:
+            'You do not have permissions to post this question with the following tags: ' +
+            listOfDisallowedTags.map((x) => x.tagname).join(', '),
+        })
       }
 
-      const [error, data] = await this.postService.createPostWithTag({
+      const data = await this.postService.createPostWithTag({
         title: req.body.title,
         description: req.body.description,
         userId: req.user?.id,
         tagname: req.body.tagname,
       })
 
-      if (error) {
-        logger.error({
-          message: 'Error while creating post',
-          meta: {
-            function: 'addPost',
-          },
-          error,
-        })
-        return res.status(error.code).json(error)
-      }
-      return res.status(data?.code || 200).json(data)
+      return res.status(200).json({ data: data })
     } catch (error) {
       logger.error({
         message: 'Error while creating post',
@@ -190,9 +145,7 @@ export class PostController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server error' })
     }
   }
 
@@ -216,31 +169,8 @@ export class PostController {
           .status(403)
           .json({ message: 'You do not have permission to delete this post.' })
       }
-    } catch (error) {
-      logger.error({
-        message: 'Error while determining permissions to delete post',
-        meta: {
-          function: 'deletePost',
-        },
-        error,
-      })
-      return res
-        .status(500)
-        .json({ message: 'Something went wrong, please try again.' })
-    }
-    try {
-      const [error, data] = await this.postService.remove(postId)
-      if (error) {
-        logger.error({
-          message: 'Error while deleting post',
-          meta: {
-            function: 'deletePost',
-          },
-          error,
-        })
-        return res.status(error.code).json(error)
-      }
-      return res.status(data?.code || 200).json(data)
+      await this.postService.remove(postId)
+      return res.sendStatus(200)
     } catch (error) {
       logger.error({
         message: 'Error while deleting post',
@@ -249,9 +179,7 @@ export class PostController {
         },
         error,
       })
-      return res
-        .status(500)
-        .json(helperFunction.responseHandler(false, 500, 'Server Error', null))
+      return res.status(500).json({ message: 'Server Error' })
     }
   }
 
@@ -294,23 +222,13 @@ export class PostController {
 
     try {
       const { sort, withAnswers, tags } = req.query
-      const [error, data] = await this.postService.listAnswerablePosts({
+      const data = await this.postService.listAnswerablePosts({
         userId,
         sort: sort as SortType,
         withAnswers,
         tags,
       })
-      if (error) {
-        logger.error({
-          message: 'Error while retrieving answerable posts',
-          meta: {
-            function: 'listAnswerablePosts',
-          },
-          error,
-        })
-        return res.status(error.code).json(error)
-      }
-      return res.status(data?.code || 200).json(data?.data)
+      return res.status(200).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving answerable posts',

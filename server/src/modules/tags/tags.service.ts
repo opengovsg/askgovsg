@@ -5,16 +5,14 @@ import {
   Tag as TagModel,
   User as UserModel,
 } from '../../bootstrap/sequelize'
-import helperFunction from '../../helpers/helperFunction'
 import { PostStatus } from '../../types/post-status'
-import { HelperResult } from '../../types/response-handler'
 import { countBy, uniqBy } from 'lodash'
 import { Tag } from '../../models'
 import { PostWithRelations } from '../post/post.service'
 import { TagType } from '../../types/tag-type'
 
 export class TagsService {
-  retrieveAll = async (): Promise<HelperResult> => {
+  retrieveAll = async (): Promise<Tag[]> => {
     const tags = await TagModel.findAll({
       group: 'id',
       include: [{ model: PostModel, attributes: ['id'] }],
@@ -38,12 +36,9 @@ export class TagsService {
       order: [[Sequelize.literal('posts_count'), 'DESC']],
     })
     if (!tags) {
-      return [
-        helperFunction.responseHandler(false, 404, 'No tags found', null),
-        null,
-      ]
+      return Array<Tag>()
     } else {
-      return [null, helperFunction.responseHandler(true, 200, 'Success', tags)]
+      return tags
     }
   }
 
@@ -78,7 +73,7 @@ export class TagsService {
     return uniqBy<Tag>(combinedTags, (tag: Tag) => tag.id)
   }
 
-  retrieveOne = async (tagName: string): Promise<HelperResult> => {
+  retrieveOne = async (tagName: string): Promise<Tag> => {
     const tag = await TagModel.findOne({
       where: { tagname: tagName },
       group: 'id',
@@ -100,12 +95,9 @@ export class TagsService {
       order: [[Sequelize.literal('posts_count'), 'DESC']],
     })
     if (!tag) {
-      return [
-        helperFunction.responseHandler(false, 404, 'Tag not found', null),
-        null,
-      ]
+      throw 'Tag not found'
     } else {
-      return [null, helperFunction.responseHandler(true, 200, 'Success', tag)]
+      return tag
     }
   }
 

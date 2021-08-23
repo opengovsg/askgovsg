@@ -5,16 +5,8 @@ import {
   Answer as AnswerModel,
 } from '../../bootstrap/sequelize'
 import { PostStatus } from '../../types/post-status'
-import helperFunction from '../../helpers/helperFunction'
 import { Answer, Post } from '../../models'
-import {
-  HelperResult,
-  HelperResultCallback,
-} from '../../types/response-handler'
 import { FindOptions } from 'sequelize/types'
-import { createLogger } from '../../bootstrap/logging'
-
-const logger = createLogger(module)
 
 type AnswerWithRelations = Answer & {
   postId: string
@@ -42,7 +34,7 @@ export class AnswersService {
   }: Pick<
     AnswerWithRelations,
     'body' | 'postId' | 'userId'
-  >): Promise<HelperResult> => {
+  >): Promise<string> => {
     const answer = await AnswerModel.create({
       postId: postId,
       body: body,
@@ -52,81 +44,23 @@ export class AnswersService {
       { status: PostStatus.PUBLIC },
       { where: { id: postId } },
     )
-    return [
-      null,
-      helperFunction.responseHandler(true, 200, 'Answer Added', answer.id),
-    ]
+    return answer.id
   }
 
-  update = async (
-    updatedAnswer: {
-      id: string
-      body: string
-    },
-    result: HelperResultCallback,
-  ): Promise<void> => {
-    try {
-      const res = await AnswerModel.update(
-        { body: updatedAnswer.body },
-        { where: { id: updatedAnswer.id } },
-      )
-      const changedRows = res[0]
-      result(
-        null,
-        helperFunction.responseHandler(
-          true,
-          200,
-          'Answer updated',
-          changedRows,
-        ),
-      )
-    } catch (error) {
-      logger.error({
-        message: 'Error while updating answer',
-        meta: {
-          function: 'update',
-          answerId: updatedAnswer.id,
-        },
-        error,
-      })
-      result(
-        helperFunction.responseHandler(
-          false,
-          error.statusCode,
-          error.message,
-          null,
-        ),
-        null,
-      )
-    }
+  update = async (updatedAnswer: {
+    id: string
+    body: string
+  }): Promise<number> => {
+    const res = await AnswerModel.update(
+      { body: updatedAnswer.body },
+      { where: { id: updatedAnswer.id } },
+    )
+    const changedRows = res[0]
+    return changedRows
   }
 
-  remove = async (id: string, result: HelperResultCallback): Promise<void> => {
-    try {
-      await AnswerModel.destroy({ where: { id: id } })
-      result(
-        null,
-        helperFunction.responseHandler(true, 200, 'Answer Removed', null),
-      )
-    } catch (error) {
-      logger.error({
-        message: 'Error while deleting answer',
-        meta: {
-          function: 'deleteAnswer',
-          answerId: id,
-        },
-        error,
-      })
-      result(
-        helperFunction.responseHandler(
-          false,
-          error.statusCode,
-          error.message,
-          null,
-        ),
-        null,
-      )
-    }
+  remove = async (id: string): Promise<void> => {
+    await AnswerModel.destroy({ where: { id: id } })
   }
 
   retrieveAll = async (
