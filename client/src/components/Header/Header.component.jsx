@@ -26,6 +26,15 @@ const Header = () => {
   const match = matchPath(location.pathname, {
     path: '/agency/:agency',
   })
+  const isHomePage =
+    matchPath(location.pathname, {
+      path: '/',
+      exact: true,
+    }) !== null ||
+    matchPath(location.pathname, {
+      path: '/agency/:agency',
+      exact: true,
+    }) !== null
   const agencyShortName = match?.params?.agency
   const { isLoading, data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
@@ -72,10 +81,12 @@ const Header = () => {
         position="relative"
         top="8px"
       >
-        {/* Hide TagPanelMobile on desktop */}
-        <Box d={{ base: 'block', xl: 'none' }}>
-          <TagPanelMobile />
-        </Box>
+        {/* Show tag panel mobile only on mobile and homepage*/}
+        {isHomePage && (
+          <Box d={{ base: 'block', xl: 'none' }}>
+            <TagPanelMobile />
+          </Box>
+        )}
         <Link to={agency ? `/agency/${agency.shortname}` : '/'}>
           <Stack
             direction={{ base: 'column', md: 'row' }}
