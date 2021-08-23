@@ -114,7 +114,7 @@ export class PostService {
     })
 
     if (!posts) {
-      return Array<Post>()
+      return []
     } else if (withAnswers) {
       return returnPosts
     } else {
@@ -127,7 +127,7 @@ export class PostService {
     data?: PostWithRelations[],
   ): Promise<Post[]> => {
     if (!data) {
-      return Array<Post>()
+      return []
     } else {
       const answerPromises = data.map((p) => p.countAnswers())
       const answerCounts = await Promise.all(answerPromises)
