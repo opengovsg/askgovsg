@@ -97,6 +97,7 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
             <div className="search-autocomplete">
               <InputGroup className="search-box">
                 <InputLeftElement
+                  zIndex="0"
                   children={<BiSearch size="24" color="secondary.500" />}
                   h="100%"
                   w="24px"

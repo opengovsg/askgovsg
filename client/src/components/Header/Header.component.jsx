@@ -1,4 +1,12 @@
-import { Box, Flex, Image, Stack, Text } from '@chakra-ui/react'
+import {
+  Box,
+  Divider,
+  Flex,
+  HStack,
+  Image,
+  Stack,
+  Text,
+} from '@chakra-ui/react'
 import { useQuery } from 'react-query'
 import { Link, matchPath, useLocation } from 'react-router-dom'
 import { ReactComponent as Logo } from '../../assets/LogoAlpha.svg'
@@ -9,6 +17,7 @@ import {
 } from '../../services/AgencyService'
 import LinkButton from '../LinkButton/LinkButton.component'
 import Spinner from '../Spinner/Spinner.component'
+import TagPanelMobile from '../TagPanel/TagPanelMobile.component'
 
 const Header = () => {
   const { user, logout } = useAuth()
@@ -42,12 +51,7 @@ const Header = () => {
           />
         </>
       )}
-      <LinkButton
-        text={'Log out'}
-        link={'/login'}
-        type={'s-btn__filled'}
-        handleClick={logout}
-      />
+      <LinkButton text={'Log out'} link={'/login'} handleClick={logout} />
     </Flex>
   )
 
@@ -57,45 +61,54 @@ const Header = () => {
       display="flex"
       justify="space-between"
       align="center"
-      px="48px"
+      px="32px"
       py="15px"
       height={{ base: '122px', md: '74px' }}
     >
-      <Link to={agency ? `/agency/${agency.shortname}` : '/'}>
-        <Stack
-          direction={{ base: 'column', md: 'row' }}
-          textDecor="none"
-          align={{ base: 'flex-start', md: 'center' }}
-          position="relative"
-          top="8px"
-        >
-          <Box pr="15px" mb={{ base: '0px', md: '6px' }}>
-            <Logo />
-          </Box>
-          {agency ? (
-            <>
-              <Text
-                d={{ base: 'none', md: 'block' }}
-                pr={{ base: 0, md: 4 }}
-                textStyle="h4"
-                fontWeight={300}
-                color="white"
-              >
-                |
-              </Text>
-              <Text
-                position={{ base: 'relative', md: 'static' }}
-                top={{ base: '-6px', md: 0 }}
-                textStyle="h4"
-                fontWeight={400}
-                color="white"
-              >
-                {agency.longname}
-              </Text>
-            </>
-          ) : null}
-        </Stack>
-      </Link>
+      <Stack
+        direction={{ base: 'column', md: 'row' }}
+        textDecor="none"
+        align={{ base: 'flex-start', md: 'center' }}
+        position="relative"
+        top="8px"
+      >
+        {/* Hide TagPanelMobile on desktop */}
+        <Box d={{ base: 'block', xl: 'none' }}>
+          <TagPanelMobile />
+        </Box>
+        <Link to={agency ? `/agency/${agency.shortname}` : '/'}>
+          <Stack
+            direction={{ base: 'column', md: 'row' }}
+            align={{ base: 'flex-start', md: 'center' }}
+          >
+            <Box pr="15px" mb={{ base: '0px', md: '6px' }}>
+              <Logo />
+            </Box>
+            {agency ? (
+              <>
+                <Text
+                  d={{ base: 'none', md: 'block' }}
+                  pr={{ base: 0, md: 5 }}
+                  textStyle="h4"
+                  fontWeight={300}
+                  color="white"
+                >
+                  |
+                </Text>
+                <Text
+                  position={{ base: 'relative', md: 'static' }}
+                  top={{ base: '-6px', md: 0 }}
+                  textStyle="h4"
+                  fontWeight={400}
+                  color="white"
+                >
+                  {agency.longname}
+                </Text>
+              </>
+            ) : null}
+          </Stack>
+        </Link>
+      </Stack>
       {user && authLinks}
     </Flex>
   )
