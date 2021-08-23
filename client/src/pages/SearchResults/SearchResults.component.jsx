@@ -1,23 +1,22 @@
 import Fuse from 'fuse.js'
-import React, { Fragment, useState } from 'react'
+import { Fragment } from 'react'
 import { useQuery } from 'react-query'
 import { useLocation } from 'react-router-dom'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import { BackToHome } from '../../components/BackToHome/BackToHome'
-import handleSorting from '../../services/handleSorting'
 import PostItem from '../../components/PostItem/PostItem.component'
 import SearchBox from '../../components/SearchBox/SearchBox.component'
 import { Spacer } from '@chakra-ui/react'
 import Spinner from '../../components/Spinner/Spinner.component'
 import { listPosts, LIST_POSTS_QUERY_KEY } from '../../services/PostService'
 import './SearchResults.styles.scss'
+import { sortByCreatedAt } from '../../util/date'
 
 const SearchResults = () => {
   const { data: posts, isLoading } = useQuery([LIST_POSTS_QUERY_KEY], () =>
     listPosts(),
   )
 
-  const [sortType] = useState('Newest')
   let searchQuery =
     new URLSearchParams(useLocation().search).get('search') ?? ''
 
@@ -26,7 +25,7 @@ const SearchResults = () => {
   })
     .search(searchQuery)
     .map((res) => res.item)
-    .sort(handleSorting(sortType))
+    .sort(sortByCreatedAt)
 
   return isLoading ? (
     <Spinner type="page" width="75px" height="200px" />
