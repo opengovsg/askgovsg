@@ -37,7 +37,7 @@ export class PostController {
       })
       return res.status(200).json(data)
     } catch (error) {
-      if (error === 'Invalid tags used in request') {
+      if (error.message === 'Invalid tags used in request') {
         return res.status(422).json({ message: error })
       } else {
         logger.error({

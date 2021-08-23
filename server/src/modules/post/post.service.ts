@@ -46,7 +46,7 @@ export class PostService {
       where: { id: userId },
     })) as UserWithRelations | null
     if (!user) {
-      throw 'Unable to find user with given ID'
+      throw new Error('Unable to find user with given ID')
     }
 
     const tagInstances = await user.getTags()
@@ -188,11 +188,11 @@ export class PostService {
     const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
 
     if (newPost.tagname.length !== tagList.length) {
-      throw 'At least one tag does not exist'
+      throw new Error('At least one tag does not exist')
     } else {
       // check if at least one agency tag exists
       if (!this.checkOneAgency(tagList)) {
-        throw 'At least one tag must be an agency tag'
+        throw new Error('At least one tag must be an agency tag')
       }
       // Only create post if tag exists
       const post = await PostModel.create({
@@ -218,7 +218,7 @@ export class PostService {
       { where: { id: id } },
     )
     if (!update) {
-      throw 'Update failed'
+      throw new Error('Update failed')
     } else {
       return
     }
@@ -291,7 +291,7 @@ export class PostService {
     })) as PostWithUserRelations
 
     if (!post) {
-      throw 'No post with this id'
+      throw new Error('No post with this id')
     } else {
       return post
     }
@@ -318,7 +318,7 @@ export class PostService {
 
     // prevent search if query is invalid
     if (tagList.length != tags_unchecked.length) {
-      throw 'Invalid tags used in request'
+      throw new Error('Invalid tags used in request')
     }
 
     const whereobj = {
