@@ -1,11 +1,4 @@
 # AskGov
-
-[![Version](https://img.shields.io/static/v1?label=version&message=2.0.0&color=blue)](https://shields.io/)
-[![NPM](https://img.shields.io/static/v1?label=npm&message=6.8.5&color=blue)](https://shields.io/)
-[![NODE](https://img.shields.io/static/v1?label=node&message=12.18.0&color=success)](https://shields.io/)
-[![MYSQL](https://img.shields.io/static/v1?label=mysql&message=8.0.10&color=blueviolet)](https://shields.io/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://shields.io/)
-
 ## Tech Stack
 
 #### Front-end
@@ -32,7 +25,7 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
   For development:
   ```
   DB_HOST=localhost
-  DB_NAME=stack_overflow_v2 
+  DB_NAME=askgov
   DB_USER=root
   DB_PASSWORD=*create your own pw here*
   SERVER_PORT=5000
@@ -76,11 +69,9 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 
 * Download a database GUI like [DBeaver](https://dbeaver.io/download/) and connect to the local MySQL server
 
-  Create database by executing the script in `DBeaver`
+  Create database by executing the following in `DBeaver`:
   ```
-  CREATE DATABASE stack_overflow_v2;
-  USE stack_overflow_v2;
-  SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+  CREATE DATABASE askgov;
   ```
   Execute `$ npm run dev` to create the tables
   
