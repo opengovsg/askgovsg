@@ -2,7 +2,6 @@ import { SortType } from '../../types/sort-type'
 
 import Sequelize, { OrderItem, Op } from 'sequelize'
 import { PostStatus } from '../../types/post-status'
-import helperFunction from '../../helpers/helperFunction'
 
 import {
   User as UserModel,
@@ -11,9 +10,9 @@ import {
   Post as PostModel,
   Answer as AnswerModel,
 } from '../../bootstrap/sequelize'
-import { HelperResult } from '../../types/response-handler'
 import { Post, Tag } from '../../models'
 import { PostEditType } from '../../types/post-type'
+import { PostWithRelations as PostWithUserRelations } from '../auth/auth.service'
 
 export type UserWithRelations = {
   getTags: () => Tag[]
@@ -42,21 +41,12 @@ export class PostService {
     sort: SortType
     withAnswers: boolean
     tags?: string[]
-  }): Promise<HelperResult> => {
+  }): Promise<Post[]> => {
     const user = (await UserModel.findOne({
       where: { id: userId },
     })) as UserWithRelations | null
     if (!user) {
-      // throw new Error('Unable to find user with given ID')
-      return [
-        helperFunction.responseHandler(
-          false,
-          404,
-          'Unable to find user with given ID',
-          null,
-        ),
-        null,
-      ]
+      throw new Error('Unable to find user with given ID')
     }
 
     const tagInstances = await user.getTags()
@@ -124,15 +114,9 @@ export class PostService {
     })
 
     if (!posts) {
-      return [
-        helperFunction.responseHandler(false, 404, 'No posts found', null),
-        null,
-      ]
+      return []
     } else if (withAnswers) {
-      return [
-        null,
-        helperFunction.responseHandler(true, 200, 'Success', returnPosts),
-      ]
+      return returnPosts
     } else {
       // posts without answers
       return this.filterPostsWithoutAnswers(posts)
@@ -141,28 +125,17 @@ export class PostService {
 
   filterPostsWithoutAnswers = async (
     data?: PostWithRelations[],
-  ): Promise<HelperResult> => {
+  ): Promise<Post[]> => {
     if (!data) {
-      return [
-        helperFunction.responseHandler(false, 404, 'No posts found', null),
-        null,
-      ]
+      return []
     } else {
       const answerPromises = data.map((p) => p.countAnswers())
       const answerCounts = await Promise.all(answerPromises)
-      return [
-        null,
-        helperFunction.responseHandler(
-          true,
-          200,
-          'Posts',
-          data.filter((_, index) => answerCounts[index] === 0),
-        ),
-      ]
+      return data.filter((_, index) => answerCounts[index] === 0)
     }
   }
 
-  getTopPosts = async (): Promise<HelperResult> => {
+  getTopPosts = async (): Promise<Post[]> => {
     const posts = await PostModel.findAll({
       include: [TagModel],
       order: [['views', 'DESC']],
@@ -186,12 +159,9 @@ export class PostService {
       where: { status: PostStatus.PUBLIC },
     })
     if (!posts) {
-      return [
-        helperFunction.responseHandler(false, 404, 'No posts found', null),
-        null,
-      ]
+      return []
     } else {
-      return [null, helperFunction.responseHandler(true, 200, 'Success', posts)]
+      return posts
     }
   }
 
@@ -214,31 +184,15 @@ export class PostService {
     description: string
     userId: string
     tagname: string[]
-  }): Promise<HelperResult> => {
+  }): Promise<string> => {
     const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
 
     if (newPost.tagname.length !== tagList.length) {
-      return [
-        helperFunction.responseHandler(
-          false,
-          400,
-          'At least one tag does not exist',
-          null,
-        ),
-        null,
-      ]
+      throw new Error('At least one tag does not exist')
     } else {
       // check if at least one agency tag exists
       if (!this.checkOneAgency(tagList)) {
-        return [
-          helperFunction.responseHandler(
-            false,
-            400,
-            'At least one tag must be an agency tag',
-            null,
-          ),
-          null,
-        ]
+        throw new Error('At least one tag must be an agency tag')
       }
       // Only create post if tag exists
       const post = await PostModel.create({
@@ -254,28 +208,19 @@ export class PostService {
           tagId: tag.id,
         })
       }
-      return [
-        null,
-        helperFunction.responseHandler(true, 200, 'Post Created', post.id),
-      ]
+      return post.id
     }
   }
 
-  remove = async (id: string): Promise<HelperResult> => {
+  remove = async (id: string): Promise<void> => {
     const update = await PostModel.update(
       { status: 'ARCHIVED' },
       { where: { id: id } },
     )
     if (!update) {
-      return [
-        helperFunction.responseHandler(false, 400, 'Update failed', null),
-        null,
-      ]
+      throw new Error('Update failed')
     } else {
-      return [
-        null,
-        helperFunction.responseHandler(true, 200, 'Post Removed', null),
-      ]
+      return
     }
   }
 
@@ -309,7 +254,7 @@ export class PostService {
     return false
   }
 
-  retrieveOne = async (postId: string): Promise<HelperResult> => {
+  retrieveOne = async (postId: string): Promise<PostWithUserRelations> => {
     await PostModel.increment(
       {
         views: +1,
@@ -321,7 +266,7 @@ export class PostService {
       },
     )
 
-    const post = await PostModel.findOne({
+    const post = (await PostModel.findOne({
       where: {
         id: postId,
       },
@@ -343,20 +288,12 @@ export class PostService {
           'answer_count',
         ],
       ],
-    })
+    })) as PostWithUserRelations
 
     if (!post) {
-      return [
-        helperFunction.responseHandler(
-          false,
-          404,
-          'No post with this id',
-          null,
-        ),
-        null,
-      ]
+      throw new Error('No post with this id')
     } else {
-      return [null, helperFunction.responseHandler(true, 200, 'Success', post)]
+      return post
     }
   }
 
@@ -366,7 +303,7 @@ export class PostService {
   }: {
     sort: SortType
     tags: string
-  }): Promise<HelperResult> => {
+  }): Promise<Post[]> => {
     // basic
     let tags_unchecked: string[] = []
 
@@ -381,15 +318,7 @@ export class PostService {
 
     // prevent search if query is invalid
     if (tagList.length != tags_unchecked.length) {
-      return [
-        helperFunction.responseHandler(
-          false,
-          422,
-          'Invalid tags used in request',
-          null,
-        ),
-        null,
-      ]
+      throw new Error('Invalid tags used in request')
     }
 
     const whereobj = {
@@ -416,10 +345,7 @@ export class PostService {
     })) as PostWithRelations[]
 
     if (!posts) {
-      return [
-        helperFunction.responseHandler(false, 200, 'No posts found', null),
-        null,
-      ]
+      return []
     } else {
       // TODO: Optimize to merge the 2 requests into one
       // Two queries used as when I search for specific tags, the response
@@ -467,10 +393,7 @@ export class PostService {
           ],
         ],
       })
-      return [
-        null,
-        helperFunction.responseHandler(true, 200, 'Success', returnPosts),
-      ]
+      return returnPosts
     }
   }
 }
