@@ -1,4 +1,3 @@
-import helperFunction from '../helpers/helperFunction'
 import {
   Answer as AnswerModel,
   Post as PostModel,
