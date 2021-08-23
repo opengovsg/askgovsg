@@ -33,16 +33,7 @@ const checkOwnership = async (
   })) as AnswerWithRelations
 
   if (!results) {
-    return res
-      .status(400)
-      .json(
-        helperFunction.responseHandler(
-          false,
-          404,
-          'No answer found with this ID',
-          null,
-        ),
-      )
+    return res.status(400).json({ message: 'No answer found with this ID' })
   }
   if (!req.user) {
     return res.status(401).json({ message: 'User not signed in' })
@@ -53,39 +44,24 @@ const checkOwnership = async (
   })) as { tags: Tag[] } | null
 
   if (!user) {
-    return res
-      .status(403)
-      .json(
-        helperFunction.responseHandler(
-          false,
-          403,
-          `User ${req.user.id} does not exist`,
-          null,
-        ),
-      )
+    return res.status(403).json({
+      message: `User ${req.user.id} does not exist`,
+    })
   }
 
   const userAgencyTagIds = user.tags.map((userTag) => userTag.id)
   const postAgencyTagIds = results.post.tags.map((postTag) => postTag.id)
-  const interesectingTagIds = userAgencyTagIds.filter((id) =>
+  const intersectingTagIds = userAgencyTagIds.filter((id) =>
     postAgencyTagIds.includes(id),
   )
 
-  if (interesectingTagIds.length === 0) {
-    return res
-      .status(403)
-      .json(
-        helperFunction.responseHandler(
-          false,
-          403,
-          `User ${
-            req.user.id
-          } is not authorized to manage agencies ${results.post.tags
-            .map((postTag) => postTag.tagname)
-            .join(',')}`,
-          null,
-        ),
-      )
+  if (intersectingTagIds.length === 0) {
+    const message = `User ${
+      req.user.id
+    } is not authorized to manage agencies ${results.post.tags
+      .map((postTag) => postTag.tagname)
+      .join(',')}`
+    return res.status(403).json({ message: message })
   }
 
   next()
