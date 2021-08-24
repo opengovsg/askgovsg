@@ -47,10 +47,9 @@ const TagPanelMobile = (): ReactElement => {
       <MenuButton
         as={IconButton}
         aria-label="Options"
-        ml="-10px"
         icon={<BiMenu size="24" />}
         color="white"
-        variant="ghost"
+        variant="outline"
       />
       <Portal>
         <MenuList>
