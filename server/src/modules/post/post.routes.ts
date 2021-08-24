@@ -52,20 +52,6 @@ export const routePosts = ({
   )
 
   /**
-   * @route      GET /api/posts/top
-   * @desc       fetch all posts sorted by maximum interactivity
-   * @access     Private
-   */
-  router.get('/top', controller.getTopPosts)
-
-  /**
-   * @route      GET /api/posts/tag/:tagname
-   * @desc       fetch all posts of a specific tag
-   * @access     Private
-   */
-  router.get('/tag/:tagname', controller.listPosts)
-
-  /**
    * @route      GET /api/posts/:id
    * @desc       fetch a single post
    * @access     Private

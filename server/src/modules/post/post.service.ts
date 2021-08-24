@@ -166,36 +166,6 @@ export class PostService {
     }
   }
 
-  getTopPosts = async (): Promise<Post[]> => {
-    const posts = await PostModel.findAll({
-      include: [TagModel],
-      order: [['views', 'DESC']],
-      attributes: [
-        'id',
-        'userId',
-        'title',
-        'description',
-        'createdAt',
-        'views',
-        [
-          Sequelize.literal(`(
-          SELECT COUNT(*)
-          FROM answers AS answer
-          WHERE
-            answer.postId = post.id
-        )`),
-          'answer_count',
-        ],
-      ],
-      where: { status: PostStatus.PUBLIC },
-    })
-    if (!posts) {
-      return []
-    } else {
-      return posts
-    }
-  }
-
   checkOneAgency = (arr: Tag[]): boolean => {
     return arr.some((e) => e.tagType === 'AGENCY')
   }
