@@ -1,6 +1,6 @@
 import { SortType } from '../../types/sort-type'
 
-import Sequelize, { OrderItem, Op } from 'sequelize'
+import Sequelize, { OrderItem, Op, ProjectionAlias } from 'sequelize'
 import { PostStatus } from '../../types/post-status'
 
 import {
@@ -24,6 +24,16 @@ export type PostWithRelations = Post & {
 }
 
 export class PostService {
+  private answerCountLiteral: ProjectionAlias = [
+    Sequelize.literal(`(
+      SELECT COUNT(*)
+      FROM answers AS answer
+      WHERE
+        answer.postId = post.id
+    )`),
+    'answerCount',
+  ]
+
   private sortFunction = (sortType: SortType): OrderItem => {
     if (sortType === SortType.Basic) {
       return ['createdAt', 'DESC']
@@ -102,14 +112,7 @@ export class PostService {
         'description',
         'createdAt',
         'views',
-        [
-          Sequelize.literal(`(
-            SELECT COUNT(DISTINCT answers.id)
-            FROM answers 
-            WHERE answers.postId = post.id
-          )`),
-          'answer_count',
-        ],
+        this.answerCountLiteral,
       ],
     })
 
@@ -146,15 +149,7 @@ export class PostService {
         'description',
         'createdAt',
         'views',
-        [
-          Sequelize.literal(`(
-          SELECT COUNT(*)
-          FROM answers AS answer
-          WHERE
-            answer.postId = post.id
-        )`),
-          'answer_count',
-        ],
+        this.answerCountLiteral,
       ],
       where: { status: PostStatus.PUBLIC },
     })
@@ -281,11 +276,11 @@ export class PostService {
         'status',
         [
           Sequelize.literal(`(
-                SELECT COUNT(*)
-                FROM answers AS answer
-                WHERE answer.postId = post.id
-              )`),
-          'answer_count',
+            SELECT COUNT(*)
+            FROM answers AS answer
+            WHERE answer.postId = post.id
+          )`),
+          'answerCount',
         ],
       ],
     })) as PostWithUserRelations
@@ -389,7 +384,7 @@ export class PostService {
             FROM answers 
             WHERE answers.postId = post.id
           )`),
-            'answer_count',
+            'answerCount',
           ],
         ],
       })

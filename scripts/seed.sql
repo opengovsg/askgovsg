@@ -1,4 +1,4 @@
-USE stack_overflow_v2;
+USE askgov;
 
 INSERT INTO tags(tagname, description, tagType, link, hasPilot, createdAt, updatedAt)
 VALUES
