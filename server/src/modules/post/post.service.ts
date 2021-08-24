@@ -31,17 +31,44 @@ export class PostService {
     return ['views', 'DESC']
   }
 
+  private getPaginatedPosts = (
+    post: Post[],
+    page?: number,
+    size?: number,
+  ): {
+    rows: Post[]
+    totalItems: number
+  } => {
+    const totalItems = post.length
+    let returnPosts = post
+    if (size) {
+      const offset = page ? (page - 1) * size : 0
+      returnPosts = returnPosts.slice(offset, offset + size)
+    }
+    return {
+      rows: returnPosts,
+      totalItems: totalItems,
+    }
+  }
+
   listAnswerablePosts = async ({
     userId,
     sort,
     withAnswers,
     tags,
+    page,
+    size,
   }: {
     userId: string
     sort: SortType
     withAnswers: boolean
     tags?: string[]
-  }): Promise<Post[]> => {
+    page?: number
+    size?: number
+  }): Promise<{
+    rows: Post[]
+    totalItems: number
+  }> => {
     const user = (await UserModel.findOne({
       where: { id: userId },
     })) as UserWithRelations | null
@@ -114,12 +141,16 @@ export class PostService {
     })
 
     if (!posts) {
-      return []
+      return { rows: [], totalItems: 0 }
     } else if (withAnswers) {
-      return returnPosts
+      return this.getPaginatedPosts(returnPosts, page, size)
     } else {
       // posts without answers
-      return this.filterPostsWithoutAnswers(posts)
+      return this.getPaginatedPosts(
+        await this.filterPostsWithoutAnswers(posts),
+        page,
+        size,
+      )
     }
   }
 
@@ -300,10 +331,17 @@ export class PostService {
   retrieveAll = async ({
     sort,
     tags,
+    page,
+    size,
   }: {
     sort: SortType
     tags: string
-  }): Promise<Post[]> => {
+    page?: number
+    size?: number
+  }): Promise<{
+    rows: Post[]
+    totalItems: number
+  }> => {
     // basic
     let tags_unchecked: string[] = []
 
@@ -345,7 +383,7 @@ export class PostService {
     })) as PostWithRelations[]
 
     if (!posts) {
-      return []
+      return { rows: [], totalItems: 0 }
     } else {
       // TODO: Optimize to merge the 2 requests into one
       // Two queries used as when I search for specific tags, the response
@@ -393,7 +431,7 @@ export class PostService {
           ],
         ],
       })
-      return returnPosts
+      return this.getPaginatedPosts(returnPosts, page, size)
     }
   }
 }

@@ -8,6 +8,8 @@ import { PostService } from './post.service'
 import { Message } from '../../types/message-type'
 import { UpdatePostRequestDto } from '../../types/post-type'
 import { createLogger } from '../../bootstrap/logging'
+import { ControllerHandler } from '../../types/response-handler'
+import { Post } from '../../models'
 
 const logger = createLogger(module)
 
@@ -26,13 +28,24 @@ export class PostController {
     this.postService = postService
   }
 
-  listPosts = async (req: Request, res: Response): Promise<Response> => {
-    const { query } = req
-    const { sort = SortType.Top, tags = '' } = query
+  listPosts: ControllerHandler<
+    unknown,
+    { rows: Post[]; totalItems: number } | Message,
+    unknown,
+    {
+      page?: number
+      size?: number
+      sort: SortType
+      tags?: string
+    }
+  > = async (req, res) => {
+    const { page, size, sort = SortType.Top, tags = '' } = req.query
     try {
       const data = await this.postService.retrieveAll({
         sort: sort as SortType,
         tags: tags as string,
+        page: page,
+        size: size,
       })
       return res.status(200).json(data)
     } catch (error) {
@@ -183,15 +196,18 @@ export class PostController {
     }
   }
 
-  listAnswerablePosts = async (
-    req: Request<
-      never,
-      Record<string, unknown>,
-      Record<string, unknown>,
-      { withAnswers: boolean; sort: string; tags?: string[] }
-    >,
-    res: Response,
-  ): Promise<Response> => {
+  listAnswerablePosts: ControllerHandler<
+    Record<string, never>,
+    { rows: Post[]; totalItems: number } | Message,
+    Record<string, never>,
+    {
+      withAnswers: boolean
+      sort: string
+      tags?: string[]
+      page?: number
+      size?: number
+    }
+  > = async (req, res) => {
     // Validation
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -221,12 +237,14 @@ export class PostController {
     }
 
     try {
-      const { sort, withAnswers, tags } = req.query
+      const { withAnswers, sort = SortType.Top, tags, page, size } = req.query
       const data = await this.postService.listAnswerablePosts({
         userId,
         sort: sort as SortType,
         withAnswers,
         tags,
+        page,
+        size,
       })
       return res.status(200).json(data)
     } catch (error) {
