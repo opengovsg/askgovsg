@@ -2,7 +2,7 @@ import { ComponentMultiStyleConfig } from '@chakra-ui/react'
 
 export const PAGINATION_THEME_KEY = 'Pagination'
 
-const baseButtonStyling = (props: Record<string, any>) => {
+const baseButtonStyling = (props: Record<string, unknown>) => {
   const { isSelected } = props
   return {
     p: '0.25rem 0.625rem',
