@@ -21,6 +21,7 @@ const AnswerableQuestions = ({ sort, tags, pageSize }) => {
   } = useQuery(
     [LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY, { sort, tags }],
     () => listAnswerablePosts({ withAnswers: true, sort, tags }),
+    { keepPreviousData: true },
   )
   useEffect(() => {
     if (isSuccess) {

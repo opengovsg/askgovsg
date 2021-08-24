@@ -15,8 +15,10 @@ const QuestionsList = ({ sort, tags, pageSize }) => {
     data: posts,
     isLoading,
     isSuccess,
-  } = useQuery([LIST_POSTS_QUERY_KEY, { sort, tags }], () =>
-    listPosts(sort, tags),
+  } = useQuery(
+    [LIST_POSTS_QUERY_KEY, { sort, tags }],
+    () => listPosts(sort, tags),
+    { keepPreviousData: true },
   )
   useEffect(() => {
     if (isSuccess) {
