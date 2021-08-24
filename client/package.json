@@ -33,7 +33,7 @@
     "react-scripts": "^4.0.3",
     "react-select": "^4.3.1",
     "react-tabs": "^3.1.2",
-    "sass": "^1.38.0",
+    "sass": "^1.38.1",
     "styled-components": "^5.3.0",
     "uuid": "^8.3.2"
   },
