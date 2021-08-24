@@ -15,14 +15,14 @@ export const routePosts = ({
   /**
    * @route      GET /api/posts
    * @desc       fetch all posts
-   * @access     Private
+   * @access     Public
    */
   router.get('/', controller.listPosts)
 
   /**
    * @route      GET /api/posts/answerable
    * @desc       fetch all posts answerable by agency user
-   * @access     Private
+   * @access     Public
    */
   router.get(
     '/answerable',
@@ -54,7 +54,7 @@ export const routePosts = ({
   /**
    * @route      GET /api/posts/:id
    * @desc       fetch a single post
-   * @access     Private
+   * @access     Public
    */
   router.get('/:id', controller.getSinglePost)
 
