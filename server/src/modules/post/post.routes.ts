@@ -19,6 +19,11 @@ export const routePosts = ({
    */
   router.get('/', controller.listPosts)
 
+  /**
+   * @route      GET /api/posts/answerable
+   * @desc       fetch all posts answerable by agency user
+   * @access     Private
+   */
   router.get(
     '/answerable',
     [
@@ -93,8 +98,8 @@ export const routePosts = ({
   )
 
   /**
-   * @route      DELETE /api/posts/:id
-   * @desc       delete a post
+   * @route      Update /api/posts/:id
+   * @desc       update a post
    * @access     Private
    */
   router.put('/:id', controller.updatePost)
