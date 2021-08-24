@@ -3,10 +3,14 @@ import AnswerableQuestionsComponent from '../AnswerableQuestions/AnswerableQuest
 
 import './OfficerDashboard.styles.scss'
 
-const OfficerDashboard = ({ sort, tags }) => {
+const OfficerDashboard = ({ sort, tags, pageSize }) => {
   return (
     <div className="officer-dashboard">
-      <AnswerableQuestionsComponent sort={sort} tags={tags} />
+      <AnswerableQuestionsComponent
+        sort={sort}
+        tags={tags}
+        pageSize={pageSize}
+      />
     </div>
   )
 }
