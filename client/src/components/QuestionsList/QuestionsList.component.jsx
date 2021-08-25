@@ -1,4 +1,4 @@
-import { Center } from '@chakra-ui/layout'
+import { Text, Center } from '@chakra-ui/layout'
 import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { listPosts, LIST_POSTS_QUERY_KEY } from '../../services/PostService'
@@ -9,26 +9,16 @@ import Pagination from '../Pagination'
 
 const QuestionsList = ({ sort, tags, pageSize }) => {
   // Pagination
-  const [postsTotal, setPostsTotal] = useState(0)
-  const [currentPage, setCurrentPage] = useState(1)
-  const {
-    data: posts,
-    isLoading,
-    isSuccess,
-  } = useQuery(
-    [LIST_POSTS_QUERY_KEY, { sort, tags }],
-    () => listPosts(sort, tags),
+  const [page, setPage] = useState(1)
+  const { data, isLoading } = useQuery(
+    [LIST_POSTS_QUERY_KEY, { sort, tags, page, pageSize }],
+    () => listPosts(sort, tags, page, pageSize),
     { keepPreviousData: true },
   )
-  useEffect(() => {
-    if (isSuccess) {
-      setPostsTotal(posts.length)
-    }
-  }, [isSuccess, posts])
 
   const handlePageChange = (nextPage) => {
     // -> request new data using the page number
-    setCurrentPage(nextPage)
+    setPage(nextPage)
     window.scrollTo(0, 0)
   }
 
@@ -36,18 +26,13 @@ const QuestionsList = ({ sort, tags, pageSize }) => {
     <Spinner type="page" width="75px" height="200px" />
   ) : (
     <>
-      <PostListComponent
-        posts={posts.slice(
-          (currentPage - 1) * pageSize,
-          currentPage * pageSize,
-        )}
-      />
-      <Center mt={5}>
+      <PostListComponent posts={data.posts} />
+      <Center my={5}>
         <Pagination
-          totalCount={postsTotal}
+          totalCount={data.totalItems}
           pageSize={pageSize}
           onPageChange={handlePageChange}
-          currentPage={currentPage}
+          currentPage={page}
         ></Pagination>
       </Center>
     </>
