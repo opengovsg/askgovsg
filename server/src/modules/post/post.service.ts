@@ -149,11 +149,8 @@ export class PostService {
       return this.getPaginatedPosts(returnPosts, page, size)
     } else {
       // posts without answers
-      return this.getPaginatedPosts(
-        await this.filterPostsWithoutAnswers(posts),
-        page,
-        size,
-      )
+      const filteredPosts = await this.filterPostsWithoutAnswers(posts)
+      return this.getPaginatedPosts(filteredPosts, page, size)
     }
   }
 
