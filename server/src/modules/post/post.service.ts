@@ -1,16 +1,8 @@
 import { SortType } from '../../types/sort-type'
 
-import Sequelize, { OrderItem, Op, ProjectionAlias } from 'sequelize'
+import Sequelize, { OrderItem, Op, ProjectionAlias, ModelCtor } from 'sequelize'
+import { Answer, Post, PostTag, Tag, User } from '../../models'
 import { PostStatus } from '../../types/post-status'
-
-import {
-  User as UserModel,
-  Tag as TagModel,
-  PostTag as PostTagModel,
-  Post as PostModel,
-  Answer as AnswerModel,
-} from '../../bootstrap/sequelize'
-import { Post, Tag } from '../../models'
 import { PostEditType } from '../../types/post-type'
 import { PostWithRelations as PostWithUserRelations } from '../auth/auth.service'
 
@@ -24,6 +16,31 @@ export type PostWithRelations = Post & {
 }
 
 export class PostService {
+  private Answer: ModelCtor<Answer>
+  private Post: ModelCtor<Post>
+  private PostTag: ModelCtor<PostTag>
+  private Tag: ModelCtor<Tag>
+  private User: ModelCtor<User>
+  constructor({
+    Answer,
+    Post,
+    PostTag,
+    Tag,
+    User,
+  }: {
+    Answer: ModelCtor<Answer>
+    Post: ModelCtor<Post>
+    PostTag: ModelCtor<PostTag>
+    Tag: ModelCtor<Tag>
+    User: ModelCtor<User>
+  }) {
+    this.Answer = Answer
+    this.Post = Post
+    this.PostTag = PostTag
+    this.Tag = Tag
+    this.User = User
+  }
+
   private answerCountLiteral: ProjectionAlias = [
     Sequelize.literal(`(
       SELECT COUNT(*)
@@ -79,7 +96,7 @@ export class PostService {
     posts: Post[]
     totalItems: number
   }> => {
-    const user = (await UserModel.findOne({
+    const user = (await this.User.findOne({
       where: { id: userId },
     })) as UserWithRelations | null
     if (!user) {
@@ -89,19 +106,19 @@ export class PostService {
     const tagInstances = await user.getTags()
     const tagIds = tagInstances.map((t) => t.id)
 
-    const postTagInstances = await PostTagModel.findAll({
+    const postTagInstances = await this.PostTag.findAll({
       where: { tagId: tagIds },
     })
     const postIds = postTagInstances.map((p) => p.postId)
 
-    const posts = (await PostModel.findAll({
+    const posts = (await this.Post.findAll({
       where: {
         id: postIds,
         status: { [Op.ne]: PostStatus.ARCHIVED },
         ...(tags ? { '$tags.tagname$': tags } : {}),
       },
       order: [this.sortFunction(sort)],
-      include: [TagModel, { model: AnswerModel, required: withAnswers }],
+      include: [this.Tag, { model: this.Answer, required: withAnswers }],
     })) as PostWithRelations[]
 
     // Duplicate of logic from retrieveAll
@@ -120,17 +137,17 @@ export class PostService {
         : posts
     const filteredPostIds = postsToMap.map(({ id }) => id)
 
-    const returnPosts = await PostModel.findAll({
+    const returnPosts = await this.Post.findAll({
       where: { id: filteredPostIds },
       order: [this.sortFunction(sort)],
       include: [
         {
-          model: TagModel,
+          model: this.Tag,
           required: true,
           attributes: ['tagname', 'description', 'tagType'],
         },
-        { model: UserModel, required: true, attributes: ['username'] },
-        AnswerModel,
+        { model: this.User, required: true, attributes: ['username'] },
+        this.Answer,
       ],
       attributes: [
         'id',
@@ -173,7 +190,7 @@ export class PostService {
   getExistingTagsFromRequestTags = async (
     tagNames: string[],
   ): Promise<Tag[]> => {
-    const existingTags = await TagModel.findAll({
+    const existingTags = await this.Tag.findAll({
       where: { tagname: tagNames },
     })
     return existingTags
@@ -196,7 +213,7 @@ export class PostService {
         throw new Error('At least one tag must be an agency tag')
       }
       // Only create post if tag exists
-      const post = await PostModel.create({
+      const post = await this.Post.create({
         title: newPost.title,
         description: newPost.description,
         userId: newPost.userId,
@@ -204,7 +221,7 @@ export class PostService {
       })
       for (const tag of tagList) {
         // Create a posttag for each tag
-        await PostTagModel.create({
+        await this.PostTag.create({
           postId: post.id,
           tagId: tag.id,
         })
@@ -214,7 +231,7 @@ export class PostService {
   }
 
   remove = async (id: string): Promise<void> => {
-    const update = await PostModel.update(
+    const update = await this.Post.update(
       { status: 'ARCHIVED' },
       { where: { id: id } },
     )
@@ -231,19 +248,19 @@ export class PostService {
     description,
     title,
   }: PostEditType): Promise<boolean> => {
-    await PostModel.update({ title, description }, { where: { id: id } })
+    await this.Post.update({ title, description }, { where: { id: id } })
 
     const tagList = await this.getExistingTagsFromRequestTags(tagname)
 
     // easier way is to delete anything of the postId and recreate
     // of course calculating the changes would be the way to go
-    await PostTagModel.destroy({ where: { postId: id } })
+    await this.PostTag.destroy({ where: { postId: id } })
 
     let updated
 
     for (const tag of tagList) {
       // Create a posttag for each tag
-      updated = await PostTagModel.create({
+      updated = await this.PostTag.create({
         postId: id,
         tagId: tag.id,
       })
@@ -256,7 +273,7 @@ export class PostService {
   }
 
   retrieveOne = async (postId: string): Promise<PostWithUserRelations> => {
-    await PostModel.increment(
+    await this.Post.increment(
       {
         views: +1,
       },
@@ -267,11 +284,11 @@ export class PostService {
       },
     )
 
-    const post = (await PostModel.findOne({
+    const post = (await this.Post.findOne({
       where: {
         id: postId,
       },
-      include: [TagModel, { model: UserModel, attributes: ['displayname'] }],
+      include: [this.Tag, { model: this.User, attributes: ['displayname'] }],
       attributes: [
         'id',
         'userId',
@@ -337,17 +354,17 @@ export class PostService {
     const orderarray = this.sortFunction(sort)
 
     // OR search and retrieve IDs of the respective posts
-    const posts = (await PostModel.findAll({
+    const posts = (await this.Post.findAll({
       where: whereobj,
       order: [orderarray],
       include: [
         {
-          model: TagModel,
+          model: this.Tag,
           required: true,
           attributes: ['tagname', 'description'],
         },
-        { model: UserModel, required: true, attributes: ['username'] },
-        AnswerModel,
+        { model: this.User, required: true, attributes: ['username'] },
+        this.Answer,
       ],
       attributes: ['id'],
     })) as PostWithRelations[]
@@ -372,17 +389,17 @@ export class PostService {
         id_array = posts.map((element) => element.id)
       }
       // get posts based on id, displaying all properties
-      const returnPosts = await PostModel.findAll({
+      const returnPosts = await this.Post.findAll({
         where: { id: id_array },
         order: [orderarray],
         include: [
           {
-            model: TagModel,
+            model: this.Tag,
             required: true,
             attributes: ['tagname', 'description', 'tagType'],
           },
-          { model: UserModel, required: true, attributes: ['username'] },
-          AnswerModel,
+          { model: this.User, required: true, attributes: ['username'] },
+          this.Answer,
         ],
         attributes: [
           'id',
