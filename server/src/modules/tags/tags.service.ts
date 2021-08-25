@@ -1,4 +1,4 @@
-import Sequelize from 'sequelize'
+import Sequelize, { ProjectionAlias } from 'sequelize'
 import {
   Agency as AgencyModel,
   Post as PostModel,
@@ -12,10 +12,17 @@ import { PostWithRelations } from '../post/post.service'
 import { TagType } from '../../types/tag-type'
 
 export class TagsService {
+  private postsCountLiteral: ProjectionAlias = [
+    Sequelize.literal(`(
+      SELECT COUNT(DISTINCT postId)
+      FROM posttags
+      WHERE tagId = tag.id
+    )`),
+    'postsCount',
+  ]
+
   retrieveAll = async (): Promise<Tag[]> => {
     const tags = await TagModel.findAll({
-      group: 'id',
-      include: [{ model: PostModel, attributes: ['id'] }],
       attributes: [
         'id',
         'tagname',
@@ -24,16 +31,9 @@ export class TagsService {
         'hasPilot',
         'createdAt',
         'tagType',
-        [
-          Sequelize.literal(`(
-          SELECT COUNT(DISTINCT posts.id)
-          FROM tags
-          WHERE postId = tags.id
-        )`),
-          'posts_count',
-        ],
+        this.postsCountLiteral,
       ],
-      order: [[Sequelize.literal('posts_count'), 'DESC']],
+      order: [[Sequelize.literal('postsCount'), 'DESC']],
     })
     if (!tags) {
       return Array<Tag>()
@@ -76,26 +76,16 @@ export class TagsService {
   retrieveOne = async (tagName: string): Promise<Tag> => {
     const tag = await TagModel.findOne({
       where: { tagname: tagName },
-      group: 'id',
-      include: [{ model: PostModel, attributes: ['id'] }],
       attributes: [
         'id',
         'tagname',
         'description',
         'createdAt',
-        [
-          Sequelize.literal(`(
-          SELECT COUNT(DISTINCT posts.id)
-          FROM tags
-          WHERE postId = tags.id
-        )`),
-          'posts_count',
-        ],
+        this.postsCountLiteral,
       ],
-      order: [[Sequelize.literal('posts_count'), 'DESC']],
     })
     if (!tag) {
-      throw 'Tag not found'
+      throw new Error('Tag not found')
     } else {
       return tag
     }
