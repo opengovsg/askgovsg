@@ -88,18 +88,23 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
   Alternatively, to run individually:
 
   ```
-  $ npm run server (for backend server only)
+  # for supporting services
+  $ docker-compose up
 
-  $ npm run client (for frontend server only)
+  # for backend server only
+  $ npm run server 
+
+  # for frontend server only
+  $ npm run client 
   ```
   
   Frontend server accessible on `localhost:3000`
   
-  Backend server accessible on `localhost:5000/api/v1/agencies`
+  Backend server accessible on `localhost:5000/api/v1`
   
   Local mail server `MailDev` accessible on `localhost:1080`
 
-* Default home page is not authorised. To become authorised user, login via `localhost:3000/login`, enter `answerer@parking.gov.sg`. Then go to the mail server to obtain the OTP
+* Default home page is not authorised. To become authorised user, login via `localhost:3000/login`, enter `enquiries@was.gov.sg`. Then go to the mail server to obtain the OTP
 
 
 ## Common Problems
@@ -137,7 +142,7 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 
 ## API Endpoints
 
-#### Base Url - `http://localhost:5000/api`
+#### Base Url - `http://localhost:5000/api/v1`
 
 #### Users
 
