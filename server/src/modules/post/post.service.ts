@@ -53,7 +53,7 @@ export class PostService {
     let returnPosts = post
     if (size) {
       const offset = page ? (page - 1) * size : 0
-      returnPosts = returnPosts.slice(offset, offset + size)
+      returnPosts = returnPosts.slice(offset, Number(offset) + Number(size))
     }
     return {
       posts: returnPosts,
