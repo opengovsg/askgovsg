@@ -42,15 +42,15 @@ export class PostService {
   }
 
   private getPaginatedPosts = (
-    post: Post[],
+    posts: Post[],
     page?: number,
     size?: number,
   ): {
     posts: Post[]
     totalItems: number
   } => {
-    const totalItems = post.length
-    let returnPosts = post
+    const totalItems = posts.length
+    let returnPosts = posts
     if (size) {
       const offset = page ? (page - 1) * size : 0
       returnPosts = returnPosts.slice(offset, Number(offset) + Number(size))
