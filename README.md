@@ -57,32 +57,29 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
   ```
   $ direnv allow .
   ```
-* Download [MySQL](https://dev.mysql.com/downloads/mysql/)
 
-  `MySQL` should appear at the bottom of _System Preferences_ upon successful installation
-
-  In `MySQL`, click _Initialize Database_, enter the appropriate password for "root" user and select _Use Strong Password Encryption_
-    
-  Password should correspond to the one in the `.env` file
-
-  Click _OK_ and _Start MySQL Server_
+* Spin up MySQL by running `docker-compose up`
 
 * Download a database GUI like [DBeaver](https://dbeaver.io/download/) and connect to the local MySQL server
 
   Create database by executing the following in `DBeaver`:
-  ```
+  ```sql
   CREATE DATABASE askgov;
   ```
-  Execute `$ npm run dev` to create the tables
-  
-  Execute the script in `seed.sql` using `DBeaver`
 
-  Check that your Database ER Diagram looks like this:
+* Spin down MySQL by running `docker-compose down`
+
+* Execute `npm run dev` to create the tables
+  
+* Execute the script in `seed.sql` using `DBeaver`
+
+* Check that your Database ER Diagram looks like this:
   
   <img width="635" alt="Screenshot 2021-07-05 at 11 35 53 AM" src="https://user-images.githubusercontent.com/20250559/124414373-3258c780-dd85-11eb-9312-faf4bba096a8.png">
 
-  
-* Start running frontend, backend and local mail server simultaneously
+## Running in Development
+
+* Start running frontend, backend, maildev, localstack and mysql simultaneously
 
   ```
   $ npm run dev
