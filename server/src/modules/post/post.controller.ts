@@ -30,7 +30,7 @@ export class PostController {
 
   listPosts: ControllerHandler<
     unknown,
-    { rows: Post[]; totalItems: number } | Message,
+    { posts: Post[]; totalItems: number } | Message,
     unknown,
     {
       page?: number
@@ -182,7 +182,7 @@ export class PostController {
 
   listAnswerablePosts: ControllerHandler<
     Record<string, never>,
-    { rows: Post[]; totalItems: number } | Message,
+    { posts: Post[]; totalItems: number } | Message,
     Record<string, never>,
     {
       withAnswers: boolean

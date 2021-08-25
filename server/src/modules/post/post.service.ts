@@ -46,7 +46,7 @@ export class PostService {
     page?: number,
     size?: number,
   ): {
-    rows: Post[]
+    posts: Post[]
     totalItems: number
   } => {
     const totalItems = post.length
@@ -56,7 +56,7 @@ export class PostService {
       returnPosts = returnPosts.slice(offset, offset + size)
     }
     return {
-      rows: returnPosts,
+      posts: returnPosts,
       totalItems: totalItems,
     }
   }
@@ -76,7 +76,7 @@ export class PostService {
     page?: number
     size?: number
   }): Promise<{
-    rows: Post[]
+    posts: Post[]
     totalItems: number
   }> => {
     const user = (await UserModel.findOne({
@@ -144,7 +144,7 @@ export class PostService {
     })
 
     if (!posts) {
-      return { rows: [], totalItems: 0 }
+      return { posts: [], totalItems: 0 }
     } else if (withAnswers) {
       return this.getPaginatedPosts(returnPosts, page, size)
     } else {
@@ -312,7 +312,7 @@ export class PostService {
     page?: number
     size?: number
   }): Promise<{
-    rows: Post[]
+    posts: Post[]
     totalItems: number
   }> => {
     // basic
@@ -356,7 +356,7 @@ export class PostService {
     })) as PostWithRelations[]
 
     if (!posts) {
-      return { rows: [], totalItems: 0 }
+      return { posts: [], totalItems: 0 }
     } else {
       // TODO: Optimize to merge the 2 requests into one
       // Two queries used as when I search for specific tags, the response
