@@ -9,7 +9,7 @@ export const routePosts = ({
   authMiddleware,
 }: {
   controller: PostController
-  authMiddleware: AuthMiddleware
+  authMiddleware: Public<AuthMiddleware>
 }): express.Router => {
   const router = express.Router()
   /**
