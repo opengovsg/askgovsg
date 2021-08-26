@@ -69,9 +69,9 @@ VALUES
 
 INSERT INTO `askgov`.`permissions` (`role`, `createdAt`, `updatedAt`, `tagId`, `userId`)
 VALUES
-('answerer', NOW(), NOW(), 5, 4)
-('answerer', NOW(), NOW(), 6, 4)
-('answerer', NOW(), NOW(), 7, 4)
+('answerer', NOW(), NOW(), 5, 4),
+('answerer', NOW(), NOW(), 6, 4),
+('answerer', NOW(), NOW(), 7, 4),
 ('answerer', NOW(), NOW(), 8, 4)
 ;
 
