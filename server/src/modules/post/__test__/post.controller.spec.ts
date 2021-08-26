@@ -19,11 +19,11 @@ describe('PostController', () => {
     filterPostsWithoutAnswers: jest.fn(),
     checkOneAgency: jest.fn(),
     getExistingTagsFromRequestTags: jest.fn(),
-    createPostWithTag: jest.fn(),
-    remove: jest.fn(),
-    update: jest.fn(),
-    retrieveOne: jest.fn(),
-    retrieveAll: jest.fn(),
+    createPost: jest.fn(),
+    deletePost: jest.fn(),
+    updatePost: jest.fn(),
+    getSinglePost: jest.fn(),
+    listPosts: jest.fn(),
   }
 
   const controller = new PostController({ authService, postService })
@@ -43,7 +43,7 @@ describe('PostController', () => {
     it('should return 200 on successful data retrieval', async () => {
       // Arrange
       const data = { rows: ['1', '2'], totalItems: 5 }
-      postService.retrieveAll.mockReturnValue(data)
+      postService.listPosts.mockReturnValue(data)
 
       // Act
       const response = await request.get(path)
@@ -56,7 +56,7 @@ describe('PostController', () => {
     it('should return 422 on invalid tags used in request', async () => {
       // Arrange
       const error = new Error('Invalid tags used in request')
-      postService.retrieveAll.mockImplementation(() => {
+      postService.listPosts.mockImplementation(() => {
         throw error
       })
 
@@ -71,7 +71,7 @@ describe('PostController', () => {
     it('should return 500 on any other errors', async () => {
       // Arrange
       const error = new Error('Database error')
-      postService.retrieveAll.mockImplementation(() => {
+      postService.listPosts.mockImplementation(() => {
         throw error
       })
 

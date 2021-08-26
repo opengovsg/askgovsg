@@ -42,7 +42,7 @@ describe('PostService', () => {
   describe('retrieveAll', () => {
     it('should return all data with no page query', async () => {
       // Act
-      const result = await postService.retrieveAll({
+      const result = await postService.listPosts({
         sort: SortType.Basic,
         tags: '',
       })
@@ -54,7 +54,7 @@ describe('PostService', () => {
 
     it('should return first 10 posts with query on page 1, size 10', async () => {
       // Act
-      const result = await postService.retrieveAll({
+      const result = await postService.listPosts({
         sort: SortType.Basic,
         tags: '',
         page: 1,
@@ -68,7 +68,7 @@ describe('PostService', () => {
     })
     it('should return 11-15th posts with query on page 3, size 5', async () => {
       // Act
-      const result = await postService.retrieveAll({
+      const result = await postService.listPosts({
         sort: SortType.Basic,
         tags: '',
         page: 3,
@@ -114,9 +114,10 @@ describe('PostService', () => {
     })
     it('should return 15-20th posts with query on page 2, size 15', async () => {
       // Act
-      const result = await postService.retrieveAll({
+      const result = await postService.listAnswerablePosts({
+        userId: '',
         sort: SortType.Basic,
-        tags: '',
+        withAnswers: true,
         page: 2,
         size: 15,
       })
