@@ -8,6 +8,8 @@ import { PostService } from './post.service'
 import { Message } from '../../types/message-type'
 import { UpdatePostRequestDto } from '../../types/post-type'
 import { createLogger } from '../../bootstrap/logging'
+import { ControllerHandler } from '../../types/response-handler'
+import { Post } from '../../models'
 
 const logger = createLogger(module)
 
@@ -26,18 +28,35 @@ export class PostController {
     this.postService = postService
   }
 
-  listPosts = async (req: Request, res: Response): Promise<Response> => {
-    const { query } = req
-    const { sort = SortType.Top, tags = '' } = query
+  /**
+   * Lists all post
+   * @return 200 with posts and totalItem for pagination
+   * @return 422 if invalid tags are used in request
+   * @return 500 when database error occurs
+   */
+  listPosts: ControllerHandler<
+    unknown,
+    { posts: Post[]; totalItems: number } | Message,
+    unknown,
+    {
+      page?: number
+      size?: number
+      sort?: SortType
+      tags?: string
+    }
+  > = async (req, res) => {
+    const { page, size, sort = SortType.Top, tags = '' } = req.query
     try {
-      const data = await this.postService.retrieveAll({
+      const data = await this.postService.listPosts({
         sort: sort as SortType,
         tags: tags as string,
+        page: page,
+        size: size,
       })
       return res.status(200).json(data)
     } catch (error) {
       if (error.message === 'Invalid tags used in request') {
-        return res.status(422).json({ message: error })
+        return res.status(422).json({ message: error.message })
       } else {
         logger.error({
           message: 'Error while listing posts',
@@ -51,10 +70,90 @@ export class PostController {
     }
   }
 
+  /**
+   * Lists all post answerable by the agency user
+   * @return 200 with posts and totalItem for pagination
+   * @return 400 if `withAnswers`, `sort` or `tags` query is not given
+   * @return 401 if userID is invalid
+   * @return 500 if invalid tags are used in request
+   * @return 500 when database error occurs
+   */
+  listAnswerablePosts: ControllerHandler<
+    Record<string, never>,
+    { posts: Post[]; totalItems: number } | Message,
+    Record<string, never>,
+    {
+      withAnswers: boolean
+      sort?: string
+      tags?: string[]
+      page?: number
+      size?: number
+    }
+  > = async (req, res) => {
+    // Validation
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ message: createValidationErrMessage(errors) })
+    }
+
+    // Authorisation checks
+    const token = req.header('x-auth-token') ?? ''
+    let userId
+    try {
+      userId = await this.authService.getUserIdFromToken(token)
+      if (!userId) throw new Error('User must be signed in to access posts')
+      await this.authService.getOfficerUser(userId)
+    } catch (error) {
+      logger.error({
+        message: 'Error while retrieving user ID',
+        meta: {
+          function: 'listAnswerablePosts',
+        },
+        error,
+      })
+      return res.status(401).json({
+        message: 'Please log in and try again',
+      })
+    }
+
+    try {
+      const { withAnswers, sort = SortType.Top, tags, page, size } = req.query
+      const data = await this.postService.listAnswerablePosts({
+        userId,
+        sort: sort as SortType,
+        withAnswers,
+        tags,
+        page,
+        size,
+      })
+      return res.status(200).json(data)
+    } catch (error) {
+      logger.error({
+        message: 'Error while retrieving answerable posts',
+        meta: {
+          function: 'listAnswerablePosts',
+        },
+        error,
+      })
+      return res.status(500).json({
+        message: 'Sorry, something went wrong. Please try again.',
+      })
+    }
+  }
+
+  /**
+   * Get a single post and all the tags and users associated with it
+   * @param postId Id of the post
+   * @return 200 with post
+   * @return 403 if user does not have permission to access post
+   * @return 500 for database error
+   */
   getSinglePost = async (req: Request, res: Response): Promise<Response> => {
     let post
     try {
-      post = await this.postService.retrieveOne(req.params.id)
+      post = await this.postService.getSinglePost(req.params.id)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving single post',
@@ -87,23 +186,16 @@ export class PostController {
     return res.status(200).json(post)
   }
 
-  getTopPosts = async (req: Request, res: Response): Promise<Response> => {
-    try {
-      const data = await this.postService.getTopPosts()
-      return res.status(200).json(data)
-    } catch (error) {
-      logger.error({
-        message: 'Error while retrieving top posts',
-        meta: {
-          function: 'getTopPosts',
-        },
-        error,
-      })
-      return res.status(500).json({ message: 'Server Error' })
-    }
-  }
-
-  addPost = async (req: Request, res: Response): Promise<Response> => {
+  /**
+   * Create a new post
+   * @param newPost Post to be created
+   * @return 200 if post is created
+   * @return 400 if title and description is too short or long
+   * @return 401 if user is not signed in
+   * @return 403 if user does not have permission to add some of the tags
+   * @return 500 if database error
+   */
+  createPost = async (req: Request, res: Response): Promise<Response> => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res.status(400).json(errors.array()[0].msg)
@@ -129,7 +221,7 @@ export class PostController {
         })
       }
 
-      const data = await this.postService.createPostWithTag({
+      const data = await this.postService.createPost({
         title: req.body.title,
         description: req.body.description,
         userId: req.user?.id,
@@ -149,6 +241,14 @@ export class PostController {
     }
   }
 
+  /**
+   * Delete a post
+   * @param id Post to be deleted
+   * @return 200 if successful
+   * @return 401 if user is not logged in
+   * @return 403 if user does not have permission to delete post
+   * @return 500 if database error
+   */
   deletePost = async (req: Request, res: Response): Promise<Response> => {
     const postId = req.params.id
     try {
@@ -169,7 +269,7 @@ export class PostController {
           .status(403)
           .json({ message: 'You do not have permission to delete this post.' })
       }
-      await this.postService.remove(postId)
+      await this.postService.deletePost(postId)
       return res.sendStatus(200)
     } catch (error) {
       logger.error({
@@ -183,66 +283,15 @@ export class PostController {
     }
   }
 
-  listAnswerablePosts = async (
-    req: Request<
-      never,
-      Record<string, unknown>,
-      Record<string, unknown>,
-      { withAnswers: boolean; sort: string; tags?: string[] }
-    >,
-    res: Response,
-  ): Promise<Response> => {
-    // Validation
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json({ message: createValidationErrMessage(errors) })
-    }
-
-    // Authorisation checks
-    const token = req.header('x-auth-token') ?? ''
-    let userId
-    try {
-      userId = await this.authService.getUserIdFromToken(token)
-      if (!userId) throw new Error('User must be signed in to access posts')
-      await this.authService.getOfficerUser(userId)
-    } catch (error) {
-      logger.error({
-        message: 'Error while retrieving user ID',
-        meta: {
-          function: 'listAnswerablePosts',
-        },
-        error,
-      })
-      return res.status(401).json({
-        message: 'Please log in and try again',
-      })
-    }
-
-    try {
-      const { sort, withAnswers, tags } = req.query
-      const data = await this.postService.listAnswerablePosts({
-        userId,
-        sort: sort as SortType,
-        withAnswers,
-        tags,
-      })
-      return res.status(200).json(data)
-    } catch (error) {
-      logger.error({
-        message: 'Error while retrieving answerable posts',
-        meta: {
-          function: 'listAnswerablePosts',
-        },
-        error,
-      })
-      return res.status(500).json({
-        message: 'Sorry, something went wrong. Please try again.',
-      })
-    }
-  }
-
+  /**
+   * Update a post
+   * @param Post Post to be updated
+   * @return 200 if successful
+   * @return 400 if title and description is too short or long
+   * @return 401 if user is not logged in
+   * @return 403 if user does not have permission to delete post
+   * @return 500 if database error
+   */
   updatePost: RequestHandler<
     { id: string },
     Message,
@@ -286,7 +335,7 @@ export class PostController {
     }
     // Update post in database
     try {
-      const updated = await this.postService.update({
+      const updated = await this.postService.updatePost({
         title: req.body.title,
         description: req.body.description ?? '',
         tagname: req.body.tagname,

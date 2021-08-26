@@ -10,27 +10,18 @@ import Pagination from '../Pagination'
 import PostListComponent from '../PostList/PostList.component'
 import './AnswerableQuestions.styles.scss'
 
-const AnswerableQuestions = ({ sort, tags, pageSize }) => {
+const AnswerableQuestions = ({ sort, tags, pageSize: size }) => {
   // Pagination
-  const [postsTotal, setPostsTotal] = useState(0)
-  const [currentPage, setCurrentPage] = useState(1)
-  const {
-    data: postsWithAnswers,
-    isLoading: isWithAnswersLoading,
-    isSuccess,
-  } = useQuery(
-    [LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY, { sort, tags }],
-    () => listAnswerablePosts({ withAnswers: true, sort, tags }),
+  const [page, setPage] = useState(1)
+  const { data, isLoading: isWithAnswersLoading } = useQuery(
+    [LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY, { sort, tags, page, size }],
+    () => listAnswerablePosts({ withAnswers: true, sort, tags, page, size }),
+    { keepPreviousData: true },
   )
-  useEffect(() => {
-    if (isSuccess) {
-      setPostsTotal(postsWithAnswers.length)
-    }
-  }, [isSuccess, postsWithAnswers])
 
   const handlePageChange = (nextPage) => {
     // -> request new data using the page number
-    setCurrentPage(nextPage)
+    setPage(nextPage)
     window.scrollTo(0, 0)
   }
 
@@ -38,18 +29,13 @@ const AnswerableQuestions = ({ sort, tags, pageSize }) => {
     <Spinner type="page" width="75px" height="200px" />
   ) : (
     <>
-      <PostListComponent
-        posts={postsWithAnswers.slice(
-          (currentPage - 1) * pageSize,
-          currentPage * pageSize,
-        )}
-      />
-      <Center mt={5}>
+      <PostListComponent posts={data.posts} />
+      <Center my={5}>
         <Pagination
-          totalCount={postsTotal}
-          pageSize={pageSize}
+          totalCount={data.totalItems}
+          pageSize={size}
           onPageChange={handlePageChange}
-          currentPage={currentPage}
+          currentPage={page}
         ></Pagination>
       </Center>
     </>
