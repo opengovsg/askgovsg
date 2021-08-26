@@ -69,7 +69,7 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 
 * Execute `npm run seq-cli db:migrate` to create the tables
   
-* Execute the script in `seed.sql` using `DBeaver`
+* Execute `npm run seq-cli db:seed:all` to seed the database with a sample dataset
 
 * Check that your Database ER Diagram looks like this:
   
