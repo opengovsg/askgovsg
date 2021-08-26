@@ -11,7 +11,8 @@
     "test": "jest",
     "lint": "eslint . --quiet --fix --ext '.ts'",
     "lint-ci": "eslint . --quiet --ext '.ts'",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "seq-cli": "sequelize --url \"mysql://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME\""
   },
   "license": "MIT",
   "dependencies": {
@@ -73,6 +74,7 @@
     "jest": "^27.0.6",
     "lint-staged": "^11.1.2",
     "prettier": "^2.2.1",
+    "sequelize-cli": "^6.2.0",
     "sqlite3": "^5.0.2",
     "supertest": "^6.1.6",
     "ts-jest": "^27.0.5",
