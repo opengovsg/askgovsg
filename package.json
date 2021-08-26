@@ -16,7 +16,8 @@
     "prepare": "husky install",
     "test": "npm --prefix server test && CI=true npm --prefix client test -- --passWithNoTests",
     "lint": "npm run --prefix server lint && npm run --prefix client lint",
-    "lint-ci": "npm run --prefix server lint-ci && npm run --prefix client lint-ci"
+    "lint-ci": "npm run --prefix server lint-ci && npm run --prefix client lint-ci",
+    "seq-cli": "npm run --prefix server seq-cli"
   },
   "author": "Open Government Products, GovTech Singapore (https://open.gov.sg)",
   "contributors": [

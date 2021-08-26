@@ -67,15 +67,15 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
   CREATE DATABASE askgov;
   ```
 
-* Spin down MySQL by running `docker-compose down`
-
-* Execute `npm run dev` to create the tables
+* Execute `npm run seq-cli db:migrate` to create the tables
   
 * Execute the script in `seed.sql` using `DBeaver`
 
 * Check that your Database ER Diagram looks like this:
   
   <img width="635" alt="Screenshot 2021-07-05 at 11 35 53 AM" src="https://user-images.githubusercontent.com/20250559/124414373-3258c780-dd85-11eb-9312-faf4bba096a8.png">
+
+* Spin down MySQL by running `docker-compose down`
 
 ## Running in Development
 
