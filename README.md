@@ -73,7 +73,8 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 
 * Check that your Database ER Diagram looks like this:
   
-  <img width="635" alt="Screenshot 2021-07-05 at 11 35 53 AM" src="https://user-images.githubusercontent.com/20250559/124414373-3258c780-dd85-11eb-9312-faf4bba096a8.png">
+![image](https://user-images.githubusercontent.com/20250559/130938844-60255d06-d07d-4c84-ad3f-0c13be7dcb67.png)
+
 
 * Spin down MySQL by running `docker-compose down`
 
