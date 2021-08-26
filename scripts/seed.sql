@@ -10,7 +10,7 @@ VALUES
 ;
 
 INSERT INTO `askgov`.`agencies` (`id`, `shortname`, `longname`, `logo`, `email`, `createdAt`, `updatedAt`)
-VALUES (4, 'was', 'Enquiries @ WAS', 'https://logos.ask.gov.sg/askgov-logo.png', 'enquiries@was.gov.sg', '2021-01-11 11:54:06', '2021-01-11 11:54:06')
+VALUES (4, 'was', 'Enquiries @ WAS', 'https://logos.ask.gov.sg/askgov-logo.svg', 'enquiries@was.gov.sg', '2021-01-11 11:54:06', '2021-01-11 11:54:06')
 ;
 
 INSERT INTO `askgov`.`users` (`id`, `username`, `displayname`, `views`, `createdAt`, `updatedAt`, `agencyId`)
