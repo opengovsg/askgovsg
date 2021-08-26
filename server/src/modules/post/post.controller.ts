@@ -35,7 +35,7 @@ export class PostController {
     {
       page?: number
       size?: number
-      sort: SortType
+      sort?: SortType
       tags?: string
     }
   > = async (req, res) => {
@@ -186,7 +186,7 @@ export class PostController {
     Record<string, never>,
     {
       withAnswers: boolean
-      sort: string
+      sort?: string
       tags?: string[]
       page?: number
       size?: number
