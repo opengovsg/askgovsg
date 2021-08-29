@@ -71,7 +71,7 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.4.1",
-    "jest": "^27.0.6",
+    "jest": "^27.1.0",
     "lint-staged": "^11.1.2",
     "prettier": "^2.2.1",
     "sequelize-cli": "^6.2.0",
