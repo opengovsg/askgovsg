@@ -40,15 +40,17 @@ export class FileController {
       })
       return res.status(200).json(response)
     } catch (error) {
-      const message = error.message
-      logger.error({
-        message,
-        meta: {
-          function: 'upload',
-        },
-        error,
-      })
-      return res.status(400).json({ message })
+      if (error instanceof Error) {
+        const message = error.message
+        logger.error({
+          message,
+          meta: {
+            function: 'upload',
+          },
+          error,
+        })
+        return res.status(400).json({ message })
+      }
     }
   }
 }
