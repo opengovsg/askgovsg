@@ -3,6 +3,7 @@ import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
 import { User } from './users.model'
 
 export interface Agency extends Model {
+  id: string
   shortname: string
   longname: string
   email: string
