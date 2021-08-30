@@ -1,46 +1,42 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import minimatch from 'minimatch'
 import { Sequelize } from 'sequelize'
+import { ModelCtor } from 'sequelize/types'
 import supertest from 'supertest'
 import {
-  defineAnswer,
-  definePostAndPostTag,
-  defineTag,
-  defineUserAndPermission,
+  Answer as AnswerModel,
+  Permission as PermissionModel,
+  Post as PostModel,
+  PostTag as PostTagModel,
+  Tag as TagModel,
+  User as UserModel,
 } from '../../../models'
+import { PostStatus } from '../../../types/post-status'
 import { SortType } from '../../../types/sort-type'
+import { TagType } from '../../../types/tag-type'
+import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { PostController } from '../post.controller'
 import { routePosts } from '../post.routes'
 import { PostService } from '../post.service'
 
 describe('/posts', () => {
-  // Set up sequelize
-  const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    username: 'username',
-    logging: false,
-  })
-  const emailValidator = new minimatch.Minimatch('*')
-  const Tag = defineTag(sequelize)
-  const { User } = defineUserAndPermission(sequelize, {
-    Tag,
-    emailValidator,
-  })
-  const { Post, PostTag } = definePostAndPostTag(sequelize, { User, Tag })
-  const Answer = defineAnswer(sequelize, { User, Post })
-  const mockPosts = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-  ].map((x) => Post.build({ title: x }))
-  const mockUser = User.build()
-  const PostModel = jest.spyOn(Post, 'findAll').mockResolvedValue(mockPosts)
-  const TagModel = jest.spyOn(Tag, 'findAll').mockResolvedValue([])
-  const UserModel = jest.spyOn(User, 'findOne').mockResolvedValue(mockUser)
-  const PostTagModel = jest.spyOn(PostTag, 'findAll').mockResolvedValue([])
+  let db: Sequelize
+  let Answer: ModelCtor<AnswerModel>
+  let Post: ModelCtor<PostModel>
+  let PostTag: ModelCtor<PostTagModel>
+  let Tag: ModelCtor<TagModel>
+  let User: ModelCtor<UserModel>
+  let Permission: ModelCtor<PermissionModel>
+
+  let postService: PostService
+  let controller: PostController
+
+  const mockPosts: PostModel[] = []
+  let mockUser: UserModel
+  let mockTag: TagModel
 
   // Set up service, controller and route
-  const postService = new PostService({ Answer, Post, PostTag, Tag, User })
   const authService = {
     getUserIdFromToken: jest.fn(),
     getOfficerUser: jest.fn(),
@@ -52,17 +48,56 @@ describe('/posts', () => {
   }
   const authMiddleware = { authenticate: jest.fn() }
 
-  const controller = new PostController({ authService, postService })
-
   // Set up supertest
   const path = '/posts'
   const app = express()
   app.use(bodyParser.json())
-  app.use(path, routePosts({ controller, authMiddleware }))
   const request = supertest(app)
+
+  beforeAll(async () => {
+    db = await createTestDatabase()
+    Answer = getModel<AnswerModel>(db, ModelName.Answer)
+    Post = getModel<PostModel>(db, ModelName.Post)
+    PostTag = getModel<PostTagModel>(db, ModelName.PostTag)
+    Tag = getModel<TagModel>(db, ModelName.Tag)
+    User = getModel<UserModel>(db, ModelName.User)
+    Permission = getModel<PermissionModel>(db, ModelName.Permission)
+    postService = new PostService({ Answer, Post, PostTag, Tag, User })
+    mockUser = await User.create({
+      username: 'answerer@test.gov.sg',
+      displayname: '',
+    })
+    mockTag = await Tag.create({
+      tagname: 'test',
+      description: '',
+      link: '',
+      hasPilot: true,
+      tagType: TagType.TOPIC,
+    })
+    for (let title = 1; title <= 20; title++) {
+      const mockPost = await Post.create({
+        title: title.toString(),
+        status: PostStatus.PUBLIC,
+        userId: mockUser.id,
+      })
+      mockPosts.push(mockPost)
+      await PostTag.create({ postId: mockPost.id, tagId: mockTag.id })
+    }
+    await Permission.create({
+      userId: mockUser.id,
+      tagId: mockTag.id,
+      role: 'Answerer',
+    })
+    controller = new PostController({ authService, postService })
+    app.use(path, routePosts({ controller, authMiddleware }))
+  })
 
   afterEach(() => {
     jest.clearAllMocks()
+  })
+
+  afterAll(async () => {
+    await db.close()
   })
 
   describe('/posts', () => {
@@ -83,7 +118,7 @@ describe('/posts', () => {
       authService.getUserIdFromToken.mockReturnValue(1)
       // Act
       const response = await request.get(path + '/answerable').query({
-        withAnswers: true,
+        withAnswers: false,
         sort: SortType.Top,
       })
 
