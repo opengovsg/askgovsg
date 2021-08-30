@@ -1,5 +1,5 @@
+import minimatch from 'minimatch'
 import { Model, ModelCtor, Sequelize } from 'sequelize'
-import { emailValidator } from '../bootstrap/email-validator'
 import {
   defineAgency,
   defineAnswer,
@@ -25,7 +25,7 @@ export enum ModelName {
  */
 export const createTestDatabase = async (): Promise<Sequelize> => {
   const sequelize = new Sequelize('sqlite::memory:', { logging: false })
-
+  const emailValidator = new minimatch.Minimatch('*')
   const Token = defineToken(sequelize)
   const Tag = defineTag(sequelize)
   const { User, Permission } = defineUserAndPermission(sequelize, {
