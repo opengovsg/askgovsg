@@ -11,6 +11,7 @@ import { Request, Response } from 'express'
 import { createLogger } from '../../bootstrap/logging'
 import { ControllerHandler } from '../../types/response-handler'
 import { Message } from '../../types/message-type'
+import { StatusCodes } from 'http-status-codes'
 
 const OTP_LENGTH = 6
 
@@ -40,13 +41,15 @@ export class AuthController {
     res,
   ) => {
     if (!req.user) {
-      return res.status(401).json({ message: 'User not signed in' })
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: 'User not signed in' })
     }
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const user = await this.userService.loadUser(req.user?.id)
-      return res.status(200).json(user)
+      return res.status(StatusCodes.OK).json(user)
     } catch (error) {
       logger.error({
         message: 'Error while loading user',
@@ -56,7 +59,9 @@ export class AuthController {
         },
         error,
       })
-      return res.status(500).json({ message: 'Server Error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
   }
 
@@ -67,7 +72,7 @@ export class AuthController {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ message: createValidationErrMessage(errors) })
     }
 
@@ -83,7 +88,7 @@ export class AuthController {
         },
         error,
       })
-      return res.status(400).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         message:
           'You are not whitelisted as an officer who can answer questions.',
       })
@@ -103,11 +108,11 @@ export class AuthController {
         },
         error,
       })
-      return res.status(500).json({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: 'Failed to send OTP, please try again later.',
       })
     }
-    return res.sendStatus(200)
+    return res.sendStatus(StatusCodes.OK)
   }
 
   handleVerifyLoginOtp = async (
@@ -117,7 +122,7 @@ export class AuthController {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ message: createValidationErrMessage(errors) })
     }
 
@@ -127,12 +132,16 @@ export class AuthController {
     try {
       const token = await Token.findOne({ where: { contact: email } })
       if (!token) {
-        return res.status(401).json({ message: 'No OTP sent for this user.' })
+        return res
+          .status(StatusCodes.UNAUTHORIZED)
+          .json({ message: 'No OTP sent for this user.' })
       }
 
       const verifyHashResult = await verifyHash(String(otp), token.hashedOtp)
       if (!verifyHashResult) {
-        return res.status(401).json({ message: 'Wrong OTP, please try again.' })
+        return res
+          .status(StatusCodes.UNAUTHORIZED)
+          .json({ message: 'Wrong OTP, please try again.' })
       }
 
       const user = await User.findOne({ where: { username: email } })
@@ -151,7 +160,9 @@ export class AuthController {
       }
 
       await Token.destroy({ where: { contact: email } })
-      return res.status(200).json({ token: jwt, newParticipant, displayname })
+      return res
+        .status(StatusCodes.OK)
+        .json({ token: jwt, newParticipant, displayname })
     } catch (error) {
       logger.error({
         message: 'Error while verifying login OTP',
@@ -159,7 +170,9 @@ export class AuthController {
           function: 'handleVerifyLoginOtp',
         },
       })
-      return res.status(500).json({ message: 'Server Error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
   }
 }

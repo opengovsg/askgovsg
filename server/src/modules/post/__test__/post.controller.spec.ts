@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser'
 import express from 'express'
+import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { PostController } from '../post.controller'
 
@@ -49,7 +50,7 @@ describe('PostController', () => {
       const response = await request.get(path)
 
       // Assert
-      expect(response.status).toEqual(200)
+      expect(response.status).toEqual(StatusCodes.OK)
       expect(response.body).toStrictEqual(data)
     })
 
@@ -79,7 +80,7 @@ describe('PostController', () => {
       const response = await request.get(path)
 
       // Assert
-      expect(response.status).toEqual(500)
+      expect(response.status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
       expect(response.body).toStrictEqual({ message: 'Server Error' })
     })
   })
@@ -94,7 +95,7 @@ describe('PostController', () => {
       const response = await request.get(path + '/answerable')
 
       // Assert
-      expect(response.status).toEqual(200)
+      expect(response.status).toEqual(StatusCodes.OK)
       expect(response.body).toStrictEqual(data)
     })
 
@@ -106,7 +107,7 @@ describe('PostController', () => {
       const response = await request.get(path + '/answerable')
 
       // Assert
-      expect(response.status).toEqual(401)
+      expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
       expect(response.body).toStrictEqual({
         message: 'Please log in and try again',
       })
@@ -124,7 +125,7 @@ describe('PostController', () => {
       const response = await request.get(path + '/answerable')
 
       // Assert
-      expect(response.status).toEqual(500)
+      expect(response.status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
       expect(response.body).toStrictEqual({
         message: 'Sorry, something went wrong. Please try again.',
       })

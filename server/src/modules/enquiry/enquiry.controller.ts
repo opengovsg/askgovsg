@@ -5,6 +5,7 @@ import { EnquiryService } from './enquiry.service'
 import { Message } from '../../types/message-type'
 import { RecaptchaService } from '../../services/recaptcha/recaptcha.service'
 import { mapRouteError } from '../../services/recaptcha/recaptcha.util'
+import { StatusCodes } from 'http-status-codes'
 
 const logger = createLogger(module)
 export class EnquiryController {
@@ -60,7 +61,7 @@ export class EnquiryController {
         agencyId: req.body.agencyId,
         enquiry: req.body.enquiry,
       })
-      return res.status(201).json({ message: 'Enquiry sent' })
+      return res.status(StatusCodes.CREATED).json({ message: 'Enquiry sent' })
     } catch (error) {
       if (error instanceof Error) {
         logger.error({
@@ -70,7 +71,9 @@ export class EnquiryController {
           },
           error,
         })
-        return res.status(400).json({ message: error.message })
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: error.message })
       }
     }
   }

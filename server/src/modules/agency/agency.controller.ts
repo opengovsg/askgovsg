@@ -4,6 +4,7 @@ import { Agency } from '../../models/agencies.model'
 import { Message } from '../../types/message-type'
 import { AgencyQuery } from '../../types/agency-type'
 import { createLogger } from '../../bootstrap/logging'
+import { StatusCodes } from 'http-status-codes'
 
 const logger = createLogger(module)
 
@@ -23,9 +24,11 @@ export class AgencyController {
     try {
       const data = await this.agencyService.findOneByShortName(req.query)
       if (!data) {
-        return res.status(404).json({ message: 'Agency not found' })
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json({ message: 'Agency not found' })
       }
-      return res.status(200).json(data)
+      return res.status(StatusCodes.OK).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving single agency by name',
@@ -34,7 +37,7 @@ export class AgencyController {
         },
         error,
       })
-      return res.sendStatus(500)
+      return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
     }
   }
 
@@ -46,9 +49,11 @@ export class AgencyController {
       try {
         const data = await this.agencyService.findOneById(agencyId)
         if (!data) {
-          return res.status(404).json({ message: 'Agency not found' })
+          return res
+            .status(StatusCodes.NOT_FOUND)
+            .json({ message: 'Agency not found' })
         }
-        return res.status(200).json(data)
+        return res.status(StatusCodes.OK).json(data)
       } catch (error) {
         logger.error({
           message: 'Error while retrieving single agency by ID',
@@ -57,7 +62,7 @@ export class AgencyController {
           },
           error,
         })
-        return res.sendStatus(500)
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
       }
     }
 }

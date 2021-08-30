@@ -1,4 +1,5 @@
 import expressWinston from 'express-winston'
+import { StatusCodes } from 'http-status-codes'
 import { format, transports } from 'winston'
 import { baseConfig, Environment } from '../config/base'
 import { formatLogMessage } from './helpers'
@@ -18,8 +19,8 @@ export const requestLoggingMiddleware = expressWinston.logger({
   expressFormat: true,
   // Set dynamic log level according to status codes
   level: function (_req, res) {
-    if (res.statusCode >= 500) return 'error'
-    if (res.statusCode >= 400) return 'warn'
+    if (res.statusCode >= StatusCodes.INTERNAL_SERVER_ERROR) return 'error'
+    if (res.statusCode >= StatusCodes.BAD_REQUEST) return 'warn'
     return 'info'
   },
   dynamicMeta: (req, res) => ({

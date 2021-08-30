@@ -10,6 +10,7 @@ import { UpdatePostRequestDto } from '../../types/post-type'
 import { createLogger } from '../../bootstrap/logging'
 import { ControllerHandler } from '../../types/response-handler'
 import { Post } from '../../models'
+import { StatusCodes } from 'http-status-codes'
 
 const logger = createLogger(module)
 
@@ -53,7 +54,7 @@ export class PostController {
         page: page,
         size: size,
       })
-      return res.status(200).json(data)
+      return res.status(StatusCodes.OK).json(data)
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === 'Invalid tags used in request') {
@@ -66,7 +67,9 @@ export class PostController {
             },
             error,
           })
-          return res.status(500).json({ message: 'Server Error' })
+          return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ message: 'Server Error' })
         }
       }
     }
@@ -96,7 +99,7 @@ export class PostController {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ message: createValidationErrMessage(errors) })
     }
 
@@ -115,7 +118,7 @@ export class PostController {
         },
         error,
       })
-      return res.status(401).json({
+      return res.status(StatusCodes.UNAUTHORIZED).json({
         message: 'Please log in and try again',
       })
     }
@@ -130,7 +133,7 @@ export class PostController {
         page,
         size,
       })
-      return res.status(200).json(data)
+      return res.status(StatusCodes.OK).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving answerable posts',
@@ -139,7 +142,7 @@ export class PostController {
         },
         error,
       })
-      return res.status(500).json({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: 'Sorry, something went wrong. Please try again.',
       })
     }
@@ -164,7 +167,9 @@ export class PostController {
         },
         error,
       })
-      return res.status(500).json({ message: 'Server Error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
 
     try {
@@ -181,11 +186,11 @@ export class PostController {
         error,
       })
       return res
-        .status(403)
+        .status(StatusCodes.FORBIDDEN)
         .json({ message: 'User does not have permission to access this post' })
     }
 
-    return res.status(200).json(post)
+    return res.status(StatusCodes.OK).json(post)
   }
 
   /**
@@ -200,10 +205,12 @@ export class PostController {
   createPost = async (req: Request, res: Response): Promise<Response> => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return res.status(400).json(errors.array()[0].msg)
+      return res.status(StatusCodes.BAD_REQUEST).json(errors.array()[0].msg)
     }
     if (!req.user) {
-      return res.status(401).json({ message: 'User not signed in' })
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: 'User not signed in' })
     }
 
     try {
@@ -216,7 +223,7 @@ export class PostController {
           ),
         )
       if (listOfDisallowedTags.length > 0) {
-        return res.status(403).json({
+        return res.status(StatusCodes.FORBIDDEN).json({
           message:
             'You do not have permissions to post this question with the following tags: ' +
             listOfDisallowedTags.map((x) => x.tagname).join(', '),
@@ -230,7 +237,7 @@ export class PostController {
         tagname: req.body.tagname,
       })
 
-      return res.status(200).json({ data: data })
+      return res.status(StatusCodes.OK).json({ data: data })
     } catch (error) {
       logger.error({
         message: 'Error while creating post',
@@ -239,7 +246,9 @@ export class PostController {
         },
         error,
       })
-      return res.status(500).json({ message: 'Server error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server error' })
     }
   }
 
@@ -259,7 +268,7 @@ export class PostController {
       )
       if (!userId) {
         return res
-          .status(401)
+          .status(StatusCodes.UNAUTHORIZED)
           .json({ message: 'You must be logged in to delete posts.' })
       }
       const hasPermission = await this.authService.hasPermissionToAnswer(
@@ -268,11 +277,11 @@ export class PostController {
       )
       if (!hasPermission) {
         return res
-          .status(403)
+          .status(StatusCodes.FORBIDDEN)
           .json({ message: 'You do not have permission to delete this post.' })
       }
       await this.postService.deletePost(postId)
-      return res.sendStatus(200)
+      return res.sendStatus(StatusCodes.OK)
     } catch (error) {
       logger.error({
         message: 'Error while deleting post',
@@ -281,7 +290,9 @@ export class PostController {
         },
         error,
       })
-      return res.status(500).json({ message: 'Server Error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
   }
 
@@ -307,7 +318,7 @@ export class PostController {
       )
       if (!userId) {
         return res
-          .status(401)
+          .status(StatusCodes.UNAUTHORIZED)
           .json({ message: 'You must be logged in to update posts.' })
       }
       const hasPermission = await this.authService.hasPermissionToAnswer(
@@ -316,7 +327,7 @@ export class PostController {
       )
       if (!hasPermission) {
         return res
-          .status(403)
+          .status(StatusCodes.FORBIDDEN)
           .json({ message: 'You do not have permission to update this post.' })
       }
     } catch (error) {
@@ -328,12 +339,14 @@ export class PostController {
         error,
       })
       return res
-        .status(500)
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: 'Something went wrong, please try again.' })
     }
     const errors = validationResult(req as Request)
     if (!errors.isEmpty()) {
-      return res.status(400).json({ message: errors.array()[0].msg })
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: errors.array()[0].msg })
     }
     // Update post in database
     try {
@@ -345,11 +358,15 @@ export class PostController {
       })
 
       if (!updated) {
-        return res.status(500).json({ message: 'Answer failed to update' })
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Answer failed to update' })
       }
-      return res.status(200).json({ message: 'Answer updated' })
+      return res.status(StatusCodes.OK).json({ message: 'Answer updated' })
     } catch (err) {
-      return res.status(500).json({ message: 'Answer failed to update' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Answer failed to update' })
     }
   }
 }

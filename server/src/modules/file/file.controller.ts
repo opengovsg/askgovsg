@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { ControllerHandler } from '../../types/response-handler'
 import { createLogger } from '../../bootstrap/logging'
 import { FileService } from './file.service'
+import { StatusCodes } from 'http-status-codes'
 
 const logger = createLogger(module)
 
@@ -29,7 +30,7 @@ export class FileController {
           function: 'upload',
         },
       })
-      return res.status(400).json({ message })
+      return res.status(StatusCodes.BAD_REQUEST).json({ message })
     }
     try {
       const response = await this.fileService.upload({
@@ -38,7 +39,7 @@ export class FileController {
         mimeType: file.mimetype,
         size: file.size,
       })
-      return res.status(200).json(response)
+      return res.status(StatusCodes.OK).json(response)
     } catch (error) {
       if (error instanceof Error) {
         const message = error.message
@@ -49,7 +50,7 @@ export class FileController {
           },
           error,
         })
-        return res.status(400).json({ message })
+        return res.status(StatusCodes.BAD_REQUEST).json({ message })
       }
     }
   }

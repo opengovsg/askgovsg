@@ -4,6 +4,7 @@ import supertest from 'supertest'
 import { okAsync, errAsync } from 'neverthrow'
 import bodyParser from 'body-parser'
 import { MissingCaptchaError } from '../../../services/recaptcha/recaptcha.errors'
+import { StatusCodes } from 'http-status-codes'
 
 describe('EnquiryController', () => {
   const path = '/enquiries'
@@ -42,7 +43,7 @@ describe('EnquiryController', () => {
       const response = await request.post(path).send(data)
 
       // Assert
-      expect(response.status).toEqual(201)
+      expect(response.status).toEqual(StatusCodes.CREATED)
       expect(response.body).toStrictEqual({ message: 'Enquiry sent' })
     })
 
@@ -56,7 +57,7 @@ describe('EnquiryController', () => {
       const response = await request.post(path).send(data)
 
       // Assert
-      expect(response.status).toEqual(400)
+      expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
       expect(response.body).toStrictEqual({ message: errorMessage })
     })
 
@@ -70,7 +71,7 @@ describe('EnquiryController', () => {
       const response = await request.post(path).send(data)
 
       // Assert
-      expect(response.status).toEqual(400)
+      expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
       expect(response.body).toStrictEqual({
         message: 'Captcha was missing. Please refresh and submit again.',
       })
