@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import { createLogger } from '../../bootstrap/logging'
 import { ControllerHandler } from '../../types/response-handler'
 import { AuthService } from '../auth/auth.service'
@@ -22,7 +23,7 @@ export class TagsController {
   getTags = async (_req: Request, res: Response): Promise<Response> => {
     try {
       const data = await this.tagsService.retrieveAll()
-      return res.status(200).json(data)
+      return res.status(StatusCodes.OK).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving all tags',
@@ -31,7 +32,9 @@ export class TagsController {
         },
         error,
       })
-      return res.status(500).json({ message: 'Server Error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
   }
 
@@ -41,7 +44,7 @@ export class TagsController {
     )
     if (!userId) {
       return res
-        .status(401)
+        .status(StatusCodes.UNAUTHORIZED)
         .json({ message: 'You must be logged in to retrieve tags.' })
     }
 
@@ -49,14 +52,22 @@ export class TagsController {
       const result = await this.tagsService.retrieveUsedByUser(userId)
       return res.json(result)
     } catch (err) {
-      return res.status(500).json({ message: err.message })
+      if (err instanceof Error) {
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: err.message })
+      } else {
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Server Error' })
+      }
     }
   }
 
   getSingleTag = async (req: Request, res: Response): Promise<Response> => {
     try {
       const data = await this.tagsService.retrieveOne(req.params.tagname)
-      return res.status(200).json(data)
+      return res.status(StatusCodes.OK).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving single tag',
@@ -65,7 +76,9 @@ export class TagsController {
         },
         error,
       })
-      return res.status(500).json({ message: 'Server Error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
   }
 
@@ -78,7 +91,15 @@ export class TagsController {
       const result = await this.tagsService.retrieveUsedByAgency(agencyId)
       return res.json(result)
     } catch (err) {
-      return res.status(400).json({ message: err.message })
+      if (err instanceof Error) {
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: err.message })
+      } else {
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Server Error' })
+      }
     }
   }
 }

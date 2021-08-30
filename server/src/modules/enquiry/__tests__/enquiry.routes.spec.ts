@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser'
 import express from 'express'
+import { StatusCodes } from 'http-status-codes'
 import minimatch from 'minimatch'
 import { Sequelize } from 'sequelize'
 import supertest from 'supertest'
@@ -80,7 +81,7 @@ describe('/enquiries', () => {
     const response = await request.post(path).send(data)
 
     // Assert
-    expect(response.status).toEqual(201)
+    expect(response.status).toEqual(StatusCodes.CREATED)
     expect(response.body).toStrictEqual({ message: 'Enquiry sent' })
     expect(AgencyModel).toBeCalledTimes(1)
     expect(transport.sendMail).toHaveBeenCalledWith({

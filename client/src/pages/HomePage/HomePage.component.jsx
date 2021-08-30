@@ -213,11 +213,13 @@ const HomePage = ({ match }) => {
             <OfficerDashboardComponent
               sort={sortState.value}
               tags={agencyAndTags}
+              pageSize={50}
             />
           ) : (
             <QuestionsListComponent
               sort={sortState.value}
               tags={agencyAndTags}
+              pageSize={50}
             />
           )}
         </Box>

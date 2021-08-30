@@ -2,6 +2,7 @@ import { FileController } from '../file.controller'
 import express from 'express'
 import multer from 'multer'
 import supertest from 'supertest'
+import { StatusCodes } from 'http-status-codes'
 
 describe('FileController', () => {
   const storage = multer.memoryStorage()
@@ -36,7 +37,7 @@ describe('FileController', () => {
       const response = await request.post(path)
 
       // Assert
-      expect(response.status).toEqual(400)
+      expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
     })
 
     it('returns 400 on bad service upload', async () => {
@@ -58,7 +59,7 @@ describe('FileController', () => {
         })
 
       // Assert
-      expect(response.status).toEqual(400)
+      expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
       expect(response.body).toStrictEqual({ message })
       expect(fileService.upload).toHaveBeenCalledWith(uploadParams)
     })
@@ -81,7 +82,7 @@ describe('FileController', () => {
         })
 
       // Assert
-      expect(response.status).toEqual(200)
+      expect(response.status).toEqual(StatusCodes.OK)
       expect(response.body).toStrictEqual({ url })
     })
   })

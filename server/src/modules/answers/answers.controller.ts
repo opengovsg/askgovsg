@@ -3,6 +3,7 @@ import { AnswersService } from './answers.service'
 import { AuthService } from '../auth/auth.service'
 import { Request, Response } from 'express'
 import { createLogger } from '../../bootstrap/logging'
+import { StatusCodes } from 'http-status-codes'
 
 const logger = createLogger(module)
 
@@ -24,7 +25,7 @@ export class AnswersController {
   getAnswers = async (req: Request, res: Response): Promise<Response> => {
     try {
       const answers = await this.answersService.retrieveAll(req.params.id)
-      return res.status(200).json(answers)
+      return res.status(StatusCodes.OK).json(answers)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving answers for post',
@@ -34,17 +35,23 @@ export class AnswersController {
         },
         error,
       })
-      return res.status(500).json({ message: 'Server Error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
   }
 
   addAnswer = async (req: Request, res: Response): Promise<Response> => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return res.status(400).json({ message: errors.array()[0].msg })
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: errors.array()[0].msg })
     }
     if (!req.user) {
-      return res.status(401).json({ message: 'User not signed in' })
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: 'User not signed in' })
     }
 
     try {
@@ -55,7 +62,7 @@ export class AnswersController {
       )
       if (!hasAnswerPermissions) {
         return res
-          .status(403)
+          .status(StatusCodes.FORBIDDEN)
           .json({ message: 'You do not have permissions to answer question' })
       }
       // Save Answer in the database
@@ -65,7 +72,7 @@ export class AnswersController {
         postId: req.params.id,
       })
 
-      return res.status(200).json(data)
+      return res.status(StatusCodes.OK).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while adding new answer',
@@ -76,7 +83,9 @@ export class AnswersController {
         },
         error,
       })
-      return res.status(500).json({ message: 'Server Error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
   }
 
@@ -86,7 +95,9 @@ export class AnswersController {
   ): Promise<Response | undefined> => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return res.status(400).json({ message: errors.array()[0].msg })
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: errors.array()[0].msg })
     }
     try {
       // Update Answer in the database
@@ -94,7 +105,7 @@ export class AnswersController {
         body: req.body.text,
         id: req.params.id,
       })
-      return res.status(200).json(data)
+      return res.status(StatusCodes.OK).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while updating answer',
@@ -104,14 +115,16 @@ export class AnswersController {
         },
         error,
       })
-      return res.status(500).json({ message: 'Server Error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
   }
 
   deleteAnswer = async (req: Request, res: Response): Promise<unknown> => {
     try {
       await this.answersService.remove(req.params.id)
-      return res.status(200).end()
+      return res.status(StatusCodes.OK).end()
     } catch (error) {
       logger.error({
         message: 'Error while deleting answer',
@@ -121,7 +134,9 @@ export class AnswersController {
         },
         error,
       })
-      return res.status(500).json({ message: 'Server Error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
   }
 }

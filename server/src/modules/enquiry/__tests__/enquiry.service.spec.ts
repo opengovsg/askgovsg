@@ -95,7 +95,10 @@ describe('EnquiryService', () => {
         throw new Error('Test was force-failed')
       } catch (error) {
         // Assert
-        expect(error.message).toBe('One or more agency IDs are invalid')
+        expect(error).toBeInstanceOf(Error)
+        if (error instanceof Error) {
+          expect(error.message).toBe('One or more agency IDs are invalid')
+        }
       }
     })
   })

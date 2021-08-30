@@ -7,6 +7,7 @@ import {
 import { Request, Response, NextFunction } from 'express'
 import { Answer, Post, Tag } from '../models'
 import { TagType } from '../types/tag-type'
+import { StatusCodes } from 'http-status-codes'
 
 type AnswerWithRelations = Answer & {
   userId: string
@@ -32,10 +33,14 @@ const checkOwnership = async (
   })) as AnswerWithRelations
 
   if (!results) {
-    return res.status(400).json({ message: 'No answer found with this ID' })
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'No answer found with this ID' })
   }
   if (!req.user) {
-    return res.status(401).json({ message: 'User not signed in' })
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ message: 'User not signed in' })
   }
 
   const user = (await UserModel.findByPk(req.user.id, {
@@ -43,7 +48,7 @@ const checkOwnership = async (
   })) as { tags: Tag[] } | null
 
   if (!user) {
-    return res.status(403).json({
+    return res.status(StatusCodes.FORBIDDEN).json({
       message: `User ${req.user.id} does not exist`,
     })
   }
@@ -60,7 +65,7 @@ const checkOwnership = async (
     } is not authorized to manage agencies ${results.post.tags
       .map((postTag) => postTag.tagname)
       .join(',')}`
-    return res.status(403).json({ message: message })
+    return res.status(StatusCodes.FORBIDDEN).json({ message: message })
   }
 
   next()

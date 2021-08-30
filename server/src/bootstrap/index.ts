@@ -37,7 +37,7 @@ import { requestLoggingMiddleware } from './logging'
 import { helmetOptions } from './helmet-options'
 import { emailValidator } from './email-validator'
 import { EnquiryService } from '../modules/enquiry/enquiry.service'
-import { Agency } from './sequelize'
+import { Agency, Answer, Post, PostTag, Tag, User } from './sequelize'
 import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
 
 import { s3, bucket, host } from './s3'
@@ -84,6 +84,7 @@ const mailService = new MailService({
   transport,
   mailFromEmail: mailConfig.senderConfig.mailFrom,
 })
+const postService = new PostService({ Answer, Post, PostTag, Tag, User })
 const enquiryService = new EnquiryService({ Agency, mailService })
 const recaptchaService = new RecaptchaService({ axios })
 
@@ -110,7 +111,7 @@ const apiOptions = {
   post: {
     controller: new PostController({
       authService,
-      postService: new PostService(),
+      postService: postService,
     }),
     authMiddleware,
   },

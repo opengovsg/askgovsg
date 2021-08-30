@@ -3,6 +3,7 @@ import { FileController } from '../file.controller'
 import express from 'express'
 import supertest from 'supertest'
 import { FileService } from '../file.service'
+import { StatusCodes } from 'http-status-codes'
 
 describe('/files', () => {
   // Provide as few mocks as possible so that we
@@ -63,7 +64,7 @@ describe('/files', () => {
     })
 
     // Assert
-    expect(response.status).toEqual(200)
+    expect(response.status).toEqual(StatusCodes.OK)
     expect(response.body).toStrictEqual({ link: `${host}/${s3Params.Key}` })
     expect(s3.putObject).toHaveBeenCalledWith(s3Params)
   })

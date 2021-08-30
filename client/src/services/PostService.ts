@@ -19,9 +19,11 @@ export const GET_POST_BY_ID_QUERY_KEY = 'getPostById'
 export const listPosts = async (
   sort?: string,
   joinedTags?: string,
+  page?: number,
+  size?: number,
 ): Promise<unknown> => {
   return ApiClient.get(`${POST_API_BASE}`, {
-    params: { sort, tags: joinedTags },
+    params: { sort, tags: joinedTags, page, size },
   }).then(({ data }) => data)
 }
 export const LIST_POSTS_QUERY_KEY = 'listPosts'
@@ -31,13 +33,17 @@ export const listAnswerablePosts = async ({
   withAnswers,
   sort,
   tags,
+  page,
+  size,
 }: {
   withAnswers: boolean
   sort: string
   tags: string
+  page?: number
+  size?: number
 }): Promise<unknown> => {
   return ApiClient.get(`${POST_API_BASE}/answerable`, {
-    params: { withAnswers, sort, tags },
+    params: { withAnswers, sort, tags, page, size },
   }).then(({ data }) => data)
 }
 export const LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY =

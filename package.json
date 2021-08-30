@@ -10,13 +10,14 @@
     "build": "npm run build-frontend && npm run build-backend",
     "server": "npm run dev --prefix server",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\" \"docker-compose up \"",
+    "dev": "concurrently \"./wait-for-it.sh localhost:3306 -t 0 -- sleep 10 && npm run server\" \"npm run client\" \"docker-compose up \"",
     "postinstall": "npm --prefix server install && npm --prefix client install",
     "auditDep": "npm audit fix && npm --prefix server audit fix && npm --client server audit fix",
     "prepare": "husky install",
     "test": "npm --prefix server test && CI=true npm --prefix client test -- --passWithNoTests",
     "lint": "npm run --prefix server lint && npm run --prefix client lint",
-    "lint-ci": "npm run --prefix server lint-ci && npm run --prefix client lint-ci"
+    "lint-ci": "npm run --prefix server lint-ci && npm run --prefix client lint-ci",
+    "seq-cli": "npm run --prefix server seq-cli"
   },
   "author": "Open Government Products, GovTech Singapore (https://open.gov.sg)",
   "contributors": [
@@ -26,7 +27,7 @@
   "devDependencies": {
     "concurrently": "^6.2.1",
     "cz-conventional-changelog": "^3.3.0",
-    "husky": "^7.0.1",
+    "husky": "^7.0.2",
     "lint-staged": "^11.1.2"
   },
   "config": {

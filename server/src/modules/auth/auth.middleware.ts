@@ -1,3 +1,4 @@
+import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
 import { createLogger } from '../../bootstrap/logging'
 import { ControllerHandler } from '../../types/response-handler'
@@ -16,14 +17,18 @@ export class AuthMiddleware {
 
     // Check if no token
     if (!token) {
-      return res.status(401).json({ message: 'Sign-in required' })
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: 'Sign-in required' })
     }
 
     // Verify token
     try {
       jwt.verify(token, this.jwtSecret, (error, decoded) => {
         if (error) {
-          return res.status(400).json({ message: 'Invalid token' })
+          return res
+            .status(StatusCodes.BAD_REQUEST)
+            .json({ message: 'Invalid token' })
         } else {
           req.user = (decoded as { user: Express.User }).user
           return next()
@@ -37,7 +42,9 @@ export class AuthMiddleware {
         },
         error,
       })
-      return res.status(500).json({ message: 'Server Error' })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
   }
 }

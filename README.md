@@ -1,11 +1,4 @@
 # AskGov
-
-[![Version](https://img.shields.io/static/v1?label=version&message=2.0.0&color=blue)](https://shields.io/)
-[![NPM](https://img.shields.io/static/v1?label=npm&message=6.8.5&color=blue)](https://shields.io/)
-[![NODE](https://img.shields.io/static/v1?label=node&message=12.18.0&color=success)](https://shields.io/)
-[![MYSQL](https://img.shields.io/static/v1?label=mysql&message=8.0.10&color=blueviolet)](https://shields.io/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://shields.io/)
-
 ## Tech Stack
 
 #### Front-end
@@ -32,7 +25,7 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
   For development:
   ```
   DB_HOST=localhost
-  DB_NAME=stack_overflow_v2 
+  DB_NAME=askgov
   DB_USER=root
   DB_PASSWORD=*create your own pw here*
   SERVER_PORT=5000
@@ -64,34 +57,30 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
   ```
   $ direnv allow .
   ```
-* Download [MySQL](https://dev.mysql.com/downloads/mysql/)
 
-  `MySQL` should appear at the bottom of _System Preferences_ upon successful installation
-
-  In `MySQL`, click _Initialize Database_, enter the appropriate password for "root" user and select _Use Strong Password Encryption_
-    
-  Password should correspond to the one in the `.env` file
-
-  Click _OK_ and _Start MySQL Server_
+* Spin up MySQL by running `docker-compose up`
 
 * Download a database GUI like [DBeaver](https://dbeaver.io/download/) and connect to the local MySQL server
 
-  Create database by executing the script in `DBeaver`
+  Create database by executing the following in `DBeaver`:
+  ```sql
+  CREATE DATABASE askgov;
   ```
-  CREATE DATABASE stack_overflow_v2;
-  USE stack_overflow_v2;
-  SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
-  ```
-  Execute `$ npm run dev` to create the tables
-  
-  Execute the script in `seed.sql` using `DBeaver`
 
-  Check that your Database ER Diagram looks like this:
+* Execute `npm run seq-cli db:migrate` to create the tables
   
-  <img width="635" alt="Screenshot 2021-07-05 at 11 35 53 AM" src="https://user-images.githubusercontent.com/20250559/124414373-3258c780-dd85-11eb-9312-faf4bba096a8.png">
+* Execute `npm run seq-cli db:seed:all` to seed the database with a sample dataset
 
+* Check that your Database ER Diagram looks like this:
   
-* Start running frontend, backend and local mail server simultaneously
+![image](https://user-images.githubusercontent.com/20250559/130938844-60255d06-d07d-4c84-ad3f-0c13be7dcb67.png)
+
+
+* Spin down MySQL by running `docker-compose down`
+
+## Running in Development
+
+* Start running frontend, backend, maildev, localstack and mysql simultaneously
 
   ```
   $ npm run dev
@@ -100,18 +89,23 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
   Alternatively, to run individually:
 
   ```
-  $ npm run server (for backend server only)
+  # for supporting services
+  $ docker-compose up
 
-  $ npm run client (for frontend server only)
+  # for backend server only
+  $ npm run server 
+
+  # for frontend server only
+  $ npm run client 
   ```
   
   Frontend server accessible on `localhost:3000`
   
-  Backend server accessible on `localhost:5000/api/v1/agencies`
+  Backend server accessible on `localhost:5000/api/v1`
   
   Local mail server `MailDev` accessible on `localhost:1080`
 
-* Default home page is not authorised. To become authorised user, login via `localhost:3000/login`, enter `answerer@parking.gov.sg`. Then go to the mail server to obtain the OTP
+* Default home page is not authorised. To become authorised user, login via `localhost:3000/login`, enter `enquiries@was.gov.sg`. Then go to the mail server to obtain the OTP
 
 
 ## Common Problems
@@ -149,7 +143,7 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 
 ## API Endpoints
 
-#### Base Url - `http://localhost:5000/api`
+#### Base Url - `http://localhost:5000/api/v1`
 
 #### Users
 
