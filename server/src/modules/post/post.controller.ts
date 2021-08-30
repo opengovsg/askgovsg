@@ -55,17 +55,19 @@ export class PostController {
       })
       return res.status(200).json(data)
     } catch (error) {
-      if (error.message === 'Invalid tags used in request') {
-        return res.status(422).json({ message: error.message })
-      } else {
-        logger.error({
-          message: 'Error while listing posts',
-          meta: {
-            function: 'listPosts',
-          },
-          error,
-        })
-        return res.status(500).json({ message: 'Server Error' })
+      if (error instanceof Error) {
+        if (error.message === 'Invalid tags used in request') {
+          return res.status(422).json({ message: error.message })
+        } else {
+          logger.error({
+            message: 'Error while listing posts',
+            meta: {
+              function: 'listPosts',
+            },
+            error,
+          })
+          return res.status(500).json({ message: 'Server Error' })
+        }
       }
     }
   }

@@ -62,14 +62,16 @@ export class EnquiryController {
       })
       return res.status(201).json({ message: 'Enquiry sent' })
     } catch (error) {
-      logger.error({
-        message: 'Error while sending enquiry email',
-        meta: {
-          function: 'sendEnquiry',
-        },
-        error,
-      })
-      return res.status(400).json({ message: error.message })
+      if (error instanceof Error) {
+        logger.error({
+          message: 'Error while sending enquiry email',
+          meta: {
+            function: 'sendEnquiry',
+          },
+          error,
+        })
+        return res.status(400).json({ message: error.message })
+      }
     }
   }
 }
