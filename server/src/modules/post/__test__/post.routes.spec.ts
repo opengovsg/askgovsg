@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser'
 import express from 'express'
+import { StatusCodes } from 'http-status-codes'
 import minimatch from 'minimatch'
 import { Sequelize } from 'sequelize'
 import supertest from 'supertest'
@@ -70,7 +71,7 @@ describe('/posts', () => {
       const response = await request.get(path)
 
       // Assert
-      expect(response.status).toEqual(200)
+      expect(response.status).toEqual(StatusCodes.OK)
       expect(response.body.posts.length).toStrictEqual(mockPosts.length)
       expect(response.body.totalItems).toStrictEqual(mockPosts.length)
     })
@@ -87,7 +88,7 @@ describe('/posts', () => {
       })
 
       // Assert
-      expect(response.status).toEqual(200)
+      expect(response.status).toEqual(StatusCodes.OK)
       expect(response.body.posts.length).toStrictEqual(mockPosts.length)
       expect(response.body.totalItems).toStrictEqual(mockPosts.length)
     })
