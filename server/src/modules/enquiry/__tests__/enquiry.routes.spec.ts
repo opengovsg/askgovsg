@@ -1,15 +1,11 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import minimatch from 'minimatch'
-import { Sequelize } from 'sequelize'
+import { ModelCtor, Sequelize } from 'sequelize'
 import supertest from 'supertest'
-import {
-  defineAgency,
-  defineTag,
-  defineUserAndPermission,
-} from '../../../models'
+import { Agency as AgencyModel } from '../../../models'
 import { RecaptchaService } from '../../../services/recaptcha/recaptcha.service'
+import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { MailService } from '../../mail/mail.service'
 import { EnquiryController } from '../enquiry.controller'
 import { routeEnquiries } from '../enquiry.routes'
@@ -22,49 +18,49 @@ describe('/enquiries', () => {
   const mailService = new MailService({ transport, mailFromEmail })
 
   // Set up sequelize
-  const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    username: 'username',
-    logging: false,
-  })
-  const emailValidator = new minimatch.Minimatch('*')
+  let db: Sequelize
+  let Agency: ModelCtor<AgencyModel>
+  let enquiryService: EnquiryService
+  let enquiryController: EnquiryController
+  let mockAgency1: AgencyModel
 
-  const Tag = defineTag(sequelize)
-  const { User } = defineUserAndPermission(sequelize, {
-    Tag,
-    emailValidator,
-  })
-  const Agency = defineAgency(sequelize, { User })
-
-  // Set up service, controller and route
-  const enquiryService = new EnquiryService({ Agency, mailService })
   const axios = { get: jest.fn() }
   const recaptchaService = new RecaptchaService({ axios })
-  const enquiryController = new EnquiryController({
-    enquiryService,
-    recaptchaService,
-  })
 
   const path = '/enquiries'
   const app = express()
   app.use(bodyParser.json())
-  app.use(path, routeEnquiries({ controller: enquiryController }))
   const request = supertest(app)
+
+  beforeAll(async () => {
+    db = await createTestDatabase()
+    Agency = getModel<AgencyModel>(db, ModelName.Agency)
+    mockAgency1 = await Agency.create({
+      shortname: '1',
+      longname: '',
+      logo: 'www.url.com',
+      email: 'agency1@ask.gov.sg',
+    })
+    enquiryService = new EnquiryService({ Agency, mailService })
+    enquiryController = new EnquiryController({
+      enquiryService,
+      recaptchaService,
+    })
+    app.use(path, routeEnquiries({ controller: enquiryController }))
+  })
 
   afterEach(() => {
     jest.clearAllMocks()
   })
 
+  afterAll(async () => {
+    await db.close()
+  })
+
   it('returns 201 if enquiry was successfully mailed', async () => {
     // Arrange
-    const mockAgency1 = await Agency.build({
-      shortname: '',
-      longname: '',
-      email: 'agency1@ask.gov.sg',
-      logo: 'www.url.com',
-    })
     const data = {
-      agencyId: ['1'],
+      agencyId: [mockAgency1.id],
       enquiry: {
         questionTitle: 'questionTitle',
         description: 'description',
@@ -72,9 +68,7 @@ describe('/enquiries', () => {
       },
       captchaResponse: 'mockResponse',
     }
-    const AgencyModel = jest
-      .spyOn(Agency, 'findOne')
-      .mockResolvedValueOnce(mockAgency1)
+    const AgencyModel = jest.spyOn(Agency, 'findOne')
     axios.get.mockResolvedValueOnce({ data: { success: true } })
 
     // Act
