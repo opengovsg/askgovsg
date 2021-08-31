@@ -30,6 +30,10 @@ export class PostController {
 
   /**
    * Lists all post
+   * @query sort Sort by popularity or recent
+   * @query tags Tags to filter by
+   * @query size Number of posts to return
+   * @query page If size is given, specify which page to return
    * @return 200 with posts and totalItem for pagination
    * @return 422 if invalid tags are used in request
    * @return 500 when database error occurs
@@ -76,6 +80,11 @@ export class PostController {
 
   /**
    * Lists all post answerable by the agency user
+   * @query sort Sort by popularity or recent
+   * @query withAnswers If false, show only posts without answers
+   * @query tags Tags to filter by
+   * @query size Number of posts to return
+   * @query page If size is given, specify which page to return
    * @return 200 with posts and totalItem for pagination
    * @return 400 if `withAnswers`, `sort` or `tags` query is not given
    * @return 401 if userID is invalid
@@ -197,7 +206,9 @@ export class PostController {
 
   /**
    * Create a new post
-   * @param newPost Post to be created
+   * @body title title of post
+   * @body tagname tags of post
+   * @body description description of post
    * @return 200 if post is created
    * @return 400 if title and description is too short or long
    * @return 401 if user is not signed in
@@ -309,7 +320,8 @@ export class PostController {
 
   /**
    * Update a post
-   * @param Post Post to be updated
+   * @param id id of post to update
+   * @body Post Post to be updated
    * @return 200 if successful
    * @return 400 if title and description is too short or long
    * @return 401 if user is not logged in
