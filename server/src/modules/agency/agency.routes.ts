@@ -9,9 +9,13 @@ export const routeAgencies = ({
 }): express.Router => {
   const router = express.Router()
 
-  /** @route      GET /api/agencies?<params>
-   *  @desc       fetch specific agency
-   *  @access     Public
+  /**
+   * Find an agency by their shortname or longname
+   * @route  GET /api/agencies?<params>
+   * @return 200 with agency
+   * @return 404 if agency is not found
+   * @return 500 if database error
+   * @access Public
    */
   router.get(
     '/',
@@ -19,9 +23,13 @@ export const routeAgencies = ({
     controller.getSingleAgency,
   )
 
-  /** @route      GET /api/agencies/:agencyId
-   *  @desc       fetch specific agency by ID
-   *  @access     Public
+  /**
+   * Find an agency by their id
+   * @route  GET /api/agencies/:agencyId
+   * @return 200 with agency
+   * @return 404 if agency is not found
+   * @return 500 if database error
+   * @access Public
    */
   router.get('/:agencyId', controller.getSingleAgencyById)
   return router

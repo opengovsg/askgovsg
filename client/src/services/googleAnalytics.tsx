@@ -2,6 +2,7 @@ import ReactGA from 'react-ga'
 
 const GA_USER_EVENTS = {
   SEARCH: 'Search',
+  ABANDONED: 'Abandoned Search',
 }
 
 const initializeGA = (trackingId: string): void => {

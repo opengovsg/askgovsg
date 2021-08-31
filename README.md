@@ -145,6 +145,10 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 
 #### Base Url - `http://localhost:5000/api/v1`
 
+#### Agencies
+- `GET /agencies?<longname, shortname>`
+- `GET /agencies/:agencyId`
+
 #### Users
 
 - `GET /auth`
