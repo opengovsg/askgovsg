@@ -119,15 +119,22 @@ export const EnquiryModal = ({
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Flex w="100%" align="center">
+            <Flex
+              w="100%"
+              align={{ base: 'left', md: 'center' }}
+              direction={{ base: 'column', md: 'row' }}
+            >
               <ReCAPTCHA
                 sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY ?? ''}
                 onChange={(token) => setCaptchaResponse(token)}
               />
               <Spacer />
               <Button
+                my={4}
                 type="submit"
                 color="white"
+                w={{ base: '100%', md: 'auto' }}
+                h={{ base: 14, md: 12 }}
                 disabled={!captchaResponse}
                 backgroundColor="primary.500"
                 _hover={{
