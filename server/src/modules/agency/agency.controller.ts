@@ -1,10 +1,10 @@
 import { AgencyService } from './agency.service'
-import { RequestHandler } from 'express'
 import { Agency } from '../../models/agencies.model'
 import { Message } from '../../types/message-type'
 import { AgencyQuery } from '../../types/agency-type'
 import { createLogger } from '../../bootstrap/logging'
 import { StatusCodes } from 'http-status-codes'
+import { ControllerHandler } from '../../types/response-handler'
 
 const logger = createLogger(module)
 
@@ -15,10 +15,10 @@ export class AgencyController {
     this.agencyService = agencyService
   }
 
-  getSingleAgency: RequestHandler<
-    unknown,
+  getSingleAgency: ControllerHandler<
+    undefined,
     Agency | Message,
-    unknown,
+    undefined,
     AgencyQuery
   > = async (req, res) => {
     try {
@@ -43,26 +43,28 @@ export class AgencyController {
 
   // ID method
 
-  getSingleAgencyById: RequestHandler<{ agencyId: number }, Agency | Message> =
-    async (req, res) => {
-      const { agencyId } = req.params
-      try {
-        const data = await this.agencyService.findOneById(agencyId)
-        if (!data) {
-          return res
-            .status(StatusCodes.NOT_FOUND)
-            .json({ message: 'Agency not found' })
-        }
-        return res.status(StatusCodes.OK).json(data)
-      } catch (error) {
-        logger.error({
-          message: 'Error while retrieving single agency by ID',
-          meta: {
-            function: 'getSingleAgencyById',
-          },
-          error,
-        })
-        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
+  getSingleAgencyById: ControllerHandler<
+    { agencyId: number },
+    Agency | Message
+  > = async (req, res) => {
+    const { agencyId } = req.params
+    try {
+      const data = await this.agencyService.findOneById(agencyId)
+      if (!data) {
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json({ message: 'Agency not found' })
       }
+      return res.status(StatusCodes.OK).json(data)
+    } catch (error) {
+      logger.error({
+        message: 'Error while retrieving single agency by ID',
+        meta: {
+          function: 'getSingleAgencyById',
+        },
+        error,
+      })
+      return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
     }
+  }
 }
