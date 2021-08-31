@@ -63,7 +63,7 @@ export class AnswersService {
     await AnswerModel.destroy({ where: { id: id } })
   }
 
-  retrieveAll = async (
+  getAnswers = async (
     postId: string,
   ): Promise<
     | {

@@ -4,6 +4,8 @@ import { AuthService } from '../auth/auth.service'
 import { Request, Response } from 'express'
 import { createLogger } from '../../bootstrap/logging'
 import { StatusCodes } from 'http-status-codes'
+import { ControllerHandler } from '../../types/response-handler'
+import { Message } from '../../types/message-type'
 
 const logger = createLogger(module)
 
@@ -22,9 +24,19 @@ export class AnswersController {
     this.authService = authService
   }
 
-  getAnswers = async (req: Request, res: Response): Promise<Response> => {
+  getAnswers: ControllerHandler<
+    { id: string },
+    | {
+        body: string
+        username: string
+        userId: string
+        agencyLogo: string
+      }[]
+    | undefined
+    | Message
+  > = async (req, res) => {
     try {
-      const answers = await this.answersService.retrieveAll(req.params.id)
+      const answers = await this.answersService.getAnswers(req.params.id)
       return res.status(StatusCodes.OK).json(answers)
     } catch (error) {
       logger.error({
@@ -41,7 +53,12 @@ export class AnswersController {
     }
   }
 
-  addAnswer = async (req: Request, res: Response): Promise<Response> => {
+  createAnswer: ControllerHandler<
+    { id: string },
+    string | Message,
+    { text: string },
+    undefined
+  > = async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res
@@ -89,10 +106,12 @@ export class AnswersController {
     }
   }
 
-  updateAnswer = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response | undefined> => {
+  updateAnswer: ControllerHandler<
+    { id: string },
+    number | Message,
+    { text: string },
+    undefined
+  > = async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res
@@ -121,7 +140,10 @@ export class AnswersController {
     }
   }
 
-  deleteAnswer = async (req: Request, res: Response): Promise<unknown> => {
+  deleteAnswer: ControllerHandler<{ id: string }, Message> = async (
+    req,
+    res,
+  ) => {
     try {
       await this.answersService.remove(req.params.id)
       return res.status(StatusCodes.OK).end()

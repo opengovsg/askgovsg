@@ -16,7 +16,7 @@ export const routeAnswers = ({
   /**
    * @route      GET /api/posts/answers/:id
    * @desc       fetch all answers of a post
-   * @access     Private
+   * @access     Public
    */
   router.get('/:id', controller.getAnswers)
 
@@ -28,7 +28,7 @@ export const routeAnswers = ({
   router.post(
     '/:id',
     [authenticate, check('text', 'Answer is required').not().isEmpty()],
-    controller.addAnswer,
+    controller.createAnswer,
   )
 
   /**
