@@ -21,7 +21,7 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
   client-side search 
   */
   const { agency: agencyShortName } = useParams()
-  const { data: data } = useQuery(
+  const { data } = useQuery(
     [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agencyShortName],
     // TODO: refactor to better split between when agencyShortName is present
     () => listPosts(undefined, agencyShortName),

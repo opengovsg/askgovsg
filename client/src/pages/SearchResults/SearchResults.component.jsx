@@ -13,7 +13,7 @@ import './SearchResults.styles.scss'
 import { sortByCreatedAt } from '../../util/date'
 
 const SearchResults = () => {
-  const { data: data, isLoading } = useQuery([LIST_POSTS_QUERY_KEY], () =>
+  const { data, isLoading } = useQuery([LIST_POSTS_QUERY_KEY], () =>
     listPosts(),
   )
 
