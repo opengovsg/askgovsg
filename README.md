@@ -165,6 +165,7 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 
 - `GET /posts/answers/:id`
 - `POST /posts/answers/:id`
+- `PUT /posts/answers/:id`
 - `DELETE /posts/answers/:id`
 
 #### Tags
