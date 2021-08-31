@@ -36,7 +36,17 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
       googleAnalytics.GA_USER_EVENTS.SEARCH,
       searchString,
     )
-    FullStory.event('Search', {
+    FullStory.event(googleAnalytics.GA_USER_EVENTS.SEARCH, {
+      // property name uses `ident_type` pattern
+      searchString_str: searchString,
+    })
+  }
+  const sendAbandonedSearchEventToAnalytics = (searchString) => {
+    googleAnalytics.sendUserEvent(
+      googleAnalytics.GA_USER_EVENTS.ABANDONED,
+      searchString,
+    )
+    FullStory.event(googleAnalytics.GA_USER_EVENTS.ABANDONED, {
       // property name uses `ident_type` pattern
       searchString_str: searchString,
     })
@@ -94,7 +104,10 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
             inputValue,
             highlightedIndex,
           }) => (
-            <div className="search-autocomplete">
+            <div
+              className="search-autocomplete"
+              onBlur={() => sendAbandonedSearchEventToAnalytics(inputValue)}
+            >
               <InputGroup className="search-box">
                 <InputLeftElement
                   children={<BiSearch size="24" color="secondary.500" />}
