@@ -21,7 +21,7 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
   client-side search 
   */
   const { agency: agencyShortName } = useParams()
-  const { data: posts } = useQuery(
+  const { data: data } = useQuery(
     [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agencyShortName],
     // TODO: refactor to better split between when agencyShortName is present
     () => listPosts(undefined, agencyShortName),
@@ -75,7 +75,7 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
 
   const itemToString = (item) => (item ? item.title : '')
 
-  const fuse = new Fuse(posts, {
+  const fuse = new Fuse(data?.posts, {
     keys: ['title', 'description'],
   })
 

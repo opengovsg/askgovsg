@@ -13,14 +13,14 @@ import './SearchResults.styles.scss'
 import { sortByCreatedAt } from '../../util/date'
 
 const SearchResults = () => {
-  const { data: posts, isLoading } = useQuery([LIST_POSTS_QUERY_KEY], () =>
+  const { data: data, isLoading } = useQuery([LIST_POSTS_QUERY_KEY], () =>
     listPosts(),
   )
 
   let searchQuery =
     new URLSearchParams(useLocation().search).get('search') ?? ''
 
-  const foundPosts = new Fuse(posts ?? [], {
+  const foundPosts = new Fuse(data?.posts ?? [], {
     keys: ['title', 'description'],
   })
     .search(searchQuery)
