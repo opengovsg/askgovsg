@@ -412,7 +412,7 @@ export class PostService {
   }
 
   /**
-   * Delete a post
+   * Delete a post by setting the post to archive
    * @param id Post to be deleted
    * @returns void if successful
    */
