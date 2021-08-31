@@ -15,6 +15,13 @@ export class AgencyController {
     this.agencyService = agencyService
   }
 
+  /**
+   * Find an agency by their shortname or longname
+   * @param query agency's shortname or longname
+   * @return 200 with agency
+   * @return 404 if agency is not found
+   * @return 500 if database error
+   */
   getSingleAgency: ControllerHandler<
     undefined,
     Agency | Message,
@@ -41,8 +48,13 @@ export class AgencyController {
     }
   }
 
-  // ID method
-
+  /**
+   * Find an agency by their id
+   * @param agencyId Agency's id
+   * @return 200 with agency
+   * @return 404 if agency is not found
+   * @return 500 if database error
+   */
   getSingleAgencyById: ControllerHandler<
     { agencyId: number },
     Agency | Message
