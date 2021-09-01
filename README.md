@@ -170,4 +170,6 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 #### Tags
 
 - `GET /tags`
-- `GET /tags/:tag_name`
+- `GET /tags/user`
+- `GET /tags/agency/:agencyId`
+- `GET /tags/:tagname`
