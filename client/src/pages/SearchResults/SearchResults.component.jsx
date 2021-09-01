@@ -8,17 +8,22 @@ import PostItem from '../../components/PostItem/PostItem.component'
 import SearchBox from '../../components/SearchBox/SearchBox.component'
 import { Spacer } from '@chakra-ui/react'
 import Spinner from '../../components/Spinner/Spinner.component'
-import { listPosts, LIST_POSTS_QUERY_KEY } from '../../services/PostService'
+import {
+  listPosts,
+  LIST_POSTS_FOR_SEARCH_QUERY_KEY,
+} from '../../services/PostService'
 import './SearchResults.styles.scss'
 import { sortByCreatedAt } from '../../util/date'
 
 const SearchResults = () => {
-  const { data, isLoading } = useQuery([LIST_POSTS_QUERY_KEY], () =>
-    listPosts(),
+  const { search } = useLocation()
+  const searchParams = new URLSearchParams(search)
+  const searchQuery = searchParams.get('search') ?? ''
+  const agency = searchParams.get('agency')
+  const { data, isLoading } = useQuery(
+    [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agency],
+    listPosts(undefined, agency),
   )
-
-  let searchQuery =
-    new URLSearchParams(useLocation().search).get('search') ?? ''
 
   const foundPosts = new Fuse(data?.posts ?? [], {
     keys: ['title', 'description'],
