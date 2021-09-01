@@ -1,9 +1,10 @@
 import { validationResult } from 'express-validator'
 import { AnswersService } from './answers.service'
 import { AuthService } from '../auth/auth.service'
-import { Request, Response } from 'express'
 import { createLogger } from '../../bootstrap/logging'
 import { StatusCodes } from 'http-status-codes'
+import { ControllerHandler } from '../../types/response-handler'
+import { Message } from '../../types/message-type'
 
 const logger = createLogger(module)
 
@@ -22,9 +23,25 @@ export class AnswersController {
     this.authService = authService
   }
 
-  getAnswers = async (req: Request, res: Response): Promise<Response> => {
+  /**
+   * Lists all answers to a post
+   * @param postId id of the post
+   * @returns 200 with array of answers
+   * @returns 500 if database error occurs
+   */
+  listAnswers: ControllerHandler<
+    { id: string },
+    | {
+        body: string
+        username: string
+        userId: string
+        agencyLogo: string
+      }[]
+    | undefined
+    | Message
+  > = async (req, res) => {
     try {
-      const answers = await this.answersService.retrieveAll(req.params.id)
+      const answers = await this.answersService.listAnswers(req.params.id)
       return res.status(StatusCodes.OK).json(answers)
     } catch (error) {
       logger.error({
@@ -41,7 +58,22 @@ export class AnswersController {
     }
   }
 
-  addAnswer = async (req: Request, res: Response): Promise<Response> => {
+  /**
+   * Create an answer attached to a post
+   * @param postId id of post to attach to
+   * @body text answer text
+   * @returns 200 with new answer id
+   * @returns 400 if invalid request
+   * @returns 401 if user not signed in
+   * @returns 403 if user is not authorized to answer question
+   * @returns 500 if database error
+   */
+  createAnswer: ControllerHandler<
+    { id: string },
+    string | Message,
+    { text: string },
+    undefined
+  > = async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res
@@ -89,10 +121,20 @@ export class AnswersController {
     }
   }
 
-  updateAnswer = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response | undefined> => {
+  /**
+   * Update an answer
+   * @param id id of answer to update
+   * @body text answer text
+   * @returns 200 with number of rows changed in answer database
+   * @returns 400 if invalid request
+   * @returns 500 if database error
+   */
+  updateAnswer: ControllerHandler<
+    { id: string },
+    number | Message,
+    { text: string },
+    undefined
+  > = async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res
@@ -101,7 +143,7 @@ export class AnswersController {
     }
     try {
       // Update Answer in the database
-      const data = await this.answersService.update({
+      const data = await this.answersService.updateAnswer({
         body: req.body.text,
         id: req.params.id,
       })
@@ -121,9 +163,19 @@ export class AnswersController {
     }
   }
 
-  deleteAnswer = async (req: Request, res: Response): Promise<unknown> => {
+  /**
+   * Delete an answer. Currently not used as a post delete
+   * will archive the post and will not touch the answer.
+   * @param id of answer to delete
+   * @returns 200 on successful delete
+   * @returns 500 on database error
+   */
+  deleteAnswer: ControllerHandler<{ id: string }, Message> = async (
+    req,
+    res,
+  ) => {
     try {
-      await this.answersService.remove(req.params.id)
+      await this.answersService.deleteAnswer(req.params.id)
       return res.status(StatusCodes.OK).end()
     } catch (error) {
       logger.error({

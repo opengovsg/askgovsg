@@ -27,43 +27,12 @@ type AnswerJSON = Pick<Answer, 'body'> & {
   }
 }
 export class AnswersService {
-  createAnswer = async ({
-    postId,
-    body,
-    userId,
-  }: Pick<
-    AnswerWithRelations,
-    'body' | 'postId' | 'userId'
-  >): Promise<string> => {
-    const answer = await AnswerModel.create({
-      postId: postId,
-      body: body,
-      userId: userId,
-    })
-    await PostModel.update(
-      { status: PostStatus.PUBLIC },
-      { where: { id: postId } },
-    )
-    return answer.id
-  }
-
-  update = async (updatedAnswer: {
-    id: string
-    body: string
-  }): Promise<number> => {
-    const res = await AnswerModel.update(
-      { body: updatedAnswer.body },
-      { where: { id: updatedAnswer.id } },
-    )
-    const changedRows = res[0]
-    return changedRows
-  }
-
-  remove = async (id: string): Promise<void> => {
-    await AnswerModel.destroy({ where: { id: id } })
-  }
-
-  retrieveAll = async (
+  /**
+   * Returns all answers to a post
+   * @param postId id of the post
+   * @returns an array of answers
+   */
+  listAnswers = async (
     postId: string,
   ): Promise<
     | {
@@ -106,5 +75,58 @@ export class AnswersService {
         }
       })
     }
+  }
+
+  /**
+   * Create an answer attached to a post
+   * @param postId id of post to attach to
+   * @param body answer text
+   * @param userId id of user that submitted the answer
+   * @returns id of new answer if it is successfully created
+   */
+  createAnswer = async ({
+    postId,
+    body,
+    userId,
+  }: Pick<
+    AnswerWithRelations,
+    'body' | 'postId' | 'userId'
+  >): Promise<string> => {
+    const answer = await AnswerModel.create({
+      postId: postId,
+      body: body,
+      userId: userId,
+    })
+    await PostModel.update(
+      { status: PostStatus.PUBLIC },
+      { where: { id: postId } },
+    )
+    return answer.id
+  }
+
+  /** Update a answer
+   * @param id of answer to update
+   * @param body answer text to change to
+   * @returns number of rows changed in answer database
+   */
+  updateAnswer = async (updatedAnswer: {
+    id: string
+    body: string
+  }): Promise<number> => {
+    const res = await AnswerModel.update(
+      { body: updatedAnswer.body },
+      { where: { id: updatedAnswer.id } },
+    )
+    const changedRows = res[0]
+    return changedRows
+  }
+
+  /**
+   * Delete an answer. Currently not used as a post delete
+   * will archive the post and will not touch the answer.
+   * @param id of answer to delete
+   */
+  deleteAnswer = async (id: string): Promise<void> => {
+    await AnswerModel.destroy({ where: { id: id } })
   }
 }
