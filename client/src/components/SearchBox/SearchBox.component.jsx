@@ -79,7 +79,10 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
   if (!handleSubmit) {
     handleSubmit = (data) => {
       sendSearchEventToAnalytics(data[name])
-      history.push(`/questions?search=${data[name]}`)
+      history.push(
+        `/questions?search=${data[name]}` +
+          (agencyShortName ? `&agency=${agencyShortName}` : ''),
+      )
     }
   }
 

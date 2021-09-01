@@ -22,7 +22,7 @@ const HomePageComponent = withPageTitle({
 
 const SearchResultsComponent = withPageTitle({
   component: SearchResults,
-  title: 'All Questions - AskGov',
+  title: 'Search Results - AskGov',
 })
 
 const LoginComponent = withPageTitle({
