@@ -1,4 +1,4 @@
-import { Box, Flex, Image, Stack, Text } from '@chakra-ui/react'
+import { Flex, Image, Stack, Text } from '@chakra-ui/react'
 import { useQuery } from 'react-query'
 import { Link, matchPath, useLocation } from 'react-router-dom'
 import { ReactComponent as Logo } from '../../assets/LogoAlpha.svg'
@@ -69,14 +69,12 @@ const Header = () => {
           position="relative"
           top="8px"
         >
-          <Box pr="15px" mb={{ base: '0px', md: '6px' }}>
-            <Logo />
-          </Box>
+          <Logo />
           {agency ? (
             <>
               <Text
                 d={{ base: 'none', md: 'block' }}
-                pr={{ base: 0, md: 4 }}
+                px={{ base: 0, md: 2 }}
                 textStyle="h4"
                 fontWeight={300}
                 color="white"
