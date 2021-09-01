@@ -3,7 +3,6 @@ import * as FullStory from '@fullstory/browser'
 import Downshift from 'downshift'
 import Fuse from 'fuse.js'
 import { BiSearch } from 'react-icons/bi'
-import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import { Link, useHistory, useParams } from 'react-router-dom'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
@@ -20,6 +19,7 @@ const SearchBox = ({
   handleSubmit = undefined,
   handleAbandon = (_inputValue) => {},
   showSearchIcon = true,
+  ...inputProps
 }) => {
   /*
   Use LIST_POSTS_FOR_SEARCH_QUERY_KEY instead of LIST_POSTS_QUERY_KEY
@@ -71,29 +71,14 @@ const SearchBox = ({
     googleAnalytics.setIsFirstSearch(true)
   }
 
-  const {
-    register,
-    handleSubmit: handleSubmitHook,
-    getValues,
-  } = useForm({
-    defaultValues: {
-      [name]: value,
-    },
-  })
-
   placeholder = placeholder ?? 'How can we help you?'
   value = value ?? ''
   if (!handleSubmit) {
-    handleSubmit = (data) =>
+    handleSubmit = (inputValue) =>
       history.push(
-        `/questions?search=${data[name]}` +
+        `/questions?search=${inputValue}` +
           (agencyShortName ? `&agency=${agencyShortName}` : ''),
       )
-  }
-
-  const onSubmit = (data) => {
-    sendSearchEventToAnalytics(data[name])
-    handleSubmit(data)
   }
 
   const onAbandon = (inputValue) => {
@@ -118,11 +103,12 @@ const SearchBox = ({
 
   return (
     <div className="search-container">
-      <form className="search-form" onSubmit={handleSubmitHook(onSubmit)}>
+      <div className="search-form">
         <Downshift
           onChange={(selection) => history.push(`/questions/${selection.id}`)}
           stateReducer={stateReducer}
           itemToString={itemToString}
+          initialInputValue={value}
         >
           {({
             getInputProps,
@@ -153,15 +139,17 @@ const SearchBox = ({
                   {...getInputProps({
                     name,
                     placeholder,
-                    ...register(name),
+                    ref: inputRef,
+                    ...inputProps,
                     onKeyDown: (event) => {
-                      const selectingOptionUsingKeyboard =
-                        event.key === 'Enter' && highlightedIndex !== null
-                      if (selectingOptionUsingKeyboard) {
+                      if (event.key === 'Enter') {
                         // when selecting option using keyboard
                         // downshift prevents form submission which is used to submit analytics event
                         // detect such event and separately send analytics event
                         sendSearchEventToAnalytics(inputValue)
+                        if (highlightedIndex === null) {
+                          handleSubmit(inputValue)
+                        }
                       }
 
                       const isCharacterKey = event.key.length === 1
@@ -182,9 +170,7 @@ const SearchBox = ({
                       return (
                         <SearchItem
                           key={item.id}
-                          onClick={() =>
-                            sendSearchEventToAnalytics(getValues(name))
-                          }
+                          onClick={() => sendSearchEventToAnalytics(inputValue)}
                           {...{
                             item,
                             index,
@@ -200,7 +186,7 @@ const SearchBox = ({
             </div>
           )}
         </Downshift>
-      </form>
+      </div>
     </div>
   )
 }
