@@ -64,7 +64,7 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
   
 * Execute `npm run seq-cli db:seed:all` to seed the database with a sample dataset
 
-* Download a database GUI like [DBeaver](https://dbeaver.io/download/) and connect to the local MySQL server
+* Download a database GUI like [DBeaver](https://dbeaver.io/download/) and connect to the local MySQL server at `127.0.0.1:3006`, using the username and password in `.env`
 
 * Check that your Database ER Diagram looks like this:
   
