@@ -36,6 +36,11 @@ export class AuthService {
     this.jwtSecret = jwtSecret
   }
 
+  /**
+   * Verify JSON Web Token (JWT) and get user Id from token
+   * @param token the JWT containing user
+   * @returns userId if it is verified and found, else null
+   */
   getUserIdFromToken = async (token: string): Promise<string | null> => {
     if (!token) return null
 
@@ -54,6 +59,11 @@ export class AuthService {
     })
   }
 
+  /**
+   * Get the user from userId only if user has validated email
+   * @param userId userId of the user to retrieve
+   * @returns user with the userId
+   */
   getOfficerUser = async (userId: string): Promise<User> => {
     if (!userId) {
       throw new Error('User must be signed in')
@@ -68,6 +78,11 @@ export class AuthService {
     return user
   }
 
+  /**
+   * Get the user from username only if user has validated email
+   * @param username username of the user to retrieve
+   * @returns user with the username
+   */
   checkIfWhitelistedOfficer = async (username: string): Promise<User> => {
     if (!username) {
       throw new Error('username must be provided')
@@ -85,6 +100,12 @@ export class AuthService {
     }
   }
 
+  /**
+   * Check if a user has permission to answer a post
+   * @param userId of user
+   * @param postId of post
+   * @returns true if user has permission to answer post
+   */
   hasPermissionToAnswer = async (
     userId: string,
     postId: string,
@@ -104,6 +125,12 @@ export class AuthService {
     })
   }
 
+  /**
+   * Get all tags that user does not have permission to add
+   * @param userId of user
+   * @param tagList list of tags
+   * @returns subset of tagList that user is not allowed to add
+   */
   getDisallowedTagsForUser = async (
     userId: string,
     tagList: Tag[],
@@ -119,6 +146,12 @@ export class AuthService {
     })
   }
 
+  /**
+   * Check if a user is able to view the post
+   * @param post post to be viewed
+   * @param token JWT of the user
+   * @returns true if user can view post
+   */
   verifyUserCanViewPost = async (
     post: PostWithRelations,
     token: string,
@@ -144,5 +177,10 @@ export class AuthService {
     }
   }
 
+  /**
+   * Check if user has an validated email
+   * @param email email of user
+   * @returns true if user has validated email
+   */
   isOfficerEmail = (email: string): boolean => this.emailValidator.match(email)
 }
