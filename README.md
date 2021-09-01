@@ -60,16 +60,11 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 
 * Spin up MySQL by running `docker-compose up`
 
-* Download a database GUI like [DBeaver](https://dbeaver.io/download/) and connect to the local MySQL server
-
-  Create database by executing the following in `DBeaver`:
-  ```sql
-  CREATE DATABASE askgov;
-  ```
-
 * Execute `npm run seq-cli db:migrate` to create the tables
   
 * Execute `npm run seq-cli db:seed:all` to seed the database with a sample dataset
+
+* Download a database GUI like [DBeaver](https://dbeaver.io/download/) and connect to the local MySQL server
 
 * Check that your Database ER Diagram looks like this:
   
