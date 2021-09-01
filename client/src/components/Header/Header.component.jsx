@@ -1,7 +1,7 @@
 import { Flex, Image, Stack, Text } from '@chakra-ui/react'
 import { useQuery } from 'react-query'
 import { Link, matchPath, useLocation } from 'react-router-dom'
-import { ReactComponent as Logo } from '../../assets/LogoAlpha.svg'
+import { ReactComponent as Logo } from '../../assets/logo-white-alpha.svg'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
@@ -57,7 +57,7 @@ const Header = () => {
       display="flex"
       justify="space-between"
       align="center"
-      px="48px"
+      px="32px"
       py="15px"
       height={{ base: '122px', md: '74px' }}
     >
