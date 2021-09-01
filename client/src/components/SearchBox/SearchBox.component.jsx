@@ -107,11 +107,21 @@ const SearchBox = ({
     keys: ['title', 'description'],
   })
 
+  const stateReducer = (_state, changes) => {
+    return [
+      Downshift.stateChangeTypes.blurInput,
+      Downshift.stateChangeTypes.mouseUp,
+    ].includes(changes.type)
+      ? { isOpen: false } // no-changes
+      : changes
+  }
+
   return (
     <div className="search-container">
       <form className="search-form" onSubmit={handleSubmitHook(onSubmit)}>
         <Downshift
           onChange={(selection) => history.push(`/questions/${selection.id}`)}
+          stateReducer={stateReducer}
           itemToString={itemToString}
         >
           {({
