@@ -13,7 +13,14 @@ import {
 } from '../../services/PostService'
 import './SearchBox.styles.scss'
 
-const SearchBox = ({ placeholder, value, handleSubmit }) => {
+const SearchBox = ({
+  placeholder,
+  value,
+  inputRef,
+  handleSubmit = undefined,
+  handleAbandon = (_inputValue) => {},
+  showSearchIcon = true,
+}) => {
   /*
   Use LIST_POSTS_FOR_SEARCH_QUERY_KEY instead of LIST_POSTS_QUERY_KEY
   Because the queries using LIST_POST_QUERY_KEY may be filtered by tags.
@@ -77,13 +84,21 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
   placeholder = placeholder ?? 'How can we help you?'
   value = value ?? ''
   if (!handleSubmit) {
-    handleSubmit = (data) => {
-      sendSearchEventToAnalytics(data[name])
+    handleSubmit = (data) =>
       history.push(
         `/questions?search=${data[name]}` +
           (agencyShortName ? `&agency=${agencyShortName}` : ''),
       )
-    }
+  }
+
+  const onSubmit = (data) => {
+    sendSearchEventToAnalytics(data[name])
+    handleSubmit(data)
+  }
+
+  const onAbandon = (inputValue) => {
+    sendAbandonedSearchEventToAnalytics(inputValue)
+    handleAbandon(inputValue)
   }
 
   const itemToString = (item) => (item ? item.title : '')
@@ -94,7 +109,7 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
 
   return (
     <div className="search-container">
-      <form className="search-form" onSubmit={handleSubmitHook(handleSubmit)}>
+      <form className="search-form" onSubmit={handleSubmitHook(onSubmit)}>
         <Downshift
           onChange={(selection) => history.push(`/questions/${selection.id}`)}
           itemToString={itemToString}
@@ -109,20 +124,22 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
           }) => (
             <div
               className="search-autocomplete"
-              onBlur={() => sendAbandonedSearchEventToAnalytics(inputValue)}
+              onBlur={() => onAbandon(inputValue)}
             >
               <InputGroup className="search-box">
-                <InputLeftElement
-                  children={<BiSearch size="24" color="secondary.500" />}
-                  h="100%"
-                  w="24px"
-                  ml="19px"
-                  mr="20px"
-                />
+                {showSearchIcon ? (
+                  <InputLeftElement
+                    children={<BiSearch size="24" color="secondary.500" />}
+                    h="100%"
+                    w="24px"
+                    ml="19px"
+                    mr="20px"
+                  />
+                ) : null}
                 <Input
-                  variant="unstyled"
+                  variant={showSearchIcon ? 'unstyled' : undefined}
                   className="search-input"
-                  sx={{ paddingInlineStart: '63px' }}
+                  sx={{ paddingInlineStart: showSearchIcon ? '63px' : '16px' }}
                   {...getInputProps({
                     name,
                     placeholder,
