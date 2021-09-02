@@ -80,6 +80,7 @@ export const EnquiryModal = ({
                 placeholder=""
                 value=""
                 showSearchIcon={false}
+                searchOnEnter={false}
                 isInvalid={formErrors.questionTitle}
                 inputRef={ref}
                 {...questionTitleProps}

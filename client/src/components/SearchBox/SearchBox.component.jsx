@@ -18,6 +18,7 @@ const SearchBox = ({
   inputRef,
   handleSubmit = undefined,
   handleAbandon = (_inputValue) => {},
+  searchOnEnter = true,
   showSearchIcon = true,
   ...inputProps
 }) => {
@@ -142,12 +143,17 @@ const SearchBox = ({
                     ref: inputRef,
                     ...inputProps,
                     onKeyDown: (event) => {
+                      // when selecting option using keyboard
                       if (event.key === 'Enter') {
-                        // when selecting option using keyboard
-                        // downshift prevents form submission which is used to submit analytics event
-                        // detect such event and separately send analytics event
-                        sendSearchEventToAnalytics(inputValue)
-                        if (highlightedIndex === null) {
+                        if (
+                          highlightedIndex !== null ||
+                          (highlightedIndex === null && searchOnEnter)
+                        ) {
+                          sendSearchEventToAnalytics(inputValue)
+                        }
+                        if (highlightedIndex === null && searchOnEnter) {
+                          // downshift prevents form submission which is used to submit analytics event
+                          // detect such event and explicitly invoke handler
                           handleSubmit(inputValue)
                         }
                       }
