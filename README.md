@@ -144,10 +144,13 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 - `GET /agencies?<longname, shortname>`
 - `GET /agencies/:agencyId`
 
+#### Auth
+- `GET /auth`
+- `GET /auth/verifyotp`
+- `GET /auth/sendotp`
+
 #### Users
 
-- `GET /auth`
-- `POST /auth`
 - `POST /users/:id`
 - `GET /users/:id`
 

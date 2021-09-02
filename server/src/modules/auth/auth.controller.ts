@@ -36,7 +36,13 @@ export class AuthController {
     this.userService = userService
   }
 
-  loadUser: ControllerHandler<unknown, UserType | null | Message> = async (
+  /**
+   * Fetch logged in user details
+   * @returns 200 with user details
+   * @returns 401 if user not signed in
+   * @returns 500 if database error
+   */
+  loadUser: ControllerHandler<undefined, UserType | null | Message> = async (
     req,
     res,
   ) => {
@@ -47,7 +53,6 @@ export class AuthController {
     }
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const user = await this.userService.loadUser(req.user?.id)
       return res.status(StatusCodes.OK).json(user)
     } catch (error) {
@@ -65,10 +70,20 @@ export class AuthController {
     }
   }
 
-  handleSendLoginOtp = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response> => {
+  /**
+   * Send login otp to specified email
+   * @body email email of the user and to send the OTP to
+   * @returns 200 if OTP sent
+   * @returns 400 if email is invalid
+   * @returns 400 if email does not belong to a user
+   * @returns 500 if OTP failed to send
+   */
+  handleSendLoginOtp: ControllerHandler<
+    undefined,
+    Message,
+    { email: string },
+    undefined
+  > = async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res
@@ -115,10 +130,22 @@ export class AuthController {
     return res.sendStatus(StatusCodes.OK)
   }
 
-  handleVerifyLoginOtp = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response> => {
+  /**
+   * Verify jwt received by the user and set the JWT
+   * @body email email of user
+   * @body otp otp of user
+   * @returns 200 with JWT if successful login
+   * @returns 400 if validation of body fails
+   * @returns 401 if no otp was sent for user
+   * @returns 401 if wrong otp
+   * @returns 500 if database error
+   */
+  handleVerifyLoginOtp: ControllerHandler<
+    undefined,
+    { token?: string; newParticipant: boolean; displayname?: string } | Message,
+    { email: string; otp: string },
+    undefined
+  > = async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res
