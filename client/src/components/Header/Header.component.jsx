@@ -1,7 +1,7 @@
-import { Box, Flex, Image, Stack, Text } from '@chakra-ui/react'
+import { Flex, Image, Stack, Text } from '@chakra-ui/react'
 import { useQuery } from 'react-query'
 import { Link, matchPath, useLocation } from 'react-router-dom'
-import { ReactComponent as Logo } from '../../assets/LogoAlpha.svg'
+import { ReactComponent as Logo } from '../../assets/logo-white-alpha.svg'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
@@ -57,9 +57,9 @@ const Header = () => {
       display="flex"
       justify="space-between"
       align="center"
-      px="48px"
-      py="15px"
-      height={{ base: '122px', md: '74px' }}
+      px={8}
+      py={4}
+      shrink={0}
     >
       <Link to={agency ? `/agency/${agency.shortname}` : '/'}>
         <Stack
@@ -67,16 +67,13 @@ const Header = () => {
           textDecor="none"
           align={{ base: 'flex-start', md: 'center' }}
           position="relative"
-          top="8px"
         >
-          <Box pr="15px" mb={{ base: '0px', md: '6px' }}>
-            <Logo />
-          </Box>
+          <Logo />
           {agency ? (
             <>
               <Text
                 d={{ base: 'none', md: 'block' }}
-                pr={{ base: 0, md: 4 }}
+                px={{ base: 0, md: 2 }}
                 textStyle="h4"
                 fontWeight={300}
                 color="white"
