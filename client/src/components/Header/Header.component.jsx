@@ -57,8 +57,8 @@ const Header = () => {
       display="flex"
       justify="space-between"
       align="center"
-      px="32px"
-      height={{ base: '122px', md: '74px' }}
+      px={8}
+      py={4}
       shrink={0}
     >
       <Link to={agency ? `/agency/${agency.shortname}` : '/'}>
