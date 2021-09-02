@@ -66,7 +66,7 @@ const Post = () => {
   return isLoading ? (
     <Spinner type="page" width="75px" height="200px" />
   ) : (
-    <>
+    <Flex direction="column" height="100%">
       <PageTitle title={`${post.title} - AskGov`} />
       <div className="post-page">
         <Flex pb="14px" align="center">
@@ -124,6 +124,7 @@ const Post = () => {
           <AnswerSection post={post} />
         </div>
       </div>
+      <Spacer />
       <CitizenRequest
         agency={
           agency
@@ -137,7 +138,7 @@ const Post = () => {
               }
         }
       />
-    </>
+    </Flex>
   )
 }
 
