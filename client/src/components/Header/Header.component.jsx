@@ -58,8 +58,8 @@ const Header = () => {
       justify="space-between"
       align="center"
       px="32px"
-      py="15px"
       height={{ base: '122px', md: '74px' }}
+      shrink={0}
     >
       <Link to={agency ? `/agency/${agency.shortname}` : '/'}>
         <Stack
@@ -67,7 +67,6 @@ const Header = () => {
           textDecor="none"
           align={{ base: 'flex-start', md: 'center' }}
           position="relative"
-          top="8px"
         >
           <Logo />
           {agency ? (
