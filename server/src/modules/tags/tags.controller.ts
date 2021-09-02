@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { createLogger } from '../../bootstrap/logging'
+import { Tag } from '../../models'
+import { Message } from '../../types/message-type'
 import { ControllerHandler } from '../../types/response-handler'
 import { AuthService } from '../auth/auth.service'
 import { TagsService } from './tags.service'
@@ -20,15 +22,24 @@ export class TagsController {
     this.authService = authService
     this.tagsService = tagsService
   }
-  getTags = async (_req: Request, res: Response): Promise<Response> => {
+
+  /**
+   * List all tags in the descending order of number of posts with them
+   * @returns 200 with tags
+   * @returns 500 if database error
+   */
+  listTags: ControllerHandler<undefined, Tag[] | Message> = async (
+    req,
+    res,
+  ) => {
     try {
-      const data = await this.tagsService.retrieveAll()
+      const data = await this.tagsService.listTags()
       return res.status(StatusCodes.OK).json(data)
     } catch (error) {
       logger.error({
         message: 'Error while retrieving all tags',
         meta: {
-          function: 'getTags',
+          function: 'listTags',
         },
         error,
       })
@@ -38,7 +49,16 @@ export class TagsController {
     }
   }
 
-  getTagsUsedByUser: ControllerHandler = async (req, res) => {
+  /**
+   * Lists all tags that user is allowed to tag a post with
+   * @returns 200 with tags
+   * @returns 401 if user is not logged in
+   * @returns 500 if database error
+   */
+  listTagsUsedByUser: ControllerHandler<undefined, Tag[] | Message> = async (
+    req,
+    res,
+  ) => {
     const userId = await this.authService.getUserIdFromToken(
       req.header('x-auth-token') ?? '',
     )
@@ -49,24 +69,62 @@ export class TagsController {
     }
 
     try {
-      const result = await this.tagsService.retrieveUsedByUser(userId)
+      const result = await this.tagsService.listTagsUsedByUser(userId)
       return res.json(result)
-    } catch (err) {
-      if (err instanceof Error) {
-        return res
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ message: err.message })
-      } else {
-        return res
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ message: 'Server Error' })
-      }
+    } catch (error) {
+      logger.error({
+        message: 'Error while retrieving tags used by user',
+        meta: {
+          function: 'listTagsUsedByUser',
+        },
+        error,
+      })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
   }
 
-  getSingleTag = async (req: Request, res: Response): Promise<Response> => {
+  /**
+   * List all tags that have appeared in a post with the agency tag
+   * @param agencyId id of agency
+   * @returns 200 with list of tags
+   * @returns 400 with database error
+   */
+  listTagsUsedByAgency: ControllerHandler<
+    { agencyId: string },
+    Tag[] | Message
+  > = async (req, res) => {
+    const { agencyId } = req.params
     try {
-      const data = await this.tagsService.retrieveOne(req.params.tagname)
+      const result = await this.tagsService.listTagsUsedByAgency(agencyId)
+      return res.json(result)
+    } catch (error) {
+      logger.error({
+        message: 'Error while retrieving tags used by agency',
+        meta: {
+          function: 'listTagsUsedByAgency',
+        },
+        error,
+      })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
+    }
+  }
+
+  /**
+   * Get a single tag by name
+   * @param tagname name of tag
+   * @returns 200 with tag
+   * @returns 500 if database error
+   */
+  getSingleTag: ControllerHandler<{ tagname: string }, Tag | Message> = async (
+    req,
+    res,
+  ) => {
+    try {
+      const data = await this.tagsService.getSingleTag(req.params.tagname)
       return res.status(StatusCodes.OK).json(data)
     } catch (error) {
       logger.error({
@@ -79,27 +137,6 @@ export class TagsController {
       return res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: 'Server Error' })
-    }
-  }
-
-  getTagsUsedByAgency: ControllerHandler<{ agencyId: string }> = async (
-    req,
-    res,
-  ) => {
-    const { agencyId } = req.params
-    try {
-      const result = await this.tagsService.retrieveUsedByAgency(agencyId)
-      return res.json(result)
-    } catch (err) {
-      if (err instanceof Error) {
-        return res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({ message: err.message })
-      } else {
-        return res
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ message: 'Server Error' })
-      }
     }
   }
 }
