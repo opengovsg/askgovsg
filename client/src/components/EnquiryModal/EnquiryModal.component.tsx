@@ -23,6 +23,7 @@ import { Agency } from '../../services/AgencyService'
 import { BiErrorCircle } from 'react-icons/bi'
 import { Enquiry } from '../../services/MailService'
 import ReCAPTCHA from 'react-google-recaptcha'
+import SearchBox from '../SearchBox/SearchBox.component'
 interface EnquiryModalProps extends Pick<ModalProps, 'isOpen' | 'onClose'> {
   onConfirm: (enquiry: Enquiry, captchaResponse: string) => Promise<void>
   agency: Agency
@@ -49,6 +50,9 @@ export const EnquiryModal = ({
     }
   }
 
+  const { ref, ...questionTitleProps } = register('questionTitle', {
+    required: true,
+  })
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -72,13 +76,16 @@ export const EnquiryModal = ({
                 Question Title
               </Text>
               <Box h={3} />
-              <Input
+              <SearchBox
                 focusBorderColor="primary.500"
                 errorBorderColor="error.500"
+                placeholder=""
+                value=""
+                showSearchIcon={false}
+                searchOnEnter={false}
                 isInvalid={formErrors.questionTitle}
-                {...register('questionTitle', {
-                  required: true,
-                })}
+                inputRef={ref}
+                {...questionTitleProps}
               />
               {formErrors.questionTitle && errorLabel('This field is required')}
               <Box h={4} />
