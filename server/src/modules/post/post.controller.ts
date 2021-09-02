@@ -1,4 +1,3 @@
-import { Request, Response, RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 import { SortType } from '../../types/sort-type'
 import { createValidationErrMessage } from '../../util/validation-error'
@@ -31,14 +30,18 @@ export class PostController {
 
   /**
    * Lists all post
+   * @query sort Sort by popularity or recent
+   * @query tags Tags to filter by
+   * @query size Number of posts to return
+   * @query page If size is given, specify which page to return
    * @return 200 with posts and totalItem for pagination
    * @return 422 if invalid tags are used in request
    * @return 500 when database error occurs
    */
   listPosts: ControllerHandler<
-    unknown,
+    undefined,
     { posts: Post[]; totalItems: number } | Message,
-    unknown,
+    undefined,
     {
       page?: number
       size?: number
@@ -77,6 +80,11 @@ export class PostController {
 
   /**
    * Lists all post answerable by the agency user
+   * @query sort Sort by popularity or recent
+   * @query withAnswers If false, show only posts without answers
+   * @query tags Tags to filter by
+   * @query size Number of posts to return
+   * @query page If size is given, specify which page to return
    * @return 200 with posts and totalItem for pagination
    * @return 400 if `withAnswers`, `sort` or `tags` query is not given
    * @return 401 if userID is invalid
@@ -84,9 +92,9 @@ export class PostController {
    * @return 500 when database error occurs
    */
   listAnswerablePosts: ControllerHandler<
-    Record<string, never>,
+    undefined,
     { posts: Post[]; totalItems: number } | Message,
-    Record<string, never>,
+    undefined,
     {
       withAnswers: boolean
       sort?: string
@@ -155,7 +163,10 @@ export class PostController {
    * @return 403 if user does not have permission to access post
    * @return 500 for database error
    */
-  getSinglePost = async (req: Request, res: Response): Promise<Response> => {
+  getSinglePost: ControllerHandler<{ id: string }, Post | Message> = async (
+    req,
+    res,
+  ) => {
     let post
     try {
       post = await this.postService.getSinglePost(req.params.id)
@@ -195,14 +206,25 @@ export class PostController {
 
   /**
    * Create a new post
-   * @param newPost Post to be created
+   * @body title title of post
+   * @body tagname tags of post
+   * @body description description of post
    * @return 200 if post is created
    * @return 400 if title and description is too short or long
    * @return 401 if user is not signed in
    * @return 403 if user does not have permission to add some of the tags
    * @return 500 if database error
    */
-  createPost = async (req: Request, res: Response): Promise<Response> => {
+  createPost: ControllerHandler<
+    undefined,
+    { data: string } | Message,
+    {
+      title: string
+      tagname: string[]
+      description: string
+    },
+    undefined
+  > = async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res.status(StatusCodes.BAD_REQUEST).json(errors.array()[0].msg)
@@ -260,7 +282,7 @@ export class PostController {
    * @return 403 if user does not have permission to delete post
    * @return 500 if database error
    */
-  deletePost = async (req: Request, res: Response): Promise<Response> => {
+  deletePost: ControllerHandler<{ id: string }, Message> = async (req, res) => {
     const postId = req.params.id
     try {
       const userId = await this.authService.getUserIdFromToken(
@@ -281,7 +303,7 @@ export class PostController {
           .json({ message: 'You do not have permission to delete this post.' })
       }
       await this.postService.deletePost(postId)
-      return res.sendStatus(StatusCodes.OK)
+      return res.status(StatusCodes.OK).send({ message: 'OK' })
     } catch (error) {
       logger.error({
         message: 'Error while deleting post',
@@ -298,18 +320,19 @@ export class PostController {
 
   /**
    * Update a post
-   * @param Post Post to be updated
+   * @param id id of post to update
+   * @body Post Post to be updated
    * @return 200 if successful
    * @return 400 if title and description is too short or long
    * @return 401 if user is not logged in
    * @return 403 if user does not have permission to delete post
    * @return 500 if database error
    */
-  updatePost: RequestHandler<
+  updatePost: ControllerHandler<
     { id: string },
     Message,
     UpdatePostRequestDto,
-    unknown
+    undefined
   > = async (req, res) => {
     const postId = req.params.id
     try {
@@ -342,7 +365,7 @@ export class PostController {
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: 'Something went wrong, please try again.' })
     }
-    const errors = validationResult(req as Request)
+    const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res
         .status(StatusCodes.BAD_REQUEST)
