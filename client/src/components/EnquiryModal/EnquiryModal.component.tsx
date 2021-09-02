@@ -77,6 +77,8 @@ export const EnquiryModal = ({
               </Text>
               <Box h={3} />
               <SearchBox
+                focusBorderColor="primary.500"
+                errorBorderColor="error.500"
                 placeholder=""
                 value=""
                 showSearchIcon={false}
