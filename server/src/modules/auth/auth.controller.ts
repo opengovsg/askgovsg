@@ -176,13 +176,13 @@ export class AuthController {
       let jwt
       let displayname
       if (user) {
-        jwt = this.userService.login(user.id)
+        jwt = this.authService.createToken(user.id)
         displayname = user.displayname
       } else {
         if (this.authService.isOfficerEmail(email)) {
           const officer = await this.userService.createOfficer(email)
           displayname = officer.displayname
-          jwt = this.userService.login(officer.id)
+          jwt = this.authService.createToken(officer.id)
         }
       }
 

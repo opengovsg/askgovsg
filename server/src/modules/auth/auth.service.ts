@@ -1,13 +1,16 @@
 import jwt from 'jsonwebtoken'
-import { PostStatus } from '../../types/post-status'
+import minimatch from 'minimatch'
 
+import { PostStatus } from '../../types/post-status'
 import {
   User as UserModel,
   Permission as PermissionModel,
   PostTag as PostTagModel,
 } from '../../bootstrap/sequelize'
-import minimatch from 'minimatch'
 import { Permission, Post, PostTag, Tag, User } from '../../models'
+import { createLogger } from '../../bootstrap/logging'
+
+const logger = createLogger(module)
 
 export type PermissionWithRelations = Permission & {
   tagId: string
@@ -34,6 +37,26 @@ export class AuthService {
   }) {
     this.emailValidator = emailValidator
     this.jwtSecret = jwtSecret
+  }
+
+  createToken = (userId: string): string => {
+    const payload = {
+      user: {
+        id: userId,
+      },
+    }
+    try {
+      return jwt.sign(payload, this.jwtSecret, { expiresIn: 86400 })
+    } catch (error) {
+      logger.error({
+        message: 'Error while signing JWT',
+        meta: {
+          function: 'createToken',
+        },
+        error,
+      })
+      throw error
+    }
   }
 
   /**
