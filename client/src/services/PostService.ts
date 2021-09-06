@@ -11,10 +11,10 @@ const POST_API_BASE = '/posts'
 
 export const getPostById = async (
   id: number,
-  noOfRelatedPosts?: number,
+  relatedPosts?: number,
 ): Promise<GetSinglePostDto> => {
   return ApiClient.get<GetSinglePostDto>(`${POST_API_BASE}/${id}`, {
-    params: { noOfRelatedPosts },
+    params: { relatedPosts },
   }).then(({ data }) => data)
 }
 export const GET_POST_BY_ID_QUERY_KEY = 'getPostById'

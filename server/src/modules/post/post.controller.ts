@@ -172,13 +172,13 @@ export class PostController {
     { id: string },
     PostWithUserTagRelations | PostWithUserTagRelatedPostRelations | Message,
     undefined,
-    { noOfRelatedPosts?: string }
+    { relatedPosts?: string }
   > = async (req, res) => {
     let post
     try {
       post = await this.postService.getSinglePost(
         req.params.id,
-        req.query.noOfRelatedPosts,
+        req.query.relatedPosts,
       )
     } catch (error) {
       logger.error({

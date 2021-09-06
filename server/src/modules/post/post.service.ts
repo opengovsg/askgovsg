@@ -386,7 +386,7 @@ export class PostService {
   /**
    * Get a single post and all the tags and users associated with it
    * @param postId Id of the post
-   * @param noOfRelatedPosts
+   * @param noOfRelatedPosts number of related posts to show
    */
   getSinglePost = async (
     postId: string,
