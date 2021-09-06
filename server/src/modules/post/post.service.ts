@@ -388,8 +388,8 @@ export class PostService {
    * @param noOfRelatedPosts number of related posts to show
    */
   getSinglePost = async (
-    postId: string,
-    noOfRelatedPosts = '0',
+    postId: number,
+    noOfRelatedPosts = 0,
   ): Promise<
     PostWithUserTagRelations | PostWithUserTagRelatedPostRelations
   > => {
@@ -427,11 +427,8 @@ export class PostService {
         ],
       ],
     })) as PostWithUserTagRelatedPostRelations
-    if (parseInt(noOfRelatedPosts) > 0) {
-      const relatedPosts = await this.getRelatedPosts(
-        post,
-        parseInt(noOfRelatedPosts),
-      )
+    if (noOfRelatedPosts > 0) {
+      const relatedPosts = await this.getRelatedPosts(post, noOfRelatedPosts)
       post.setDataValue('relatedPosts', relatedPosts)
     }
     if (!post) {

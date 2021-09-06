@@ -169,11 +169,15 @@ export class PostController {
    * @return 500 for database error
    */
   getSinglePost: ControllerHandler<
-    { id: string },
+    { id: number },
     PostWithUserTagRelations | PostWithUserTagRelatedPostRelations | Message,
     undefined,
-    { relatedPosts?: string }
+    { relatedPosts?: number }
   > = async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(StatusCodes.BAD_REQUEST).json(errors.array()[0].msg)
+    }
     let post
     try {
       post = await this.postService.getSinglePost(
