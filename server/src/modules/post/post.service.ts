@@ -124,9 +124,11 @@ export class PostService {
         [Sequelize.col('relatedTags'), 'DESC'],
         ['views', 'DESC'],
       ],
+      subQuery: false,
+      limit: numberOfRelatedPosts,
     })
 
-    return relatedPosts.slice(0, numberOfRelatedPosts)
+    return relatedPosts
   }
 
   /**
