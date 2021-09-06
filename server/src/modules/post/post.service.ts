@@ -105,7 +105,6 @@ export class PostService {
           [Op.ne]: post.id,
         },
       },
-      raw: true,
       include: [
         {
           model: this.Tag,
