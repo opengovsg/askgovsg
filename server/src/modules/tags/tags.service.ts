@@ -8,7 +8,7 @@ import {
 import { PostStatus } from '../../types/post-status'
 import { countBy, uniqBy } from 'lodash'
 import { Tag } from '../../models'
-import { PostWithRelations } from '../post/post.service'
+import { PostWithUserTagRelations } from '../post/post.service'
 import { TagType } from '../../types/tag-type'
 
 export class TagsService {
@@ -85,7 +85,7 @@ export class TagsService {
     const posts = (await PostModel.findAll({
       where: { id: postIds },
       include: TagModel,
-    })) as PostWithRelations[]
+    })) as PostWithUserTagRelations[]
 
     const existingTopicTags = posts.reduce<Tag[]>(
       (acc, post) => acc.concat(post.tags),
@@ -142,7 +142,7 @@ export class TagsService {
     const posts = (await PostModel.findAll({
       where: { id: postIds },
       include: TagModel,
-    })) as PostWithRelations[]
+    })) as PostWithUserTagRelations[]
 
     const combinedTags = posts.reduce<Tag[]>(
       (acc, post) => acc.concat(post.tags),

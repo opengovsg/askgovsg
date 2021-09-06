@@ -2,7 +2,11 @@ import { validationResult } from 'express-validator'
 import { SortType } from '../../types/sort-type'
 import { createValidationErrMessage } from '../../util/validation-error'
 import { AuthService } from '../auth/auth.service'
-import { PostService } from './post.service'
+import {
+  PostService,
+  PostWithUserTagRelatedPostRelations,
+  PostWithUserTagRelations,
+} from './post.service'
 
 import { Message } from '../../types/message-type'
 import { UpdatePostRequestDto } from '../../types/post-type'
@@ -159,17 +163,23 @@ export class PostController {
   /**
    * Get a single post and all the tags and users associated with it
    * @param postId Id of the post
+   * @query relatedPosts if true, return related posts
    * @return 200 with post
    * @return 403 if user does not have permission to access post
    * @return 500 for database error
    */
-  getSinglePost: ControllerHandler<{ id: string }, Post | Message> = async (
-    req,
-    res,
-  ) => {
+  getSinglePost: ControllerHandler<
+    { id: string },
+    PostWithUserTagRelations | PostWithUserTagRelatedPostRelations | Message,
+    undefined,
+    { noOfRelatedPosts?: string }
+  > = async (req, res) => {
     let post
     try {
-      post = await this.postService.getSinglePost(req.params.id)
+      post = await this.postService.getSinglePost(
+        req.params.id,
+        req.query.noOfRelatedPosts,
+      )
     } catch (error) {
       logger.error({
         message: 'Error while retrieving single post',
