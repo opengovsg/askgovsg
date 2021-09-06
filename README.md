@@ -62,7 +62,7 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
   npm run seq-cli db:seed:all
   ```
 
-* Optional: Use Dbeaver to connect to the local MySQL server at `127.0.0.1:3006`, using the username and password in `.env`
+* Optional: Use Dbeaver to connect to the local MySQL server at `127.0.0.1:3306`, using the username and password in `.env`
 
 * Check that your Database ER Diagram looks like this:
   
