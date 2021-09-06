@@ -121,7 +121,7 @@ const SearchBox = ({
           }) => (
             <div
               className="search-autocomplete"
-              onBlur={() => onAbandon(inputValue)}
+              onBlur={() => searchOnEnter && onAbandon(inputValue)}
             >
               <InputGroup className="search-box">
                 {showSearchIcon ? (
