@@ -21,7 +21,11 @@ export class TagsService {
     'postsCount',
   ]
 
-  retrieveAll = async (): Promise<Tag[]> => {
+  /**
+   * List all tags in the descending order of number of posts with them
+   * @returns list of tags
+   */
+  listTags = async (): Promise<Tag[]> => {
     const tags = await TagModel.findAll({
       attributes: [
         'id',
@@ -36,63 +40,14 @@ export class TagsService {
       order: [[Sequelize.literal('postsCount'), 'DESC']],
     })
     if (!tags) {
-      return Array<Tag>()
+      return []
     } else {
       return tags
     }
   }
 
-  retrieveUsedByAgency = async (agencyId: string): Promise<Tag[]> => {
-    const agency = await AgencyModel.findByPk(agencyId)
-    // error case if agency is not found
-    if (!agency) return []
-
-    const postsWithAgencyTag = await PostModel.findAll({
-      where: {
-        // TODO: clarify whether we need to get Posts that have been deleted/archived
-        status: PostStatus.PUBLIC,
-      },
-      include: {
-        model: TagModel,
-        where: { tagname: agency.shortname },
-      },
-    })
-
-    const postIds = postsWithAgencyTag.map((post) => post.id)
-
-    const posts = (await PostModel.findAll({
-      where: { id: postIds },
-      include: TagModel,
-    })) as PostWithRelations[]
-
-    const combinedTags = posts.reduce<Tag[]>(
-      (acc, post) => acc.concat(post.tags),
-      [],
-    )
-
-    return uniqBy<Tag>(combinedTags, (tag: Tag) => tag.id)
-  }
-
-  retrieveOne = async (tagName: string): Promise<Tag> => {
-    const tag = await TagModel.findOne({
-      where: { tagname: tagName },
-      attributes: [
-        'id',
-        'tagname',
-        'description',
-        'createdAt',
-        this.postsCountLiteral,
-      ],
-    })
-    if (!tag) {
-      throw new Error('Tag not found')
-    } else {
-      return tag
-    }
-  }
-
   /**
-   * Gets the list of tags that user is allowed to tag a post with in the following order:
+   * Lists all tags that user is allowed to tag a post with in the following order:
    * 1) Agency tags that user is allowed to add
    * 2) Topic tags that user is allowed to add in descending order
    *    of number of occurrences in existing posts
@@ -100,7 +55,7 @@ export class TagsService {
    * @param userId id of the user
    * @returns list of tags
    */
-  retrieveUsedByUser = async (userId: string): Promise<Tag[]> => {
+  listTagsUsedByUser = async (userId: string): Promise<Tag[]> => {
     const userAgencyTags = await TagModel.findAll({
       where: {
         tagType: TagType.AGENCY,
@@ -157,5 +112,66 @@ export class TagsService {
     const combinedTags = [...userAgencyTags, ...orderedTopicTags]
 
     return combinedTags
+  }
+
+  /**
+   * List all tags that have appeared in a post with the agency tag
+   * If there is no posts with both the agency tag and topic tag,
+   * topic tag will not be shown even if the tag belongs to the agency.
+   * @param agencyId id of agency
+   * @returns list of tags
+   */
+  listTagsUsedByAgency = async (agencyId: string): Promise<Tag[]> => {
+    const agency = await AgencyModel.findByPk(agencyId)
+    // If agency is not found, there are no tags used by it
+    if (!agency) return []
+
+    const postsWithAgencyTag = await PostModel.findAll({
+      where: {
+        // TODO: clarify whether we need to get Posts that have been deleted/archived
+        status: PostStatus.PUBLIC,
+      },
+      include: {
+        model: TagModel,
+        where: { tagname: agency.shortname },
+      },
+    })
+
+    const postIds = postsWithAgencyTag.map((post) => post.id)
+
+    const posts = (await PostModel.findAll({
+      where: { id: postIds },
+      include: TagModel,
+    })) as PostWithRelations[]
+
+    const combinedTags = posts.reduce<Tag[]>(
+      (acc, post) => acc.concat(post.tags),
+      [],
+    )
+
+    return uniqBy<Tag>(combinedTags, (tag: Tag) => tag.id)
+  }
+
+  /**
+   * Get a single tag by name
+   * @param tagName name of tag
+   * @returns tag
+   */
+  getSingleTag = async (tagName: string): Promise<Tag> => {
+    const tag = await TagModel.findOne({
+      where: { tagname: tagName },
+      attributes: [
+        'id',
+        'tagname',
+        'description',
+        'createdAt',
+        this.postsCountLiteral,
+      ],
+    })
+    if (!tag) {
+      throw new Error('Tag not found')
+    } else {
+      return tag
+    }
   }
 }

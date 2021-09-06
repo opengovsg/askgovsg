@@ -3,7 +3,6 @@ import * as FullStory from '@fullstory/browser'
 import Downshift from 'downshift'
 import Fuse from 'fuse.js'
 import { BiSearch } from 'react-icons/bi'
-import { useForm } from 'react-hook-form'
 import { useQuery } from 'react-query'
 import { Link, useHistory, useParams } from 'react-router-dom'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
@@ -13,7 +12,16 @@ import {
 } from '../../services/PostService'
 import './SearchBox.styles.scss'
 
-const SearchBox = ({ placeholder, value, handleSubmit }) => {
+const SearchBox = ({
+  placeholder,
+  value,
+  inputRef,
+  handleSubmit = undefined,
+  handleAbandon = (_inputValue) => {},
+  searchOnEnter = true,
+  showSearchIcon = true,
+  ...inputProps
+}) => {
   /*
   Use LIST_POSTS_FOR_SEARCH_QUERY_KEY instead of LIST_POSTS_QUERY_KEY
   Because the queries using LIST_POST_QUERY_KEY may be filtered by tags.
@@ -64,23 +72,19 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
     googleAnalytics.setIsFirstSearch(true)
   }
 
-  const {
-    register,
-    handleSubmit: handleSubmitHook,
-    getValues,
-  } = useForm({
-    defaultValues: {
-      [name]: value,
-    },
-  })
-
   placeholder = placeholder ?? 'How can we help you?'
   value = value ?? ''
   if (!handleSubmit) {
-    handleSubmit = (data) => {
-      sendSearchEventToAnalytics(data[name])
-      history.push(`/questions?search=${data[name]}`)
-    }
+    handleSubmit = (inputValue) =>
+      history.push(
+        `/questions?search=${inputValue}` +
+          (agencyShortName ? `&agency=${agencyShortName}` : ''),
+      )
+  }
+
+  const onAbandon = (inputValue) => {
+    sendAbandonedSearchEventToAnalytics(inputValue)
+    handleAbandon(inputValue)
   }
 
   const itemToString = (item) => (item ? item.title : '')
@@ -89,12 +93,24 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
     keys: ['title', 'description'],
   })
 
+  const stateReducer = (_state, changes) => {
+    return [
+      Downshift.stateChangeTypes.blurInput,
+      Downshift.stateChangeTypes.mouseUp,
+      Downshift.stateChangeTypes.touchEnd,
+    ].includes(changes.type)
+      ? { isOpen: false } // no-changes
+      : changes
+  }
+
   return (
     <div className="search-container">
-      <form className="search-form" onSubmit={handleSubmitHook(handleSubmit)}>
+      <div className="search-form">
         <Downshift
           onChange={(selection) => history.push(`/questions/${selection.id}`)}
+          stateReducer={stateReducer}
           itemToString={itemToString}
+          initialInputValue={value}
         >
           {({
             getInputProps,
@@ -106,32 +122,41 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
           }) => (
             <div
               className="search-autocomplete"
-              onBlur={() => sendAbandonedSearchEventToAnalytics(inputValue)}
+              onBlur={() => onAbandon(inputValue)}
             >
               <InputGroup className="search-box">
-                <InputLeftElement
-                  children={<BiSearch size="24" color="secondary.500" />}
-                  h="100%"
-                  w="24px"
-                  ml="19px"
-                  mr="20px"
-                />
+                {showSearchIcon ? (
+                  <InputLeftElement
+                    children={<BiSearch size="24" color="secondary.500" />}
+                    h="100%"
+                    w="24px"
+                    ml="19px"
+                    mr="20px"
+                  />
+                ) : null}
                 <Input
-                  variant="unstyled"
+                  variant={showSearchIcon ? 'unstyled' : undefined}
                   className="search-input"
-                  sx={{ paddingInlineStart: '63px' }}
+                  sx={{ paddingInlineStart: showSearchIcon ? '63px' : '16px' }}
                   {...getInputProps({
                     name,
                     placeholder,
-                    ...register(name),
+                    ref: inputRef,
+                    ...inputProps,
                     onKeyDown: (event) => {
-                      const selectingOptionUsingKeyboard =
-                        event.key === 'Enter' && highlightedIndex !== null
-                      if (selectingOptionUsingKeyboard) {
-                        // when selecting option using keyboard
-                        // downshift prevents form submission which is used to submit analytics event
-                        // detect such event and separately send analytics event
-                        sendSearchEventToAnalytics(inputValue)
+                      // when selecting option using keyboard
+                      if (event.key === 'Enter') {
+                        if (
+                          highlightedIndex !== null ||
+                          (highlightedIndex === null && searchOnEnter)
+                        ) {
+                          sendSearchEventToAnalytics(inputValue)
+                        }
+                        if (highlightedIndex === null && searchOnEnter) {
+                          // downshift prevents form submission which is used to submit analytics event
+                          // detect such event and explicitly invoke handler
+                          handleSubmit(inputValue)
+                        }
                       }
 
                       const isCharacterKey = event.key.length === 1
@@ -152,9 +177,7 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
                       return (
                         <SearchItem
                           key={item.id}
-                          onClick={() =>
-                            sendSearchEventToAnalytics(getValues(name))
-                          }
+                          onClick={() => sendSearchEventToAnalytics(inputValue)}
                           {...{
                             item,
                             index,
@@ -170,7 +193,7 @@ const SearchBox = ({ placeholder, value, handleSubmit }) => {
             </div>
           )}
         </Downshift>
-      </form>
+      </div>
     </div>
   )
 }

@@ -1,16 +1,14 @@
-import React from 'react'
+import { Flex, Image, Stack, Text } from '@chakra-ui/react'
 import { useQuery } from 'react-query'
-import { matchPath, Link, useLocation } from 'react-router-dom'
-import { ReactComponent as Logo } from '../../assets/LogoAlpha.svg'
+import { Link, matchPath, useLocation } from 'react-router-dom'
+import { ReactComponent as Logo } from '../../assets/logo-white-alpha.svg'
+import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
 } from '../../services/AgencyService'
-import { useAuth } from '../../contexts/AuthContext'
 import LinkButton from '../LinkButton/LinkButton.component'
 import Spinner from '../Spinner/Spinner.component'
-import './Header.styles.scss'
-import { Text } from '@chakra-ui/react'
 
 const Header = () => {
   const { user, logout } = useAuth()
@@ -25,16 +23,21 @@ const Header = () => {
     () => getAgencyByShortName({ shortname: agencyShortName }),
     { enabled: !!agencyShortName },
   )
+
   const authLinks = (
-    <div className="btns">
+    <Flex align="center">
       {isLoading || user === null ? (
         <Spinner width="50px" height="50px" />
       ) : (
         <>
-          <span>{user.displayname}</span>
-          <img
+          <Text textStyle="body-2" mr={2} color="white">
+            {user.displayname}
+          </Text>
+          <Image
             alt="user-logo"
-            className="logo"
+            boxSize={8}
+            borderRadius="3px"
+            mr={4}
             src={`https://secure.gravatar.com/avatar/${user.id}?s=164&d=identicon`}
           />
         </>
@@ -45,24 +48,35 @@ const Header = () => {
         type={'s-btn__filled'}
         handleClick={logout}
       />
-    </div>
+    </Flex>
   )
 
   return (
-    <>
-      <nav className="navbar">
-        <Link
-          className="navbar-brand"
-          to={agency ? `/agency/${agency.shortname}` : '/'}
+    <Flex
+      background="primary.500"
+      display="flex"
+      justify="space-between"
+      align="center"
+      px={8}
+      py={4}
+      shrink={0}
+    >
+      <Link to={agency ? `/agency/${agency.shortname}` : '/'}>
+        <Stack
+          direction={{ base: 'column', md: 'row' }}
+          textDecor="none"
+          align={{ base: 'flex-start', md: 'center' }}
+          position="relative"
         >
-          <Logo className="askgov-name" />
+          <Logo />
           {agency ? (
             <>
               <Text
-                d={{ base: 'none', md: 'inline' }}
-                mr={{ base: 0, md: 4 }}
+                d={{ base: 'none', md: 'block' }}
+                px={{ base: 0, md: 2 }}
                 textStyle="h4"
                 fontWeight={300}
+                color="white"
               >
                 |
               </Text>
@@ -71,15 +85,16 @@ const Header = () => {
                 top={{ base: '-6px', md: 0 }}
                 textStyle="h4"
                 fontWeight={400}
+                color="white"
               >
                 {agency.longname}
               </Text>
             </>
           ) : null}
-        </Link>
-        {user && authLinks}
-      </nav>
-    </>
+        </Stack>
+      </Link>
+      {user && authLinks}
+    </Flex>
   )
 }
 

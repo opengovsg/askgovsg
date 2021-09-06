@@ -1,10 +1,12 @@
 # AskGov
+Answers from the Singapore Government 
+
 ## Tech Stack
 
 #### Front-end
 
-- Front-end Framework: `React`, switching to `react-query`
-- Styling: `SASS` and `BOOTSTRAP`, switching to [Chakra UI](https://chakra-ui.com/)
+- Front-end Framework: `React`
+- Styling: `SASS` switching to [Chakra UI](https://chakra-ui.com/)
 
 #### Back-end
 
@@ -16,87 +18,82 @@
 
 [Git](https://git-scm.com/download/mac)
 
+[Docker](https://docs.docker.com/desktop/mac/install/)
+
+[direnv](https://formulae.brew.sh/formula/direnv#default)
+
 Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
+
+Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 
 ## Setup
 
-* Create a `.env` file with the same format as `.env.example` and fill it in:
+* Make a copy of `.env.example` and name it `.env`
 
-  For development:
+* [Hook](https://github.com/direnv/direnv/blob/master/docs/hook.md) direnv onto your appropriate shell. Load the environment variables:
+
   ```
-  DB_HOST=localhost
-  DB_NAME=askgov
-  DB_USER=root
-  DB_PASSWORD=*create your own pw here*
-  SERVER_PORT=5000
-  NODE_ENV=development
-  JWT_SECRET=mysecrettoken
-
-  REACT_APP_RECAPTCHA_SITE_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
-  RECAPTCHA_SECRET_KEY=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
-  
-  FILE_BUCKET_NAME=files.ask.gov.sg
-  AWS_ACCESS_KEY_ID=localstack
-  AWS_SECRET_ACCESS_KEY=localstack
-
-  MAIL_PORT=1025
-  MAIL_FROM=admin@ask.gov.sg
-  MAIL_HOST=127.0.0.1
+  direnv allow .
   ```
 
 * Install and audit node dependencies
 
   ```
-  $ npm install (To install all the dependencies)
+  npm install
 
-  $ npm run auditDep (Run this to audit fix all the vulnerabilities)
+  npm run auditDep
   ```
 
-* Install `direnv` [here](https://github.com/direnv/direnv/blob/master/docs/installation.md) and [hook](https://github.com/direnv/direnv/blob/master/docs/hook.md) it onto your appropriate shell. Load the environment variables:
-
-  ```
-  $ direnv allow .
-  ```
-
-* Spin up MySQL by running `docker-compose up`
-
-* Download a database GUI like [DBeaver](https://dbeaver.io/download/) and connect to the local MySQL server
-
-  Create database by executing the following in `DBeaver`:
-  ```sql
-  CREATE DATABASE askgov;
-  ```
-
-* Execute `npm run seq-cli db:migrate` to create the tables
+* Spin up docker containers (this will create the `askgov` database):
   
-* Execute `npm run seq-cli db:seed:all` to seed the database with a sample dataset
+  ```
+  docker-compose up
+  ```
+
+* Create tables in database:
+
+  ```
+  npm run seq-cli db:migrate
+  ```
+  
+* Seed the database with a sample dataset:
+
+  ```
+  npm run seq-cli db:seed:all
+  ```
+
+* Optional: Use Dbeaver to connect to the local MySQL server at `127.0.0.1:3306`, using the username and password in `.env`
 
 * Check that your Database ER Diagram looks like this:
   
 ![image](https://user-images.githubusercontent.com/20250559/130938844-60255d06-d07d-4c84-ad3f-0c13be7dcb67.png)
 
 
-* Spin down MySQL by running `docker-compose down`
+* Stop docker compose (`npm run dev` will spin it up again):
+
+ ```
+ docker-compose stop
+ ```
 
 ## Running in Development
 
 * Start running frontend, backend, maildev, localstack and mysql simultaneously
 
   ```
-  $ npm run dev
+  npm run dev
   ```
 
   Alternatively, to run individually:
 
   ```
   # for supporting services
-  $ docker-compose up
+  docker-compose up
 
   # for backend server only
-  $ npm run server 
+  npm run server 
 
   # for frontend server only
-  $ npm run client 
+  npm run client 
   ```
   
   Frontend server accessible on `localhost:3000`
@@ -149,10 +146,13 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 - `GET /agencies?<longname, shortname>`
 - `GET /agencies/:agencyId`
 
+#### Auth
+- `GET /auth`
+- `GET /auth/verifyotp`
+- `GET /auth/sendotp`
+
 #### Users
 
-- `GET /auth`
-- `POST /auth`
 - `POST /users/:id`
 - `GET /users/:id`
 
@@ -169,9 +169,12 @@ Optionally [VSCode](https://code.visualstudio.com/) with extension `ESLint`
 
 - `GET /posts/answers/:id`
 - `POST /posts/answers/:id`
+- `PUT /posts/answers/:id`
 - `DELETE /posts/answers/:id`
 
 #### Tags
 
 - `GET /tags`
-- `GET /tags/:tag_name`
+- `GET /tags/user`
+- `GET /tags/agency/:agencyId`
+- `GET /tags/:tagname`

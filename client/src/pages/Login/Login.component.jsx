@@ -22,7 +22,7 @@ const Login = () => {
       <div className="login-page">
         <Spacer h={['64px', '64px', '84px']} />
         <h2>AskGov</h2>
-        <p>Official Government Help Center</p>
+        <p>Answers from the Singapore Government</p>
         <AuthForm />
         <Spacer minH={20} />
       </div>

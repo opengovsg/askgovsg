@@ -13,16 +13,24 @@ export const routeAuth = ({
   const router = express.Router()
 
   /**
-   * @route      GET /api/auth
-   * @desc       fetch logged in user details
-   * @access     Private
+   * Fetch logged in user details
+   * @route   GET /api/auth
+   * @returns 200 with user details
+   * @returns 401 if user not signed in
+   * @returns 500 if database error
+   * @access  Private
    */
   router.get('/', middleware.authenticate, controller.loadUser)
 
   /**
-   * @route      POST /api/auth/verifyotp
-   * @desc       verify the otp received by user
-   * @access     Private
+   * Verify jwt received by the user and set the JWT
+   * @route   POST /api/auth/verifyotp
+   * @returns 200 with JWT if successful login
+   * @returns 400 if validation of body fails
+   * @returns 401 if no otp was sent for user
+   * @returns 401 if wrong otp
+   * @returns 500 if database error
+   * @access  Private
    */
   router.post(
     '/verifyotp',
@@ -40,9 +48,13 @@ export const routeAuth = ({
   )
 
   /**
-   * @route      POST /api/auth/sendotp
-   * @desc       send the otp to the specified email
-   * @access     Private
+   * Send login otp to specified email
+   * @route   POST /api/auth/sendotp
+   * @returns 200 if OTP sent
+   * @returns 400 if email is invalid
+   * @returns 400 if email does not belong to a user
+   * @returns 500 if OTP failed to send
+   * @access  Private
    */
   router.post(
     '/sendotp',
