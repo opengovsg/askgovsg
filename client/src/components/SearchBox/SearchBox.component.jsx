@@ -97,6 +97,7 @@ const SearchBox = ({
     return [
       Downshift.stateChangeTypes.blurInput,
       Downshift.stateChangeTypes.mouseUp,
+      Downshift.stateChangeTypes.touchEnd,
     ].includes(changes.type)
       ? { isOpen: false } // no-changes
       : changes
