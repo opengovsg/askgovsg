@@ -6,6 +6,7 @@ import { UserBaseDto } from '../../../shared/types'
 
 const USER_MODEL_NAME = 'user'
 
+// TODO (#225): Remove this and replace ModelCtor below with ModelDefined
 export interface User extends Model, UserBaseDto {}
 
 interface Settable {
