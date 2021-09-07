@@ -1,19 +1,23 @@
-import { SortType } from '../../types/sort-type'
-
-import Sequelize, { OrderItem, Op, ProjectionAlias, ModelCtor } from 'sequelize'
+import Sequelize, { ModelCtor, Op, OrderItem, ProjectionAlias } from 'sequelize'
 import { Answer, Post, PostTag, Tag, User } from '../../models'
 import { PostStatus } from '../../types/post-status'
 import { PostEditType } from '../../types/post-type'
-import { PostWithRelations as PostWithUserRelations } from '../auth/auth.service'
+import { SortType } from '../../types/sort-type'
+import { PostWithRelations } from '../auth/auth.service'
 
-export type UserWithRelations = {
+export type UserWithTagRelations = {
   getTags: () => Tag[]
 }
 
-export type PostWithRelations = Post & {
+export type PostWithUserTagRelations = PostWithRelations & {
   countAnswers: () => number
   tags: Tag[]
 }
+
+export type PostWithUserTagRelatedPostRelations = PostWithRelations &
+  PostWithUserTagRelations & {
+    getRelatedPosts: Post[]
+  }
 
 export class PostService {
   private Answer: ModelCtor<Answer>
@@ -59,7 +63,7 @@ export class PostService {
   }
 
   private filterPostsWithoutAnswers = async (
-    data?: PostWithRelations[],
+    data?: PostWithUserTagRelations[],
   ): Promise<Post[]> => {
     if (!data) {
       return []
@@ -74,13 +78,56 @@ export class PostService {
     return arr.some((e) => e.tagType === 'AGENCY')
   }
 
-  getExistingTagsFromRequestTags = async (
-    tagNames: string[],
-  ): Promise<Tag[]> => {
-    const existingTags = await this.Tag.findAll({
-      where: { tagname: tagNames },
+  /**
+   * Get posts related to the one provided
+   * There is room to improve on finding related posts, using a better algorithm
+   * as discussed https://meta.stackexchange.com/questions/20473/how-are-related-questions-selected or
+   * https://medium.com/analytics-vidhya/building-a-simple-stack-overflow-search-engine-to-predict-posts-related-to-given-query-post-56b3e508520c.
+   * As a preliminary step, it finds the posts with the
+   * most number of same tag, followed by number of views.
+   * @param post post to find related posts to
+   * @param numberOfRelatedPosts number of posts to find
+   * @returns posts that are related to the one provided
+   */
+  private getRelatedPosts = async (
+    post: PostWithUserTagRelations,
+    numberOfRelatedPosts: number,
+  ): Promise<Post[]> => {
+    const tags = post.tags.map((tag) => tag.id)
+    const relatedPosts = await this.Post.findAll({
+      attributes: {
+        include: [
+          [Sequelize.fn('COUNT', Sequelize.col('tags.id')), 'relatedTags'],
+        ],
+      },
+      where: {
+        id: {
+          [Op.ne]: post.id,
+        },
+      },
+      include: [
+        {
+          model: this.Tag,
+          attributes: [],
+          required: false,
+          through: {
+            attributes: [],
+          },
+          where: {
+            id: tags,
+          },
+        },
+      ],
+      group: 'id',
+      order: [
+        [Sequelize.col('relatedTags'), 'DESC'],
+        ['views', 'DESC'],
+      ],
+      subQuery: false,
+      limit: numberOfRelatedPosts,
     })
-    return existingTags
+
+    return relatedPosts
   }
 
   /**
@@ -108,6 +155,15 @@ export class PostService {
       posts: returnPosts,
       totalItems: totalItems,
     }
+  }
+
+  getExistingTagsFromRequestTags = async (
+    tagNames: string[],
+  ): Promise<Tag[]> => {
+    const existingTags = await this.Tag.findAll({
+      where: { tagname: tagNames },
+    })
+    return existingTags
   }
 
   /**
@@ -169,7 +225,7 @@ export class PostService {
         this.Answer,
       ],
       attributes: ['id'],
-    })) as PostWithRelations[]
+    })) as PostWithUserTagRelations[]
 
     if (!posts) {
       return { posts: [], totalItems: 0 }
@@ -253,7 +309,7 @@ export class PostService {
   }> => {
     const user = (await this.User.findOne({
       where: { id: userId },
-    })) as UserWithRelations | null
+    })) as UserWithTagRelations | null
     if (!user) {
       throw new Error('Unable to find user with given ID')
     }
@@ -274,7 +330,7 @@ export class PostService {
       },
       order: [this.sortFunction(sort)],
       include: [this.Tag, { model: this.Answer, required: withAnswers }],
-    })) as PostWithRelations[]
+    })) as PostWithUserTagRelations[]
 
     // Duplicate of logic from retrieveAll
     // TODO: Optimize to merge the 2 requests into one
@@ -329,8 +385,14 @@ export class PostService {
   /**
    * Get a single post and all the tags and users associated with it
    * @param postId Id of the post
+   * @param noOfRelatedPosts number of related posts to show
    */
-  getSinglePost = async (postId: string): Promise<PostWithUserRelations> => {
+  getSinglePost = async (
+    postId: number,
+    noOfRelatedPosts = 0,
+  ): Promise<
+    PostWithUserTagRelations | PostWithUserTagRelatedPostRelations
+  > => {
     await this.Post.increment(
       {
         views: +1,
@@ -364,8 +426,11 @@ export class PostService {
           'answerCount',
         ],
       ],
-    })) as PostWithUserRelations
-
+    })) as PostWithUserTagRelatedPostRelations
+    if (noOfRelatedPosts > 0) {
+      const relatedPosts = await this.getRelatedPosts(post, noOfRelatedPosts)
+      post.setDataValue('relatedPosts', relatedPosts)
+    }
     if (!post) {
       throw new Error('No post with this id')
     } else {
