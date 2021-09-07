@@ -40,6 +40,7 @@ const toolbarWithImageUpload = (uploadCallback: UploadCallback) => {
     image: {
       uploadEnabled: true,
       uploadCallback,
+      previewImage: true,
     },
   }
 }
