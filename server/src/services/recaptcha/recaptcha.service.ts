@@ -1,7 +1,6 @@
 import { AxiosStatic } from 'axios'
 import { createLogger } from '../../bootstrap/logging'
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
-import { recaptchaConfig } from '../../bootstrap/config/recaptcha'
 
 import {
   CaptchaConnectionError,
@@ -12,9 +11,21 @@ import {
 const logger = createLogger(module)
 export class RecaptchaService {
   private axios: Pick<AxiosStatic, 'get'>
+  private googleRecaptchaURL: string
+  private recaptchaSecretKey: string
 
-  constructor({ axios }: { axios: Pick<AxiosStatic, 'get'> }) {
+  constructor({
+    axios,
+    googleRecaptchaURL,
+    recaptchaSecretKey,
+  }: {
+    axios: Pick<AxiosStatic, 'get'>
+    googleRecaptchaURL: string
+    recaptchaSecretKey: string
+  }) {
     this.axios = axios
+    this.googleRecaptchaURL = googleRecaptchaURL
+    this.recaptchaSecretKey = recaptchaSecretKey
   }
 
   public verifyCaptchaResponse = (
@@ -28,10 +39,10 @@ export class RecaptchaService {
       return errAsync(new MissingCaptchaError())
     }
     const verifyCaptchaPromise = this.axios.get<{ success: boolean }>(
-      recaptchaConfig.googleRecaptchaURL,
+      this.googleRecaptchaURL,
       {
         params: {
-          secret: recaptchaConfig.recaptchaSecretKey,
+          secret: this.recaptchaSecretKey,
           response,
           remoteip,
         },
