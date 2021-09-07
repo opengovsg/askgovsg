@@ -111,10 +111,7 @@ export class AuthController {
 
     const otp = generateRandomDigits(OTP_LENGTH)
     const hashedOtp = await hashData(otp)
-    const ip =
-      ((req.headers['x-forwarded-for'] as string) || '').split(',')[0] ||
-      req.socket.remoteAddress ||
-      ''
+    const ip = req.header('CF-Connecting-IP') || req.ip
     try {
       await Token.destroy({ where: { contact: email } })
       await Token.create({ contact: email, hashedOtp })
