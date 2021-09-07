@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
-    "@types/compression": "^1.7.0",
+    "@types/compression": "^1.7.2",
     "@types/convict": "^6.1.1",
     "@types/convict-format-with-validator": "^6.0.2",
     "@types/cors": "^2.8.10",
