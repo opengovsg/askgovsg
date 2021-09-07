@@ -12,7 +12,7 @@ import {
 
 import { BackToHome } from '../../components/BackToHome/BackToHome'
 
-const NotFound = () => {
+const NotFound = (): JSX.Element => {
   return (
     <Fragment>
       <BackToHome />
