@@ -23,11 +23,11 @@ const NotFound = () => {
             <Heading align="center" size="4xl">
               Not Found
             </Heading>
-            <Spacer />
-            <Text align="center">Whoops!</Text>
+            <Spacer minH={10} />
             <Text align="center">
-              It seems like we couldn't find the page you were looking for :(
+              It seems like we couldn't find the page you were looking for.
             </Text>
+            <Spacer minH={10} />
             <Center>
               <Button as={ReachLink} to="/">
                 Back to home page
