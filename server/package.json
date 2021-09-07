@@ -6,7 +6,7 @@
   "main": "./build/index.js",
   "scripts": {
     "start": "node ./build/index.js",
-    "build": "tsc",
+    "build": "tsc -b",
     "dev": "ts-node-dev --respawn --transpile-only --inspect -- ./src/index.ts",
     "test": "jest",
     "lint": "eslint . --quiet --fix --ext '.ts'",
