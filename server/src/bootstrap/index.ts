@@ -101,9 +101,7 @@ const apiOptions = {
     controller: new AuthController({
       mailService,
       authService,
-      userService: new UserService({
-        jwtSecret,
-      }),
+      userService: new UserService(),
     }),
     middleware: authMiddleware,
   },
