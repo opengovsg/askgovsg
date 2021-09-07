@@ -111,10 +111,14 @@ export class AuthController {
 
     const otp = generateRandomDigits(OTP_LENGTH)
     const hashedOtp = await hashData(otp)
+    const ip =
+      ((req.headers['x-forwarded-for'] as string) || '').split(',')[0] ||
+      req.socket.remoteAddress ||
+      ''
     try {
       await Token.destroy({ where: { contact: email } })
       await Token.create({ contact: email, hashedOtp })
-      await this.mailService.sendLoginOtp(email, otp)
+      await this.mailService.sendLoginOtp(email, otp, ip)
     } catch (error) {
       logger.error({
         message: 'Error while sending login OTP',
