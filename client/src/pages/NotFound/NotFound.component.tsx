@@ -10,12 +10,11 @@ import {
   Container,
 } from '@chakra-ui/react'
 
-import './NotFound.styles.scss'
 import { BackToHome } from '../../components/BackToHome/BackToHome'
 
 const NotFound = () => {
   return (
-    <Fragment centerContent>
+    <Fragment>
       <BackToHome />
       <Container>
         <Container>
