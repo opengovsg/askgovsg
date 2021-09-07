@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npm run --prefix server lint-staged && npm run --prefix client lint-staged && sh secrets-check.sh
+npm run --prefix server lint-staged && npm run --prefix client lint-staged && npm run --prefix shared lint-staged && sh secrets-check.sh

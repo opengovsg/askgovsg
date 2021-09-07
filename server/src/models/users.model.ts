@@ -2,15 +2,12 @@ import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
 
 import { Tag } from './tags.model'
 import { IMinimatch } from 'minimatch'
+import { User as UserBaseDto } from '../../../shared/types'
 
 const USER_MODEL_NAME = 'user'
 
-export interface User extends Model {
-  id: string
-  username: string
-  displayname: string
-  views: number
-}
+// TODO (#225): Remove this and replace ModelCtor below with ModelDefined
+export interface User extends Model, UserBaseDto {}
 
 interface Settable {
   setDataValue(key: string, value: unknown): void
