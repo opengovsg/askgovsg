@@ -25,7 +25,14 @@ describe('/enquiries', () => {
   let mockAgency1: AgencyModel
 
   const axios = { get: jest.fn() }
-  const recaptchaService = new RecaptchaService({ axios })
+  const googleRecaptchaURL = 'https://recaptcha.net'
+  const recaptchaSecretKey = ''
+
+  const recaptchaService = new RecaptchaService({
+    axios,
+    googleRecaptchaURL,
+    recaptchaSecretKey,
+  })
 
   const path = '/enquiries'
   const app = express()

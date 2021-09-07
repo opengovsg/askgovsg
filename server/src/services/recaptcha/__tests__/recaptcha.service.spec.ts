@@ -1,5 +1,3 @@
-import { recaptchaConfig } from '../../../bootstrap/config/recaptcha'
-
 import {
   CaptchaConnectionError,
   MissingCaptchaError,
@@ -7,13 +5,19 @@ import {
 } from '../recaptcha.errors'
 import { RecaptchaService } from '../recaptcha.service'
 
-const MOCK_PRIVATE_KEY = ''
 const MOCK_RESPONSE = 'captchaResponse'
 const MOCK_REMOTE_IP = 'remoteIp'
 
-describe('captcha.service', () => {
+describe('recaptcha.service', () => {
   const axios = { get: jest.fn() }
-  const recaptchaService = new RecaptchaService({ axios })
+  const googleRecaptchaURL = 'https://recaptcha.net'
+  const recaptchaSecretKey = ''
+
+  const recaptchaService = new RecaptchaService({
+    axios,
+    googleRecaptchaURL,
+    recaptchaSecretKey,
+  })
 
   describe('verifyCaptchaResponse', () => {
     beforeEach(() => jest.clearAllMocks())
@@ -40,16 +44,13 @@ describe('captcha.service', () => {
       )
 
       // Assert
-      expect(axios.get).toHaveBeenCalledWith(
-        recaptchaConfig.googleRecaptchaURL,
-        {
-          params: {
-            secret: MOCK_PRIVATE_KEY,
-            response: MOCK_RESPONSE,
-            remoteip: MOCK_REMOTE_IP,
-          },
+      expect(axios.get).toHaveBeenCalledWith(googleRecaptchaURL, {
+        params: {
+          secret: recaptchaSecretKey,
+          response: MOCK_RESPONSE,
+          remoteip: MOCK_REMOTE_IP,
         },
-      )
+      })
       expect(result._unsafeUnwrapErr()).toEqual(new VerifyCaptchaError())
     })
 
@@ -64,16 +65,13 @@ describe('captcha.service', () => {
       )
 
       // Assert
-      expect(axios.get).toHaveBeenCalledWith(
-        recaptchaConfig.googleRecaptchaURL,
-        {
-          params: {
-            secret: MOCK_PRIVATE_KEY,
-            response: MOCK_RESPONSE,
-            remoteip: MOCK_REMOTE_IP,
-          },
+      expect(axios.get).toHaveBeenCalledWith(googleRecaptchaURL, {
+        params: {
+          secret: recaptchaSecretKey,
+          response: MOCK_RESPONSE,
+          remoteip: MOCK_REMOTE_IP,
         },
-      )
+      })
       expect(result._unsafeUnwrap()).toEqual(true)
     })
 
@@ -88,16 +86,13 @@ describe('captcha.service', () => {
       )
 
       // Assert
-      expect(axios.get).toHaveBeenCalledWith(
-        recaptchaConfig.googleRecaptchaURL,
-        {
-          params: {
-            secret: MOCK_PRIVATE_KEY,
-            response: MOCK_RESPONSE,
-            remoteip: MOCK_REMOTE_IP,
-          },
+      expect(axios.get).toHaveBeenCalledWith(googleRecaptchaURL, {
+        params: {
+          secret: recaptchaSecretKey,
+          response: MOCK_RESPONSE,
+          remoteip: MOCK_REMOTE_IP,
         },
-      )
+      })
       expect(result._unsafeUnwrapErr()).toEqual(new CaptchaConnectionError())
     })
   })
