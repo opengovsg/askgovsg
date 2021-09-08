@@ -4,6 +4,8 @@ import { Agency } from '../../services/AgencyService'
 import { Enquiry, Mail, postMail } from '../../services/MailService'
 import { EnquiryModal } from '../EnquiryModal/EnquiryModal.component'
 import { useStyledToast } from '../StyledToast/StyledToast'
+import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
+import * as FullStory from '@fullstory/browser'
 
 const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
   const toast = useStyledToast()
@@ -12,6 +14,24 @@ const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
     onClose: onEnquiryModalClose,
     isOpen: isEnquiryModalOpen,
   } = useDisclosure()
+  const googleAnalytics = useGoogleAnalytics()
+
+  const sendOpenEnquiryEventToAnalytics = () => {
+    googleAnalytics.sendUserEvent(
+      googleAnalytics.GA_USER_EVENTS.OPEN_ENQUIRY,
+      agency.email,
+    )
+    FullStory.event(googleAnalytics.GA_USER_EVENTS.OPEN_ENQUIRY, {
+      // property name uses `ident_type` pattern
+      enquiry_str: agency.email,
+    })
+  }
+
+  const onClick = async () => {
+    onEnquiryModalOpen()
+    sendOpenEnquiryEventToAnalytics()
+  }
+
   const onPostConfirm = async (
     enquiry: Enquiry,
     captchaResponse: string,
@@ -55,7 +75,7 @@ const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
         }}
         borderRadius="4px"
         color="white"
-        onClick={onEnquiryModalOpen}
+        onClick={onClick}
       >
         Submit an enquiry
       </Button>
