@@ -19,10 +19,10 @@ const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
   const sendOpenEnquiryEventToAnalytics = () => {
     googleAnalytics.sendUserEvent(
       googleAnalytics.GA_USER_EVENTS.OPEN_ENQUIRY,
-      agency.email,
+      agency.shortname,
     )
     FullStory.event(googleAnalytics.GA_USER_EVENTS.OPEN_ENQUIRY, {
-      enquiry_str: agency.email,
+      enquiry_str: agency.shortname,
     })
   }
 

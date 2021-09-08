@@ -42,15 +42,15 @@ export const EnquiryModal = ({
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [captchaResponse, setCaptchaResponse] = useState<string | null>(null)
   const googleAnalytics = useGoogleAnalytics()
-  const agencyEmail = agency.email
+  const agencyName = agency.shortname
 
-  const sendSubmitEnquiryEventToAnalytics = (agencyEmail: string) => {
+  const sendSubmitEnquiryEventToAnalytics = (agencyName: string) => {
     googleAnalytics.sendUserEvent(
       googleAnalytics.GA_USER_EVENTS.SUBMIT_ENQUIRY,
-      agencyEmail,
+      agencyName,
     )
     FullStory.event(googleAnalytics.GA_USER_EVENTS.SUBMIT_ENQUIRY, {
-      enquiry_str: agencyEmail,
+      enquiry_str: agencyName,
     })
   }
 
@@ -59,7 +59,7 @@ export const EnquiryModal = ({
       setIsLoading(true)
       await onConfirm(enquiry, captchaResponse)
       setIsLoading(false)
-      sendSubmitEnquiryEventToAnalytics(agencyEmail)
+      sendSubmitEnquiryEventToAnalytics(agencyName)
       reset()
       onClose()
     }
