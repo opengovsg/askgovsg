@@ -111,11 +111,10 @@ export class AuthController {
 
     const otp = generateRandomDigits(OTP_LENGTH)
     const hashedOtp = await hashData(otp)
-    const ip = req.header('CF-Connecting-IP') || req.ip
     try {
       await Token.destroy({ where: { contact: email } })
       await Token.create({ contact: email, hashedOtp })
-      await this.mailService.sendLoginOtp(email, otp, ip)
+      await this.mailService.sendLoginOtp(email, otp)
     } catch (error) {
       logger.error({
         message: 'Error while sending login OTP',

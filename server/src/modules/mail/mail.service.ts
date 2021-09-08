@@ -15,16 +15,12 @@ export class MailService {
     this.mailFromEmail = mailFromEmail
   }
 
-  sendLoginOtp = async (
-    email: string,
-    otp: string,
-    ip: string,
-  ): Promise<unknown> => {
+  sendLoginOtp = async (email: string, otp: string): Promise<unknown> => {
     return this.transport.sendMail({
       to: email,
       from: this.mailFromEmail,
       subject: `One-Time Password for AskGov`,
-      html: renderLoginOtpBody(otp, ip),
+      html: renderLoginOtpBody(otp),
     })
   }
 
