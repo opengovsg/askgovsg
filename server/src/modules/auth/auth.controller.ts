@@ -111,7 +111,15 @@ export class AuthController {
 
     const otp = generateRandomDigits(OTP_LENGTH)
     const hashedOtp = await hashData(otp)
+
+    // On staging and production, we use CloudFlare which adds a CF-Connecting-IP
+    // header with every request which contains only the origin IP.
+    // See https://support.cloudflare.com/hc/en-us/articles/200170986-How-does-CloudFlare-handle-HTTP-Request-headers-.
+    // As a fallback, use req.ip, automatically parsed from the x-forwarded-for
+    // header if we configure app.set('trust proxy').
+
     const ip = req.header('CF-Connecting-IP') || req.ip
+
     try {
       await Token.destroy({ where: { contact: email } })
       await Token.create({ contact: email, hashedOtp })
