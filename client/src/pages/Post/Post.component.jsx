@@ -139,10 +139,12 @@ const Post = () => {
             align="left"
             color="secondary.400"
           >
-            <Text textStyle="subhead-3">Related</Text>
+            <Text mb="8px" textStyle="subhead-3">
+              Related
+            </Text>
             {post.relatedPosts.map((relatedPost) => (
               <Link to={`/questions/${relatedPost.id}`}>
-                <Text textStyle="subhead-2" fontWeight="normal">
+                <Text mb="24px" textStyle="subhead-2" fontWeight="normal">
                   {relatedPost.title}
                 </Text>
               </Link>
