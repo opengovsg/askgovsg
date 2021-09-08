@@ -38,6 +38,7 @@ describe('/posts', () => {
 
   // Set up service, controller and route
   const authService = {
+    createToken: jest.fn(),
     getUserIdFromToken: jest.fn(),
     getOfficerUser: jest.fn(),
     checkIfWhitelistedOfficer: jest.fn(),

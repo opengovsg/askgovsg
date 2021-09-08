@@ -1,7 +1,7 @@
 import { PostStatus } from '../../types/post-status'
 import { BaseModelParams, MessageResponse } from './common'
 import { BaseTagDto } from './tag'
-import { BaseUserDto } from './user'
+import { User as UserBaseDto } from '~shared/types'
 
 export type BasePostDto = BaseModelParams & {
   userId: number
@@ -14,7 +14,7 @@ export type BasePostDto = BaseModelParams & {
 // Backend does not select updatedAt
 export type GetSinglePostDto = Omit<BasePostDto, 'updatedAt'> & {
   tags: BaseTagDto[]
-  user: Pick<BaseUserDto, 'displayname'>
+  user: Pick<UserBaseDto, 'displayname'>
 }
 
 export type CreatePostReqDto = Pick<BasePostDto, 'title' | 'description'> & {

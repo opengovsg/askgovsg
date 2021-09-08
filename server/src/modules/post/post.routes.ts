@@ -1,6 +1,6 @@
 import { AuthMiddleware } from '../auth/auth.middleware'
 import express from 'express'
-import { check, query } from 'express-validator'
+import { check, param, query } from 'express-validator'
 import { PostController } from './post.controller'
 import { SortType } from '../../types/sort-type'
 
@@ -67,7 +67,14 @@ export const routePosts = ({
    * @return 500 for database error
    * @access Public
    */
-  router.get('/:id', controller.getSinglePost)
+  router.get(
+    '/:id',
+    [
+      param('id').isInt().toInt(),
+      query('relatedPosts').isInt().toInt().optional({ nullable: true }),
+    ],
+    controller.getSinglePost,
+  )
 
   /**
    * Create a new post

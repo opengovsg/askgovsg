@@ -15,16 +15,21 @@ describe('MailService', () => {
       // Arrange
       const email = 'user@agency.gov.sg'
       const otp = '123456'
+      const ip = '127.0.0.1'
 
       // Act
-      await mailService.sendLoginOtp(email, otp)
+      await mailService.sendLoginOtp(email, otp, ip)
 
       // Assert
       expect(transport.sendMail).toHaveBeenCalledWith({
         to: email,
         from: mailFromEmail,
         subject: `One-Time Password for AskGov`,
-        html: `Your OTP for AskGov is <b>${otp}</b>.`,
+        html: `Your OTP for AskGov is <b>${otp}</b>. Please use this to login to your AskGov account.<br><br>\
+If your OTP does not work, please request for a new OTP at <a href="https://ask.gov.sg/login">https://ask.gov.sg/login</a>.<br><br>\
+This login attempt was made from the IP: <u>${ip}</u>. If you did not attempt to log in to AskGov, you may choose to investigate this IP to address further. <br><br>\
+<br>\
+The AskGov Support Team`,
       })
     })
   })

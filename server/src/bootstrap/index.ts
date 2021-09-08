@@ -32,6 +32,7 @@ import { authConfig } from './config/auth'
 import { fullStoryConfig } from './config/fullstory'
 import { mailConfig } from './config/mail'
 import { fileConfig } from './config/file'
+import { recaptchaConfig } from './config/recaptcha'
 import { requestLoggingMiddleware } from './logging'
 
 import { helmetOptions } from './helmet-options'
@@ -86,7 +87,7 @@ const mailService = new MailService({
 })
 const postService = new PostService({ Answer, Post, PostTag, Tag, User })
 const enquiryService = new EnquiryService({ Agency, mailService })
-const recaptchaService = new RecaptchaService({ axios })
+const recaptchaService = new RecaptchaService({ axios, ...recaptchaConfig })
 
 const apiOptions = {
   agency: new AgencyController({ agencyService }),
@@ -101,9 +102,7 @@ const apiOptions = {
     controller: new AuthController({
       mailService,
       authService,
-      userService: new UserService({
-        jwtSecret,
-      }),
+      userService: new UserService(),
     }),
     middleware: authMiddleware,
   },

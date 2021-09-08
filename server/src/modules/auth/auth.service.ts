@@ -1,13 +1,16 @@
 import jwt from 'jsonwebtoken'
-import { PostStatus } from '../../types/post-status'
+import minimatch from 'minimatch'
 
+import { PostStatus } from '../../types/post-status'
 import {
   User as UserModel,
   Permission as PermissionModel,
   PostTag as PostTagModel,
 } from '../../bootstrap/sequelize'
-import minimatch from 'minimatch'
 import { Permission, Post, PostTag, Tag, User } from '../../models'
+import { createLogger } from '../../bootstrap/logging'
+
+const logger = createLogger(module)
 
 export type PermissionWithRelations = Permission & {
   tagId: string
@@ -37,9 +40,36 @@ export class AuthService {
   }
 
   /**
-   * Verify JSON Web Token (JWT) and get user Id from token
-   * @param token the JWT containing user
-   * @returns userId if it is verified and found, else null
+   * Generates JSON Web Token (JWT) from user id
+   * @param userId the user identifier
+   * @returns a JWT token containing the user id
+   * and signed with a secret known to the AuthService
+   */
+  createToken = (userId: string): string => {
+    const payload = {
+      user: {
+        id: userId,
+      },
+    }
+    try {
+      return jwt.sign(payload, this.jwtSecret, { expiresIn: 86400 })
+    } catch (error) {
+      logger.error({
+        message: 'Error while signing JWT',
+        meta: {
+          function: 'createToken',
+        },
+        error,
+      })
+      throw error
+    }
+  }
+
+  /**
+   * Verifies a JSON Web Token (JWT) using the secret known
+   * to the AuthService and get the user id
+   * @param token the JWT containing the user id
+   * @returns user id if it is verified and found, else null
    */
   getUserIdFromToken = async (token: string): Promise<string | null> => {
     if (!token) return null
@@ -62,7 +92,7 @@ export class AuthService {
   /**
    * Get the user from userId only if user has validated email
    * @param userId userId of the user to retrieve
-   * @returns user with the userId
+   * @returns user with the user id
    */
   getOfficerUser = async (userId: string): Promise<User> => {
     if (!userId) {

@@ -8,6 +8,8 @@ COPY . /app
 # Create app directory
 WORKDIR /app
 
+# Install shared dependencies
+RUN cd shared && npm ci && cd ..
 # Install backend dependencies
 RUN cd server && npm ci && cd ..
 # Install frontend dependencies
