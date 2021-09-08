@@ -8,9 +8,9 @@ import { useStyledToast } from '../StyledToast/StyledToast'
 const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
   const toast = useStyledToast()
   const {
-    onOpen: onDeleteModalOpen,
-    onClose: onDeleteModalClose,
-    isOpen: isDeleteModalOpen,
+    onOpen: onEnquiryModalOpen,
+    onClose: onEnquiryModalClose,
+    isOpen: isEnquiryModalOpen,
   } = useDisclosure()
   const onPostConfirm = async (
     enquiry: Enquiry,
@@ -55,13 +55,13 @@ const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
         }}
         borderRadius="4px"
         color="white"
-        onClick={onDeleteModalOpen}
+        onClick={onEnquiryModalOpen}
       >
         Submit an enquiry
       </Button>
       <EnquiryModal
-        isOpen={isDeleteModalOpen}
-        onClose={onDeleteModalClose}
+        isOpen={isEnquiryModalOpen}
+        onClose={onEnquiryModalClose}
         onConfirm={onPostConfirm}
         agency={agency}
       />
