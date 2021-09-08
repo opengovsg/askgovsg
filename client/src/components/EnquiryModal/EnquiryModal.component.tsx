@@ -50,7 +50,6 @@ export const EnquiryModal = ({
       agencyEmail,
     )
     FullStory.event(googleAnalytics.GA_USER_EVENTS.SUBMIT_ENQUIRY, {
-      // property name uses `ident_type` pattern
       enquiry_str: agencyEmail,
     })
   }

@@ -22,7 +22,6 @@ const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
       agency.email,
     )
     FullStory.event(googleAnalytics.GA_USER_EVENTS.OPEN_ENQUIRY, {
-      // property name uses `ident_type` pattern
       enquiry_str: agency.email,
     })
   }
