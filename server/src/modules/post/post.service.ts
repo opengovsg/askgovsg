@@ -101,6 +101,7 @@ export class PostService {
         ],
       },
       where: {
+        status: PostStatus.PUBLIC,
         id: {
           [Op.ne]: post.id,
         },
