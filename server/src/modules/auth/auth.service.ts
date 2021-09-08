@@ -39,6 +39,12 @@ export class AuthService {
     this.jwtSecret = jwtSecret
   }
 
+  /**
+   * Generates JSON Web Token (JWT) from user id
+   * @param userId the user identifier
+   * @returns a JWT token containing the user id
+   * and signed with a secret known to the AuthService
+   */
   createToken = (userId: string): string => {
     const payload = {
       user: {
@@ -60,9 +66,10 @@ export class AuthService {
   }
 
   /**
-   * Verify JSON Web Token (JWT) and get user Id from token
-   * @param token the JWT containing user
-   * @returns userId if it is verified and found, else null
+   * Verifies a JSON Web Token (JWT) using the secret known
+   * to the AuthService and get the user id
+   * @param token the JWT containing the user id
+   * @returns user id if it is verified and found, else null
    */
   getUserIdFromToken = async (token: string): Promise<string | null> => {
     if (!token) return null
@@ -85,7 +92,7 @@ export class AuthService {
   /**
    * Get the user from userId only if user has validated email
    * @param userId userId of the user to retrieve
-   * @returns user with the userId
+   * @returns user with the user id
    */
   getOfficerUser = async (userId: string): Promise<User> => {
     if (!userId) {
