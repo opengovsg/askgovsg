@@ -4,14 +4,33 @@ import { Agency } from '../../services/AgencyService'
 import { Enquiry, Mail, postMail } from '../../services/MailService'
 import { EnquiryModal } from '../EnquiryModal/EnquiryModal.component'
 import { useStyledToast } from '../StyledToast/StyledToast'
+import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
+import * as FullStory from '@fullstory/browser'
 
 const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
   const toast = useStyledToast()
   const {
-    onOpen: onDeleteModalOpen,
-    onClose: onDeleteModalClose,
-    isOpen: isDeleteModalOpen,
+    onOpen: onEnquiryModalOpen,
+    onClose: onEnquiryModalClose,
+    isOpen: isEnquiryModalOpen,
   } = useDisclosure()
+  const googleAnalytics = useGoogleAnalytics()
+
+  const sendOpenEnquiryEventToAnalytics = () => {
+    googleAnalytics.sendUserEvent(
+      googleAnalytics.GA_USER_EVENTS.OPEN_ENQUIRY,
+      agency.shortname,
+    )
+    FullStory.event(googleAnalytics.GA_USER_EVENTS.OPEN_ENQUIRY, {
+      enquiry_str: agency.shortname,
+    })
+  }
+
+  const onClick = async () => {
+    onEnquiryModalOpen()
+    sendOpenEnquiryEventToAnalytics()
+  }
+
   const onPostConfirm = async (
     enquiry: Enquiry,
     captchaResponse: string,
@@ -55,13 +74,13 @@ const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
         }}
         borderRadius="4px"
         color="white"
-        onClick={onDeleteModalOpen}
+        onClick={onClick}
       >
         Submit an enquiry
       </Button>
       <EnquiryModal
-        isOpen={isDeleteModalOpen}
-        onClose={onDeleteModalClose}
+        isOpen={isEnquiryModalOpen}
+        onClose={onEnquiryModalClose}
         onConfirm={onPostConfirm}
         agency={agency}
       />
