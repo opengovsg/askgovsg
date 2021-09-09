@@ -40,56 +40,6 @@ export class AuthService {
   }
 
   /**
-   * Generates JSON Web Token (JWT) from user id
-   * @param userId the user identifier
-   * @returns a JWT token containing the user id
-   * and signed with a secret known to the AuthService
-   */
-  createToken = (userId: number): string => {
-    const payload = {
-      user: {
-        id: userId,
-      },
-    }
-    try {
-      return jwt.sign(payload, this.jwtSecret, { expiresIn: 86400 })
-    } catch (error) {
-      logger.error({
-        message: 'Error while signing JWT',
-        meta: {
-          function: 'createToken',
-        },
-        error,
-      })
-      throw error
-    }
-  }
-
-  /**
-   * Verifies a JSON Web Token (JWT) using the secret known
-   * to the AuthService and get the user id
-   * @param token the JWT containing the user id
-   * @returns user id if it is verified and found, else null
-   */
-  getUserIdFromToken = async (token: string): Promise<number | null> => {
-    if (!token) return null
-
-    return new Promise((resolve, reject) => {
-      // TODO: refactor to use synchronous verify
-      jwt.verify(token, this.jwtSecret, (error, decoded) => {
-        const decodedCasted = decoded as { user: { id: number } }
-        if (error) {
-          return reject(new Error('Unable to verify JWT'))
-        } else if (!decoded || !decodedCasted.user || !decodedCasted.user.id) {
-          return reject(new Error('User has invalid shape'))
-        } else {
-          return resolve(decodedCasted.user.id)
-        }
-      })
-    })
-  }
-
-  /**
    * Get the user from userId only if user has validated email
    * @param userId userId of the user to retrieve
    * @returns user with the user id
@@ -184,13 +134,12 @@ export class AuthService {
    */
   verifyUserCanViewPost = async (
     post: PostWithRelations,
-    token: string,
+    userId?: string,
   ): Promise<void> => {
     // If post is public, anyone can view
     if (post.status === PostStatus.Public) return
 
     // If private or archived, must be logged in
-    const userId = await this.getUserIdFromToken(token)
     if (!userId)
       throw new Error('User must be logged in to access private post')
     const user = await UserModel.findOne({ where: { id: userId } })

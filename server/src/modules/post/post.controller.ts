@@ -115,26 +115,18 @@ export class PostController {
         .json({ message: createValidationErrMessage(errors) })
     }
 
-    // Authorisation checks
-    const token = req.header('x-auth-token') ?? ''
-    let userId
-    try {
-      userId = await this.authService.getUserIdFromToken(token)
-      if (!userId) throw new Error('User must be signed in to access posts')
-      await this.authService.getOfficerUser(userId)
-    } catch (error) {
+    const userId = req.user?.id
+    if (!userId) {
       logger.error({
-        message: 'Error while retrieving user ID',
+        message: 'UserId is undefined after authenticated',
         meta: {
-          function: 'listAnswerablePosts',
+          function: 'updatePost',
         },
-        error,
       })
-      return res.status(StatusCodes.UNAUTHORIZED).json({
-        message: 'Please log in and try again',
-      })
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Something went wrong, please try again.' })
     }
-
     try {
       const { withAnswers, sort = SortType.Top, tags, page, size } = req.query
       const data = await this.postService.listAnswerablePosts({
@@ -200,7 +192,7 @@ export class PostController {
     try {
       await this.authService.verifyUserCanViewPost(
         post,
-        req.header('x-auth-token') ?? '',
+        req.user?.id.toString() ?? '',
       )
     } catch (error) {
       logger.error({
@@ -299,10 +291,14 @@ export class PostController {
   deletePost: ControllerHandler<{ id: string }, Message> = async (req, res) => {
     const postId = Number(req.params.id)
     try {
-      const userId = await this.authService.getUserIdFromToken(
-        req.header('x-auth-token') ?? '',
-      )
+      const userId = req.user?.id
       if (!userId) {
+        logger.error({
+          message: 'UserId is undefined after authenticated',
+          meta: {
+            function: 'deletePost',
+          },
+        })
         return res
           .status(StatusCodes.UNAUTHORIZED)
           .json({ message: 'You must be logged in to delete posts.' })
@@ -350,13 +346,17 @@ export class PostController {
   > = async (req, res) => {
     const postId = Number(req.params.id)
     try {
-      const userId = await this.authService.getUserIdFromToken(
-        req.header('x-auth-token') ?? '',
-      )
+      const userId = req.user?.id
       if (!userId) {
+        logger.error({
+          message: 'UserId is undefined after authenticated',
+          meta: {
+            function: 'updatePost',
+          },
+        })
         return res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: 'You must be logged in to update posts.' })
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Something went wrong, please try again.' })
       }
       const hasPermission = await this.authService.hasPermissionToAnswer(
         userId,

@@ -5,10 +5,10 @@ import { AuthMiddleware } from './auth.middleware'
 
 export const routeAuth = ({
   controller,
-  middleware,
+  authMiddleware,
 }: {
   controller: AuthController
-  middleware: AuthMiddleware
+  authMiddleware: AuthMiddleware
 }): express.Router => {
   const router = express.Router()
 
@@ -20,7 +20,7 @@ export const routeAuth = ({
    * @returns 500 if database error
    * @access  Private
    */
-  router.get('/', middleware.authenticate, controller.loadUser)
+  router.get('/', authMiddleware.authenticate, controller.loadUser)
 
   /**
    * Verify jwt received by the user and set the JWT

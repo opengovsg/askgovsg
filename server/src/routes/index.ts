@@ -28,7 +28,7 @@ type ApiRouterOptions = {
   }
   auth: {
     controller: AuthController
-    middleware: AuthMiddleware
+    authMiddleware: AuthMiddleware
   }
   env: EnvController
   post: {

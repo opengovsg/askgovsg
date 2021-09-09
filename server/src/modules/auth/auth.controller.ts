@@ -1,11 +1,13 @@
 import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
-import { ErrorDto, LoadUserDto, VerifyLoginOtpDto } from '~shared/types/api'
+import passport from 'passport'
+import { Message } from 'src/types/message-type'
+import { ErrorDto, LoadUserDto } from '~shared/types/api'
 import { createLogger } from '../../bootstrap/logging'
-import { Token, User } from '../../bootstrap/sequelize'
+import { Token } from '../../bootstrap/sequelize'
 import { UserService } from '../../modules/user/user.service'
 import { ControllerHandler } from '../../types/response-handler'
-import { generateRandomDigits, hashData, verifyHash } from '../../util/hash'
+import { generateRandomDigits, hashData } from '../../util/hash'
 import { createValidationErrMessage } from '../../util/validation-error'
 import { MailService } from '../mail/mail.service'
 import { AuthService } from './auth.service'
@@ -43,14 +45,21 @@ export class AuthController {
     req,
     res,
   ) => {
-    if (!req.user) {
+    const id = req.user?.id
+    if (!id) {
+      logger.error({
+        message: 'User not found after being authenticated',
+        meta: {
+          function: 'loadUser',
+          userId: req.user?.id,
+        },
+      })
       return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json({ message: 'User not signed in' })
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Server Error' })
     }
-
     try {
-      const user = await this.userService.loadUser(req.user?.id)
+      const user = await this.userService.loadUser(id)
       return res.status(StatusCodes.OK).json(user)
     } catch (error) {
       logger.error({
@@ -148,69 +157,54 @@ export class AuthController {
    */
   handleVerifyLoginOtp: ControllerHandler<
     undefined,
-    VerifyLoginOtpDto | ErrorDto,
+    ErrorDto, // success case has no return data
     { email: string; otp: string },
     undefined
-  > = async (req, res) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: createValidationErrMessage(errors) })
-    }
-
+  > = async (req, res, next) => {
     const email = req.body.email
-    const otp = req.body.otp
-
     if (!this.authService.isOfficerEmail(email)) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
         message:
           'You must use a Singapore Public Service official email address.',
       })
     }
-
-    try {
-      const token = await Token.findOne({ where: { contact: email } })
-      if (!token) {
+    passport.authenticate('local', {}, (error, user, info: Message) => {
+      if (error) {
+        logger.error({
+          message: 'Error while authenticating',
+          meta: {
+            function: 'handleVerifyLoginOtp',
+          },
+          error,
+        })
         return res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: 'No OTP sent for this user.' })
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Server Error' })
       }
-
-      const verifyHashResult = await verifyHash(String(otp), token.hashedOtp)
-      if (!verifyHashResult) {
-        return res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: 'Wrong OTP, please try again.' })
+      if (!user) {
+        logger.warn({
+          message: info.message,
+          meta: {
+            function: 'handleVerifyLoginOtp',
+          },
+        })
+        return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json(info)
       }
-
-      const user = await User.findOne({ where: { username: email } })
-      const newParticipant = false
-      let jwt
-      let displayname
-      if (user) {
-        jwt = this.authService.createToken(user.id)
-        displayname = user.displayname
-      } else {
-        const officer = await this.userService.createOfficer(email)
-        displayname = officer.displayname
-        jwt = this.authService.createToken(officer.id)
-      }
-
-      await Token.destroy({ where: { contact: email } })
-      return res
-        .status(StatusCodes.OK)
-        .json({ token: jwt, newParticipant, displayname })
-    } catch (error) {
-      logger.error({
-        message: 'Error while verifying login OTP',
-        meta: {
-          function: 'handleVerifyLoginOtp',
-        },
+      req.logIn(user, (error) => {
+        if (error) {
+          logger.error({
+            message: 'Error while logging in',
+            meta: {
+              function: 'handleVerifyLoginOtp',
+            },
+            error,
+          })
+          return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ message: 'Server Error' })
+        }
+        return res.sendStatus(StatusCodes.OK)
       })
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: 'Server Error' })
-    }
+    })(req, res, next)
   }
 }

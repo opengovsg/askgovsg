@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser'
 import helmet from 'helmet'
 import cors from 'cors'
 import compression from 'compression'
@@ -42,13 +41,25 @@ import { requestLoggingMiddleware } from './logging/request-logging'
 import { helmetOptions } from './helmet-options'
 import { emailValidator } from './email-validator'
 import { EnquiryService } from '../modules/enquiry/enquiry.service'
-import { Agency, Answer, Post, PostTag, Tag, User } from './sequelize'
+import {
+  Agency,
+  Answer,
+  Post,
+  PostTag,
+  Tag,
+  User,
+  sequelize,
+} from './sequelize'
 import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
 
 import { s3, bucket, host } from './s3'
 import { FileController } from '../modules/file/file.controller'
 import { FileService } from '../modules/file/file.service'
 import { datadogConfig } from './config/datadog'
+
+import session from 'express-session'
+import init from 'connect-session-sequelize'
+import passportConfig from './passport/passport'
 
 export { sequelize } from './sequelize'
 export const app = express()
@@ -67,8 +78,23 @@ app.use(cors({ origin: 'http://localhost:5000' }))
 app.use(helmet(helmetOptions))
 
 // body-parser
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+
+// passport and session
+const SequelizeStore = init(session.Store)
+const sequelizeStore = new SequelizeStore({
+  db: sequelize,
+})
+app.use(
+  session({
+    secret: authConfig.sessionSecret,
+    resave: false,
+    saveUninitialized: true,
+    store: sequelizeStore,
+  }),
+)
+passportConfig(app)
 
 // all the api routes
 // This must come before app.get('*') to avoid overriding API routes
@@ -85,7 +111,7 @@ const transport = createTransport(mailOptions)
 
 const agencyService = new AgencyService()
 const authService = new AuthService({ emailValidator, jwtSecret })
-const authMiddleware = new AuthMiddleware({ jwtSecret })
+const authMiddleware = new AuthMiddleware()
 const mailService = new MailService({
   transport,
   mailFromEmail: mailConfig.senderConfig.mailFrom,
@@ -109,7 +135,7 @@ const apiOptions = {
       authService,
       userService: new UserService(),
     }),
-    middleware: authMiddleware,
+    authMiddleware,
   },
   env: new EnvController({ bannerMessage, googleAnalyticsId, fullStoryOrgId }),
   post: {
