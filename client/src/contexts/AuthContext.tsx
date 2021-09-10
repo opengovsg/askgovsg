@@ -1,18 +1,14 @@
 import { AxiosError } from 'axios'
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { useMutation, UseMutationResult } from 'react-query'
+import { User } from '~shared/types/base/user'
 import { ApiClient } from '../api'
-import { useLocalStorage } from '../hooks/useLocalStorage'
 import * as AuthService from '../services/AuthService'
 import { LoadUserDto } from '~shared/types/api'
 
 interface AuthContextProps {
-  user: unknown
-  verifyOtp: UseMutationResult<
-    { displayName: string; newParticipant: boolean; token: string },
-    unknown,
-    { email: string; otp: string }
-  >
+  user: User | null
+  verifyOtp: UseMutationResult<void, unknown, { email: string; otp: string }>
   logout: () => void
 }
 
@@ -30,7 +26,6 @@ export const AuthProvider = ({
   children: JSX.Element
 }): JSX.Element => {
   const [user, setUser] = useState<LoadUserDto>(null)
-  const [token, setToken] = useLocalStorage<string>('token')
 
   const whoami = () => {
     ApiClient.get<LoadUserDto>('/auth')
@@ -40,33 +35,26 @@ export const AuthProvider = ({
         }
       })
       .catch((reason: AxiosError) => {
-        // Catch 401 which signals an unauthorized user, which is not an issue
-        if (!(reason.response && reason.response.status === 401)) {
+        // Catch 400 or 401 which signals an unauthorized user, which is not an issue
+        if (
+          !(
+            reason.response &&
+            (reason.response.status === 401 || reason.response.status === 400)
+          )
+        ) {
           throw reason
         }
       })
   }
 
-  const setApiClientToken = (token?: string) => {
-    if (token) {
-      ApiClient.defaults.headers.common['x-auth-token'] = token
-    } else {
-      delete ApiClient.defaults.headers.common['x-auth-token']
-    }
-  }
-
   const verifyOtp = useMutation(AuthService.verifyOtp, {
-    onSuccess: ({ token: receivedToken }) => {
-      setToken(receivedToken)
-      setApiClientToken(receivedToken)
+    onSuccess: () => {
       whoami()
     },
   })
 
   const logout = () => {
     setUser(null)
-    setToken(undefined)
-    setApiClientToken(undefined)
   }
 
   const auth = {
@@ -76,7 +64,6 @@ export const AuthProvider = ({
   }
 
   const initialize = () => {
-    setApiClientToken(token)
     whoami()
   }
 
