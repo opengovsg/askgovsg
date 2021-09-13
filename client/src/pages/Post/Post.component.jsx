@@ -132,7 +132,7 @@ const Post = () => {
             </div>
           </div>
           <VStack
-            maxW={{ base: 'auto', lg: '240px' }}
+            minW={{ base: 'auto', lg: '240px' }}
             pt={{ base: '0px', lg: '152px' }}
             px={{ base: '20px', lg: '0px' }}
             pb="40px"
