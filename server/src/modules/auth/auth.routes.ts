@@ -23,9 +23,9 @@ export const routeAuth = ({
   router.get('/', authMiddleware.authenticate, controller.loadUser)
 
   /**
-   * Verify jwt received by the user and set the JWT
+   * Verify otp received by the user and store the session
    * @route   POST /api/auth/verifyotp
-   * @returns 200 with JWT if successful login
+   * @returns 200 if successful login
    * @returns 400 if validation of body fails
    * @returns 401 if no otp was sent for user
    * @returns 401 if wrong otp

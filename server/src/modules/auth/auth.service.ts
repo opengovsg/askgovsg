@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken'
 import minimatch from 'minimatch'
 
 import { PermissionType, PostStatus } from '~shared/types/base'
@@ -26,17 +25,9 @@ export type PostWithRelations = Post & {
 
 export class AuthService {
   private emailValidator
-  private jwtSecret
 
-  constructor({
-    emailValidator,
-    jwtSecret,
-  }: {
-    emailValidator: minimatch.IMinimatch
-    jwtSecret: string
-  }) {
+  constructor({ emailValidator }: { emailValidator: minimatch.IMinimatch }) {
     this.emailValidator = emailValidator
-    this.jwtSecret = jwtSecret
   }
 
   /**
@@ -129,7 +120,7 @@ export class AuthService {
   /**
    * Check if a user is able to view the post
    * @param post post to be viewed
-   * @param token JWT of the user
+   * @param userId id of user
    * @returns true if user can view post
    */
   verifyUserCanViewPost = async (

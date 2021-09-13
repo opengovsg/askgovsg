@@ -204,6 +204,10 @@ export class AuthController {
     })(req, res)
   }
 
+  /**
+   * Logout
+   * @returns 200 if logged out
+   */
   logout: ControllerHandler = (req, res) => {
     req.logout()
     res.sendStatus(StatusCodes.OK)

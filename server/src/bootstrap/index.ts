@@ -100,7 +100,6 @@ passportConfig(app)
 // This must come before app.get('*') to avoid overriding API routes
 const bannerMessage = bannerConfig.siteWideMessage
 const googleAnalyticsId = googleAnalyticsConfig.googleAnalyticsId
-const jwtSecret = authConfig.jwtSecret
 const fullStoryOrgId = fullStoryConfig.fullStoryOrgId
 
 const mailOptions = {
@@ -110,7 +109,7 @@ const mailOptions = {
 const transport = createTransport(mailOptions)
 
 const agencyService = new AgencyService()
-const authService = new AuthService({ emailValidator, jwtSecret })
+const authService = new AuthService({ emailValidator })
 const authMiddleware = new AuthMiddleware()
 const mailService = new MailService({
   transport,
