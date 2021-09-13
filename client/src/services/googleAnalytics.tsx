@@ -5,6 +5,7 @@ const GA_USER_EVENTS = {
   ABANDONED: 'Abandoned Search',
   SUBMIT_ENQUIRY: 'Submit Enquiry',
   OPEN_ENQUIRY: 'Open Enquiry',
+  CLICK_TAG: 'Click Tag',
 }
 
 const initializeGA = (trackingId: string): void => {
