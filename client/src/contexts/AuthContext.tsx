@@ -54,6 +54,7 @@ export const AuthProvider = ({
   })
 
   const logout = () => {
+    ApiClient.get('/auth/logout')
     setUser(null)
   }
 
