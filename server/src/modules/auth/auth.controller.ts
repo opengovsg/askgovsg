@@ -54,9 +54,7 @@ export class AuthController {
           userId: req.user?.id,
         },
       })
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: 'Server Error' })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(null)
     }
     try {
       const user = await this.userService.loadUser(id)
@@ -70,9 +68,7 @@ export class AuthController {
         },
         error,
       })
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: 'Server Error' })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(null)
     }
   }
 
@@ -146,10 +142,10 @@ export class AuthController {
   }
 
   /**
-   * Verify jwt received by the user and set the JWT
+   * Verify otp received by the user
    * @body email email of user
    * @body otp otp of user
-   * @returns 200 with JWT if successful login
+   * @returns 200 if successful login
    * @returns 400 if validation of body fails
    * @returns 401 if no otp was sent for user
    * @returns 401 if wrong otp
@@ -205,6 +201,6 @@ export class AuthController {
         }
         return res.sendStatus(StatusCodes.OK)
       })
-    })(req, res, next)
+    })(req, res)
   }
 }
