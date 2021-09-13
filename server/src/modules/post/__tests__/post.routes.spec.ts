@@ -38,7 +38,6 @@ describe('/posts', () => {
 
   // Set up service, controller and route
   const authService = {
-    getOfficerUser: jest.fn(),
     checkIfWhitelistedOfficer: jest.fn(),
     hasPermissionToAnswer: jest.fn(),
     getDisallowedTagsForUser: jest.fn(),

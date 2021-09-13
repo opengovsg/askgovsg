@@ -8,7 +8,6 @@ import { PostController } from '../post.controller'
 describe('PostController', () => {
   const path = '/posts'
   const authService = {
-    getOfficerUser: jest.fn(),
     checkIfWhitelistedOfficer: jest.fn(),
     hasPermissionToAnswer: jest.fn(),
     getDisallowedTagsForUser: jest.fn(),

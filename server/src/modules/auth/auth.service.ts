@@ -31,25 +31,6 @@ export class AuthService {
   }
 
   /**
-   * Get the user from userId only if user has validated email
-   * @param userId userId of the user to retrieve
-   * @returns user with the user id
-   */
-  getOfficerUser = async (userId: number): Promise<User> => {
-    if (!userId) {
-      throw new Error('User must be signed in')
-    }
-    const user = await UserModel.findOne({ where: { id: userId } })
-    if (!user) {
-      throw new Error('Invalid user ID')
-    }
-    if (!this.isOfficerEmail(user.username)) {
-      throw new Error('User is not public officer')
-    }
-    return user
-  }
-
-  /**
    * Get the user from username only if user has validated email
    * @param username username of the user to retrieve
    * @returns user with the username
