@@ -24,6 +24,8 @@ import { BiErrorCircle } from 'react-icons/bi'
 import { Enquiry } from '../../services/MailService'
 import ReCAPTCHA from 'react-google-recaptcha'
 import SearchBox from '../SearchBox/SearchBox.component'
+import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
+import * as FullStory from '@fullstory/browser'
 interface EnquiryModalProps extends Pick<ModalProps, 'isOpen' | 'onClose'> {
   onConfirm: (enquiry: Enquiry, captchaResponse: string) => Promise<void>
   agency: Agency
@@ -39,12 +41,25 @@ export const EnquiryModal = ({
   const { errors: formErrors } = formState
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [captchaResponse, setCaptchaResponse] = useState<string | null>(null)
+  const googleAnalytics = useGoogleAnalytics()
+  const agencyName = agency.shortname
+
+  const sendSubmitEnquiryEventToAnalytics = (agencyName: string) => {
+    googleAnalytics.sendUserEvent(
+      googleAnalytics.GA_USER_EVENTS.SUBMIT_ENQUIRY,
+      agencyName,
+    )
+    FullStory.event(googleAnalytics.GA_USER_EVENTS.SUBMIT_ENQUIRY, {
+      enquiry_str: agencyName,
+    })
+  }
 
   const onSubmit: SubmitHandler<Enquiry> = async (enquiry) => {
     if (captchaResponse) {
       setIsLoading(true)
       await onConfirm(enquiry, captchaResponse)
       setIsLoading(false)
+      sendSubmitEnquiryEventToAnalytics(agencyName)
       reset()
       onClose()
     }
