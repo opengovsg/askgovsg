@@ -71,7 +71,7 @@ export const routeAuth = ({
    * @returns 200 if logged out
    * @access  private
    */
-  router.get('/logout', controller.logout)
+  router.get('/logout', controller.handleLogout)
 
   return router
 }
