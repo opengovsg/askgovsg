@@ -7,7 +7,11 @@ import {
   User as UserModel,
   Permission as PermissionModel,
 } from '../../../models'
-import { PostStatus, TagType } from '../../../../../shared/types/base'
+import {
+  PermissionType,
+  PostStatus,
+  TagType,
+} from '../../../../../shared/types/base'
 import { SortType } from '../../../types/sort-type'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { PostService } from '../post.service'
@@ -57,7 +61,7 @@ describe('PostService', () => {
     await Permission.create({
       userId: mockUser.id,
       tagId: mockTag.id,
-      role: 'Answerer',
+      role: PermissionType.Answerer,
     })
   })
 
