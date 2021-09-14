@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom'
 import Select from 'react-select'
 import { RichTextEditor } from '../../../components/RichText/RichTextEditor.component'
 import { Tag } from '../../../services/tag.service'
-import { TagType } from '../../../types/tag-type'
+import { TagType } from '~shared/types/base'
 import './AskForm.styles.scss'
 
 export type AskFormSubmission = {

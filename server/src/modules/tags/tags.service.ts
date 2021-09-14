@@ -5,11 +5,10 @@ import {
   Tag as TagModel,
   User as UserModel,
 } from '../../bootstrap/sequelize'
-import { PostStatus } from '../../../../shared/types/base'
+import { PostStatus, TagType } from '../../../../shared/types/base'
 import { countBy, uniqBy } from 'lodash'
 import { Tag } from '../../models'
 import { PostWithUserTagRelations } from '../post/post.service'
-import { TagType } from '../../types/tag-type'
 
 export class TagsService {
   private postsCountLiteral: ProjectionAlias = [
@@ -58,7 +57,7 @@ export class TagsService {
   listTagsUsedByUser = async (userId: number): Promise<Tag[]> => {
     const userAgencyTags = await TagModel.findAll({
       where: {
-        tagType: TagType.AGENCY,
+        tagType: TagType.Agency,
       },
       include: {
         model: UserModel,
@@ -96,7 +95,7 @@ export class TagsService {
 
     const allowedTopicTags = await TagModel.findAll({
       where: {
-        tagType: TagType.TOPIC,
+        tagType: TagType.Topic,
       },
       include: {
         model: UserModel,

@@ -25,7 +25,7 @@ import {
   GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/tag.service'
 import { getRedirectURL } from '../../util/urlparser'
-import { TagType } from '../../types/tag-type'
+import { TagType } from '~shared/types/base'
 
 const TagPanel = (): ReactElement => {
   const { agency: agencyShortName } = useParams<{ agency: string }>()

@@ -14,7 +14,7 @@ import {
 } from '../../../models'
 import { PostStatus } from '../../../../../shared/types/base'
 import { SortType } from '../../../types/sort-type'
-import { TagType } from '../../../types/tag-type'
+import { TagType } from '../../../../../shared/types/base'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { PostController } from '../post.controller'
 import { routePosts } from '../post.routes'
@@ -73,7 +73,7 @@ describe('/posts', () => {
       description: '',
       link: '',
       hasPilot: true,
-      tagType: TagType.TOPIC,
+      tagType: TagType.Topic,
     })
     for (let title = 1; title <= 20; title++) {
       const mockPost = await Post.create({
