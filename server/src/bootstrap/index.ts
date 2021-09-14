@@ -48,6 +48,7 @@ import {
   PostTag,
   Tag,
   User,
+  Token,
   sequelize,
 } from './sequelize'
 import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
@@ -133,6 +134,7 @@ const apiOptions = {
       mailService,
       authService,
       userService: new UserService(),
+      Token,
     }),
     authMiddleware,
   },

@@ -4,7 +4,6 @@ import passport from 'passport'
 import { Message } from 'src/types/message-type'
 import { ErrorDto, LoadUserDto } from '~shared/types/api'
 import { createLogger } from '../../bootstrap/logging'
-import { Token } from '../../bootstrap/sequelize'
 import { UserService } from '../../modules/user/user.service'
 import { ControllerHandler } from '../../types/response-handler'
 import { generateRandomDigits, hashData } from '../../util/hash'
@@ -20,25 +19,29 @@ export class AuthController {
   private mailService: Public<MailService>
   private authService: Public<AuthService>
   private userService: Public<UserService>
+  private Token: ModelCtor<Token>
 
   constructor({
     mailService,
     authService,
     userService,
+    Token,
   }: {
     mailService: Public<MailService>
     authService: Public<AuthService>
     userService: Public<UserService>
+    Token: ModelCtor<Token>
   }) {
     this.mailService = mailService
     this.authService = authService
     this.userService = userService
+    this.Token = Token
   }
 
   /**
-   * Fetch logged in user details
+   * Fetch logged in user details after being authenticated.
    * @returns 200 with user details
-   * @returns 401 if user not signed in
+   * @returns 500 if user id not found
    * @returns 500 if database error
    */
   loadUser: ControllerHandler<unknown, LoadUserDto | ErrorDto> = async (
@@ -61,7 +64,7 @@ export class AuthController {
       return res.status(StatusCodes.OK).json(user)
     } catch (error) {
       logger.error({
-        message: 'Error while loading user',
+        message: 'Database Error while loading user',
         meta: {
           function: 'loadUser',
           userId: req.user?.id,
@@ -123,8 +126,8 @@ export class AuthController {
     const ip = req.header('CF-Connecting-IP') || req.ip
 
     try {
-      await Token.destroy({ where: { contact: email } })
-      await Token.create({ contact: email, hashedOtp })
+      await this.Token.destroy({ where: { contact: email } })
+      await this.Token.create({ contact: email, hashedOtp })
       await this.mailService.sendLoginOtp(email, otp, ip)
     } catch (error) {
       logger.error({
@@ -147,8 +150,7 @@ export class AuthController {
    * @body otp otp of user
    * @returns 200 if successful login
    * @returns 400 if validation of body fails
-   * @returns 401 if no otp was sent for user
-   * @returns 401 if wrong otp
+   * @returns 422 if no otp was sent for user or wrong otp
    * @returns 500 if database error
    */
   handleVerifyLoginOtp: ControllerHandler<
@@ -208,7 +210,7 @@ export class AuthController {
    * Logout
    * @returns 200 if logged out
    */
-  logout: ControllerHandler = (req, res) => {
+  handleLogout: ControllerHandler = (req, res) => {
     req.logout()
     res.sendStatus(StatusCodes.OK)
   }
