@@ -1,6 +1,7 @@
 import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
 import passport from 'passport'
+import { ModelCtor } from 'sequelize/types'
 import { Message } from 'src/types/message-type'
 import { ErrorDto, LoadUserDto } from '~shared/types/api'
 import { createLogger } from '../../bootstrap/logging'
