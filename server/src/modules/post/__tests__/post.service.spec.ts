@@ -7,7 +7,7 @@ import {
   User as UserModel,
   Permission as PermissionModel,
 } from '../../../models'
-import { PostStatus } from '../../../types/post-status'
+import { PostStatus } from '../../../../../shared/types/base'
 import { SortType } from '../../../types/sort-type'
 import { TagType } from '../../../types/tag-type'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
@@ -49,7 +49,7 @@ describe('PostService', () => {
     for (let title = 1; title <= 20; title++) {
       const mockPost = await Post.create({
         title: title.toString(),
-        status: PostStatus.PUBLIC,
+        status: PostStatus.Public,
         userId: mockUser.id,
       })
       mockPosts.push(mockPost)

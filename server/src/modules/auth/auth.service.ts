@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import minimatch from 'minimatch'
 
-import { PostStatus } from '../../types/post-status'
+import { PostStatus } from '../../../../shared/types/base'
 import {
   User as UserModel,
   Permission as PermissionModel,
@@ -187,7 +187,7 @@ export class AuthService {
     token: string,
   ): Promise<void> => {
     // If post is public, anyone can view
-    if (post.status === PostStatus.PUBLIC) return
+    if (post.status === PostStatus.Public) return
 
     // If private or archived, must be logged in
     const userId = await this.getUserIdFromToken(token)

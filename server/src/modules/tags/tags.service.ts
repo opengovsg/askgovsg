@@ -5,7 +5,7 @@ import {
   Tag as TagModel,
   User as UserModel,
 } from '../../bootstrap/sequelize'
-import { PostStatus } from '../../types/post-status'
+import { PostStatus } from '../../../../shared/types/base'
 import { countBy, uniqBy } from 'lodash'
 import { Tag } from '../../models'
 import { PostWithUserTagRelations } from '../post/post.service'
@@ -70,7 +70,7 @@ export class TagsService {
 
     const postsWithAgencyTags = await PostModel.findAll({
       where: {
-        status: PostStatus.PUBLIC,
+        status: PostStatus.Public,
       },
       include: {
         model: TagModel,
@@ -129,7 +129,7 @@ export class TagsService {
     const postsWithAgencyTag = await PostModel.findAll({
       where: {
         // TODO: clarify whether we need to get Posts that have been deleted/archived
-        status: PostStatus.PUBLIC,
+        status: PostStatus.Public,
       },
       include: {
         model: TagModel,

@@ -1,7 +1,7 @@
 import { z } from 'zod'
+import { BaseModel } from './common'
 
-export const User = z.object({
-  id: z.number(),
+export const User = BaseModel.extend({
   username: z.string(),
   displayname: z.string(),
   views: z.number().nonnegative(),
