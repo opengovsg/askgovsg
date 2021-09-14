@@ -15,6 +15,7 @@
   "include": [
     "src"
   ],
+  "exclude": ["**/__tests__/"],
   "references": [
     { "path": "../shared" }
   ]
