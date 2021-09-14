@@ -1,7 +1,7 @@
 import { Post } from '../models'
 
 export type PostEditType = {
-  id: string
+  id: number
   tagname: Array<string>
   description: string
   title: string

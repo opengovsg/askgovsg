@@ -55,7 +55,7 @@ export class TagsService {
    * @param userId id of the user
    * @returns list of tags
    */
-  listTagsUsedByUser = async (userId: string): Promise<Tag[]> => {
+  listTagsUsedByUser = async (userId: number): Promise<Tag[]> => {
     const userAgencyTags = await TagModel.findAll({
       where: {
         tagType: TagType.AGENCY,
@@ -121,7 +121,7 @@ export class TagsService {
    * @param agencyId id of agency
    * @returns list of tags
    */
-  listTagsUsedByAgency = async (agencyId: string): Promise<Tag[]> => {
+  listTagsUsedByAgency = async (agencyId: number): Promise<Tag[]> => {
     const agency = await AgencyModel.findByPk(agencyId)
     // If agency is not found, there are no tags used by it
     if (!agency) return []

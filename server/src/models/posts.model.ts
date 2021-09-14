@@ -5,7 +5,7 @@ import { Tag } from './tags.model'
 import { PostStatus } from '../types/post-status'
 
 export interface Post extends Model {
-  id: string
+  id: number
   title: string
   description?: string
   views: number
@@ -13,8 +13,8 @@ export interface Post extends Model {
 }
 
 export interface PostTag extends Model {
-  postId: string
-  tagId: string
+  postId: number
+  tagId: number
 }
 
 // constructor

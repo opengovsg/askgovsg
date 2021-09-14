@@ -9,8 +9,8 @@ import { Answer, Post } from '../../models'
 import { FindOptions } from 'sequelize/types'
 
 type AnswerWithRelations = Answer & {
-  postId: string
-  userId: string
+  postId: number
+  userId: number
 }
 
 type PostWithRelations = Post & {
@@ -20,7 +20,7 @@ type PostWithRelations = Post & {
 type AnswerJSON = Pick<Answer, 'body'> & {
   user: {
     displayname: string
-    id: string
+    id: number
     agency: {
       logo: string
     }
@@ -33,12 +33,12 @@ export class AnswersService {
    * @returns an array of answers
    */
   listAnswers = async (
-    postId: string,
+    postId: number,
   ): Promise<
     | {
         body: string
         username: string
-        userId: string
+        userId: number
         agencyLogo: string
       }[]
     | undefined
@@ -91,7 +91,7 @@ export class AnswersService {
   }: Pick<
     AnswerWithRelations,
     'body' | 'postId' | 'userId'
-  >): Promise<string> => {
+  >): Promise<number> => {
     const answer = await AnswerModel.create({
       postId: postId,
       body: body,
@@ -110,7 +110,7 @@ export class AnswersService {
    * @returns number of rows changed in answer database
    */
   updateAnswer = async (updatedAnswer: {
-    id: string
+    id: number
     body: string
   }): Promise<number> => {
     const res = await AnswerModel.update(
@@ -126,7 +126,7 @@ export class AnswersService {
    * will archive the post and will not touch the answer.
    * @param id of answer to delete
    */
-  deleteAnswer = async (id: string): Promise<void> => {
+  deleteAnswer = async (id: number): Promise<void> => {
     await AnswerModel.destroy({ where: { id: id } })
   }
 }

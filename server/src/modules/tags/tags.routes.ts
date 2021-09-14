@@ -40,7 +40,7 @@ export const routeTags = ({
    * @returns 400 with database error
    * @access  public
    */
-  router.get('/agency/:agencyId', controller.listTagsUsedByAgency)
+  router.get('/agency/:agencyId([0-9]+$)', controller.listTagsUsedByAgency)
 
   /**
    * Get a single tag by name

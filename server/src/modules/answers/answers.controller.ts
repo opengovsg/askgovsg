@@ -34,14 +34,16 @@ export class AnswersController {
     | {
         body: string
         username: string
-        userId: string
+        userId: number
         agencyLogo: string
       }[]
     | undefined
     | Message
   > = async (req, res) => {
     try {
-      const answers = await this.answersService.listAnswers(req.params.id)
+      const answers = await this.answersService.listAnswers(
+        Number(req.params.id),
+      )
       return res.status(StatusCodes.OK).json(answers)
     } catch (error) {
       logger.error({
@@ -70,7 +72,7 @@ export class AnswersController {
    */
   createAnswer: ControllerHandler<
     { id: string },
-    string | Message,
+    number | Message,
     { text: string },
     undefined
   > = async (req, res) => {
@@ -90,7 +92,7 @@ export class AnswersController {
       // Check permissions
       const hasAnswerPermissions = await this.authService.hasPermissionToAnswer(
         req.user.id,
-        req.params.id,
+        Number(req.params.id),
       )
       if (!hasAnswerPermissions) {
         return res
@@ -100,8 +102,8 @@ export class AnswersController {
       // Save Answer in the database
       const data = await this.answersService.createAnswer({
         body: req.body.text,
-        userId: req.user.id,
-        postId: req.params.id,
+        userId: Number(req.user.id),
+        postId: Number(req.params.id),
       })
 
       return res.status(StatusCodes.OK).json(data)
@@ -145,7 +147,7 @@ export class AnswersController {
       // Update Answer in the database
       const data = await this.answersService.updateAnswer({
         body: req.body.text,
-        id: req.params.id,
+        id: Number(req.params.id),
       })
       return res.status(StatusCodes.OK).json(data)
     } catch (error) {
@@ -175,7 +177,7 @@ export class AnswersController {
     res,
   ) => {
     try {
-      await this.answersService.deleteAnswer(req.params.id)
+      await this.answersService.deleteAnswer(Number(req.params.id))
       return res.status(StatusCodes.OK).end()
     } catch (error) {
       logger.error({

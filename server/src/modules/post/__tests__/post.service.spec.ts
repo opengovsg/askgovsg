@@ -117,7 +117,7 @@ describe('PostService', () => {
     it('should return error when the user ID is invalid', async () => {
       try {
         await postService.listAnswerablePosts({
-          userId: '2',
+          userId: 2,
           sort: SortType.Top,
           withAnswers: false,
         })

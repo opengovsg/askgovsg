@@ -97,7 +97,9 @@ export class TagsController {
   > = async (req, res) => {
     const { agencyId } = req.params
     try {
-      const result = await this.tagsService.listTagsUsedByAgency(agencyId)
+      const result = await this.tagsService.listTagsUsedByAgency(
+        Number(agencyId),
+      )
       return res.json(result)
     } catch (error) {
       logger.error({
