@@ -69,6 +69,6 @@ export const createPost = async (
   )
 }
 
-export const deletePost = async (postId: string): Promise<unknown> => {
+export const deletePost = async (postId: number): Promise<unknown> => {
   return ApiClient.delete(`${POST_API_BASE}/${postId}`).then(({ data }) => data)
 }
