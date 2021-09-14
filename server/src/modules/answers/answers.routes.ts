@@ -21,7 +21,7 @@ export const routeAnswers = ({
    * @returns 500 if database error occurs
    * @access  Public
    */
-  router.get('/:id', controller.listAnswers)
+  router.get('/:id([0-9]+$)', controller.listAnswers)
 
   /**
    * Create an answer attached to a post
@@ -34,7 +34,7 @@ export const routeAnswers = ({
    * @access  Private
    */
   router.post(
-    '/:id',
+    '/:id([0-9]+$)',
     [authenticate, check('text', 'Answer is required').not().isEmpty()],
     controller.createAnswer,
   )
@@ -48,7 +48,7 @@ export const routeAnswers = ({
    * @access  Private
    */
   router.put(
-    '/:id',
+    '/:id([0-9]+$)',
     [
       authenticate,
       checkOwnership,
@@ -65,6 +65,10 @@ export const routeAnswers = ({
    * @returns 500 on database error
    * @access  Private
    */
-  router.delete('/:id', [authenticate, checkOwnership], controller.deleteAnswer)
+  router.delete(
+    '/:id([0-9]+$)',
+    [authenticate, checkOwnership],
+    controller.deleteAnswer,
+  )
   return router
 }

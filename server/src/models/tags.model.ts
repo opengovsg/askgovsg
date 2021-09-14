@@ -3,7 +3,7 @@ import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
 import { TagType } from '../types/tag-type'
 
 export interface Tag extends Model {
-  id: string
+  id: number
   tagname: string
   description: string
   link: string

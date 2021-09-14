@@ -34,7 +34,7 @@ export class EnquiryController {
     unknown,
     Message,
     {
-      agencyId: string[]
+      agencyId: number[]
       enquiry: Enquiry
       captchaResponse: string
     }

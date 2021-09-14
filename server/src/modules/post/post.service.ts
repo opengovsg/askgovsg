@@ -298,7 +298,7 @@ export class PostService {
     page,
     size,
   }: {
-    userId: string
+    userId: number
     sort: SortType
     withAnswers: boolean
     tags?: string[]
@@ -447,9 +447,9 @@ export class PostService {
   createPost = async (newPost: {
     title: string
     description: string
-    userId: string
+    userId: number
     tagname: string[]
-  }): Promise<string> => {
+  }): Promise<number> => {
     const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
 
     if (newPost.tagname.length !== tagList.length) {
@@ -482,7 +482,7 @@ export class PostService {
    * @param id Post to be deleted
    * @returns void if successful
    */
-  deletePost = async (id: string): Promise<void> => {
+  deletePost = async (id: number): Promise<void> => {
     const update = await this.Post.update(
       { status: 'ARCHIVED' },
       { where: { id: id } },

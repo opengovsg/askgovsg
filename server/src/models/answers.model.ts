@@ -4,7 +4,7 @@ import { User } from './users.model'
 import { Post } from './posts.model'
 
 export interface Answer extends Model {
-  id: string
+  id: number
   body: string
 }
 

@@ -1,7 +1,7 @@
 import { ApiClient } from '../api'
 
 export type Agency = {
-  id: string
+  id: number
   email: string
   shortname: string
   longname: string

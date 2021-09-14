@@ -231,7 +231,7 @@ export class PostController {
    */
   createPost: ControllerHandler<
     undefined,
-    { data: string } | Message,
+    { data: number } | Message,
     {
       title: string
       tagname: string[]
@@ -297,7 +297,7 @@ export class PostController {
    * @return 500 if database error
    */
   deletePost: ControllerHandler<{ id: string }, Message> = async (req, res) => {
-    const postId = req.params.id
+    const postId = Number(req.params.id)
     try {
       const userId = await this.authService.getUserIdFromToken(
         req.header('x-auth-token') ?? '',
@@ -348,7 +348,7 @@ export class PostController {
     UpdatePostRequestDto,
     undefined
   > = async (req, res) => {
-    const postId = req.params.id
+    const postId = Number(req.params.id)
     try {
       const userId = await this.authService.getUserIdFromToken(
         req.header('x-auth-token') ?? '',

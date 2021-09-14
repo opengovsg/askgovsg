@@ -10,7 +10,7 @@ import { TagType } from '../types/tag-type'
 import { StatusCodes } from 'http-status-codes'
 
 type AnswerWithRelations = Answer & {
-  userId: string
+  userId: number
   post: Post & {
     tags: Tag[]
   }
@@ -31,7 +31,6 @@ const checkOwnership = async (
       },
     ],
   })) as AnswerWithRelations
-
   if (!results) {
     return res
       .status(StatusCodes.BAD_REQUEST)

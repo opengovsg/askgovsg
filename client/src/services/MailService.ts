@@ -7,8 +7,7 @@ export type Enquiry = {
 }
 
 export type Mail = {
-  // TODO change string to number. Currently aligned with AgencyService
-  agencyId: Array<string>
+  agencyId: number[]
   enquiry: Enquiry
   captchaResponse: string
 }
