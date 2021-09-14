@@ -20,7 +20,7 @@ export class EnquiryService {
     agencyId,
     enquiry,
   }: {
-    agencyId: Array<string>
+    agencyId: number[]
     enquiry: Enquiry
   }): Promise<void> => {
     const agencyEmail = await Promise.all(
