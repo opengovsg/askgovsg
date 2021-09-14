@@ -5,6 +5,7 @@ import {
   GetSinglePostDto,
   UpdatePostReqDto,
   UpdatePostResDto,
+  GetPostsDto,
 } from '../api'
 
 const POST_API_BASE = '/posts'
@@ -24,8 +25,8 @@ export const listPosts = async (
   joinedTags?: string,
   page?: number,
   size?: number,
-): Promise<unknown> => {
-  return ApiClient.get(`${POST_API_BASE}`, {
+): Promise<GetPostsDto> => {
+  return ApiClient.get<GetPostsDto>(`${POST_API_BASE}`, {
     params: { sort, tags: joinedTags, page, size },
   }).then(({ data }) => data)
 }

@@ -17,6 +17,11 @@ export type GetSinglePostDto = Omit<BasePostDto, 'updatedAt'> & {
   user: Pick<UserBaseDto, 'displayname'>
 }
 
+export type GetPostsDto = {
+  posts: BasePostDto[]
+  totalItems: number
+}
+
 export type CreatePostReqDto = Pick<BasePostDto, 'title' | 'description'> & {
   tagname: string[]
 }
