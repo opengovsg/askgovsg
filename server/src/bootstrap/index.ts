@@ -90,7 +90,7 @@ app.use(
   session({
     secret: authConfig.sessionSecret,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store: sequelizeStore,
   }),
 )
