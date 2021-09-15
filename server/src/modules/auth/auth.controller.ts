@@ -205,7 +205,7 @@ export class AuthController {
         }
         return res.sendStatus(StatusCodes.OK)
       })
-    })(req, res)
+    })(req, res, next)
   }
 
   /**

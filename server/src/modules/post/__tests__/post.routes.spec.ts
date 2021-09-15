@@ -12,7 +12,7 @@ import {
   Tag as TagModel,
   User as UserModel,
 } from '../../../models'
-import { PermissionType, PostStatus, TagType } from '~shared/src/types/base'
+import { PermissionType, PostStatus, TagType } from '~shared/types/base'
 import { ControllerHandler } from '../../../types/response-handler'
 import { SortType } from '../../../types/sort-type'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
