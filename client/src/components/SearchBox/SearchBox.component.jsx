@@ -20,6 +20,7 @@ const SearchBox = ({
   handleAbandon = (_inputValue) => {},
   searchOnEnter = true,
   showSearchIcon = true,
+  agencyShortName,
   ...inputProps
 }) => {
   /*
@@ -28,7 +29,6 @@ const SearchBox = ({
   Use a separate query here to return all unfiltered posts for
   client-side search 
   */
-  const { agency: agencyShortName } = useParams()
   const { data } = useQuery(
     [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agencyShortName],
     // TODO: refactor to better split between when agencyShortName is present

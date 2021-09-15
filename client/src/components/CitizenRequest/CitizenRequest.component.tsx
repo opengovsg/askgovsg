@@ -7,7 +7,7 @@ import { useStyledToast } from '../StyledToast/StyledToast'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import * as FullStory from '@fullstory/browser'
 
-const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
+const CitizenRequest = ({ agency }: { agency?: Agency }): JSX.Element => {
   const toast = useStyledToast()
   const {
     onOpen: onEnquiryModalOpen,
@@ -15,14 +15,15 @@ const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
     isOpen: isEnquiryModalOpen,
   } = useDisclosure()
   const googleAnalytics = useGoogleAnalytics()
+  const agencyName = agency?.shortname || 'AskGov'
 
   const sendOpenEnquiryEventToAnalytics = () => {
     googleAnalytics.sendUserEvent(
       googleAnalytics.GA_USER_EVENTS.OPEN_ENQUIRY,
-      agency.shortname,
+      agencyName,
     )
     FullStory.event(googleAnalytics.GA_USER_EVENTS.OPEN_ENQUIRY, {
-      enquiry_str: agency.shortname,
+      enquiry_str: agencyName,
     })
   }
 
@@ -36,7 +37,7 @@ const CitizenRequest = ({ agency }: { agency: Agency }): JSX.Element => {
     captchaResponse: string,
   ): Promise<void> => {
     const mail: Mail = {
-      agencyId: agency.id ? [agency.id] : [],
+      agencyId: agency?.id ? [agency?.id] : [],
       enquiry: enquiry,
       captchaResponse: captchaResponse,
     }
