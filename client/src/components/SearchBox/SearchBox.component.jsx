@@ -60,7 +60,7 @@ const SearchBox = ({
     })
   }
   const sendSearchTimingToAnalytics = () => {
-    const timeToFirstSearch = new Date() - googleAnalytics.appLoadDate
+    const timeToFirstSearch = new Date() - googleAnalytics.appLoadTime
     googleAnalytics.sendTiming(
       'User',
       'Time to first search',
@@ -69,7 +69,7 @@ const SearchBox = ({
     FullStory.event('Search', {
       timeToFirstSearch_int: timeToFirstSearch,
     })
-    googleAnalytics.setIsFirstSearch(true)
+    googleAnalytics.isFirstSearch = true
   }
 
   placeholder = placeholder ?? 'How can we help you?'

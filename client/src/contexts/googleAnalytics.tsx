@@ -1,10 +1,4 @@
-import React, {
-  FC,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
+import { FC, createContext, useContext, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useEnvironment } from '../hooks/useEnvironment'
 import { GoogleAnalyticsService } from '../services/googleAnalytics'
@@ -17,6 +11,8 @@ const {
   sendUserEvent,
   sendTiming,
   sendException,
+  isFirstSearch,
+  appLoadTime,
 } = GoogleAnalyticsService
 
 type GoogleAnalyticsContextProps = Omit<
@@ -39,8 +35,6 @@ export const useGoogleAnalytics = (): GoogleAnalyticsContextProps => {
 
 export const GoogleAnalyticsProvider: FC = ({ children }) => {
   const location = useLocation()
-  const [isFirstSearch, setIsFirstSearch] = useState(false)
-  const [appLoadDate] = useState(new Date())
   const { data, isSuccess } = useEnvironment()
 
   useEffect(() => {
@@ -60,8 +54,7 @@ export const GoogleAnalyticsProvider: FC = ({ children }) => {
     sendTiming,
     sendException,
     isFirstSearch,
-    setIsFirstSearch,
-    appLoadDate,
+    appLoadTime,
   }
 
   return (

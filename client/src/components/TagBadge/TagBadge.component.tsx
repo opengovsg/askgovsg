@@ -1,10 +1,9 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import { getRedirectURL } from '../../util/urlparser'
 import './TagBadge.styles.scss'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import * as FullStory from '@fullstory/browser'
-import { TagType } from '../../types/tag-type'
+import { TagType } from '~shared/types/base'
 import { Agency } from '../../services/AgencyService'
 
 const TagBadge = ({
@@ -21,12 +20,20 @@ const TagBadge = ({
   const googleAnalytics = useGoogleAnalytics()
 
   const sendClickTagEventToAnalytics = () => {
+    const timeToTagClick = new Date().getTime() - googleAnalytics.appLoadTime
     googleAnalytics.sendUserEvent(
       googleAnalytics.GA_USER_EVENTS.CLICK_TAG,
       tagName,
+      timeToTagClick,
+    )
+    googleAnalytics.sendTiming(
+      'User',
+      'Time to first tag click',
+      timeToTagClick,
     )
     FullStory.event(googleAnalytics.GA_USER_EVENTS.CLICK_TAG, {
       tag_str: tagName,
+      timeToTagClick_int: timeToTagClick,
     })
   }
 
