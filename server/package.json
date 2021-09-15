@@ -88,6 +88,7 @@
     "sequelize-cli": "^6.2.0",
     "sqlite3": "^5.0.2",
     "supertest": "^6.1.6",
+    "supertest-session": "^4.1.0",
     "ts-jest": "^27.0.5",
     "ts-node-dev": "^1.1.6",
     "tsconfig-paths": "^3.11.0",
