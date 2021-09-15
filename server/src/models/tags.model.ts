@@ -1,5 +1,5 @@
 import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
-import { Tag as TagBaseDto, TagType } from '../../../shared/types/base'
+import { Tag as TagBaseDto, TagType } from '~shared/types/base'
 
 export interface Tag extends Model, TagBaseDto {}
 

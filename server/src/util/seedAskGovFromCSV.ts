@@ -7,7 +7,7 @@ import sequelize, {
   Agency,
   User,
 } from '../bootstrap/sequelize'
-import { PostStatus } from '../../../shared/types/base'
+import { PostStatus } from '~shared/types/base'
 
 import neatCsv from 'neat-csv'
 import { promises as fs } from 'fs'

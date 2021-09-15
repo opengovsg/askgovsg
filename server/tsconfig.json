@@ -5,12 +5,16 @@
     "lib": ["es6", "dom"],                          /* Specify library files to be included in the compilation. */
     "allowJs": true,                                /* Allow javascript files to be compiled. */
     "outDir": "./build",                     /* Redirect output structure to the directory. */
+    "baseUrl": "./",
     "strict": true,                                 /* Enable all strict type-checking options. */
     "noImplicitAny": true,                          /* Raise error on expressions and declarations with an implied 'any' type. */
     "esModuleInterop": true,                        /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
     "resolveJsonModule": true,                      /* Include modules imported with '.json' extension */
     "skipLibCheck": true,                           /* Skip type checking of declaration files. */
-    "forceConsistentCasingInFileNames": true        /* Disallow inconsistently-cased references to the same file. */
+    "forceConsistentCasingInFileNames": true,       /* Disallow inconsistently-cased references to the same file. */
+    "paths": {
+      "~shared/*": ["../shared/build/*"]
+    }
   },
   "include": [
     "src"
@@ -18,5 +22,8 @@
   "exclude": ["**/__tests__/"],
   "references": [
     { "path": "../shared" }
-  ]
+  ],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
 }

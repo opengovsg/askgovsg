@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "lint": "eslint . --quiet --fix --ext '.ts'",
-    "lint-ci": "eslint . --quiet --ext '.ts'",
+    "lint": "eslint src --quiet --fix --ext '.ts'",
+    "lint-ci": "eslint src --quiet --ext '.ts'",
     "lint-staged": "lint-staged"
   },
   "license": "MIT",

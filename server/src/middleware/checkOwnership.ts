@@ -6,7 +6,7 @@ import {
 } from '../bootstrap/sequelize'
 import { Request, Response, NextFunction } from 'express'
 import { Answer, Post, Tag } from '../models'
-import { TagType } from '../../../shared/types/base'
+import { TagType } from '~shared/types/base'
 import { StatusCodes } from 'http-status-codes'
 
 type AnswerWithRelations = Answer & {
