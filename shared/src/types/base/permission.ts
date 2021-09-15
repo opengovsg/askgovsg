@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { SequelizeTimestamps } from './common'
+import { HasSequelizeTimestamps } from './common'
 
 export enum PermissionType {
   Answerer = 'answerer',
@@ -8,7 +8,7 @@ export enum PermissionType {
 
 // Permission table has no id, so extend from
 // Timestamps instead of BaseModel
-export const Permission = SequelizeTimestamps.extend({
+export const Permission = HasSequelizeTimestamps.extend({
   role: z.nativeEnum(PermissionType),
   tagId: z.number(),
   userId: z.number(),
