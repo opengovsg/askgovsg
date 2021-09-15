@@ -4,6 +4,7 @@ import { useMutation, UseMutationResult } from 'react-query'
 import { ApiClient } from '../api'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import * as AuthService from '../services/AuthService'
+import { LoadUserDto } from '~shared/types/api'
 
 interface AuthContextProps {
   user: unknown
@@ -28,12 +29,11 @@ export const AuthProvider = ({
 }: {
   children: JSX.Element
 }): JSX.Element => {
-  const [user, setUser] = useState<Record<string, unknown> | null>(null)
+  const [user, setUser] = useState<LoadUserDto>(null)
   const [token, setToken] = useLocalStorage<string>('token')
 
   const whoami = () => {
-    // TODO: type the response/user
-    ApiClient.get<{ data: Record<string, unknown> } | null>('/auth')
+    ApiClient.get<LoadUserDto>('/auth')
       .then(({ data }) => {
         if (data) {
           setUser(data)
