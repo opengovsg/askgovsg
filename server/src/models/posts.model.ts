@@ -2,19 +2,14 @@ import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
 
 import { User } from './users.model'
 import { Tag } from './tags.model'
-import { PostStatus } from '../types/post-status'
+import { Post as PostBaseDto, PostStatus } from '../../../shared/types/base'
 
-export interface Post extends Model {
-  id: string
-  title: string
-  description?: string
-  views: number
-  status: string
-}
+// TODO (#225): Remove this and replace ModelCtor below with ModelDefined
+export interface Post extends Model, PostBaseDto {}
 
 export interface PostTag extends Model {
-  postId: string
-  tagId: string
+  postId: number
+  tagId: number
 }
 
 // constructor
@@ -37,9 +32,9 @@ export const definePostAndPostTag = (
     },
     status: {
       type: DataTypes.ENUM(
-        PostStatus.PUBLIC,
-        PostStatus.PRIVATE,
-        PostStatus.ARCHIVED,
+        PostStatus.Public,
+        PostStatus.Private,
+        PostStatus.Archived,
       ),
       allowNull: false,
     },

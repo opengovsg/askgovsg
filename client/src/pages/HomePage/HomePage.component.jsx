@@ -104,7 +104,9 @@ const HomePage = ({ match }) => {
             mx={agency ? 0 : 'auto'}
             maxW={{ base: '100%', xl: '80%' }}
           >
-            <SearchBoxComponent />
+            <SearchBoxComponent
+              agencyShortName={match.params.agency || agency?.shortname}
+            />
           </Box>
         </Flex>
       </Box>
@@ -225,19 +227,7 @@ const HomePage = ({ match }) => {
         </Box>
       </Flex>
       <Spacer />
-      <CitizenRequest
-        agency={
-          agency
-            ? agency
-            : {
-                id: '',
-                email: 'enquiries@ask.gov.sg',
-                shortname: 'AskGov',
-                longname: 'AskGov',
-                logo: '',
-              }
-        }
-      />
+      <CitizenRequest agency={agency} />
     </Flex>
   )
 }

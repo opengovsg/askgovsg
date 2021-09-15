@@ -115,7 +115,7 @@ export const routePosts = ({
    * @return 500 if database error
    * @access Private
    */
-  router.delete('/:id', controller.deletePost)
+  router.delete('/:id([0-9]+$)', controller.deletePost)
 
   /**
    * Update a post
@@ -127,7 +127,7 @@ export const routePosts = ({
    * @return 500 if database error
    * @access Private
    */
-  router.put('/:id', controller.updatePost)
+  router.put('/:id([0-9]+$)', controller.updatePost)
 
   return router
 }

@@ -5,11 +5,10 @@ import {
   Tag as TagModel,
   User as UserModel,
 } from '../../bootstrap/sequelize'
-import { PostStatus } from '../../types/post-status'
+import { PostStatus, TagType } from '../../../../shared/types/base'
 import { countBy, uniqBy } from 'lodash'
 import { Tag } from '../../models'
 import { PostWithUserTagRelations } from '../post/post.service'
-import { TagType } from '../../types/tag-type'
 
 export class TagsService {
   private postsCountLiteral: ProjectionAlias = [
@@ -55,10 +54,10 @@ export class TagsService {
    * @param userId id of the user
    * @returns list of tags
    */
-  listTagsUsedByUser = async (userId: string): Promise<Tag[]> => {
+  listTagsUsedByUser = async (userId: number): Promise<Tag[]> => {
     const userAgencyTags = await TagModel.findAll({
       where: {
-        tagType: TagType.AGENCY,
+        tagType: TagType.Agency,
       },
       include: {
         model: UserModel,
@@ -70,7 +69,7 @@ export class TagsService {
 
     const postsWithAgencyTags = await PostModel.findAll({
       where: {
-        status: PostStatus.PUBLIC,
+        status: PostStatus.Public,
       },
       include: {
         model: TagModel,
@@ -96,7 +95,7 @@ export class TagsService {
 
     const allowedTopicTags = await TagModel.findAll({
       where: {
-        tagType: TagType.TOPIC,
+        tagType: TagType.Topic,
       },
       include: {
         model: UserModel,
@@ -121,7 +120,7 @@ export class TagsService {
    * @param agencyId id of agency
    * @returns list of tags
    */
-  listTagsUsedByAgency = async (agencyId: string): Promise<Tag[]> => {
+  listTagsUsedByAgency = async (agencyId: number): Promise<Tag[]> => {
     const agency = await AgencyModel.findByPk(agencyId)
     // If agency is not found, there are no tags used by it
     if (!agency) return []
@@ -129,7 +128,7 @@ export class TagsService {
     const postsWithAgencyTag = await PostModel.findAll({
       where: {
         // TODO: clarify whether we need to get Posts that have been deleted/archived
-        status: PostStatus.PUBLIC,
+        status: PostStatus.Public,
       },
       include: {
         model: TagModel,

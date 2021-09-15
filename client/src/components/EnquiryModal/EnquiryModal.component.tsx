@@ -28,7 +28,7 @@ import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import * as FullStory from '@fullstory/browser'
 interface EnquiryModalProps extends Pick<ModalProps, 'isOpen' | 'onClose'> {
   onConfirm: (enquiry: Enquiry, captchaResponse: string) => Promise<void>
-  agency: Agency
+  agency?: Agency
 }
 
 export const EnquiryModal = ({
@@ -42,7 +42,7 @@ export const EnquiryModal = ({
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [captchaResponse, setCaptchaResponse] = useState<string | null>(null)
   const googleAnalytics = useGoogleAnalytics()
-  const agencyName = agency.shortname
+  const agencyName = agency?.shortname || 'AskGov'
 
   const sendSubmitEnquiryEventToAnalytics = (agencyName: string) => {
     googleAnalytics.sendUserEvent(
@@ -75,15 +75,16 @@ export const EnquiryModal = ({
         <ModalContent w="660px">
           <ModalHeader>
             <Text textStyle="h2" color="secondary.700">
-              {`${agency.shortname.toUpperCase()} Enquiry Form`}
+              {`${(agency?.shortname ?? '').toUpperCase()} Enquiry Form`}
             </Text>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack align="left" spacing={0}>
               <Text>
-                {`This enquiry form will generate an email to be sent to 
-                ${agency.longname}. Please note that we would take within
+                {`This enquiry form will generate an email to be sent${
+                  agency?.longname ? ` to ${agency?.longname}` : ''
+                }. Please note that we would take within
                 3 - 14 working days to process your enquiry. Thank you.`}
               </Text>
               <Box h={4} />
@@ -100,6 +101,7 @@ export const EnquiryModal = ({
                 searchOnEnter={false}
                 isInvalid={formErrors.questionTitle}
                 inputRef={ref}
+                agencyShortName={agency?.shortname}
                 {...questionTitleProps}
               />
               {formErrors.questionTitle && errorLabel('This field is required')}

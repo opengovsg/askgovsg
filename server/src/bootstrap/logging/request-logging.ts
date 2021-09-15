@@ -1,11 +1,19 @@
 import expressWinston from 'express-winston'
 import { StatusCodes } from 'http-status-codes'
-import { format, transports } from 'winston'
+import { format, transports, transport as TransportStream } from 'winston'
+
 import { baseConfig, Environment } from '../config/base'
+import { getDatadogTransport } from './datadog'
 import { formatLogMessage } from './helpers'
 
+const winstonTransports: TransportStream[] = [new transports.Console()]
+
+if (baseConfig.nodeEnv === Environment.Prod) {
+  winstonTransports.push(getDatadogTransport())
+}
+
 export const requestLoggingMiddleware = expressWinston.logger({
-  transports: [new transports.Console()],
+  transports: winstonTransports,
   format: format.combine(
     // Label as 'network' to differentiate from application logs
     format.label({ label: 'network' }),
@@ -28,7 +36,7 @@ export const requestLoggingMiddleware = expressWinston.logger({
     contentLength: res.get('content-length'),
   }),
   headerBlacklist: ['cookie'],
-  skip: (req, _res) => {
+  skip: (req) => {
     // Skip if it's ELB-HealthChecker to avoid polluting logs
     const userAgent = req.get('user-agent') || ''
     return userAgent.startsWith('ELB-HealthChecker')

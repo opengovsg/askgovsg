@@ -10,7 +10,7 @@ export class UserService {
     })
   }
 
-  loadUser = async (userId: string): Promise<User | null> => {
+  loadUser = async (userId: number): Promise<User | null> => {
     return UserModel.findByPk(userId, { include: TagModel })
   }
 }

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import minimatch from 'minimatch'
 
-import { PostStatus } from '../../types/post-status'
+import { PermissionType, PostStatus } from '../../../../shared/types/base'
 import {
   User as UserModel,
   Permission as PermissionModel,
@@ -13,15 +13,15 @@ import { createLogger } from '../../bootstrap/logging'
 const logger = createLogger(module)
 
 export type PermissionWithRelations = Permission & {
-  tagId: string
+  tagId: number
 }
 
 export type PostTagWithRelations = PostTag & {
-  tagId: string
+  tagId: number
 }
 
 export type PostWithRelations = Post & {
-  userId: string
+  userId: number
 }
 
 export class AuthService {
@@ -45,7 +45,7 @@ export class AuthService {
    * @returns a JWT token containing the user id
    * and signed with a secret known to the AuthService
    */
-  createToken = (userId: string): string => {
+  createToken = (userId: number): string => {
     const payload = {
       user: {
         id: userId,
@@ -71,13 +71,13 @@ export class AuthService {
    * @param token the JWT containing the user id
    * @returns user id if it is verified and found, else null
    */
-  getUserIdFromToken = async (token: string): Promise<string | null> => {
+  getUserIdFromToken = async (token: string): Promise<number | null> => {
     if (!token) return null
 
     return new Promise((resolve, reject) => {
       // TODO: refactor to use synchronous verify
       jwt.verify(token, this.jwtSecret, (error, decoded) => {
-        const decodedCasted = decoded as { user: { id: string } }
+        const decodedCasted = decoded as { user: { id: number } }
         if (error) {
           return reject(new Error('Unable to verify JWT'))
         } else if (!decoded || !decodedCasted.user || !decodedCasted.user.id) {
@@ -94,7 +94,7 @@ export class AuthService {
    * @param userId userId of the user to retrieve
    * @returns user with the user id
    */
-  getOfficerUser = async (userId: string): Promise<User> => {
+  getOfficerUser = async (userId: number): Promise<User> => {
     if (!userId) {
       throw new Error('User must be signed in')
     }
@@ -137,8 +137,8 @@ export class AuthService {
    * @returns true if user has permission to answer post
    */
   hasPermissionToAnswer = async (
-    userId: string,
-    postId: string,
+    userId: number,
+    postId: number,
   ): Promise<boolean> => {
     const userTags = (await PermissionModel.findAll({
       where: { userId },
@@ -151,7 +151,7 @@ export class AuthService {
       const permission = userTags.find(
         (userTag) => userTag.tagId === postTag.tagId,
       )
-      return permission && permission.role === 'answerer'
+      return permission && permission.role === PermissionType.Answerer
     })
   }
 
@@ -162,7 +162,7 @@ export class AuthService {
    * @returns subset of tagList that user is not allowed to add
    */
   getDisallowedTagsForUser = async (
-    userId: string,
+    userId: number,
     tagList: Tag[],
   ): Promise<Tag[]> => {
     const userTags = (await PermissionModel.findAll({
@@ -172,7 +172,7 @@ export class AuthService {
       const permission = userTags.find(
         (userTag) => userTag.tagId === postTag.id,
       )
-      return !(permission && permission.role === 'answerer')
+      return !(permission && permission.role === PermissionType.Answerer)
     })
   }
 
@@ -187,7 +187,7 @@ export class AuthService {
     token: string,
   ): Promise<void> => {
     // If post is public, anyone can view
-    if (post.status === PostStatus.PUBLIC) return
+    if (post.status === PostStatus.Public) return
 
     // If private or archived, must be logged in
     const userId = await this.getUserIdFromToken(token)

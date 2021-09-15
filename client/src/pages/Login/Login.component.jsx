@@ -3,7 +3,7 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import AuthForm from '../../components/AuthForm/AuthForm.component'
 import { useAuth } from '../../contexts/AuthContext'
-import { TagType } from '../../types/tag-type'
+import { TagType } from '~shared/types/base'
 import './Login.styles.scss'
 
 const Login = () => {

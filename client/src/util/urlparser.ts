@@ -1,4 +1,4 @@
-import { TagType } from '../types/tag-type'
+import { TagType } from '~shared/types/base'
 import queryString from 'query-string'
 import { Agency } from '../services/AgencyService'
 

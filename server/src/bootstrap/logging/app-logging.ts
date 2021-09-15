@@ -1,7 +1,15 @@
 import path from 'path'
 import { SPLAT } from 'triple-beam'
-import { format, Logger, LoggerOptions, loggers, transports } from 'winston'
+import {
+  format,
+  Logger,
+  LoggerOptions,
+  loggers,
+  transports,
+  transport as TransportStream,
+} from 'winston'
 import { baseConfig, Environment } from '../config/base'
+import { getDatadogTransport } from './datadog'
 import { formatLogMessage } from './helpers'
 
 /**
@@ -32,6 +40,16 @@ const getModuleLabel = (callingModule: NodeModule): string => {
  * @returns the created options
  */
 export const createLoggerOptions = (label: string): LoggerOptions => {
+  const winstonTransports: TransportStream[] = [
+    new transports.Console({
+      silent: baseConfig.nodeEnv === Environment.Test,
+    }),
+  ]
+
+  if (baseConfig.nodeEnv === Environment.Prod) {
+    winstonTransports.push(getDatadogTransport())
+  }
+
   return {
     level: 'debug',
     format: format.combine(
@@ -43,11 +61,7 @@ export const createLoggerOptions = (label: string): LoggerOptions => {
         ? format.json({ replacer: jsonErrorReplacer })
         : format.combine(format.colorize(), errorPrinter(), formatLogMessage),
     ),
-    transports: [
-      new transports.Console({
-        silent: baseConfig.nodeEnv === Environment.Test,
-      }),
-    ],
+    transports: winstonTransports,
     exitOnError: false,
   }
 }

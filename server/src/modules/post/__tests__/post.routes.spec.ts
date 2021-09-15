@@ -12,9 +12,9 @@ import {
   Tag as TagModel,
   User as UserModel,
 } from '../../../models'
-import { PostStatus } from '../../../types/post-status'
+import { PermissionType, PostStatus } from '../../../../../shared/types/base'
 import { SortType } from '../../../types/sort-type'
-import { TagType } from '../../../types/tag-type'
+import { TagType } from '../../../../../shared/types/base'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { PostController } from '../post.controller'
 import { routePosts } from '../post.routes'
@@ -73,12 +73,12 @@ describe('/posts', () => {
       description: '',
       link: '',
       hasPilot: true,
-      tagType: TagType.TOPIC,
+      tagType: TagType.Topic,
     })
     for (let title = 1; title <= 20; title++) {
       const mockPost = await Post.create({
         title: title.toString(),
-        status: PostStatus.PUBLIC,
+        status: PostStatus.Public,
         userId: mockUser.id,
       })
       mockPosts.push(mockPost)
@@ -87,7 +87,7 @@ describe('/posts', () => {
     await Permission.create({
       userId: mockUser.id,
       tagId: mockTag.id,
-      role: 'Answerer',
+      role: PermissionType.Answerer,
     })
     controller = new PostController({ authService, postService })
     app.use(path, routePosts({ controller, authMiddleware }))

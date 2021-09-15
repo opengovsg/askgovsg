@@ -6,11 +6,11 @@ import {
 } from '../bootstrap/sequelize'
 import { Request, Response, NextFunction } from 'express'
 import { Answer, Post, Tag } from '../models'
-import { TagType } from '../types/tag-type'
+import { TagType } from '../../../shared/types/base'
 import { StatusCodes } from 'http-status-codes'
 
 type AnswerWithRelations = Answer & {
-  userId: string
+  userId: number
   post: Post & {
     tags: Tag[]
   }
@@ -27,11 +27,10 @@ const checkOwnership = async (
     include: [
       {
         model: PostModel,
-        include: [{ model: TagModel, where: { tagType: TagType.AGENCY } }],
+        include: [{ model: TagModel, where: { tagType: TagType.Agency } }],
       },
     ],
   })) as AnswerWithRelations
-
   if (!results) {
     return res
       .status(StatusCodes.BAD_REQUEST)
@@ -44,7 +43,7 @@ const checkOwnership = async (
   }
 
   const user = (await UserModel.findByPk(req.user.id, {
-    include: [{ model: TagModel, where: { tagType: TagType.AGENCY } }],
+    include: [{ model: TagModel, where: { tagType: TagType.Agency } }],
   })) as { tags: Tag[] } | null
 
   if (!user) {

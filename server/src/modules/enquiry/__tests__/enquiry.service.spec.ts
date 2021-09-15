@@ -67,7 +67,7 @@ describe('EnquiryService', () => {
 
     it('should send an enquiry email to AskGov if no agency is specified', async () => {
       // Arrange
-      const agencyId: string[] = []
+      const agencyId: number[] = []
 
       // Act
       await enquiryService.emailEnquiry({ agencyId, enquiry })
@@ -82,7 +82,7 @@ describe('EnquiryService', () => {
 
     it('should return error when a agency ID is invalid', async () => {
       // Arrange
-      const agencyId = ['1234']
+      const agencyId = [1234]
 
       try {
         // Act

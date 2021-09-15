@@ -2,7 +2,7 @@ import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
 
 import { Tag } from './tags.model'
 import { IMinimatch } from 'minimatch'
-import { User as UserBaseDto } from '../../../shared/types'
+import { PermissionType, User as UserBaseDto } from '../../../shared/types/base'
 
 const USER_MODEL_NAME = 'user'
 
@@ -49,7 +49,7 @@ export const defineUserAndPermission = (
   })
   const Permission: ModelCtor<Permission> = sequelize.define('permission', {
     role: {
-      type: DataTypes.ENUM('answerer', 'admin'),
+      type: DataTypes.ENUM(...Object.values(PermissionType)),
       allowNull: false,
     },
   })

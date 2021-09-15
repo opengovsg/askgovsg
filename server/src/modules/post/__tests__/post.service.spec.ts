@@ -7,9 +7,12 @@ import {
   User as UserModel,
   Permission as PermissionModel,
 } from '../../../models'
-import { PostStatus } from '../../../types/post-status'
+import {
+  PermissionType,
+  PostStatus,
+  TagType,
+} from '../../../../../shared/types/base'
 import { SortType } from '../../../types/sort-type'
-import { TagType } from '../../../types/tag-type'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { PostService } from '../post.service'
 
@@ -44,12 +47,12 @@ describe('PostService', () => {
       description: '',
       link: '',
       hasPilot: true,
-      tagType: TagType.TOPIC,
+      tagType: TagType.Topic,
     })
     for (let title = 1; title <= 20; title++) {
       const mockPost = await Post.create({
         title: title.toString(),
-        status: PostStatus.PUBLIC,
+        status: PostStatus.Public,
         userId: mockUser.id,
       })
       mockPosts.push(mockPost)
@@ -58,7 +61,7 @@ describe('PostService', () => {
     await Permission.create({
       userId: mockUser.id,
       tagId: mockTag.id,
-      role: 'Answerer',
+      role: PermissionType.Answerer,
     })
   })
 
@@ -117,7 +120,7 @@ describe('PostService', () => {
     it('should return error when the user ID is invalid', async () => {
       try {
         await postService.listAnswerablePosts({
-          userId: '2',
+          userId: 2,
           sort: SortType.Top,
           withAnswers: false,
         })
