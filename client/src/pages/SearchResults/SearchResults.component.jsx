@@ -19,10 +19,10 @@ const SearchResults = () => {
   const { search } = useLocation()
   const searchParams = new URLSearchParams(search)
   const searchQuery = searchParams.get('search') ?? ''
-  const agency = searchParams.get('agency')
+  const agencyShortName = searchParams.get('agency')
   const { data, isLoading } = useQuery(
-    [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agency],
-    listPosts(undefined, agency),
+    [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agencyShortName],
+    listPosts(undefined, agencyShortName),
   )
 
   const foundPosts = new Fuse(data?.posts ?? [], {
@@ -53,7 +53,12 @@ const SearchResults = () => {
             <span style={{ color: '#acb2b8', fontSize: '12px' }}>
               Results for {searchQuery}
             </span>
-            <SearchBox placeholder={'Search...'} name={'search'} pt={'mt8'} />
+            <SearchBox
+              agencyShortName={agencyShortName}
+              placeholder={'Search...'}
+              name={'search'}
+              pt={'mt8'}
+            />
           </div>
         ) : (
           ''
