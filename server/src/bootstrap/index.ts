@@ -95,7 +95,7 @@ app.use(
     store: sequelizeStore,
   }),
 )
-passportConfig(app)
+passportConfig(app, Token, User)
 
 // all the api routes
 // This must come before app.get('*') to avoid overriding API routes

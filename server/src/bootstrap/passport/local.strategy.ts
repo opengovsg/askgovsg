@@ -1,10 +1,14 @@
 import passport from 'passport'
 import passportLocal from 'passport-local'
-import { Token, User } from '../sequelize'
+import { ModelCtor } from 'sequelize/types'
+import { Token, User } from '../../models'
 import { verifyHash } from '../../util/hash'
 const LocalStrategy = passportLocal.Strategy
 
-export const localStrategy = (): void => {
+export const localStrategy = (
+  Token: ModelCtor<Token>,
+  User: ModelCtor<User>,
+): void => {
   passport.use(
     new LocalStrategy(
       { usernameField: 'email', passwordField: 'otp' },

@@ -1,9 +1,15 @@
 import express from 'express'
 import passport from 'passport'
 import { localStrategy } from './local.strategy'
+import { Token, User } from '../../models'
+import { ModelCtor } from 'sequelize/types'
 
-const passportConfig = (app: express.Application): void => {
-  localStrategy()
+const passportConfig = (
+  app: express.Application,
+  Token: ModelCtor<Token>,
+  User: ModelCtor<User>,
+): void => {
+  localStrategy(Token, User)
   app.use(passport.initialize())
   app.use(passport.session())
   // stores user to session
@@ -12,7 +18,7 @@ const passportConfig = (app: express.Application): void => {
   })
 
   // retrieves user from session
-  passport.deserializeUser((id: string, done) => {
+  passport.deserializeUser((id: number, done) => {
     const user = { id }
     done(null, user)
   })
