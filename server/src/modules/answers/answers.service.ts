@@ -4,7 +4,7 @@ import {
   Agency as AgencyModel,
   Answer as AnswerModel,
 } from '../../bootstrap/sequelize'
-import { PostStatus } from '../../types/post-status'
+import { PostStatus } from '../../../../shared/types/base'
 import { Answer, Post } from '../../models'
 import { FindOptions } from 'sequelize/types'
 
@@ -98,7 +98,7 @@ export class AnswersService {
       userId: userId,
     })
     await PostModel.update(
-      { status: PostStatus.PUBLIC },
+      { status: PostStatus.Public },
       { where: { id: postId } },
     )
     return answer.id

@@ -7,7 +7,7 @@ import sequelize, {
   Agency,
   User,
 } from '../bootstrap/sequelize'
-import { PostStatus } from '../types/post-status'
+import { PostStatus } from '../../../shared/types/base'
 
 import neatCsv from 'neat-csv'
 import { promises as fs } from 'fs'
@@ -115,7 +115,7 @@ const fileName = 'example_data.csv'
         {
           title: title,
           description: description,
-          status: PostStatus.PUBLIC,
+          status: PostStatus.Public,
           userId: user.id,
         },
         { transaction: t },

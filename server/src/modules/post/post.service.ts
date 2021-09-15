@@ -1,6 +1,6 @@
 import Sequelize, { ModelCtor, Op, OrderItem, ProjectionAlias } from 'sequelize'
 import { Answer, Post, PostTag, Tag, User } from '../../models'
-import { PostStatus } from '../../types/post-status'
+import { PostStatus } from '../../../../shared/types/base'
 import { PostEditType } from '../../types/post-type'
 import { SortType } from '../../types/sort-type'
 import { PostWithRelations } from '../auth/auth.service'
@@ -101,7 +101,7 @@ export class PostService {
         ],
       },
       where: {
-        status: PostStatus.PUBLIC,
+        status: PostStatus.Public,
         id: {
           [Op.ne]: post.id,
         },
@@ -206,7 +206,7 @@ export class PostService {
     }
 
     const whereobj = {
-      status: PostStatus.PUBLIC,
+      status: PostStatus.Public,
       ...(tagList.length ? { '$tags.tagname$': rawTags } : {}),
     }
 
@@ -326,7 +326,7 @@ export class PostService {
     const posts = (await this.Post.findAll({
       where: {
         id: postIds,
-        status: { [Op.ne]: PostStatus.ARCHIVED },
+        status: { [Op.ne]: PostStatus.Archived },
         ...(tags ? { '$tags.tagname$': tags } : {}),
       },
       order: [this.sortFunction(sort)],
@@ -464,7 +464,7 @@ export class PostService {
         title: newPost.title,
         description: newPost.description,
         userId: newPost.userId,
-        status: PostStatus.PRIVATE,
+        status: PostStatus.Private,
       })
       for (const tag of tagList) {
         // Create a posttag for each tag
