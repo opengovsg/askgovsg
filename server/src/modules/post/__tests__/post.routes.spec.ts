@@ -12,9 +12,8 @@ import {
   Tag as TagModel,
   User as UserModel,
 } from '../../../models'
-import { PermissionType, PostStatus } from '../../../../../shared/types/base'
+import { PermissionType, PostStatus, TagType } from '../../../shared/types/base'
 import { SortType } from '../../../types/sort-type'
-import { TagType } from '../../../../../shared/types/base'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { PostController } from '../post.controller'
 import { routePosts } from '../post.routes'

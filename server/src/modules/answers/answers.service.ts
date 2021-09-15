@@ -4,7 +4,7 @@ import {
   Agency as AgencyModel,
   Answer as AnswerModel,
 } from '../../bootstrap/sequelize'
-import { PostStatus } from '../../../../shared/types/base'
+import { PostStatus } from '../../shared/types/base'
 import { Answer, Post } from '../../models'
 import { FindOptions } from 'sequelize/types'
 

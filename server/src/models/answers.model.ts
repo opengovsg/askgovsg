@@ -1,5 +1,5 @@
 import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
-import { Answer as AnswerBaseDto } from '../../../shared/types/base'
+import { Answer as AnswerBaseDto } from '../shared/types/base'
 import { User } from './users.model'
 import { Post } from './posts.model'
 

@@ -2,7 +2,7 @@ import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
 
 import { User } from './users.model'
 import { Tag } from './tags.model'
-import { Post as PostBaseDto, PostStatus } from '../../../shared/types/base'
+import { Post as PostBaseDto, PostStatus } from '../shared/types/base'
 
 // TODO (#225): Remove this and replace ModelCtor below with ModelDefined
 export interface Post extends Model, PostBaseDto {}

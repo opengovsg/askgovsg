@@ -1,5 +1,5 @@
 import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
-import { Agency as AgencyBaseDto } from '../../../shared/types/base'
+import { Agency as AgencyBaseDto } from '../shared/types/base'
 import { User } from './users.model'
 
 export interface Agency extends Model, AgencyBaseDto {}

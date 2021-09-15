@@ -1,6 +1,6 @@
 import Sequelize, { ModelCtor, Op, OrderItem, ProjectionAlias } from 'sequelize'
 import { Answer, Post, PostTag, Tag, User } from '../../models'
-import { PostStatus } from '../../../../shared/types/base'
+import { PostStatus } from '../../shared/types/base'
 import { PostEditType } from '../../types/post-type'
 import { SortType } from '../../types/sort-type'
 import { PostWithRelations } from '../auth/auth.service'

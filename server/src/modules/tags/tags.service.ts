@@ -5,7 +5,7 @@ import {
   Tag as TagModel,
   User as UserModel,
 } from '../../bootstrap/sequelize'
-import { PostStatus, TagType } from '../../../../shared/types/base'
+import { PostStatus, TagType } from '../../shared/types/base'
 import { countBy, uniqBy } from 'lodash'
 import { Tag } from '../../models'
 import { PostWithUserTagRelations } from '../post/post.service'

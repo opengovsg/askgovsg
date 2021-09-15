@@ -7,11 +7,7 @@ import {
   User as UserModel,
   Permission as PermissionModel,
 } from '../../../models'
-import {
-  PermissionType,
-  PostStatus,
-  TagType,
-} from '../../../../../shared/types/base'
+import { PermissionType, PostStatus, TagType } from '../../../shared/types/base'
 import { SortType } from '../../../types/sort-type'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { PostService } from '../post.service'

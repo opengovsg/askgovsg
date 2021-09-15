@@ -6,7 +6,7 @@
   "main": "./build/index.js",
   "scripts": {
     "start": "node ./build/index.js",
-    "build": "tsc -b",
+    "build": "tsc",
     "dev": "ts-node-dev --respawn --transpile-only --inspect -- ./src/index.ts",
     "test": "jest",
     "lint": "eslint . --quiet --fix --ext '.ts'",
@@ -46,7 +46,8 @@
     "nodemailer": "^6.4.17",
     "sequelize": "^6.3.5",
     "triple-beam": "^1.3.0",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "zod": "^3.8.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
