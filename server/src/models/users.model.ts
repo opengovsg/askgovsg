@@ -2,7 +2,7 @@ import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
 
 import { Tag } from './tags.model'
 import { IMinimatch } from 'minimatch'
-import { PermissionType, User as UserBaseDto } from '../../../shared/types/base'
+import { PermissionType, User as UserBaseDto } from '~shared/types/base'
 
 const USER_MODEL_NAME = 'user'
 
