@@ -46,7 +46,7 @@ describe('/posts', () => {
   }
 
   const authenticate: ControllerHandler = (req, res, next) => {
-    req.user = { id: '1' }
+    req.user = { id: 1 }
     next()
   }
 
@@ -58,6 +58,7 @@ describe('/posts', () => {
   const path = '/posts'
   const app = express()
   app.use(bodyParser.json())
+  app.use(authenticate)
   const request = supertest(app)
 
   beforeAll(async () => {

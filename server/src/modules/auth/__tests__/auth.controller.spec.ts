@@ -9,18 +9,13 @@ import { Token as TokenModel } from '../../../models'
 import { Sequelize, ModelCtor } from 'sequelize/types'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import passport from 'passport'
-// import { Result, validationResult } from 'express-validator'
-// import { createValidationErrMessage } from '../../../util/validation-error'
+
 jest.mock('../../../util/hash')
 jest.mock('passport')
-// jest.mock('express-validator')
-// jest.mock('../../../util/validation-error')
 
 const mockedGenerateRandomDigits = mocked(generateRandomDigits)
 const mockedHashData = mocked(hashData)
 const mockedPassport = mocked(passport)
-// const mockedValidator = mocked(validationResult)
-// const mockedValidationErrMsg = mocked(createValidationErrMessage)
 
 const VALID_EMAIL = 'test@example.com'
 
@@ -41,7 +36,7 @@ let authController: AuthController
 
 const path = '/auth'
 // Set up auth middleware to inject user
-const user: Express.User | undefined = { id: '1' }
+const user: Express.User | undefined = { id: 1 }
 const isAuthenticated = true
 const middleware: ControllerHandler = (req, res, next) => {
   req.isAuthenticated = () => isAuthenticated

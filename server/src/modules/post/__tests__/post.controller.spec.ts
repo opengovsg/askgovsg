@@ -29,7 +29,7 @@ describe('PostController', () => {
   const controller = new PostController({ authService, postService })
 
   // Set up auth middleware to inject user
-  let user: Express.User | undefined = { id: '1' }
+  let user: Express.User | undefined = { id: 1 }
   const middleware: ControllerHandler = (req, res, next) => {
     req.user = user
     next()

@@ -9,7 +9,7 @@ describe('auth.middleware', () => {
   const path = '/auth'
   const authMiddleware = new AuthMiddleware()
   // Set up auth middleware to inject user
-  const user: Express.User | undefined = { id: '1' }
+  const user: Express.User | undefined = { id: 1 }
   let isAuthenticated = true
   const middleware: ControllerHandler = (req, res, next) => {
     req.isAuthenticated = () => isAuthenticated
