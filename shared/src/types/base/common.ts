@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const SequelizeTimestamps = z.object({
+export const HasSequelizeTimestamps = z.object({
   // createdAt and updatedAt are of type Date
   // in the backend, but are received by the frontend
   // as strings because
@@ -11,6 +11,6 @@ export const SequelizeTimestamps = z.object({
   updatedAt: z.date().or(z.string()),
 })
 
-export const BaseModel = SequelizeTimestamps.extend({
+export const BaseModel = HasSequelizeTimestamps.extend({
   id: z.number(),
 })
