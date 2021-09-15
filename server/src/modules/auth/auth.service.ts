@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import minimatch from 'minimatch'
 
-import { PermissionType, PostStatus } from '../../../../shared/types/base'
+import { PermissionType, PostStatus } from '~shared/types/base'
 import {
   User as UserModel,
   Permission as PermissionModel,
