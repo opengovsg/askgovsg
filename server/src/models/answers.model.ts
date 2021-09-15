@@ -1,12 +1,10 @@
 import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
-
+import { Answer as AnswerBaseDto } from '../../../shared/types/base'
 import { User } from './users.model'
 import { Post } from './posts.model'
 
-export interface Answer extends Model {
-  id: number
-  body: string
-}
+// TODO (#225): Remove this and replace ModelCtor below with ModelDefined
+export interface Answer extends Model, AnswerBaseDto {}
 
 // constructor
 export const defineAnswer = (

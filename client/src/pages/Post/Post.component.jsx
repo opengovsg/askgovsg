@@ -15,8 +15,7 @@ import {
   getPostById,
   GET_POST_BY_ID_QUERY_KEY,
 } from '../../services/PostService'
-import { PostStatus } from '~shared/types/base'
-import { TagType } from '../../types/tag-type'
+import { PostStatus, TagType } from '~shared/types/base'
 import AnswerSection from './AnswerSection/AnswerSection.component'
 import './Post.styles.scss'
 import QuestionSection from './QuestionSection/QuestionSection.component'

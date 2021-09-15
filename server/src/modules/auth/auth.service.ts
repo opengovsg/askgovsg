@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import minimatch from 'minimatch'
 
-import { PostStatus } from '../../../../shared/types/base'
+import { PermissionType, PostStatus } from '../../../../shared/types/base'
 import {
   User as UserModel,
   Permission as PermissionModel,
@@ -151,7 +151,7 @@ export class AuthService {
       const permission = userTags.find(
         (userTag) => userTag.tagId === postTag.tagId,
       )
-      return permission && permission.role === 'answerer'
+      return permission && permission.role === PermissionType.Answerer
     })
   }
 
@@ -172,7 +172,7 @@ export class AuthService {
       const permission = userTags.find(
         (userTag) => userTag.tagId === postTag.id,
       )
-      return !(permission && permission.role === 'answerer')
+      return !(permission && permission.role === PermissionType.Answerer)
     })
   }
 

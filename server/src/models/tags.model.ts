@@ -1,15 +1,7 @@
 import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
+import { Tag as TagBaseDto, TagType } from '../../../shared/types/base'
 
-import { TagType } from '../types/tag-type'
-
-export interface Tag extends Model {
-  id: number
-  tagname: string
-  description: string
-  link: string
-  hasPilot: boolean
-  tagType: string
-}
+export interface Tag extends Model, TagBaseDto {}
 
 // constructor
 export const defineTag = (sequelize: Sequelize): ModelCtor<Tag> =>
@@ -32,7 +24,7 @@ export const defineTag = (sequelize: Sequelize): ModelCtor<Tag> =>
       allowNull: false,
     },
     tagType: {
-      type: DataTypes.ENUM(TagType.AGENCY, TagType.TOPIC),
+      type: DataTypes.ENUM(...Object.values(TagType)),
       allowNull: false,
     },
   })
