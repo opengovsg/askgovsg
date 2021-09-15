@@ -151,7 +151,7 @@ export class AuthController {
    */
   handleVerifyLoginOtp: ControllerHandler<
     undefined,
-    { token?: string; newParticipant: boolean; displayname?: string } | Message,
+    { token: string; newParticipant: boolean; displayname: string } | Message,
     { email: string; otp: string },
     undefined
   > = async (req, res) => {
@@ -164,6 +164,13 @@ export class AuthController {
 
     const email = req.body.email
     const otp = req.body.otp
+
+    if (!this.authService.isOfficerEmail(email)) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        message:
+          'You must use a Singapore Public Service official email address.',
+      })
+    }
 
     try {
       const token = await Token.findOne({ where: { contact: email } })
@@ -188,11 +195,9 @@ export class AuthController {
         jwt = this.authService.createToken(user.id)
         displayname = user.displayname
       } else {
-        if (this.authService.isOfficerEmail(email)) {
-          const officer = await this.userService.createOfficer(email)
-          displayname = officer.displayname
-          jwt = this.authService.createToken(officer.id)
-        }
+        const officer = await this.userService.createOfficer(email)
+        displayname = officer.displayname
+        jwt = this.authService.createToken(officer.id)
       }
 
       await Token.destroy({ where: { contact: email } })
