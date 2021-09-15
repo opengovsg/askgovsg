@@ -20,7 +20,7 @@ const QuestionsList = ({
 }: QuestionsListProps): JSX.Element => {
   // Pagination
   const [page, setPage] = useState(1)
-  const { data: posts, isLoading } = useQuery(
+  const { data, isLoading } = useQuery(
     [LIST_POSTS_QUERY_KEY, { sort, tags, page, pageSize }],
     () => listPosts(sort, tags, page, pageSize),
     { keepPreviousData: true },
@@ -37,14 +37,14 @@ const QuestionsList = ({
   ) : (
     <>
       <PostListComponent
-        posts={posts?.posts}
+        posts={data?.posts}
         defaultText={undefined}
         alertIfMoreThanDays={undefined}
         showViews={undefined}
       />
       <Center my={5}>
         <Pagination
-          totalCount={posts?.totalItems ?? 0}
+          totalCount={data?.totalItems ?? 0}
           pageSize={pageSize}
           onPageChange={handlePageChange}
           currentPage={page}
