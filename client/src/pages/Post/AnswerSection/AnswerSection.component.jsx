@@ -15,7 +15,7 @@ const AnswerSection = ({ post }) => {
   )
 
   return isLoading ? (
-    <Spinner width="25px" height="25px" />
+    <Spinner type="paragraph" />
   ) : (
     <div className="answer-section">
       {answers.length > 0 ? null : (
