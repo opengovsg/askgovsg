@@ -1,13 +1,9 @@
 import minimatch from 'minimatch'
 
 import { PermissionType, PostStatus } from '~shared/types/base'
-import {
-  User as UserModel,
-  Permission as PermissionModel,
-  PostTag as PostTagModel,
-} from '../../bootstrap/sequelize'
 import { Permission, Post, PostTag, Tag, User } from '../../models'
 import { createLogger } from '../../bootstrap/logging'
+import { ModelCtor } from 'sequelize/types'
 
 const logger = createLogger(module)
 
@@ -25,9 +21,25 @@ export type PostWithRelations = Post & {
 
 export class AuthService {
   private emailValidator
+  private User: ModelCtor<User>
+  private PostTag: ModelCtor<PostTag>
+  private Permission: ModelCtor<Permission>
 
-  constructor({ emailValidator }: { emailValidator: minimatch.IMinimatch }) {
+  constructor({
+    emailValidator,
+    User,
+    PostTag,
+    Permission,
+  }: {
+    emailValidator: minimatch.IMinimatch
+    User: ModelCtor<User>
+    PostTag: ModelCtor<PostTag>
+    Permission: ModelCtor<Permission>
+  }) {
     this.emailValidator = emailValidator
+    this.User = User
+    this.PostTag = PostTag
+    this.Permission = Permission
   }
 
   /**
@@ -39,7 +51,7 @@ export class AuthService {
     if (!username) {
       throw new Error('username must be provided')
     }
-    const user = await UserModel.findOne({ where: { username } })
+    const user = await this.User.findOne({ where: { username } })
     if (this.isOfficerEmail(username)) {
       if (user) {
         return user
@@ -62,10 +74,10 @@ export class AuthService {
     userId: number,
     postId: number,
   ): Promise<boolean> => {
-    const userTags = (await PermissionModel.findAll({
+    const userTags = (await this.Permission.findAll({
       where: { userId },
     })) as PermissionWithRelations[]
-    const postTags = (await PostTagModel.findAll({
+    const postTags = (await this.PostTag.findAll({
       where: { postId },
     })) as PostTagWithRelations[]
 
@@ -87,7 +99,7 @@ export class AuthService {
     userId: number,
     tagList: Tag[],
   ): Promise<Tag[]> => {
-    const userTags = (await PermissionModel.findAll({
+    const userTags = (await this.Permission.findAll({
       where: { userId },
     })) as PermissionWithRelations[]
     return tagList.filter((postTag) => {
@@ -114,7 +126,7 @@ export class AuthService {
     // If private or archived, must be logged in
     if (!userId)
       throw new Error('User must be logged in to access private post')
-    const user = await UserModel.findOne({ where: { id: userId } })
+    const user = await this.User.findOne({ where: { id: userId } })
 
     if (user) {
       // If officer, they may have permission to answer

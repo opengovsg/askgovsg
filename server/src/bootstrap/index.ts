@@ -44,6 +44,7 @@ import { EnquiryService } from '../modules/enquiry/enquiry.service'
 import {
   Agency,
   Answer,
+  Permission,
   Post,
   PostTag,
   Tag,
@@ -110,7 +111,12 @@ const mailOptions = {
 const transport = createTransport(mailOptions)
 
 const agencyService = new AgencyService()
-const authService = new AuthService({ emailValidator })
+const authService = new AuthService({
+  emailValidator,
+  User,
+  Permission,
+  PostTag,
+})
 const authMiddleware = new AuthMiddleware()
 const mailService = new MailService({
   transport,
