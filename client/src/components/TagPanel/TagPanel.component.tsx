@@ -10,7 +10,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
 import {
@@ -26,6 +26,8 @@ import {
 } from '../../services/tag.service'
 import { getRedirectURL } from '../../util/urlparser'
 import { TagType } from '~shared/types/base'
+import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
+import * as FullStory from '@fullstory/browser'
 
 const TagPanel = (): ReactElement => {
   const { agency: agencyShortName } = useParams<{ agency: string }>()
@@ -36,6 +38,26 @@ const TagPanel = (): ReactElement => {
     // If agency URL param is not present, agencyShortName is undefined
     { enabled: agencyShortName !== undefined },
   )
+
+  const googleAnalytics = useGoogleAnalytics()
+
+  const sendClickTagEventToAnalytics = (tagName: string) => {
+    const timeToTagClick = new Date().getTime() - googleAnalytics.appLoadTime
+    googleAnalytics.sendUserEvent(
+      googleAnalytics.GA_USER_EVENTS.CLICK_TAG,
+      tagName,
+      timeToTagClick,
+    )
+    googleAnalytics.sendTiming(
+      'User',
+      'Time to first tag click',
+      timeToTagClick,
+    )
+    FullStory.event(googleAnalytics.GA_USER_EVENTS.CLICK_TAG, {
+      tag_str: tagName,
+      timeToTagClick_int: timeToTagClick,
+    })
+  }
 
   const { isLoading, data: tags } = agency
     ? useQuery(GET_TAGS_USED_BY_AGENCY_QUERY_KEY, () =>
@@ -94,6 +116,7 @@ const TagPanel = (): ReactElement => {
                       as={RouterLink}
                       key={tag.id}
                       to={getRedirectURL(tagType, tagname, agency)}
+                      onClick={() => sendClickTagEventToAnalytics(tagname)}
                     >
                       {tag.tagname}
                     </Link>
