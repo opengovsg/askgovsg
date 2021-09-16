@@ -6,7 +6,7 @@
   "main": "./build/index.js",
   "scripts": {
     "start": "node -r tsconfig-paths/register ./build/index.js",
-    "build": "tsc -b",
+    "build": "tsc -p tsconfig.build.json",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --inspect --watch ../shared/src -- ./src/index.ts",
     "test": "jest",
     "lint": "eslint . --quiet --fix --ext '.ts'",
