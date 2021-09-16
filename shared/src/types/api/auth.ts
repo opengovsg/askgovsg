@@ -7,9 +7,3 @@ export type LoadUserDto =
       })[]
     })
   | null
-
-export type VerifyLoginOtpDto = {
-  token: string
-  newParticipant: boolean
-  displayname: string
-}
