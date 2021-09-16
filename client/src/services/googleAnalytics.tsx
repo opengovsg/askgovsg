@@ -6,6 +6,7 @@ const GA_USER_EVENTS = {
   SUBMIT_ENQUIRY: 'Submit Enquiry',
   OPEN_ENQUIRY: 'Open Enquiry',
   CLICK_TAG: 'Click Tag',
+  BROWSE: 'Browse',
 }
 
 const initializeGA = (trackingId: string): void => {
@@ -58,6 +59,7 @@ const sendException = (description: string): void => {
 
 const isFirstSearch = false
 const appLoadTime = new Date().getTime()
+const maxScroll = 0
 
 export const GoogleAnalyticsService = {
   GA_USER_EVENTS,
@@ -69,4 +71,5 @@ export const GoogleAnalyticsService = {
   sendException,
   isFirstSearch,
   appLoadTime,
+  maxScroll,
 }

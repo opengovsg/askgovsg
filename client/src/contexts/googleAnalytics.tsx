@@ -13,6 +13,7 @@ const {
   sendException,
   isFirstSearch,
   appLoadTime,
+  maxScroll,
 } = GoogleAnalyticsService
 
 type GoogleAnalyticsContextProps = Omit<
@@ -55,6 +56,7 @@ export const GoogleAnalyticsProvider: FC = ({ children }) => {
     sendException,
     isFirstSearch,
     appLoadTime,
+    maxScroll,
   }
 
   return (
