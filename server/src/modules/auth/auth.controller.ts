@@ -1,14 +1,15 @@
 import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
+import { isEmpty } from 'lodash'
 import passport from 'passport'
 import { ModelCtor } from 'sequelize/types'
 import { Message } from 'src/types/message-type'
 import { ErrorDto, LoadUserDto } from '~shared/types/api'
 import { createLogger } from '../../bootstrap/logging'
+import { Token } from '../../models'
 import { UserService } from '../../modules/user/user.service'
 import { ControllerHandler } from '../../types/response-handler'
 import { generateRandomDigits, hashData } from '../../util/hash'
-import { Token } from '../../models'
 import { createValidationErrMessage } from '../../util/validation-error'
 import { MailService } from '../mail/mail.service'
 import { AuthService } from './auth.service'
@@ -213,7 +214,34 @@ export class AuthController {
    * @returns 200 if logged out
    */
   handleLogout: ControllerHandler = (req, res) => {
-    req.logout()
-    res.sendStatus(StatusCodes.OK)
+    if (!req.session || isEmpty(req.session)) {
+      logger.error({
+        message: 'Attempted to sign out without a session',
+        meta: {
+          function: 'handleLogout',
+        },
+      })
+      return res.sendStatus(StatusCodes.BAD_REQUEST)
+    }
+
+    req.session.destroy((error) => {
+      if (error) {
+        logger.error({
+          message: 'Failed to destroy session',
+          meta: {
+            action: 'handleLogout',
+            function: 'handleLogout',
+          },
+          error,
+        })
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Sign out failed' })
+      }
+
+      // No error.
+      res.clearCookie('connect.sid')
+      return res.status(StatusCodes.OK).json({ message: 'Sign out successful' })
+    })
   }
 }
