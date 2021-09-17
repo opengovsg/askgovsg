@@ -52,7 +52,7 @@ const PostForm = (): JSX.Element => {
   }
 
   return isLoading ? (
-    <Spinner type="page" width="75px" height="200px" />
+    <Spinner height="200px" />
   ) : (
     <Fragment>
       <div className="post-form-container">

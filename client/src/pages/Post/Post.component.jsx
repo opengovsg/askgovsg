@@ -63,7 +63,7 @@ const Post = () => {
     user && post?.tags && hasCommonAgencyTags(user, post?.tags)
 
   return isLoading ? (
-    <Spinner type="page" width="75px" height="200px" />
+    <Spinner height="200px" />
   ) : (
     <Flex direction="column" height="100%">
       <PageTitle title={`${post.title} - AskGov`} />

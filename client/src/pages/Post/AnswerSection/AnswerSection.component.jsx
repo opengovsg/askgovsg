@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query'
-import Spinner from '../../../components/Spinner/Spinner.component'
+import { SkeletonText } from '@chakra-ui/react'
 import AnswerItem from './AnswerItem/AnswerItem.component'
 import './AnswerSection.styles.scss'
 import {
@@ -15,7 +15,7 @@ const AnswerSection = ({ post }) => {
   )
 
   return isLoading ? (
-    <Spinner type="paragraph" />
+    <SkeletonText />
   ) : (
     <div className="answer-section">
       {answers.length > 0 ? null : (

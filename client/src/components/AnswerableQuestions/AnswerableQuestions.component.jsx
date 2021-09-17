@@ -26,7 +26,7 @@ const AnswerableQuestions = ({ sort, tags, pageSize: size }) => {
   }
 
   return isWithAnswersLoading ? (
-    <Spinner type="page" width="75px" height="200px" />
+    <Spinner height="200px" />
   ) : (
     <>
       <PostListComponent posts={data.posts} />
