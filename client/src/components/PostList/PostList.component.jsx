@@ -20,6 +20,7 @@ const PostList = ({ posts, defaultText, alertIfMoreThanDays, showViews }) => {
   )
   defaultText = defaultText ?? 'There are no posts to display.'
 
+  // Creates reference for maxScroll variable with initial value of 0
   const maxScroll = useRef(0)
 
   const googleAnalytics = useGoogleAnalytics()
@@ -45,16 +46,17 @@ const PostList = ({ posts, defaultText, alertIfMoreThanDays, showViews }) => {
     })
   }
 
-  const resetMaxScrollAndAddListener = () => {
-    window.addEventListener('scroll', updateMaxScroll)
-  }
   const removeListenerAndSendEvent = (maxScrollPossible) => {
     window.removeEventListener('scroll', updateMaxScroll)
     if (maxScroll.current !== 0) sendMaxScrollToAnalytics(maxScrollPossible)
   }
 
+  // On component mount (i.e. first render), attach an event listener to update maxScroll on scroll and
+  // get the maximum scroll possible on the page. This hook installs a callback that gets triggered only
+  // when the component unmounts as well, where a cleanup function is fired to remove the event listener
+  // as well as send event with percentage of page scrolled to analytics.
   useEffect(() => {
-    resetMaxScrollAndAddListener()
+    window.addEventListener('scroll', updateMaxScroll)
     // Due to browser compatibility issues, there is no single source of truth for maximum scroll height:
     // https://stackoverflow.com/questions/17688595/finding-the-maximum-scroll-position-of-a-page
     const pageHeight = Math.max(
