@@ -12,6 +12,12 @@ updates:
       time: "01:00"
       timezone: "Asia/Singapore"
   - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/shared" # Location of package manifests
+    schedule:
+      interval: "daily"
+      time: "01:00"
+      timezone: "Asia/Singapore"
+  - package-ecosystem: "npm" # See documentation for possible values
     directory: "/client" # Location of package manifests
     schedule:
       interval: "daily"

@@ -1,17 +1,14 @@
 import { validationResult } from 'express-validator'
+import { StatusCodes } from 'http-status-codes'
+import { ErrorDto, LoadUserDto, VerifyLoginOtpDto } from '~shared/types/api'
+import { createLogger } from '../../bootstrap/logging'
+import { Token, User } from '../../bootstrap/sequelize'
+import { UserService } from '../../modules/user/user.service'
+import { ControllerHandler } from '../../types/response-handler'
 import { generateRandomDigits, hashData, verifyHash } from '../../util/hash'
-import { User, Token } from '../../bootstrap/sequelize'
-import { User as UserType } from '../../models'
 import { createValidationErrMessage } from '../../util/validation-error'
-
 import { MailService } from '../mail/mail.service'
 import { AuthService } from './auth.service'
-import { UserService } from '../../modules/user/user.service'
-import { Request, Response } from 'express'
-import { createLogger } from '../../bootstrap/logging'
-import { ControllerHandler } from '../../types/response-handler'
-import { Message } from '../../types/message-type'
-import { StatusCodes } from 'http-status-codes'
 
 const OTP_LENGTH = 6
 
@@ -42,7 +39,7 @@ export class AuthController {
    * @returns 401 if user not signed in
    * @returns 500 if database error
    */
-  loadUser: ControllerHandler<undefined, UserType | null | Message> = async (
+  loadUser: ControllerHandler<unknown, LoadUserDto | ErrorDto> = async (
     req,
     res,
   ) => {
@@ -80,7 +77,7 @@ export class AuthController {
    */
   handleSendLoginOtp: ControllerHandler<
     undefined,
-    Message,
+    ErrorDto, // success case has no return data
     { email: string },
     undefined
   > = async (req, res) => {
@@ -151,7 +148,7 @@ export class AuthController {
    */
   handleVerifyLoginOtp: ControllerHandler<
     undefined,
-    { token: string; newParticipant: boolean; displayname: string } | Message,
+    VerifyLoginOtpDto | ErrorDto,
     { email: string; otp: string },
     undefined
   > = async (req, res) => {

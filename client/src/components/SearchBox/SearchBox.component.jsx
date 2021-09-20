@@ -60,16 +60,16 @@ const SearchBox = ({
     })
   }
   const sendSearchTimingToAnalytics = () => {
-    const timeToFirstSearch = new Date() - googleAnalytics.appLoadDate
+    const timeToFirstSearch = Date.now() - googleAnalytics.appLoadTime
     googleAnalytics.sendTiming(
       'User',
       'Time to first search',
       timeToFirstSearch,
     )
-    FullStory.event('Search', {
+    FullStory.event(googleAnalytics.GA_USER_EVENTS.SEARCH, {
       timeToFirstSearch_int: timeToFirstSearch,
     })
-    googleAnalytics.setIsFirstSearch(true)
+    googleAnalytics.hasSearched = true
   }
 
   placeholder = placeholder ?? 'How can we help you?'
@@ -160,7 +160,7 @@ const SearchBox = ({
                       }
 
                       const isCharacterKey = event.key.length === 1
-                      if (isCharacterKey && !googleAnalytics.isFirstSearch) {
+                      if (isCharacterKey && !googleAnalytics.hasSearched) {
                         sendSearchTimingToAnalytics()
                       }
                     },
