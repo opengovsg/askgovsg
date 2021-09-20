@@ -27,7 +27,7 @@ const Header = () => {
   const authLinks = (
     <Flex align="center">
       {isLoading || user === null ? (
-        <Spinner width="50px" height="50px" />
+        <Spinner centerWidth="50px" centerHeight="50px" />
       ) : (
         <>
           <Text textStyle="body-2" mr={2} color="white">

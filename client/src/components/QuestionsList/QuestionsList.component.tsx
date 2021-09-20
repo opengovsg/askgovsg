@@ -33,7 +33,7 @@ const QuestionsList = ({
   }
 
   return isLoading ? (
-    <Spinner type="page" width="75px" height="200px" />
+    <Spinner centerHeight="200px" />
   ) : (
     <>
       <PostListComponent
