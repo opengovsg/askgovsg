@@ -30,7 +30,6 @@ import { AuthMiddleware } from '../modules/auth/auth.middleware'
 import { baseConfig, Environment } from './config/base'
 import { bannerConfig } from './config/banner'
 import { googleAnalyticsConfig } from './config/googleAnalytics'
-import { authConfig } from './config/auth'
 import { fullStoryConfig } from './config/fullstory'
 import { mailConfig } from './config/mail'
 import { fileConfig } from './config/file'
@@ -59,9 +58,8 @@ import { FileController } from '../modules/file/file.controller'
 import { FileService } from '../modules/file/file.service'
 import { datadogConfig } from './config/datadog'
 
-import session from 'express-session'
-import init from 'connect-session-sequelize'
 import passportConfig from './passport/passport'
+import sessionMiddleware from './session'
 
 export { sequelize } from './sequelize'
 export const app = express()
@@ -84,18 +82,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 // passport and session
-const SequelizeStore = init(session.Store)
-const sequelizeStore = new SequelizeStore({
-  db: sequelize,
-})
-app.use(
-  session({
-    secret: authConfig.sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    store: sequelizeStore,
-  }),
-)
+app.use(sessionMiddleware(sequelize))
 passportConfig(app, Token, User)
 
 // all the api routes
