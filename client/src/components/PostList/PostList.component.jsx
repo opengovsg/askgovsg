@@ -9,7 +9,7 @@ import {
 } from '../../services/AgencyService'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import * as FullStory from '@fullstory/browser'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 const PostList = ({ posts, defaultText, alertIfMoreThanDays, showViews }) => {
   const { agency: agencyShortName } = useParams()
@@ -20,18 +20,19 @@ const PostList = ({ posts, defaultText, alertIfMoreThanDays, showViews }) => {
   )
   defaultText = defaultText ?? 'There are no posts to display.'
 
+  const maxScroll = useRef(0)
+
   const googleAnalytics = useGoogleAnalytics()
   const updateMaxScroll = () => {
-    googleAnalytics.maxScroll = Math.max(
-      googleAnalytics.maxScroll,
-      window.pageYOffset,
-    )
+    maxScroll.current = Math.max(maxScroll.current, window.pageYOffset)
   }
 
   const sendMaxScrollToAnalytics = (maxScrollPossible) => {
-    maxScrollPossible = Math.max(maxScrollPossible, googleAnalytics.maxScroll) // this is required to restrict the percentage to 100
+    // The following is required to restrict the percentage to 100 due to browser compatibility issues:
+    // https://stackoverflow.com/questions/17688595/finding-the-maximum-scroll-position-of-a-page
+    maxScrollPossible = Math.max(maxScrollPossible, maxScroll.current)
     const maxScrollPercentage = Math.floor(
-      (googleAnalytics.maxScroll / maxScrollPossible) * 100,
+      (maxScroll.current / maxScrollPossible) * 100,
     )
     googleAnalytics.sendUserEvent(
       googleAnalytics.GA_USER_EVENTS.BROWSE,
@@ -45,17 +46,17 @@ const PostList = ({ posts, defaultText, alertIfMoreThanDays, showViews }) => {
   }
 
   const resetMaxScrollAndAddListener = () => {
-    googleAnalytics.maxScroll = 0
     window.addEventListener('scroll', updateMaxScroll)
   }
   const removeListenerAndSendEvent = (maxScrollPossible) => {
     window.removeEventListener('scroll', updateMaxScroll)
-    if (googleAnalytics.maxScroll !== 0)
-      sendMaxScrollToAnalytics(maxScrollPossible)
+    if (maxScroll.current !== 0) sendMaxScrollToAnalytics(maxScrollPossible)
   }
 
   useEffect(() => {
     resetMaxScrollAndAddListener()
+    // Due to browser compatibility issues, there is no single source of truth for maximum scroll height:
+    // https://stackoverflow.com/questions/17688595/finding-the-maximum-scroll-position-of-a-page
     const pageHeight = Math.max(
       document.body.scrollHeight,
       document.body.offsetHeight,

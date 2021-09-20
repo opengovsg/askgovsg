@@ -57,9 +57,8 @@ const sendException = (description: string): void => {
   ReactGA.exception({ description })
 }
 
-const isFirstSearch = false
-const appLoadTime = new Date().getTime()
-const maxScroll = 0
+const appLoadTime = Date.now()
+const hasSearched = false
 
 export const GoogleAnalyticsService = {
   GA_USER_EVENTS,
@@ -69,7 +68,6 @@ export const GoogleAnalyticsService = {
   sendUserEvent,
   sendTiming,
   sendException,
-  isFirstSearch,
   appLoadTime,
-  maxScroll,
+  hasSearched,
 }

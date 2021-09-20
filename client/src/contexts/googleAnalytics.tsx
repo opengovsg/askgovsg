@@ -11,9 +11,8 @@ const {
   sendUserEvent,
   sendTiming,
   sendException,
-  isFirstSearch,
   appLoadTime,
-  maxScroll,
+  hasSearched,
 } = GoogleAnalyticsService
 
 type GoogleAnalyticsContextProps = Omit<
@@ -54,9 +53,8 @@ export const GoogleAnalyticsProvider: FC = ({ children }) => {
     sendUserEvent,
     sendTiming,
     sendException,
-    isFirstSearch,
     appLoadTime,
-    maxScroll,
+    hasSearched,
   }
 
   return (

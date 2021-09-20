@@ -42,7 +42,7 @@ const TagPanel = (): ReactElement => {
   const googleAnalytics = useGoogleAnalytics()
 
   const sendClickTagEventToAnalytics = (tagName: string) => {
-    const timeToTagClick = new Date().getTime() - googleAnalytics.appLoadTime
+    const timeToTagClick = Date.now() - googleAnalytics.appLoadTime
     googleAnalytics.sendUserEvent(
       googleAnalytics.GA_USER_EVENTS.CLICK_TAG,
       tagName,
