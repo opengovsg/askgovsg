@@ -11,7 +11,6 @@ import {
   LIST_POSTS_FOR_SEARCH_QUERY_KEY,
 } from '../../services/PostService'
 import './SearchBox.styles.scss'
-import { useRef } from 'react'
 
 const SearchBox = ({
   placeholder,
@@ -67,7 +66,7 @@ const SearchBox = ({
       'Time to first search',
       timeToFirstSearch,
     )
-    FullStory.event('Search', {
+    FullStory.event(googleAnalytics.GA_USER_EVENTS.SEARCH, {
       timeToFirstSearch_int: timeToFirstSearch,
     })
     googleAnalytics.hasSearched = true
