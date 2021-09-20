@@ -33,7 +33,7 @@ const SearchResults = () => {
     .sort(sortByCreatedAt)
 
   return isLoading ? (
-    <Spinner height="200px" />
+    <Spinner centerHeight="200px" />
   ) : (
     <Fragment>
       {searchQuery ? (

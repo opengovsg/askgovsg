@@ -67,7 +67,7 @@ const AuthForm = () => {
       </>
     )
   } else if (otpState === OtpState.Requested) {
-    OtpComponent = <Spinner height="50px" />
+    OtpComponent = <Spinner centerHeight="50px" />
   }
 
   const contactComponent = (
