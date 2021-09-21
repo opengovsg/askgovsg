@@ -4,7 +4,7 @@ import { localStrategy } from './local.strategy'
 import { Token, User } from '../../models'
 import { ModelCtor } from 'sequelize/types'
 
-const passportConfig = (
+export const passportConfig = (
   app: express.Application,
   Token: ModelCtor<Token>,
   User: ModelCtor<User>,
@@ -23,5 +23,3 @@ const passportConfig = (
     done(null, user)
   })
 }
-
-export default passportConfig

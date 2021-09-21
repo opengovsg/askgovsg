@@ -58,7 +58,7 @@ import { FileController } from '../modules/file/file.controller'
 import { FileService } from '../modules/file/file.service'
 import { datadogConfig } from './config/datadog'
 
-import passportConfig from './passport/passport'
+import { passportConfig } from './passport'
 import sessionMiddleware from './session'
 
 export { sequelize } from './sequelize'
