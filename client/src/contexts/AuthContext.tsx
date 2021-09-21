@@ -35,13 +35,8 @@ export const AuthProvider = ({
         }
       })
       .catch((reason: AxiosError) => {
-        // Catch 400 or 401 which signals an unauthorized user, which is not an issue
-        if (
-          !(
-            reason.response &&
-            (reason.response.status === 401 || reason.response.status === 400)
-          )
-        ) {
+        // Catch 401 which signals an unauthorized user, which is not an issue
+        if (!(reason.response?.status === 401)) {
           throw reason
         }
       })
