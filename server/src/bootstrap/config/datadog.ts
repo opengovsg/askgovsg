@@ -1,5 +1,6 @@
 import convict, { Schema } from 'convict'
 import { readFileSync } from 'fs'
+import { baseConfig, Environment } from './base'
 
 function getInstanceId() {
   let instanceId = 'i-unknown'
@@ -8,8 +9,10 @@ function getInstanceId() {
     // found in cloud-init hosts, including EC2 instances
     instanceId = readFileSync('/var/lib/cloud/data/instance-id', 'utf-8')
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error)
+    if (baseConfig.nodeEnv === Environment.Prod) {
+      // eslint-disable-next-line no-console
+      console.error(error)
+    }
   } finally {
     // For safety, interpolate into another string and trim whitespace
     return `${instanceId}`.trim()
