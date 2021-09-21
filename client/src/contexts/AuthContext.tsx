@@ -2,9 +2,10 @@ import { AxiosError } from 'axios'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useMutation, UseMutationResult } from 'react-query'
 import { User } from '~shared/types/base/user'
-import { ApiClient } from '../api'
+import { ApiClient, getApiErrorMessage } from '../api'
 import * as AuthService from '../services/AuthService'
 import { LoadUserDto } from '~shared/types/api'
+import { useStyledToast } from '../components/StyledToast/StyledToast'
 
 interface AuthContextProps {
   user: User | null
@@ -25,6 +26,7 @@ export const AuthProvider = ({
 }: {
   children: JSX.Element
 }): JSX.Element => {
+  const toast = useStyledToast()
   const [user, setUser] = useState<LoadUserDto>(null)
 
   const whoami = () => {
@@ -50,7 +52,15 @@ export const AuthProvider = ({
 
   const logout = () => {
     ApiClient.get('/auth/logout')
-    setUser(null)
+      .then(() => {
+        setUser(null)
+      })
+      .catch((error) => {
+        toast({
+          status: 'error',
+          description: getApiErrorMessage(error),
+        })
+      })
   }
 
   const auth = {
