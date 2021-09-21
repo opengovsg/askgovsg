@@ -1,24 +1,23 @@
-import { Agency } from '../../bootstrap/sequelize'
-import { Agency as AgencyType } from '../../models/agencies.model'
+import { ModelDef } from '../../types/sequelize'
+import { Agency } from '~shared/types/base'
 import { AgencyQuery } from '../../types/agency-type'
-
 export class AgencyService {
+  private Agency: ModelDef<Agency>
+
+  constructor({ Agency }: { Agency: ModelDef<Agency> }) {
+    this.Agency = Agency
+  }
+
   /**
    * Find an agency by their shortname or longname
    * @param query agency's shortname or longname
    * @returns agency if found, else null
    */
-  findOneByShortName = async (
-    query: AgencyQuery,
-  ): Promise<AgencyType | null> => {
-    const agency = await Agency.findOne({
+  findOneByName = async (query: AgencyQuery): Promise<Agency | null> => {
+    const agency = await this.Agency.findOne({
       where: query,
     })
-    if (!agency) {
-      return null
-    } else {
-      return agency
-    }
+    return agency ?? null
   }
 
   /**
@@ -28,14 +27,10 @@ export class AgencyService {
    * @param agencyId Agency's id
    * @returns agency if found, else null
    */
-  findOneById = async (agencyId: number): Promise<AgencyType | null> => {
-    const agency = await Agency.findOne({
+  findOneById = async (agencyId: number): Promise<Agency | null> => {
+    const agency = await this.Agency.findOne({
       where: { id: agencyId },
     })
-    if (!agency) {
-      return null
-    } else {
-      return agency
-    }
+    return agency ?? null
   }
 }

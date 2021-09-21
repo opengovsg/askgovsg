@@ -1,5 +1,5 @@
 import { AgencyService } from './agency.service'
-import { Agency } from '../../models/agencies.model'
+import { Agency } from '~shared/types/base'
 import { Message } from '../../types/message-type'
 import { AgencyQuery } from '../../types/agency-type'
 import { createLogger } from '../../bootstrap/logging'
@@ -29,7 +29,7 @@ export class AgencyController {
     AgencyQuery
   > = async (req, res) => {
     try {
-      const data = await this.agencyService.findOneByShortName(req.query)
+      const data = await this.agencyService.findOneByName(req.query)
       if (!data) {
         return res
           .status(StatusCodes.NOT_FOUND)
