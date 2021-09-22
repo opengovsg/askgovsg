@@ -83,7 +83,7 @@ const mailOptions = {
 }
 const transport = createTransport(mailOptions)
 
-const agencyService = new AgencyService()
+const agencyService = new AgencyService({ Agency })
 const authService = new AuthService({ emailValidator, jwtSecret })
 const authMiddleware = new AuthMiddleware({ jwtSecret })
 const mailService = new MailService({
@@ -143,7 +143,7 @@ if (baseConfig.nodeEnv === Environment.Prod) {
     connectDatadog({
       response_code: true,
       tags: [`service:${datadogConfig.service}`, `env:${datadogConfig.env}`],
-      path: true,
+      path: false,
       dogstatsd: new StatsD({
         useDefaultRoute: true,
         errorHandler: (error) => {
