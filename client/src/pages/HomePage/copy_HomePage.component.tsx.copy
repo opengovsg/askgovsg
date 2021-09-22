@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Center,
   Flex,
   Menu,
   MenuButton,
@@ -9,18 +10,18 @@ import {
   Spacer,
   Stack,
   Text,
+  IconButton,
 } from '@chakra-ui/react'
 import { useEffect, useState, useRef } from 'react'
 import { BiChevronUp, BiChevronDown } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams, RouteComponentProps } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import OfficerDashboardComponent from '../../components/OfficerDashboard/OfficerDashboard.component'
 import PostQuestionButton from '../../components/PostQuestionButton/PostQuestionButton.component'
 import QuestionsListComponent from '../../components/QuestionsList/QuestionsList.component'
 import SearchBoxComponent from '../../components/SearchBox/SearchBox.component'
-import FullScreenSearch from '../../components/FullScreenSearch/FullScreenSearch.component'
 import TagPanel from '../../components/TagPanel/TagPanel.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
@@ -30,8 +31,34 @@ import {
 import { isUserPublicOfficer } from '../../services/user.service'
 import { mergeTags } from '../../util/tagsmerger'
 import { getTagsQuery } from '../../util/urlparser'
+import { listPosts, LIST_POSTS_QUERY_KEY } from '../../services/PostService'
 
-const HomePage = ({ match }) => {
+import * as H from "history";
+
+export interface RouteComponentProps<P> {
+  match: match<P>;
+  location: H.Location;
+  history: H.History;
+  staticContext?: any;
+}
+
+export interface match<P> {
+  params: P;
+  isExact: boolean;
+  path: string;
+  url: string;
+}
+
+interface TopCategoriesProps {
+  sort: string
+  tags: string
+  pageSize: number
+  page: number
+}
+
+type HomePageProps = RouteComponentProps<{ match: string }>
+
+const HomePage = ({ match }: HomePageProps) => {
   // check URL
   const location = useLocation()
   // TODO (#259): make into custom hook
@@ -41,7 +68,7 @@ const HomePage = ({ match }) => {
 
   const { user } = useAuth()
 
-  const { agency: agencyShortName } = useParams()
+  const { agency: agencyShortName } = useParams<{agency: string}>()
   const { data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
     () => getAgencyByShortName({ shortname: agencyShortName }),
@@ -56,25 +83,106 @@ const HomePage = ({ match }) => {
   // dropdown state, default popular
   const [sortState, setSortState] = useState(options[0])
   const [queryState, setQueryState] = useState('')
-  const [agencyState, setAgencyState] = useState(match.params.agency)
 
   const agencyAndTags = mergeTags(match.params.agency, queryState)
   const isAuthenticatedOfficer = isUserPublicOfficer(user)
 
-  const questionsViewAnchor = 'questions-view'
+  const mobileSearchHeightRef = useRef('100vh')
+  const [agencyState, setAgencyState] = useState(match.params.agency)
+
+  const [page, setPage] = useState(1)
+  const { data, isLoading } = useQuery(
+    [LIST_POSTS_QUERY_KEY, TopCategoriesProps],
+    () => listPosts('top', match.params.agency, 1, 10),
+    { keepPreviousData: true },
+  )
 
   useEffect(() => {
+    mobileSearchHeightRef.current =
+      'calc(100vh - ' +
+      document.getElementById('mobile-search').getBoundingClientRect().top +
+      'px - ' +
+      window.scrollY +
+      'px)'
     setAgencyState(agency)
   }, [agency])
+  console.log(agencyAndTags)
+  const scrollToQuestions = () => {
+    const questionsView = document.getElementById('questions-view')
+    questionsView.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  }
 
   return (
     <Flex direction="column" height="100%" className="home-page">
-      <Box display={{ base: 'block', sm: 'none' }}>
-        <FullScreenSearch
-          agencyParam={agencyState}
-          scrollToAnchor={questionsViewAnchor}
-        />
+      {/* landing page starts here */}
+      <Box id="mobile-search" height={mobileSearchHeightRef.current}>
+        <Flex direction="column" height="100%">
+          <Spacer />
+          <Flex direction="column" height="80%">
+            <Spacer />
+            <Center>
+              <Box w="85%">
+                {agencyState ? (
+                  <Flex
+                    // flex="1"
+                    // mt="56px"
+                    // mr={{ base: '48px', xl: '88px' }}
+                    // display={{ base: 'none', md: 'flex' }}
+                    direction="column"
+                  >
+                    <AgencyLogo agencyShortName={agencyState.shortname} />
+                    <Spacer />
+                    <Text
+                      // position={{ base: 'relative', md: 'static' }}
+                      // top={{ base: '-6px', md: 0 }}
+                      py="10px"
+                      textStyle="h1-mobile"
+                    >
+                      {agencyState.longname}
+                    </Text>
+                  </Flex>
+                ) : null}
+                <Box
+                  flex="5"
+                  h="58px"
+                  mt={
+                    agency
+                      ? { base: '20px', md: '56px' }
+                      : { base: '4px', xl: '56px' }
+                  }
+                  mx={agency ? 0 : 'auto'}
+                  maxW={{ base: '100%', xl: '80%' }}
+                >
+                  <SearchBoxComponent
+                    agencyShortName={agencyState?.shortname}
+                    inputVariant="filled"
+                  />
+                </Box>
+                <Text py="20px" textStyle="body-2">
+                  Common topics imclude [top category 1], [top category 2], [top
+                  category 3]
+                </Text>
+              </Box>
+            </Center>
+            <Spacer />
+          </Flex>
+          <Spacer />
+          <Center>
+            <IconButton
+              aria-label="Search database"
+              variant="ghost"
+              isRound
+              icon={<BiChevronDown size="sm" color="grey" />}
+              onClick={scrollToQuestions}
+            />
+          </Center>
+          <Spacer />
+        </Flex>
       </Box>
+      {/* landing page ends here */}
       <Box
         bg="primary.500"
         h={
@@ -128,7 +236,7 @@ const HomePage = ({ match }) => {
         pt={agency ? { base: '44px', md: '104px', xl: '80px' } : '44px'}
         px={{ base: 8, md: 12 }}
         direction={{ base: 'column', md: 'row' }}
-        id={questionsViewAnchor}
+        id="questions-view"
       >
         {/* Hide TagPanel on mobile */}
         <Box flex="1" mr={{ md: 88 }} d={{ base: 'none', xl: 'block' }}>

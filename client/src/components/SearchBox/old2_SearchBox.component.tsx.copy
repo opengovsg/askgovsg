@@ -1,11 +1,12 @@
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input'
 import * as FullStory from '@fullstory/browser'
-import Downshift from 'downshift'
+import Downshift, { DownshiftState, GetItemPropsOptions, StateChangeOptions, StateChangeTypes } from 'downshift'
 import Fuse from 'fuse.js'
 import { RefCallback } from 'react'
 import { BiSearch } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link, useHistory, useParams } from 'react-router-dom'
+import { BasePostDto } from 'src/api'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   listPosts,
@@ -14,17 +15,28 @@ import {
 import './SearchBox.styles.scss'
 
 const SearchBox = ({
-  placeholder = 'How can we help you?',
-  value = '',
+  placeholder = "How can we help you?",
+  value = "",
   inputRef,
   handleSubmit = undefined,
-  handleAbandon = (_inputValue) => {},
+  handleAbandon = (_inputValue: string) => {},
   searchOnEnter = true,
   showSearchIcon = true,
   agencyShortName,
-  inputVariant = 'outline',
+  inputVariant = "outline",
   isInvalid,
   ...inputProps
+}: {
+  placeholder: string,
+  value: string,
+  inputRef: RefCallback<any>,
+  handleSubmit: any,
+  handleAbandon: any,
+  searchOnEnter: boolean,
+  showSearchIcon: boolean,
+  agencyShortName: string,
+  inputVariant: string,
+  isInvalid: string,
 }) => {
   /*
   Use LIST_POSTS_FOR_SEARCH_QUERY_KEY instead of LIST_POSTS_QUERY_KEY
@@ -42,7 +54,7 @@ const SearchBox = ({
   const name = 'search'
 
   const googleAnalytics = useGoogleAnalytics()
-  const sendSearchEventToAnalytics = (searchString) => {
+  const sendSearchEventToAnalytics = (searchString: string) => {
     googleAnalytics.sendUserEvent(
       googleAnalytics.GA_USER_EVENTS.SEARCH,
       searchString,
@@ -52,7 +64,7 @@ const SearchBox = ({
       searchString_str: searchString,
     })
   }
-  const sendAbandonedSearchEventToAnalytics = (searchString) => {
+  const sendAbandonedSearchEventToAnalytics = (searchString: string) => {
     googleAnalytics.sendUserEvent(
       googleAnalytics.GA_USER_EVENTS.ABANDONED,
       searchString,
@@ -78,25 +90,25 @@ const SearchBox = ({
   placeholder = placeholder
   value = value ?? ''
   if (!handleSubmit) {
-    handleSubmit = (inputValue) =>
+    handleSubmit = (inputValue: string) =>
       history.push(
         `/questions?search=${inputValue}` +
           (agencyShortName ? `&agency=${agencyShortName}` : ''),
       )
   }
 
-  const onAbandon = (inputValue) => {
+  const onAbandon = (inputValue: string) => {
     sendAbandonedSearchEventToAnalytics(inputValue)
     handleAbandon(inputValue)
   }
 
-  const itemToString = (item) => (item ? item.title : '')
+  const itemToString = (item: any) => (item ? item.title : '')
 
-  const fuse = new Fuse(data?.posts, {
+  const fuse = new Fuse(data?.posts!, {
     keys: ['title', 'description'],
   })
 
-  const stateReducer = (_state, changes) => {
+  const stateReducer = (_state: DownshiftState<any>, changes: StateChangeOptions<any> ) => {
     return [
       Downshift.stateChangeTypes.blurInput,
       Downshift.stateChangeTypes.mouseUp,
@@ -125,7 +137,7 @@ const SearchBox = ({
       }) => (
         <div
           className="search-autocomplete"
-          onBlur={() => onAbandon(inputValue)}
+          onBlur={() => onAbandon(inputValue!)}
         >
           <InputGroup size="lg">
             <InputLeftElement
@@ -204,6 +216,13 @@ const SearchItem = ({
   highlightedIndex,
   itemToString,
   onClick,
+} : {
+  item: BasePostDto,
+  index: number,
+  highlightedIndex: number | null,
+  getItemProps: (options: GetItemPropsOptions<any>) => any,
+  itemToString: (item: any) => any,
+  onClick: () => void,
 }) => (
   <Link
     {...getItemProps({
