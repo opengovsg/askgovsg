@@ -4,7 +4,7 @@ import minimatch from 'minimatch'
 import session from 'express-session'
 import { ModelCtor, Sequelize } from 'sequelize'
 import supertest, { Session } from 'supertest-session'
-import passportConfig from '../../../bootstrap/passport/passport'
+import { passportConfig } from '../../../bootstrap/passport'
 import {
   Token as TokenModel,
   User as UserModel,

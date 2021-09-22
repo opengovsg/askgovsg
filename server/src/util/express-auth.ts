@@ -52,7 +52,7 @@ export const createAuthedSession = async (
 }
 
 export const logoutSession = async (request: Session): Promise<Session> => {
-  const response = await request.get('/auth/logout')
+  const response = await request.post('/auth/logout')
 
   expect(response.status).toEqual(200)
 
