@@ -163,7 +163,7 @@ if (baseConfig.nodeEnv === Environment.Prod) {
     connectDatadog({
       response_code: true,
       tags: [`service:${datadogConfig.service}`, `env:${datadogConfig.env}`],
-      path: true,
+      path: false,
       dogstatsd: new StatsD({
         useDefaultRoute: true,
         errorHandler: (error) => {

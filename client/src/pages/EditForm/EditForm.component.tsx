@@ -106,7 +106,7 @@ const EditForm = ({ match }: EditFormProps): JSX.Element => {
   const isLoading = isPostLoading || isAnswerLoading || isTagLoading
 
   return isLoading ? (
-    <Spinner type="page" width="75px" height="200px" />
+    <Spinner centerHeight="200px" />
   ) : (
     <>
       <div className="edit-form-container">

@@ -8,7 +8,7 @@
     "build-frontend": "npm run build --prefix client",
     "build-backend": "npm run build --prefix server",
     "build-shared": "npm run build --prefix shared",
-    "build": "npm run build-frontend && npm run build-backend",
+    "build": "npm run build-shared && npm run build-frontend && npm run build-backend",
     "server": "npm run dev --prefix server",
     "client": "npm start --prefix client",
     "dev": "concurrently \"./wait-for-it.sh localhost:3306 -t 0 -- npm run build-shared && sleep 5 && npm run server\" \"npm run client\" \"docker-compose up \"",

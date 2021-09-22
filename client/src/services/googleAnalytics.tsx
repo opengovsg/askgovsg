@@ -5,6 +5,8 @@ const GA_USER_EVENTS = {
   ABANDONED: 'Abandoned Search',
   SUBMIT_ENQUIRY: 'Submit Enquiry',
   OPEN_ENQUIRY: 'Open Enquiry',
+  CLICK_TAG: 'Click Tag',
+  BROWSE: 'Browse',
 }
 
 const initializeGA = (trackingId: string): void => {
@@ -55,6 +57,9 @@ const sendException = (description: string): void => {
   ReactGA.exception({ description })
 }
 
+const appLoadTime = Date.now()
+const hasSearched = false
+
 export const GoogleAnalyticsService = {
   GA_USER_EVENTS,
   initializeGA,
@@ -63,4 +68,6 @@ export const GoogleAnalyticsService = {
   sendUserEvent,
   sendTiming,
   sendException,
+  appLoadTime,
+  hasSearched,
 }
