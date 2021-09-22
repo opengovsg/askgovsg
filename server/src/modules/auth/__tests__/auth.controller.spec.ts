@@ -40,6 +40,23 @@ const user: Express.User | undefined = { id: 1 }
 const isAuthenticated = true
 const middleware: ControllerHandler = (req, res, next) => {
   req.isAuthenticated = () => isAuthenticated
+  req.session = {
+    passport: { id: 1 },
+    regenerate: (callback) => {
+      callback(null)
+      return req.session
+    },
+    save: (callback) => {
+      if (callback) callback(null)
+      return req.session
+    },
+    id: '',
+    cookie: { originalMaxAge: 240000 },
+    destroy: jest.fn(),
+    reload: jest.fn(),
+    resetMaxAge: jest.fn(),
+    touch: jest.fn(),
+  }
   req.logIn = (_, callback) => {
     callback()
   }

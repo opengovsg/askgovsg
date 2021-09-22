@@ -204,7 +204,45 @@ export class AuthController {
             .status(StatusCodes.INTERNAL_SERVER_ERROR)
             .json({ message: 'Server Error' })
         }
-        return res.sendStatus(StatusCodes.OK)
+
+        //
+        /**
+         * Regenerate session to mitigate session fixation
+         * We regenerate the session upon logging in so an
+         * anonymous session cookie cannot be used
+         */
+        const passportSession = req.session.passport
+        req.session.regenerate(function (error) {
+          if (error) {
+            logger.error({
+              message: 'Error while regenerating session',
+              meta: {
+                function: 'handleVerifyLoginOtp',
+              },
+              error,
+            })
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .json({ message: 'Server Error' })
+          }
+          //req.session.passport is now undefined
+          req.session.passport = passportSession
+          req.session.save(function (error) {
+            if (error) {
+              logger.error({
+                message: 'Error while saving regenerated session',
+                meta: {
+                  function: 'handleVerifyLoginOtp',
+                },
+                error,
+              })
+              return res
+                .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                .json({ message: 'Server Error' })
+            }
+            return res.sendStatus(StatusCodes.OK)
+          })
+        })
       })
     })(req, res, next)
   }
