@@ -17,23 +17,21 @@ const NotFound = (): JSX.Element => {
     <Fragment>
       <BackToHome />
       <Container>
-        <Container>
-          <Flex direction="column">
-            <Heading align="center" size="4xl">
-              Not Found
-            </Heading>
-            <Spacer minH={10} />
-            <Text align="center">
-              It seems like we couldn't find the page you were looking for.
-            </Text>
-            <Spacer minH={10} />
-            <Center>
-              <Button as={ReachLink} to="/">
-                Back to home page
-              </Button>
-            </Center>
-          </Flex>
-        </Container>
+        <Flex direction="column">
+          <Heading align="center" size="4xl">
+            Not Found
+          </Heading>
+          <Spacer minH={10} />
+          <Text align="center">
+            It seems like we couldn't find the page you were looking for.
+          </Text>
+          <Spacer minH={10} />
+          <Center>
+            <Button as={ReachLink} to="/">
+              Back to home page
+            </Button>
+          </Center>
+        </Flex>
       </Container>
       <Spacer minH={20} />
     </Fragment>
