@@ -1,5 +1,4 @@
 import './AgencyLogo.styles.scss'
-import React from 'react'
 import { useQuery } from 'react-query'
 import {
   getAgencyByShortName,
@@ -8,7 +7,7 @@ import {
 import { useParams } from 'react-router-dom'
 
 const AgencyLogo = () => {
-  const { agency: agencyShortName } = useParams()
+  const { agency: agencyShortName } = useParams<{ agency: string }>()
   const { data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
     () => getAgencyByShortName({ shortname: agencyShortName }),
