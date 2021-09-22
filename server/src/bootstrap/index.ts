@@ -83,7 +83,7 @@ const mailOptions = {
 }
 const transport = createTransport(mailOptions)
 
-const agencyService = new AgencyService()
+const agencyService = new AgencyService({ Agency })
 const authService = new AuthService({ emailValidator, jwtSecret })
 const authMiddleware = new AuthMiddleware({ jwtSecret })
 const mailService = new MailService({
