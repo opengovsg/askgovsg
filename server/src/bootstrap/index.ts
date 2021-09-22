@@ -97,7 +97,8 @@ const mailOptions = {
 }
 const transport = createTransport(mailOptions)
 
-const agencyService = new AgencyService()
+
+const agencyService = new AgencyService({ Agency })
 const authService = new AuthService({
   emailValidator,
   User,
