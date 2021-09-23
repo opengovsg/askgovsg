@@ -102,17 +102,17 @@ export const textStyles = {
   },
   'caption-1': {
     ...baseTextStyle,
-    fontWeight: 'normal',
+    fontWeight: 'medium',
     fontSize: '12px',
     lineHeight: '16px',
-    fontFeatureSettings: "'tnum' on, 'lnum' on, 'cv05' on",
+    fontFeatureSettings: "'tnum' on, 'cv05' on",
   },
   'caption-2': {
     ...baseTextStyle,
     fontWeight: 'normal',
-    fontSize: '10px',
+    fontSize: '12px',
     lineHeight: '16px',
-    fontFeatureSettings: "'tnum' on, 'lnum' on, 'cv05' on",
+    fontFeatureSettings: "'tnum' on, 'cv05' on",
   },
   link: {
     ...baseTextStyle,
@@ -122,5 +122,12 @@ export const textStyles = {
     letterSpacing: '-0.011em',
     textDecorationLine: 'underline',
     fontFeatureSettings: "'tnum' on, 'lnum' on, 'zero' on, 'cv05' on",
+  },
+  Legal: {
+    ...baseTextStyle,
+    fontWeight: 'normal',
+    fontSize: '10px',
+    lineHeight: '12px',
+    fontFeatureSettings: "'tnum' on, 'cv05' on",
   },
 }

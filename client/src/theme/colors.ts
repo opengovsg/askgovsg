@@ -12,7 +12,7 @@ export const colors = {
   },
   secondary: {
     100: '#f5f6f8',
-    200: '#dadce3',
+    200: '#F0F0F1',
     300: '#a2a8b9',
     400: '#69738e',
     500: '#445072',
@@ -65,4 +65,5 @@ export const colors = {
     800: '#7D6C34',
     900: '#4B411F',
   },
+  systemLinks: '#2F60CE',
 }
