@@ -340,12 +340,13 @@ export class PostService {
     // with a question
 
     // get only the IDs we need via filtering
+    const tagsLength = tags?.length ?? 0
     const postsToMap =
-      tags && tags.length > 0
+      tagsLength > 0
         ? // filter posts further to contain ALL of the wanted tags from ANY of the tags
           // since posts are already filtered for ANY of the wanted tags
           // sufficient to filter posts that contain the same number of tags as wanted tags
-          posts.filter((posts) => posts.tags.length == tags.length)
+          posts.filter((posts) => posts.tags.length == tagsLength)
         : posts
     const filteredPostIds = postsToMap.map(({ id }) => id)
 
