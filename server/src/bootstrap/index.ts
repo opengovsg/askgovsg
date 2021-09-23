@@ -188,11 +188,12 @@ if (baseConfig.nodeEnv === Environment.Prod) {
     express.static(path.resolve(__dirname, '../../..', 'client', 'build')),
   )
 
-  app.get('*', (_req, res) => {
-    res.sendFile(
+  app.get(
+    '*',
+    express.static(
       path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
-    )
-  })
+    ),
+  )
 }
 
 export default app
