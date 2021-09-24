@@ -65,7 +65,7 @@ export class AgencyService {
       }),
       (error) => {
         logger.error({
-          message: 'Database find agency error',
+          message: 'Database error while retrieving single agency by id',
           meta: {
             function: 'findOneById',
             agencyId,
