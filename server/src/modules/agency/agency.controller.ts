@@ -29,24 +29,20 @@ export class AgencyController {
     undefined,
     AgencyQuery
   > = async (req, res) => {
-    try {
-      const data = await this.agencyService.findOneByName(req.query)
-      if (!data) {
-        return res
-          .status(StatusCodes.NOT_FOUND)
-          .json({ message: 'Agency not found' })
-      }
-      return res.status(StatusCodes.OK).json(data)
-    } catch (error) {
-      logger.error({
-        message: 'Error while retrieving single agency by name',
-        meta: {
-          function: 'getSingleAgency',
-        },
-        error,
+    return this.agencyService
+      .findOneByName(req.query)
+      .map((data) => res.status(StatusCodes.OK).json(data))
+      .mapErr((error) => {
+        if (error.constructor === MissingAgencyError) {
+          return res
+            .status(StatusCodes.NOT_FOUND)
+            .json({ message: error.message })
+        } else {
+          return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ message: 'Something went wrong. Please try again.' })
+        }
       })
-      return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
-    }
   }
 
   /**
