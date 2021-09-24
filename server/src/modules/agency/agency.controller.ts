@@ -2,12 +2,9 @@ import { AgencyService } from './agency.service'
 import { Agency } from '~shared/types/base'
 import { Message } from '../../types/message-type'
 import { AgencyQuery } from '../../types/agency-type'
-import { createLogger } from '../../bootstrap/logging'
 import { StatusCodes } from 'http-status-codes'
 import { ControllerHandler } from '../../types/response-handler'
 import { MissingAgencyError } from './agency.errors'
-
-const logger = createLogger(module)
 
 export class AgencyController {
   private agencyService: Public<AgencyService>
