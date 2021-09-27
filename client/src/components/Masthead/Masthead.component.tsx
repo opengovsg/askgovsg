@@ -19,7 +19,7 @@ const Masthead: FC = () => {
     setMastheadExpanded(!mastheadExpanded)
   }
   const mastheadTopTextStyle = { base: 'Legal', sm: 'caption-2' }
-  const mastheadTopMarginY = { base: '8px', xl: '6px' }
+  const mastheadTopMarginY = { base: '6px', xl: '4px' }
   const mastheadHeadingTextStyle = { base: 'caption-1', xl: 'subhead-1' }
   const mastheadHeadingMarginBottom = { base: '8px', sm: '12px' }
   const mastheadBodyTextStyle = { base: 'caption-2', xl: 'body-1' }
