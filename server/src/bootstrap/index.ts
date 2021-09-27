@@ -2,6 +2,7 @@ import bodyParser from 'body-parser'
 import helmet from 'helmet'
 import cors from 'cors'
 import compression from 'compression'
+import fs from 'fs'
 import path from 'path'
 import axios from 'axios'
 
@@ -168,11 +169,12 @@ if (baseConfig.nodeEnv === Environment.Prod) {
     express.static(path.resolve(__dirname, '../../..', 'client', 'build')),
   )
 
-  app.get(
-    '*',
-    express.static(
-      path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
-    ),
+  const index = fs.readFileSync(
+    path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
+  )
+
+  app.get('*', (_req, res) =>
+    res.header('content-type', 'text/html').send(index),
   )
 }
 
