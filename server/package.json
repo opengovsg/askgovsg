@@ -30,7 +30,7 @@
     "datadog-winston": "^1.5.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
-    "express-validator": "^6.4.0",
+    "express-validator": "^6.12.2",
     "express-winston": "^4.2.0",
     "helmet": "^4.6.0",
     "hot-shots": "^8.5.2",
