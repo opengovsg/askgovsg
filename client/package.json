@@ -31,7 +31,7 @@
     "react-query": "^3.24.4",
     "react-router-dom": "^5.3.0",
     "react-scripts": "^4.0.3",
-    "react-select": "^4.3.1",
+    "react-select": "^5.0.0",
     "react-tabs": "^3.1.2",
     "sass": "^1.42.1",
     "styled-components": "^5.3.1",
