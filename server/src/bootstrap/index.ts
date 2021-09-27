@@ -83,6 +83,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 // passport and session
+app.set('trust proxy', 1) // trust first proxy
 app.use(sessionMiddleware(sequelize))
 passportConfig(app, Token, User)
 
