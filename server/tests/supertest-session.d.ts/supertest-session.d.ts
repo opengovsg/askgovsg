@@ -6,11 +6,11 @@ declare module 'supertest-session' {
     agent: SuperAgentTest
     app: Express
     url: string
-    options: Record<string, any>
+    options: Record<string, unknown>
     reset: () => void
 
     cookies: ReturnType<SuperAgentTest['jar']['getCookies']>
   }
 
-  export default function (app: any): Session
+  export default function (app: Express): Session
 }

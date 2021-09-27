@@ -11,7 +11,7 @@ import {
   Permission as PermissionModel,
   PostTag as PostTagModel,
 } from '../../../models'
-import { createAuthedSession, logoutSession } from '../../../util/express-auth'
+import { createAuthedSession, logoutSession } from '../../../../tests/mock-auth'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { AuthController } from '../auth.controller'
 import { AuthMiddleware } from '../auth.middleware'

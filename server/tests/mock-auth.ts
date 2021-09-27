@@ -1,5 +1,5 @@
 import { Session } from 'supertest-session'
-import * as hash from './hash'
+import * as hash from '../src/util/hash'
 
 const MOCK_VALID_OTP = '123456'
 
