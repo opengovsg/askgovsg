@@ -3,7 +3,7 @@ import { BaseModel } from './common'
 
 export const Category = BaseModel.extend({
   catname: z.string(),
-  parentId: z.string(),
+  parentId: z.number(),
   agencyId: z.number(),
 })
 
