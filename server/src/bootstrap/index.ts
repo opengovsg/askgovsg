@@ -1,7 +1,7 @@
-import bodyParser from 'body-parser'
 import helmet from 'helmet'
 import cors from 'cors'
 import compression from 'compression'
+import fs from 'fs'
 import path from 'path'
 import axios from 'axios'
 
@@ -31,7 +31,6 @@ import { AuthMiddleware } from '../modules/auth/auth.middleware'
 import { baseConfig, Environment } from './config/base'
 import { bannerConfig } from './config/banner'
 import { googleAnalyticsConfig } from './config/googleAnalytics'
-import { authConfig } from './config/auth'
 import { fullStoryConfig } from './config/fullstory'
 import { mailConfig } from './config/mail'
 import { fileConfig } from './config/file'
@@ -42,13 +41,26 @@ import { requestLoggingMiddleware } from './logging/request-logging'
 import { helmetOptions } from './helmet-options'
 import { emailValidator } from './email-validator'
 import { EnquiryService } from '../modules/enquiry/enquiry.service'
-import { Agency, Answer, Post, PostTag, Tag, User } from './sequelize'
+import {
+  Agency,
+  Answer,
+  Permission,
+  Post,
+  PostTag,
+  Tag,
+  User,
+  Token,
+  sequelize,
+} from './sequelize'
 import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
 
 import { s3, bucket, host } from './s3'
 import { FileController } from '../modules/file/file.controller'
 import { FileService } from '../modules/file/file.service'
 import { datadogConfig } from './config/datadog'
+
+import { passportConfig } from './passport'
+import sessionMiddleware from './session'
 
 export { sequelize } from './sequelize'
 export const app = express()
@@ -67,14 +79,18 @@ app.use(cors({ origin: 'http://localhost:5000' }))
 app.use(helmet(helmetOptions))
 
 // body-parser
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+
+// passport and session
+app.set('trust proxy', 1) // trust first proxy
+app.use(sessionMiddleware(sequelize))
+passportConfig(app, Token, User)
 
 // all the api routes
 // This must come before app.get('*') to avoid overriding API routes
 const bannerMessage = bannerConfig.siteWideMessage
 const googleAnalyticsId = googleAnalyticsConfig.googleAnalyticsId
-const jwtSecret = authConfig.jwtSecret
 const fullStoryOrgId = fullStoryConfig.fullStoryOrgId
 
 const mailOptions = {
@@ -84,8 +100,13 @@ const mailOptions = {
 const transport = createTransport(mailOptions)
 
 const agencyService = new AgencyService({ Agency })
-const authService = new AuthService({ emailValidator, jwtSecret })
-const authMiddleware = new AuthMiddleware({ jwtSecret })
+const authService = new AuthService({
+  emailValidator,
+  User,
+  Permission,
+  PostTag,
+})
+const authMiddleware = new AuthMiddleware()
 const mailService = new MailService({
   transport,
   mailFromEmail: mailConfig.senderConfig.mailFrom,
@@ -108,8 +129,9 @@ const apiOptions = {
       mailService,
       authService,
       userService: new UserService(),
+      Token,
     }),
-    middleware: authMiddleware,
+    authMiddleware,
   },
   env: new EnvController({ bannerMessage, googleAnalyticsId, fullStoryOrgId }),
   post: {
@@ -168,11 +190,13 @@ if (baseConfig.nodeEnv === Environment.Prod) {
     express.static(path.resolve(__dirname, '../../..', 'client', 'build')),
   )
 
-  app.get('*', (_req, res) => {
-    res.sendFile(
-      path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
-    )
-  })
+  const index = fs.readFileSync(
+    path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
+  )
+
+  app.get('*', (_req, res) =>
+    res.header('content-type', 'text/html').send(index),
+  )
 }
 
 export default app

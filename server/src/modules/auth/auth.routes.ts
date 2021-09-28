@@ -5,10 +5,10 @@ import { AuthMiddleware } from './auth.middleware'
 
 export const routeAuth = ({
   controller,
-  middleware,
+  authMiddleware,
 }: {
   controller: AuthController
-  middleware: AuthMiddleware
+  authMiddleware: AuthMiddleware
 }): express.Router => {
   const router = express.Router()
 
@@ -20,12 +20,12 @@ export const routeAuth = ({
    * @returns 500 if database error
    * @access  Private
    */
-  router.get('/', middleware.authenticate, controller.loadUser)
+  router.get('/', authMiddleware.authenticate, controller.loadUser)
 
   /**
-   * Verify jwt received by the user and set the JWT
+   * Verify otp received by the user and store the session
    * @route   POST /api/auth/verifyotp
-   * @returns 200 with JWT if successful login
+   * @returns 200 if successful login
    * @returns 400 if validation of body fails
    * @returns 401 if no otp was sent for user
    * @returns 401 if wrong otp
@@ -64,6 +64,14 @@ export const routeAuth = ({
       .normalizeEmail(),
     controller.handleSendLoginOtp,
   )
+
+  /**
+   * Logout
+   * @route   POST /api/auth/logout
+   * @returns 200 if logged out
+   * @access  private
+   */
+  router.post('/logout', controller.handleLogout)
 
   return router
 }

@@ -12,9 +12,9 @@ import {
   Tag as TagModel,
   User as UserModel,
 } from '../../../models'
-import { PermissionType, PostStatus } from '~shared/types/base'
+import { PermissionType, PostStatus, TagType } from '~shared/types/base'
+import { ControllerHandler } from '../../../types/response-handler'
 import { SortType } from '../../../types/sort-type'
-import { TagType } from '~shared/types/base'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { PostController } from '../post.controller'
 import { routePosts } from '../post.routes'
@@ -38,21 +38,27 @@ describe('/posts', () => {
 
   // Set up service, controller and route
   const authService = {
-    createToken: jest.fn(),
-    getUserIdFromToken: jest.fn(),
-    getOfficerUser: jest.fn(),
     checkIfWhitelistedOfficer: jest.fn(),
     hasPermissionToAnswer: jest.fn(),
     getDisallowedTagsForUser: jest.fn(),
     verifyUserCanViewPost: jest.fn(),
     isOfficerEmail: jest.fn(),
   }
-  const authMiddleware = { authenticate: jest.fn() }
+
+  const authenticate: ControllerHandler = (req, res, next) => {
+    req.user = { id: 1 }
+    next()
+  }
+
+  const authMiddleware = {
+    authenticate,
+  }
 
   // Set up supertest
   const path = '/posts'
   const app = express()
   app.use(bodyParser.json())
+  app.use(authenticate)
   const request = supertest(app)
 
   beforeAll(async () => {
@@ -115,8 +121,6 @@ describe('/posts', () => {
 
   describe('/posts/answerable', () => {
     it('returns 200 and data on posts on request', async () => {
-      // Arrange
-      authService.getUserIdFromToken.mockReturnValue(1)
       // Act
       const response = await request.get(path + '/answerable').query({
         withAnswers: false,

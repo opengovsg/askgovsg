@@ -66,7 +66,7 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 
 * Check that your Database ER Diagram looks like this:
   
-![image](https://user-images.githubusercontent.com/20250559/130938844-60255d06-d07d-4c84-ad3f-0c13be7dcb67.png)
+![image](https://user-images.githubusercontent.com/20250559/133567780-7bc3a4bb-02d2-45e3-883c-249156e38fd1.png)
 
 
 * Stop docker compose (`npm run dev` will spin it up again):
@@ -150,6 +150,7 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 - `GET /auth`
 - `GET /auth/verifyotp`
 - `GET /auth/sendotp`
+- `GET /auth/logout`
 
 #### Users
 

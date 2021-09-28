@@ -1,11 +1,15 @@
 import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
-import { ErrorDto, LoadUserDto, VerifyLoginOtpDto } from '~shared/types/api'
+import { isEmpty } from 'lodash'
+import passport from 'passport'
+import { ModelCtor } from 'sequelize/types'
+import { Message } from 'src/types/message-type'
+import { ErrorDto, LoadUserDto } from '~shared/types/api'
 import { createLogger } from '../../bootstrap/logging'
-import { Token, User } from '../../bootstrap/sequelize'
+import { Token } from '../../models'
 import { UserService } from '../../modules/user/user.service'
 import { ControllerHandler } from '../../types/response-handler'
-import { generateRandomDigits, hashData, verifyHash } from '../../util/hash'
+import { generateRandomDigits, hashData } from '../../util/hash'
 import { createValidationErrMessage } from '../../util/validation-error'
 import { MailService } from '../mail/mail.service'
 import { AuthService } from './auth.service'
@@ -18,52 +22,59 @@ export class AuthController {
   private mailService: Public<MailService>
   private authService: Public<AuthService>
   private userService: Public<UserService>
+  private Token: ModelCtor<Token>
 
   constructor({
     mailService,
     authService,
     userService,
+    Token,
   }: {
     mailService: Public<MailService>
     authService: Public<AuthService>
     userService: Public<UserService>
+    Token: ModelCtor<Token>
   }) {
     this.mailService = mailService
     this.authService = authService
     this.userService = userService
+    this.Token = Token
   }
 
   /**
-   * Fetch logged in user details
+   * Fetch logged in user details after being authenticated.
    * @returns 200 with user details
-   * @returns 401 if user not signed in
+   * @returns 500 if user id not found
    * @returns 500 if database error
    */
   loadUser: ControllerHandler<unknown, LoadUserDto | ErrorDto> = async (
     req,
     res,
   ) => {
-    if (!req.user) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json({ message: 'User not signed in' })
+    const id = req.user?.id
+    if (!id) {
+      logger.error({
+        message: 'User not found after being authenticated',
+        meta: {
+          function: 'loadUser',
+          userId: req.user?.id,
+        },
+      })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(null)
     }
-
     try {
-      const user = await this.userService.loadUser(req.user?.id)
+      const user = await this.userService.loadUser(id)
       return res.status(StatusCodes.OK).json(user)
     } catch (error) {
       logger.error({
-        message: 'Error while loading user',
+        message: 'Database Error while loading user',
         meta: {
           function: 'loadUser',
           userId: req.user?.id,
         },
         error,
       })
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: 'Server Error' })
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(null)
     }
   }
 
@@ -118,8 +129,8 @@ export class AuthController {
     const ip = req.header('CF-Connecting-IP') || req.ip
 
     try {
-      await Token.destroy({ where: { contact: email } })
-      await Token.create({ contact: email, hashedOtp })
+      await this.Token.destroy({ where: { contact: email } })
+      await this.Token.create({ contact: email, hashedOtp })
       await this.mailService.sendLoginOtp(email, otp, ip)
     } catch (error) {
       logger.error({
@@ -137,80 +148,138 @@ export class AuthController {
   }
 
   /**
-   * Verify jwt received by the user and set the JWT
+   * Verify otp received by the user
    * @body email email of user
    * @body otp otp of user
-   * @returns 200 with JWT if successful login
+   * @returns 200 if successful login
    * @returns 400 if validation of body fails
-   * @returns 401 if no otp was sent for user
-   * @returns 401 if wrong otp
+   * @returns 422 if no otp was sent for user or wrong otp
    * @returns 500 if database error
    */
   handleVerifyLoginOtp: ControllerHandler<
     undefined,
-    VerifyLoginOtpDto | ErrorDto,
+    ErrorDto, // success case has no return data
     { email: string; otp: string },
     undefined
-  > = async (req, res) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ message: createValidationErrMessage(errors) })
-    }
-
+  > = async (req, res, next) => {
     const email = req.body.email
-    const otp = req.body.otp
-
     if (!this.authService.isOfficerEmail(email)) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
         message:
           'You must use a Singapore Public Service official email address.',
       })
     }
-
-    try {
-      const token = await Token.findOne({ where: { contact: email } })
-      if (!token) {
+    passport.authenticate('local', {}, (error, user, info: Message) => {
+      if (error) {
+        logger.error({
+          message: 'Error while authenticating',
+          meta: {
+            function: 'handleVerifyLoginOtp',
+          },
+          error,
+        })
         return res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: 'No OTP sent for this user.' })
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Server Error' })
       }
-
-      const verifyHashResult = await verifyHash(String(otp), token.hashedOtp)
-      if (!verifyHashResult) {
-        return res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: 'Wrong OTP, please try again.' })
+      if (!user) {
+        logger.warn({
+          message: info.message,
+          meta: {
+            function: 'handleVerifyLoginOtp',
+          },
+        })
+        return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json(info)
       }
+      req.logIn(user, (error) => {
+        if (error) {
+          logger.error({
+            message: 'Error while logging in',
+            meta: {
+              function: 'handleVerifyLoginOtp',
+            },
+            error,
+          })
+          return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ message: 'Server Error' })
+        }
 
-      const user = await User.findOne({ where: { username: email } })
-      const newParticipant = false
-      let jwt
-      let displayname
-      if (user) {
-        jwt = this.authService.createToken(user.id)
-        displayname = user.displayname
-      } else {
-        const officer = await this.userService.createOfficer(email)
-        displayname = officer.displayname
-        jwt = this.authService.createToken(officer.id)
-      }
+        //
+        /**
+         * Regenerate session to mitigate session fixation
+         * We regenerate the session upon logging in so an
+         * anonymous session cookie cannot be used
+         */
+        const passportSession = req.session.passport
+        req.session.regenerate(function (error) {
+          if (error) {
+            logger.error({
+              message: 'Error while regenerating session',
+              meta: {
+                function: 'handleVerifyLoginOtp',
+              },
+              error,
+            })
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .json({ message: 'Server Error' })
+          }
+          //req.session.passport is now undefined
+          req.session.passport = passportSession
+          req.session.save(function (error) {
+            if (error) {
+              logger.error({
+                message: 'Error while saving regenerated session',
+                meta: {
+                  function: 'handleVerifyLoginOtp',
+                },
+                error,
+              })
+              return res
+                .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                .json({ message: 'Server Error' })
+            }
+            return res.sendStatus(StatusCodes.OK)
+          })
+        })
+      })
+    })(req, res, next)
+  }
 
-      await Token.destroy({ where: { contact: email } })
-      return res
-        .status(StatusCodes.OK)
-        .json({ token: jwt, newParticipant, displayname })
-    } catch (error) {
+  /**
+   * Logout
+   * @returns 200 if logged out
+   */
+  handleLogout: ControllerHandler = (req, res) => {
+    if (!req.session || isEmpty(req.session)) {
       logger.error({
-        message: 'Error while verifying login OTP',
+        message: 'Attempted to sign out without a session',
         meta: {
-          function: 'handleVerifyLoginOtp',
+          function: 'handleLogout',
         },
       })
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: 'Server Error' })
+      return res.sendStatus(StatusCodes.BAD_REQUEST)
     }
+
+    req.session.destroy((error) => {
+      if (error) {
+        logger.error({
+          message: 'Failed to destroy session',
+          meta: {
+            action: 'handleLogout',
+            function: 'handleLogout',
+          },
+          error,
+        })
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Sign out failed' })
+      }
+
+      // No error.
+      res.clearCookie('connect.sid')
+      return res.status(StatusCodes.OK).json({ message: 'Sign out successful' })
+    })
   }
 }

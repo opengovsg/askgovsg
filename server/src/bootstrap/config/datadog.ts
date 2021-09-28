@@ -29,6 +29,7 @@ export type DataDogConfig = {
   hostname: string
   env: DatadogEnv
   service: string
+  ddsource: string
 }
 
 const datadogSchema: Schema<DataDogConfig> = {
@@ -55,6 +56,11 @@ const datadogSchema: Schema<DataDogConfig> = {
     doc: 'Name of service as reported to Datadog',
     format: String,
     default: 'askgovsg',
+  },
+  ddsource: {
+    doc: 'The source of the logs sent to Datadog, ie nodejs',
+    format: String,
+    default: 'nodejs',
   },
 }
 
