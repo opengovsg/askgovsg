@@ -6,6 +6,7 @@ export const Agency = BaseModel.extend({
   longname: z.string(),
   email: z.string(),
   logo: z.string(),
+  noEnquiriesMessage: z.string().nullable(),
 })
 
 export type Agency = z.infer<typeof Agency>

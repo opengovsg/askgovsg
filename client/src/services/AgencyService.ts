@@ -1,12 +1,7 @@
+import { Agency } from '~shared/types/base'
 import { ApiClient } from '../api'
 
-export type Agency = {
-  id: number
-  email: string
-  shortname: string
-  longname: string
-  logo: string
-}
+export { Agency } from '~shared/types/base'
 
 export type AgencyQuery = {
   shortname: string

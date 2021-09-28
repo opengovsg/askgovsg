@@ -1,11 +1,24 @@
-import { Button, Flex, Text, useDisclosure } from '@chakra-ui/react'
+import {
+  Button,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  useDisclosure,
+} from '@chakra-ui/react'
+import * as FullStory from '@fullstory/browser'
 import { getApiErrorMessage } from '../../api'
+import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import { Agency } from '../../services/AgencyService'
 import { Enquiry, Mail, postMail } from '../../services/MailService'
 import { EnquiryModal } from '../EnquiryModal/EnquiryModal.component'
+import { RichTextPreview } from '../RichText/RichTextEditor.component'
 import { useStyledToast } from '../StyledToast/StyledToast'
-import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
-import * as FullStory from '@fullstory/browser'
 
 const CitizenRequest = ({ agency }: { agency?: Agency }): JSX.Element => {
   const toast = useStyledToast()
@@ -77,14 +90,36 @@ const CitizenRequest = ({ agency }: { agency?: Agency }): JSX.Element => {
         color="white"
         onClick={onClick}
       >
-        Submit an enquiry
+        {agency?.noEnquiriesMessage ? 'More information' : 'Submit an enquiry'}
       </Button>
       <EnquiryModal
-        isOpen={isEnquiryModalOpen}
+        isOpen={!Boolean(agency?.noEnquiriesMessage) && isEnquiryModalOpen}
         onClose={onEnquiryModalClose}
         onConfirm={onPostConfirm}
         agency={agency}
       />
+      <Modal
+        isOpen={Boolean(agency?.noEnquiriesMessage) && isEnquiryModalOpen}
+        onClose={onEnquiryModalClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>More information</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <RichTextPreview
+              value={
+                agency?.noEnquiriesMessage ||
+                `${agency?.longname} does not accept enquiries via AskGov`
+              }
+            />
+          </ModalBody>
+
+          <ModalFooter>
+            <Button onClick={onEnquiryModalClose}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Flex>
   )
 }
