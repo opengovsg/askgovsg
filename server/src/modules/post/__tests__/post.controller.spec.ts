@@ -2,14 +2,12 @@ import bodyParser from 'body-parser'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
+import { ControllerHandler } from '../../../types/response-handler'
 import { PostController } from '../post.controller'
 
 describe('PostController', () => {
   const path = '/posts'
   const authService = {
-    createToken: jest.fn(),
-    getUserIdFromToken: jest.fn(),
-    getOfficerUser: jest.fn(),
     checkIfWhitelistedOfficer: jest.fn(),
     hasPermissionToAnswer: jest.fn(),
     getDisallowedTagsForUser: jest.fn(),
@@ -30,12 +28,19 @@ describe('PostController', () => {
 
   const controller = new PostController({ authService, postService })
 
+  // Set up auth middleware to inject user
+  let user: Express.User | undefined = { id: 1 }
+  const middleware: ControllerHandler = (req, res, next) => {
+    req.user = user
+    next()
+  }
+
   const app = express()
   app.use(bodyParser.json())
+  app.use(middleware)
   app.get(path, controller.listPosts)
   app.get(path + '/answerable', controller.listAnswerablePosts)
   const request = supertest(app)
-  // beforeEach(async () => {})
 
   afterEach(async () => {
     jest.clearAllMocks()
@@ -89,7 +94,6 @@ describe('PostController', () => {
     it('should return 200 on successful data retrieval', async () => {
       // Arrange
       const data = { rows: ['1', '2'], totalItems: 5 }
-      authService.getUserIdFromToken.mockReturnValue(123)
       postService.listAnswerablePosts.mockReturnValue(data)
 
       // Act
@@ -100,24 +104,23 @@ describe('PostController', () => {
       expect(response.body).toStrictEqual(data)
     })
 
-    it('should return 401 on unauthorized user', async () => {
+    it('should return 500 if userID not found', async () => {
       // Arrange
-      authService.getUserIdFromToken.mockReturnValue(undefined)
+      user = undefined
 
       // Act
       const response = await request.get(path + '/answerable')
 
       // Assert
-      expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
+      expect(response.status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
       expect(response.body).toStrictEqual({
-        message: 'Please log in and try again',
+        message: 'Something went wrong, please try again.',
       })
     })
 
     it('should return 500 on any other errors', async () => {
       // Arrange
       const error = new Error('Database error')
-      authService.getUserIdFromToken.mockReturnValue(123)
       postService.listAnswerablePosts.mockImplementation(() => {
         throw error
       })
@@ -128,7 +131,7 @@ describe('PostController', () => {
       // Assert
       expect(response.status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
       expect(response.body).toStrictEqual({
-        message: 'Sorry, something went wrong. Please try again.',
+        message: 'Something went wrong, please try again.',
       })
     })
   })

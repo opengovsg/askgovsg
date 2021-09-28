@@ -1,18 +1,15 @@
 import { AxiosError } from 'axios'
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { useMutation, UseMutationResult } from 'react-query'
-import { ApiClient } from '../api'
-import { useLocalStorage } from '../hooks/useLocalStorage'
+import { User } from '~shared/types/base/user'
+import { ApiClient, getApiErrorMessage } from '../api'
 import * as AuthService from '../services/AuthService'
 import { LoadUserDto } from '~shared/types/api'
+import { useStyledToast } from '../components/StyledToast/StyledToast'
 
 interface AuthContextProps {
-  user: unknown
-  verifyOtp: UseMutationResult<
-    { displayName: string; newParticipant: boolean; token: string },
-    unknown,
-    { email: string; otp: string }
-  >
+  user: User | null
+  verifyOtp: UseMutationResult<void, unknown, { email: string; otp: string }>
   logout: () => void
 }
 
@@ -29,8 +26,8 @@ export const AuthProvider = ({
 }: {
   children: JSX.Element
 }): JSX.Element => {
+  const toast = useStyledToast()
   const [user, setUser] = useState<LoadUserDto>(null)
-  const [token, setToken] = useLocalStorage<string>('token')
 
   const whoami = () => {
     ApiClient.get<LoadUserDto>('/auth')
@@ -41,32 +38,29 @@ export const AuthProvider = ({
       })
       .catch((reason: AxiosError) => {
         // Catch 401 which signals an unauthorized user, which is not an issue
-        if (!(reason.response && reason.response.status === 401)) {
+        if (!(reason.response?.status === 401)) {
           throw reason
         }
       })
   }
 
-  const setApiClientToken = (token?: string) => {
-    if (token) {
-      ApiClient.defaults.headers.common['x-auth-token'] = token
-    } else {
-      delete ApiClient.defaults.headers.common['x-auth-token']
-    }
-  }
-
   const verifyOtp = useMutation(AuthService.verifyOtp, {
-    onSuccess: ({ token: receivedToken }) => {
-      setToken(receivedToken)
-      setApiClientToken(receivedToken)
+    onSuccess: () => {
       whoami()
     },
   })
 
   const logout = () => {
-    setUser(null)
-    setToken(undefined)
-    setApiClientToken(undefined)
+    ApiClient.post('/auth/logout')
+      .then(() => {
+        setUser(null)
+      })
+      .catch((error) => {
+        toast({
+          status: 'error',
+          description: getApiErrorMessage(error),
+        })
+      })
   }
 
   const auth = {
@@ -76,7 +70,6 @@ export const AuthProvider = ({
   }
 
   const initialize = () => {
-    setApiClientToken(token)
     whoami()
   }
 

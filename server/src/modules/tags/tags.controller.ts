@@ -59,13 +59,17 @@ export class TagsController {
     req,
     res,
   ) => {
-    const userId = await this.authService.getUserIdFromToken(
-      req.header('x-auth-token') ?? '',
-    )
+    const userId = req.user?.id
     if (!userId) {
+      logger.error({
+        message: 'UserId is undefined after authenticated',
+        meta: {
+          function: 'updatePost',
+        },
+      })
       return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json({ message: 'You must be logged in to retrieve tags.' })
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Something went wrong, please try again.' })
     }
 
     try {
