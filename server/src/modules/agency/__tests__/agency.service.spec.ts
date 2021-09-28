@@ -18,6 +18,7 @@ describe('AgencyService', () => {
       longname: 'Work Allocation Singapore',
       email: 'enquiries@was.gov.sg',
       logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
+      noEnquiriesMessage: null,
     })
     service = new AgencyService({ Agency })
   })

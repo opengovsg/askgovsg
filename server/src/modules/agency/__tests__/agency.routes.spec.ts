@@ -26,6 +26,7 @@ describe('/agencies', () => {
       longname: 'Work Allocation Singapore',
       email: 'enquiries@was.gov.sg',
       logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
+      noEnquiriesMessage: null,
     })
     const agencyService = new AgencyService({ Agency })
     const controller = new AgencyController({ agencyService })
