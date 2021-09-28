@@ -1,14 +1,12 @@
+import { StatusCodes } from 'http-status-codes'
+
 /**
- * A custom base error class that encapsulates the name, message, status code,
- * and logging meta string (if any) for the error.
+ * A custom base error class that encapsulates the name, message and status code
  */
 export class ApplicationError extends Error {
-  /**
-   * Meta object to be logged by the application logger, if any.
-   */
-  meta?: unknown
+  statusCode: StatusCodes
 
-  constructor(message?: string, meta?: unknown) {
+  constructor(message?: string, statusCode?: StatusCodes) {
     super()
 
     Error.captureStackTrace(this, this.constructor)
@@ -17,7 +15,7 @@ export class ApplicationError extends Error {
 
     this.message = message || 'Something went wrong. Please try again.'
 
-    this.meta = meta
+    this.statusCode = statusCode || StatusCodes.INTERNAL_SERVER_ERROR
   }
 }
 
@@ -25,7 +23,10 @@ export class ApplicationError extends Error {
  * Error thrown when database query fails
  */
 export class DatabaseError extends ApplicationError {
-  constructor(message?: string) {
-    super(message)
+  constructor(
+    message?: string,
+    statusCode = StatusCodes.INTERNAL_SERVER_ERROR,
+  ) {
+    super(message, statusCode)
   }
 }

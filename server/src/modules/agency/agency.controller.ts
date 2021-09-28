@@ -4,8 +4,6 @@ import { Message } from '../../types/message-type'
 import { AgencyQuery } from '../../types/agency-type'
 import { StatusCodes } from 'http-status-codes'
 import { ControllerHandler } from '../../types/response-handler'
-import { MissingAgencyError } from './agency.errors'
-
 export class AgencyController {
   private agencyService: Public<AgencyService>
 
@@ -30,15 +28,7 @@ export class AgencyController {
       .findOneByName(req.query)
       .map((data) => res.status(StatusCodes.OK).json(data))
       .mapErr((error) => {
-        if (error.constructor === MissingAgencyError) {
-          return res
-            .status(StatusCodes.NOT_FOUND)
-            .json({ message: error.message })
-        } else {
-          return res
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .json({ message: 'Something went wrong. Please try again.' })
-        }
+        return res.status(error.statusCode).json({ message: error.message })
       })
   }
 
@@ -58,15 +48,7 @@ export class AgencyController {
       .findOneById(agencyId)
       .map((data) => res.status(StatusCodes.OK).json(data))
       .mapErr((error) => {
-        if (error.constructor === MissingAgencyError) {
-          return res
-            .status(StatusCodes.NOT_FOUND)
-            .json({ message: error.message })
-        } else {
-          return res
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .json({ message: 'Something went wrong. Please try again.' })
-        }
+        return res.status(error.statusCode).json({ message: error.message })
       })
   }
 }
