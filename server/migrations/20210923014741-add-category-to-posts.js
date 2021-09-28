@@ -15,6 +15,6 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.removeColumn('posts', 'agencyId')
+    await queryInterface.removeColumn('posts', 'categoryId')
   },
 }
