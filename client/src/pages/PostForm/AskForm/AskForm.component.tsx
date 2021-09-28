@@ -181,7 +181,6 @@ const AskForm = ({
                 rules={{ validate: areTagsValid }}
                 render={({ field }) => (
                   <Select
-                    inputRef={field.ref}
                     {...field}
                     isMulti
                     options={optionsForTagSelect}
