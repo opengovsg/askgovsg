@@ -7,6 +7,7 @@ import {
   defineTag,
   defineToken,
   defineUserAndPermission,
+  defineCategory,
 } from '../models'
 
 export enum ModelName {
@@ -18,6 +19,7 @@ export enum ModelName {
   User = 'user',
   Permission = 'permission',
   Token = 'token',
+  Category = 'category',
 }
 
 /**
@@ -33,9 +35,11 @@ export const createTestDatabase = async (): Promise<Sequelize> => {
     emailValidator,
   })
   const Agency = defineAgency(sequelize, { User })
+  const Category = defineCategory(sequelize, { Agency })
   const { Post, PostTag } = definePostAndPostTag(sequelize, {
     User,
     Tag,
+    Category,
   })
   const Answer = defineAnswer(sequelize, { User, Post })
 
