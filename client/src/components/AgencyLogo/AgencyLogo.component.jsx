@@ -40,6 +40,7 @@ const AgencyLogo = () => {
           <Image
             src={agency.logo}
             alt="Agency Logo"
+            loading="lazy"
             display="inline"
             maxW="100%"
             maxH="100%"
