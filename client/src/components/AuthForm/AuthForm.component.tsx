@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import axios from 'axios'
+import { useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { getApiErrorMessage } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
@@ -14,9 +15,14 @@ const OtpState = {
   Sent: 2,
 }
 
-const AuthForm = () => {
+type FormValues = {
+  email: string
+  otp: string
+}
+
+const AuthForm = (): JSX.Element => {
   const toast = useStyledToast()
-  const { register, handleSubmit, reset } = useForm()
+  const { register, handleSubmit, getValues, reset } = useForm<FormValues>()
   const [otpState, setOtpState] = useState(OtpState.Initial)
   const auth = useAuth()
 
@@ -36,19 +42,25 @@ const AuthForm = () => {
     },
   })
 
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
     if (otpState === OtpState.Sent) {
-      // Assumed at this point that
-      // shape is { email, otp }
       auth.verifyOtp.mutate(data, {
         onError: (error) => {
+          if (axios.isAxiosError(error)) {
+            if (
+              error.response?.data.message ===
+              'You have hit the max number of attempts. Please request for a new OTP.'
+            ) {
+              setOtpState(0)
+            }
+          }
           toast({
             status: 'error',
             description: getApiErrorMessage(error),
           })
         },
       })
-      reset()
+      reset({ ...getValues(), otp: '' })
     } else {
       setOtpState(OtpState.Requested)
       sendOtp.mutate(data.email)
@@ -59,10 +71,11 @@ const AuthForm = () => {
   if (otpState === OtpState.Sent) {
     OtpComponent = (
       <>
-        <label className="form-label">OTP</label>
+        <label className="form-label">One-Time Password</label>
         <input
           className="form-input"
-          {...register('otp', { required: true })}
+          placeholder="Enter OTP sent to your email"
+          {...register('otp', { required: true, minLength: 6, maxLength: 6 })}
         />
       </>
     )
