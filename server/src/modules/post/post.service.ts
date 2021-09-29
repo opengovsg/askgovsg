@@ -402,6 +402,7 @@ export class PostService {
         where: {
           id: postId,
         },
+        silent: true,
       },
     )
 
