@@ -108,10 +108,8 @@ const Post = () => {
                   })}
                 </div>
                 {/* <div className="post-time">
-              <time dateTime={moment(post.createdAt).fromNow(true)}>
-                {moment(post.createdAt).fromNow(true)} ago
-              </time>
-            </div> */}
+                  <time dateTime={post.createdAt}>{post.createdAt} ago</time>
+                </div> */}
                 <ViewCount views={post.views} className="views-info center" />
               </div>
               {post.status === PostStatus.Private ? (
