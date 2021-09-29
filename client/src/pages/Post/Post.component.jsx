@@ -2,6 +2,8 @@ import { Center, Flex, Stack, Spacer, Text, VStack } from '@chakra-ui/layout'
 import { BiArrowBack, BiXCircle } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link, useParams, useHistory } from 'react-router-dom'
+import { format, utcToZonedTime } from 'date-fns-tz'
+
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import Spinner from '../../components/Spinner/Spinner.component'
@@ -62,6 +64,11 @@ const Post = () => {
   const isAgencyMember =
     user && post?.tags && hasCommonAgencyTags(user, post?.tags)
 
+  const formattedTimeString = format(
+    utcToZonedTime(post?.updatedAt ?? Date.now()),
+    'dd MMM yyyy HH:mm, zzzz',
+  )
+
   return isLoading ? (
     <Spinner centerHeight="200px" />
   ) : (
@@ -107,9 +114,6 @@ const Post = () => {
                     )
                   })}
                 </div>
-                {/* <div className="post-time">
-                  <time dateTime={post.createdAt}>{post.createdAt} ago</time>
-                </div> */}
                 <ViewCount views={post.views} className="views-info center" />
               </div>
               {post.status === PostStatus.Private ? (
@@ -128,6 +132,11 @@ const Post = () => {
             <div className="question-main">
               <QuestionSection post={post} />
               <AnswerSection post={post} />
+              <div className="post-time">
+                <time dateTime={formattedTimeString}>
+                  Last updated {formattedTimeString}
+                </time>
+              </div>
             </div>
           </div>
           <VStack

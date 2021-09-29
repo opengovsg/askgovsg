@@ -417,6 +417,7 @@ export class PostService {
         'title',
         'description',
         'createdAt',
+        'updatedAt',
         'views',
         'status',
         [
