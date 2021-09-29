@@ -2,12 +2,8 @@ import { AgencyService } from './agency.service'
 import { Agency } from '~shared/types/base'
 import { Message } from '../../types/message-type'
 import { AgencyQuery } from '../../types/agency-type'
-import { createLogger } from '../../bootstrap/logging'
 import { StatusCodes } from 'http-status-codes'
 import { ControllerHandler } from '../../types/response-handler'
-
-const logger = createLogger(module)
-
 export class AgencyController {
   private agencyService: Public<AgencyService>
 
@@ -28,24 +24,12 @@ export class AgencyController {
     undefined,
     AgencyQuery
   > = async (req, res) => {
-    try {
-      const data = await this.agencyService.findOneByName(req.query)
-      if (!data) {
-        return res
-          .status(StatusCodes.NOT_FOUND)
-          .json({ message: 'Agency not found' })
-      }
-      return res.status(StatusCodes.OK).json(data)
-    } catch (error) {
-      logger.error({
-        message: 'Error while retrieving single agency by name',
-        meta: {
-          function: 'getSingleAgency',
-        },
-        error,
+    return this.agencyService
+      .findOneByName(req.query)
+      .map((data) => res.status(StatusCodes.OK).json(data))
+      .mapErr((error) => {
+        return res.status(error.statusCode).json({ message: error.message })
       })
-      return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
-    }
   }
 
   /**
@@ -60,23 +44,11 @@ export class AgencyController {
     Agency | Message
   > = async (req, res) => {
     const { agencyId } = req.params
-    try {
-      const data = await this.agencyService.findOneById(agencyId)
-      if (!data) {
-        return res
-          .status(StatusCodes.NOT_FOUND)
-          .json({ message: 'Agency not found' })
-      }
-      return res.status(StatusCodes.OK).json(data)
-    } catch (error) {
-      logger.error({
-        message: 'Error while retrieving single agency by ID',
-        meta: {
-          function: 'getSingleAgencyById',
-        },
-        error,
+    return this.agencyService
+      .findOneById(agencyId)
+      .map((data) => res.status(StatusCodes.OK).json(data))
+      .mapErr((error) => {
+        return res.status(error.statusCode).json({ message: error.message })
       })
-      return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
-    }
   }
 }
