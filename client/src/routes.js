@@ -17,7 +17,6 @@ import withPageTitle from './services/withPageTitle'
 
 const HomePageComponent = withPageTitle({
   component: HomePage,
-  title: 'AskGov',
 })
 
 const SearchResultsComponent = withPageTitle({

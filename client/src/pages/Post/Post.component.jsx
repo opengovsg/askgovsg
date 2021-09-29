@@ -66,7 +66,9 @@ const Post = () => {
     <Spinner centerHeight="200px" />
   ) : (
     <Flex direction="column" height="100%">
-      <PageTitle title={`${post.title} - AskGov`} />
+      <PageTitle
+        title={`${post.title} - ${agencyShortName?.toUpperCase()} FAQ - AskGov`}
+      />
       <Center>
         <Stack
           maxW="1188px"

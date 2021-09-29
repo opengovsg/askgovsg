@@ -11,12 +11,13 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-import { BiChevronUp, BiChevronDown } from 'react-icons/bi'
+import { BiChevronDown, BiChevronUp } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { useLocation, useParams } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import OfficerDashboardComponent from '../../components/OfficerDashboard/OfficerDashboard.component'
+import PageTitle from '../../components/PageTitle/PageTitle.component'
 import PostQuestionButton from '../../components/PostQuestionButton/PostQuestionButton.component'
 import QuestionsListComponent from '../../components/QuestionsList/QuestionsList.component'
 import SearchBoxComponent from '../../components/SearchBox/SearchBox.component'
@@ -58,8 +59,10 @@ const HomePage = ({ match }) => {
 
   const agencyAndTags = mergeTags(match.params.agency, queryState)
   const isAuthenticatedOfficer = isUserPublicOfficer(user)
+
   return (
     <Flex direction="column" height="100%" className="home-page">
+      <PageTitle title={`${agency?.shortname.toUpperCase()} FAQ - AskGov`} />
       <Box
         bg="primary.500"
         h={
