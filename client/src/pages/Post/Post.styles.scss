@@ -21,11 +21,6 @@
     .tags-name-time {
       display: flex;
       align-items: flex-start;
-
-      .post-time {
-        padding-left: 10px;
-        padding-right: 20px;
-      }
     }
 
     .private-subtitle {
@@ -43,6 +38,13 @@
 
   .subtitle-bar + .question-main {
     margin-top: 16px;
+
+    .post-time {
+      @include body-2;
+      color: $sec-400;
+      padding-left: 10px;
+      padding-right: 20px;
+    }
   }
 
 }

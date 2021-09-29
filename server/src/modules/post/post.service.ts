@@ -402,6 +402,7 @@ export class PostService {
         where: {
           id: postId,
         },
+        silent: true,
       },
     )
 
@@ -416,6 +417,7 @@ export class PostService {
         'title',
         'description',
         'createdAt',
+        'updatedAt',
         'views',
         'status',
         [
