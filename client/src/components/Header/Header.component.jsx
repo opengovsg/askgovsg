@@ -60,17 +60,21 @@ const Header = () => {
     </Flex>
   )
 
-  const websiteLinks = (
-    <Link href={agency?.website} isExternal>
-      <Button
-        rightIcon={<BiLinkExternal color="white" />}
-        variant="link"
-        color="white"
-      >
-        Go to {agency?.shortname.toUpperCase()}
-      </Button>
-    </Link>
-  )
+  const websiteLinks = () => {
+    // Extract hostname from URL
+    const hostname = new URL(agency?.website).hostname
+    return (
+      <Link href={agency?.website} isExternal>
+        <Button
+          rightIcon={<BiLinkExternal color="white" />}
+          variant="link"
+          color="white"
+        >
+          Go to {hostname}
+        </Button>
+      </Link>
+    )
+  }
 
   return (
     <Flex
@@ -115,7 +119,7 @@ const Header = () => {
         </Stack>
       </Link>
       <Spacer />
-      {agency?.website && websiteLinks}
+      {agency?.website && websiteLinks()}
       {user && authLinks}
     </Flex>
   )
