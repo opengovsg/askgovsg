@@ -1,6 +1,15 @@
-import { Flex, Image, Stack, Text } from '@chakra-ui/react'
+import {
+  Button,
+  Flex,
+  Image,
+  Link,
+  Stack,
+  Spacer,
+  Text,
+} from '@chakra-ui/react'
+import { BiLinkExternal } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { Link, matchPath, useLocation } from 'react-router-dom'
+import { matchPath, useLocation } from 'react-router-dom'
 import { ReactComponent as Logo } from '../../assets/logo-white-alpha.svg'
 import { useAuth } from '../../contexts/AuthContext'
 import {
@@ -25,7 +34,7 @@ const Header = () => {
   )
 
   const authLinks = (
-    <Flex align="center">
+    <Flex align="center" mx={6}>
       {isLoading || user === null ? (
         <Spinner centerWidth="50px" centerHeight="50px" />
       ) : (
@@ -49,6 +58,18 @@ const Header = () => {
         handleClick={logout}
       />
     </Flex>
+  )
+
+  const websiteLinks = (
+    <Link href={agency?.website} isExternal>
+      <Button
+        rightIcon={<BiLinkExternal color="white" />}
+        variant="link"
+        color="white"
+      >
+        Go to {agency?.shortname.toUpperCase()}
+      </Button>
+    </Link>
   )
 
   return (
@@ -93,6 +114,8 @@ const Header = () => {
           ) : null}
         </Stack>
       </Link>
+      <Spacer />
+      {agency?.website && websiteLinks}
       {user && authLinks}
     </Flex>
   )
