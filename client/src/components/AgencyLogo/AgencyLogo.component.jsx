@@ -42,6 +42,8 @@ const AgencyLogo = () => {
             alt="Agency Logo"
             loading="lazy"
             display="inline"
+            htmlWidth="120px"
+            htmlHeight="120px"
             maxW="100%"
             maxH="100%"
             width="auto"
