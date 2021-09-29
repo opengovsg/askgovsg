@@ -130,7 +130,7 @@ export class AuthController {
 
     try {
       await this.Token.destroy({ where: { contact: email } })
-      await this.Token.create({ contact: email, hashedOtp })
+      await this.Token.create({ contact: email, hashedOtp, attempts: 0 })
       await this.mailService.sendLoginOtp(email, otp, ip)
     } catch (error) {
       logger.error({
