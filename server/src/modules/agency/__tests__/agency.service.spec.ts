@@ -3,6 +3,7 @@ import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { Sequelize, Model } from 'sequelize'
 import { Agency } from '~shared/types/base'
 import { ModelDef } from '../../../types/sequelize'
+import { MissingAgencyError } from '../agency.errors'
 
 describe('AgencyService', () => {
   let agency: Agency
@@ -39,17 +40,17 @@ describe('AgencyService', () => {
     it('returns agency on existing shortname', async () => {
       const { shortname } = agency
       const actualAgency = await service.findOneByName({ shortname })
-      expectAgencyMatch(actualAgency, agency)
+      expectAgencyMatch(actualAgency._unsafeUnwrap(), agency)
     })
     it('returns agency on existing longname', async () => {
       const { longname } = agency
       const actualAgency = await service.findOneByName({ longname })
-      expectAgencyMatch(actualAgency, agency)
+      expectAgencyMatch(actualAgency._unsafeUnwrap(), agency)
     })
-    it('returns null on non-existing shortname', async () => {
+    it('returns MissingAgencyError on non-existing shortname', async () => {
       const shortname = 'non-existing'
       const actualAgency = await service.findOneByName({ shortname })
-      expect(actualAgency).toBeNull()
+      expect(actualAgency._unsafeUnwrapErr()).toEqual(new MissingAgencyError())
     })
   })
 
@@ -57,12 +58,12 @@ describe('AgencyService', () => {
     it('returns agency on existing id', async () => {
       const { id } = agency
       const actualAgency = await service.findOneById(id)
-      expectAgencyMatch(actualAgency, agency)
+      expectAgencyMatch(actualAgency._unsafeUnwrap(), agency)
     })
-    it('returns null on non-existing shortname', async () => {
+    it('returns MissingAgencyError on non-existing shortname', async () => {
       const id = agency.id + 20
       const actualAgency = await service.findOneById(id)
-      expect(actualAgency).toBeNull()
+      expect(actualAgency._unsafeUnwrapErr()).toEqual(new MissingAgencyError())
     })
   })
 })

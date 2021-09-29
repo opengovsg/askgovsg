@@ -2,6 +2,9 @@ import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { AgencyController } from '../agency.controller'
+import { errAsync, okAsync } from 'neverthrow'
+import { MissingAgencyError } from '../agency.errors'
+import { DatabaseError } from '../../core/core.errors'
 
 describe('AgencyController', () => {
   const agency = {
@@ -25,8 +28,8 @@ describe('AgencyController', () => {
   beforeEach(() => {
     agencyService.findOneByName.mockReset()
     agencyService.findOneById.mockReset()
-    agencyService.findOneByName.mockReturnValue(agency)
-    agencyService.findOneById.mockReturnValue(agency)
+    agencyService.findOneByName.mockReturnValue(okAsync(agency))
+    agencyService.findOneById.mockReturnValue(okAsync(agency))
   })
   describe('getSingleAgency', () => {
     it('returns OK on valid query', async () => {
@@ -44,7 +47,9 @@ describe('AgencyController', () => {
 
     it('returns NOT_FOUND on invalid query', async () => {
       const { shortname, longname } = agency
-      agencyService.findOneByName.mockReturnValue(null)
+      agencyService.findOneByName.mockReturnValue(
+        errAsync(new MissingAgencyError()),
+      )
 
       const response = await request.get('/').query({ shortname, longname })
 
@@ -58,7 +63,7 @@ describe('AgencyController', () => {
 
     it('returns INTERNAL_SERVER_ERROR on bad service', async () => {
       const { shortname, longname } = agency
-      agencyService.findOneByName.mockRejectedValue(new Error())
+      agencyService.findOneByName.mockReturnValue(errAsync(new DatabaseError()))
 
       const response = await request.get('/').query({ shortname, longname })
 
@@ -83,7 +88,9 @@ describe('AgencyController', () => {
 
     it('returns NOT_FOUND on invalid query', async () => {
       const id = `${agency.id}`
-      agencyService.findOneById.mockReturnValue(null)
+      agencyService.findOneById.mockReturnValue(
+        errAsync(new MissingAgencyError()),
+      )
 
       const response = await request.get(`/${id}`)
 
@@ -94,7 +101,7 @@ describe('AgencyController', () => {
 
     it('returns INTERNAL_SERVER_ERROR on bad service', async () => {
       const id = `${agency.id}`
-      agencyService.findOneById.mockRejectedValue(new Error())
+      agencyService.findOneById.mockReturnValue(errAsync(new DatabaseError()))
 
       const response = await request.get(`/${id}`)
 

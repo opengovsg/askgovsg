@@ -13,7 +13,7 @@
     "client": "npm start --prefix client",
     "dev": "concurrently \"./wait-for-it.sh localhost:3306 -t 0 -- npm run build-shared && sleep 5 && npm run server\" \"npm run client\" \"docker-compose up \"",
     "postinstall": "npm --prefix server install && npm --prefix client install && npm --prefix shared install && npm run build-shared",
-    "auditDep": "npm audit fix && npm --prefix server audit fix && npm --client server audit fix && npm --shared audit fix",
+    "audit-dep": "npm audit fix && npm --prefix server audit fix && npm --prefix client audit fix && npm --prefix shared audit fix",
     "prepare": "husky install",
     "test": "npm run build-shared && npm --prefix server test && CI=true npm --prefix client test -- --passWithNoTests",
     "lint": "npm run --prefix server lint && npm run --prefix client lint && npm run --prefix shared lint",
@@ -26,7 +26,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^6.2.1",
+    "concurrently": "^6.2.2",
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^7.0.2",
     "lint-staged": "^11.1.2"

@@ -5,6 +5,8 @@ import { Token, User } from '../../models'
 import { verifyHash } from '../../util/hash'
 const LocalStrategy = passportLocal.Strategy
 
+export const MAX_OTP_ATTEMPTS = 3
+
 export const localStrategy = (
   Token: ModelCtor<Token>,
   User: ModelCtor<User>,
@@ -20,9 +22,18 @@ export const localStrategy = (
           }
           const verifyHashResult = await verifyHash(otp, token.hashedOtp)
           if (!verifyHashResult) {
-            return done(null, false, {
-              message: 'OTP is invalid. Please try again.',
-            })
+            if (token.attempts + 1 >= MAX_OTP_ATTEMPTS) {
+              await Token.destroy({ where: { contact: email } })
+              return done(null, false, {
+                message:
+                  'You have hit the max number of attempts. Please request for a new OTP.',
+              })
+            } else {
+              await token.increment('attempts')
+              return done(null, false, {
+                message: 'OTP is invalid. Please try again.',
+              })
+            }
           }
           const user = await User.findOne({ where: { username: email } })
           if (!user) {
