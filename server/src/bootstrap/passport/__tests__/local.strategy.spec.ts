@@ -4,7 +4,7 @@ import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { ModelCtor, Sequelize } from 'sequelize/types'
 import * as hash from '../../../util/hash'
 import { Strategy, VerifyFunction } from 'passport-local'
-import { localStrategy } from '../local.strategy'
+import { localStrategy, MAX_OTP_ATTEMPTS } from '../local.strategy'
 
 jest.mock('passport-local', () => {
   const mLocalStrategy = jest.fn()
@@ -62,6 +62,7 @@ describe('localStrategy', () => {
     await Token.create({
       contact: mockedUsername,
       hashedOtp: mockedOtp,
+      attempts: 0,
     })
     verifySpy.mockResolvedValue(true)
     await localStrategy(Token, User)
@@ -104,6 +105,7 @@ describe('localStrategy', () => {
     const fakeToken = await Token.create({
       contact: mockedUsername,
       hashedOtp: mockedOtp,
+      attempts: 0,
     })
     verifySpy.mockResolvedValue(false)
     await localStrategy(Token, User)
@@ -132,6 +134,7 @@ describe('localStrategy', () => {
     const fakeToken = await Token.create({
       contact: fakeUsername,
       hashedOtp: mockedOtp,
+      attempts: 0,
     })
     await localStrategy(Token, User)
 
@@ -150,5 +153,40 @@ describe('localStrategy', () => {
 
     // Clean up
     await fakeToken.destroy()
+  })
+
+  it('should return false and delete token when exceeded attempts', async () => {
+    // Arrange
+    await Token.create({
+      contact: mockedUsername,
+      hashedOtp: mockedOtp,
+      attempts: 0,
+    })
+    verifySpy.mockResolvedValue(false)
+    await localStrategy(Token, User)
+
+    // Try multiple times
+    for (let i = 0; i < MAX_OTP_ATTEMPTS - 1; i++) {
+      // Act
+      await verifyRef(mockedUsername, mockedOtp, mockedDone)
+
+      // Assert
+      expect(mockedDone).toBeCalledWith(null, false, {
+        message: 'OTP is invalid. Please try again.',
+      })
+      expect(await Token.count()).toBe(1)
+      mockedDone.mockReset()
+    }
+
+    // Next time should delete token
+    // Act
+    await verifyRef(mockedUsername, mockedOtp, mockedDone)
+
+    // Assert
+    expect(mockedDone).toBeCalledWith(null, false, {
+      message:
+        'You have hit the max number of attempts. Please request for a new OTP.',
+    })
+    expect(await Token.count()).toBe(0)
   })
 })

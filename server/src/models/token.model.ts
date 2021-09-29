@@ -5,6 +5,7 @@ export const TOKEN_MODEL_NAME = 'token'
 export interface Token extends Model {
   contact: string
   hashedOtp: string
+  attempts: number
 }
 
 export const defineToken = (sequelize: Sequelize): ModelCtor<Token> =>
@@ -16,6 +17,10 @@ export const defineToken = (sequelize: Sequelize): ModelCtor<Token> =>
     },
     hashedOtp: {
       type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    attempts: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   })
