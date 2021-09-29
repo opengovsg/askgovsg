@@ -62,7 +62,11 @@ const HomePage = ({ match }) => {
 
   return (
     <Flex direction="column" height="100%" className="home-page">
-      <PageTitle title={`${agency?.shortname.toUpperCase()} FAQ - AskGov`} />
+      <PageTitle
+        title={
+          agency ? `${agency?.shortname.toUpperCase()} FAQ - AskGov` : undefined
+        }
+      />
       <Box
         bg="primary.500"
         h={
