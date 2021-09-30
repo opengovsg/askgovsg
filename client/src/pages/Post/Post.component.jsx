@@ -26,6 +26,7 @@ import {
 import AnswerSection from './AnswerSection/AnswerSection.component'
 import './Post.styles.scss'
 import QuestionSection from './QuestionSection/QuestionSection.component'
+import sanitizeHtml from 'sanitize-html'
 
 const Post = () => {
   const { id: postId } = useParams()
@@ -85,7 +86,13 @@ const Post = () => {
         title={`${post.title} - ${agencyShortName?.toUpperCase()} FAQ - AskGov`}
         description={
           answers && answers.length > 0
-            ? answers[0]?.body.replace(/<[^>]*>?/gm, '') // .replace() uses regex to remove html tags
+            ? sanitizeHtml(
+                answers[0]?.body,
+                {
+                  allowedTags: [],
+                  allowedAttributes: {},
+                }, // remove ALL html tags
+              )
             : undefined
         }
       />
