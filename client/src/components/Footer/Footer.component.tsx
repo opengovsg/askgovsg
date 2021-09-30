@@ -93,6 +93,7 @@ const Footer = (): JSX.Element => {
               htmlWidth="160px"
               htmlHeight="47px"
               src={OGPLogo}
+              alt="Open Government Products Logo"
               loading="lazy"
             />
           </Link>
