@@ -45,6 +45,7 @@ const Masthead: FC = () => {
         <Center my={mastheadTopMarginY}>
           <Image
             src={LionHeadSymbol}
+            alt="Lion Head Symbol"
             htmlHeight="15.2px"
             htmlWidth="12.8px"
             loading="lazy"
