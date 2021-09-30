@@ -1,28 +1,31 @@
-import { Center, Flex, Stack, Spacer, Text, VStack } from '@chakra-ui/layout'
+import { Center, Flex, Spacer, Stack, Text, VStack } from '@chakra-ui/layout'
+import { format, utcToZonedTime } from 'date-fns-tz'
 import { BiArrowBack, BiXCircle } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { Link, useParams, useHistory } from 'react-router-dom'
-import { format, utcToZonedTime } from 'date-fns-tz'
-
+import { Link, useHistory, useParams } from 'react-router-dom'
+import { PostStatus, TagType } from '~shared/types/base'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
+import EditButton from '../../components/EditButton/EditButton.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import Spinner from '../../components/Spinner/Spinner.component'
 import TagBadge from '../../components/TagBadge/TagBadge.component'
 import ViewCount from '../../components/ViewCount/ViewCount.component'
+import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
 } from '../../services/AgencyService'
 import {
+  getAnswersForPost,
+  GET_ANSWERS_FOR_POST_QUERY_KEY,
+} from '../../services/AnswerService'
+import {
   getPostById,
   GET_POST_BY_ID_QUERY_KEY,
 } from '../../services/PostService'
-import { PostStatus, TagType } from '~shared/types/base'
 import AnswerSection from './AnswerSection/AnswerSection.component'
 import './Post.styles.scss'
 import QuestionSection from './QuestionSection/QuestionSection.component'
-import EditButton from '../../components/EditButton/EditButton.component'
-import { useAuth } from '../../contexts/AuthContext'
 
 const Post = () => {
   const { id: postId } = useParams()
@@ -69,12 +72,22 @@ const Post = () => {
     'dd MMM yyyy HH:mm, zzzz',
   )
 
+  const { _, data: answers } = useQuery(
+    [GET_ANSWERS_FOR_POST_QUERY_KEY, post?.id],
+    () => getAnswersForPost(post?.id),
+  )
+
   return isLoading ? (
     <Spinner centerHeight="200px" />
   ) : (
     <Flex direction="column" height="100%">
       <PageTitle
         title={`${post.title} - ${agencyShortName?.toUpperCase()} FAQ - AskGov`}
+        description={
+          answers && answers.length > 0
+            ? answers[0]?.body.replace(/<[^>]*>?/gm, '') // .replace() uses regex to remove html tags
+            : undefined
+        }
       />
       <Center>
         <Stack
@@ -131,7 +144,7 @@ const Post = () => {
             </div>
             <div className="question-main">
               <QuestionSection post={post} />
-              <AnswerSection post={post} />
+              <AnswerSection answers={answers} />
               <div className="post-time">
                 <time dateTime={formattedTimeString}>
                   Last updated {formattedTimeString}
