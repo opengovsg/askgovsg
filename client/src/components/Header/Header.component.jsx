@@ -39,6 +39,7 @@ const Header = () => {
             borderRadius="3px"
             mr={4}
             src={`https://secure.gravatar.com/avatar/${user.id}?s=164&d=identicon`}
+            loading="lazy"
           />
         </>
       )}
