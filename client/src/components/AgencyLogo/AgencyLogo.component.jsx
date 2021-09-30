@@ -1,5 +1,4 @@
-import './AgencyLogo.styles.scss'
-import React from 'react'
+import { Image, Box } from '@chakra-ui/react'
 import { useQuery } from 'react-query'
 import {
   getAgencyByShortName,
@@ -15,13 +14,44 @@ const AgencyLogo = () => {
     { enabled: !!agencyShortName },
   )
   return (
-    <>
-      <div className="img_wrapper">
-        <div className="border">
-          {agency && <img src={agency.logo} alt="Agency Logo" />}
-        </div>
-      </div>
-    </>
+    <Box
+      width="120px"
+      height="120px"
+      p="5px"
+      mt="56px"
+      position="relative"
+      display="flex"
+      justify-content="center"
+      alignItems="center"
+      overflow="hidden"
+      borderRadius="10px"
+      bg="#fff"
+    >
+      <Box
+        width="100%"
+        height="100%"
+        display="flex"
+        alignItems="center"
+        overflow="hidden"
+        border="1px solid #DADCE3"
+        borderRadius="10px"
+      >
+        {agency && (
+          <Image
+            src={agency.logo}
+            alt="Agency Logo"
+            loading="lazy"
+            display="inline"
+            htmlWidth="120px"
+            htmlHeight="120px"
+            maxW="100%"
+            maxH="100%"
+            width="auto"
+            height="auto"
+          />
+        )}
+      </Box>
+    </Box>
   )
 }
 

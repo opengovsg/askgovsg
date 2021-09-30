@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import ScrollToTop from './components/ScrollToTop/ScrollToTop.component'
+import { HelmetProvider } from 'react-helmet-async'
 
 import App from './App'
 
@@ -16,7 +17,9 @@ ReactDOM.render(
       <ReactQueryDevtools initialIsOpen={false} />
       <BrowserRouter>
         <ScrollToTop />
-        <App />
+        <HelmetProvider>
+          <App />
+        </HelmetProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>,

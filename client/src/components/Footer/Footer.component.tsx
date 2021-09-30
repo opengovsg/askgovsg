@@ -89,7 +89,12 @@ const Footer = (): JSX.Element => {
             Built by
           </Text>
           <Link href="https://open.gov.sg" isExternal>
-            <Image htmlWidth="160px" htmlHeight="47px" src={OGPLogo} />
+            <Image
+              htmlWidth="160px"
+              htmlHeight="47px"
+              src={OGPLogo}
+              loading="lazy"
+            />
           </Link>
         </VStack>
 

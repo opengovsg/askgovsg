@@ -43,7 +43,12 @@ const Masthead: FC = () => {
     <Box bg="secondary.200" px={{ base: '24px', sm: '29px', xl: '33px' }}>
       <Flex direction="row">
         <Center my={mastheadTopMarginY}>
-          <Image src={LionHeadSymbol} htmlHeight="15.2px" htmlWidth="15.2px" />
+          <Image
+            src={LionHeadSymbol}
+            htmlHeight="15.2px"
+            htmlWidth="12.8px"
+            loading="lazy"
+          />
           <Text textStyle={mastheadTopTextStyle} color="neutral.900" mx={1}>
             A Singapore Government Agency Website.
           </Text>
