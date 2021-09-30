@@ -14,6 +14,7 @@ import { RefCallBack } from 'react-hook-form'
 import { LinkControl } from './LinkControl'
 import { ApiClient, getApiErrorMessage } from '../../api'
 import { useStyledToast } from '../StyledToast/StyledToast'
+import { PreviewLinkDecorator } from './LinkDecorator'
 
 type UploadCallback = (
   file: File,
@@ -144,6 +145,7 @@ export const RichTextPreview: FC<{
       onEditorStateChange={setEditorState}
       placeholder={placeholder}
       editorClassName={editorClassName}
+      customDecorators={[PreviewLinkDecorator]}
       toolbar={{ link: { showOpenOptionOnHover: false } }}
       readOnly
       toolbarHidden
