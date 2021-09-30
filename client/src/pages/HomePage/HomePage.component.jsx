@@ -66,6 +66,13 @@ const HomePage = ({ match }) => {
         title={
           agency ? `${agency?.shortname.toUpperCase()} FAQ - AskGov` : undefined
         }
+        description={
+          agency
+            ? `Answers from ${
+                agency?.longname
+              } (${agency?.shortname.toUpperCase()})`
+            : undefined
+        }
       />
       <Box
         bg="primary.500"
