@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { matchPath, useLocation } from 'react-router-dom'
+import { matchPath, useLocation, Link as RouterLink } from 'react-router-dom'
 import { ReactComponent as Logo } from '../../assets/logo-white-alpha.svg'
 import { useAuth } from '../../contexts/AuthContext'
 import {
@@ -87,7 +87,7 @@ const Header = () => {
       py={4}
       shrink={0}
     >
-      <Link to={agency ? `/agency/${agency.shortname}` : '/'}>
+      <Link as={RouterLink} to={agency ? `/agency/${agency.shortname}` : '/'}>
         <Stack
           direction={{ base: 'column', md: 'row' }}
           textDecor="none"
