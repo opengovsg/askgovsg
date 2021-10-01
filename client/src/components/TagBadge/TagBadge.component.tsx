@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 import { getRedirectURL } from '../../util/urlparser'
-import './TagBadge.styles.scss'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import * as FullStory from '@fullstory/browser'
 import { TagType } from '~shared/types/base'
 import { Agency } from '../../services/AgencyService'
+import { Button, Link, Text } from '@chakra-ui/react'
 
 const TagBadge = ({
   tagName,
@@ -15,8 +15,6 @@ const TagBadge = ({
   tagType: TagType
   agency: Agency
 }): JSX.Element => {
-  const TagComponent = <div className="tag-badge">{tagName.toUpperCase()}</div>
-
   const googleAnalytics = useGoogleAnalytics()
 
   const sendClickTagEventToAnalytics = () => {
@@ -39,10 +37,21 @@ const TagBadge = ({
 
   return (
     <Link
+      as={RouterLink}
       to={getRedirectURL(tagType, tagName, agency)}
-      onClick={sendClickTagEventToAnalytics}
+      mr="8px"
     >
-      {TagComponent}
+      <Button
+        size="xs"
+        py="4px"
+        px="6px"
+        onClick={sendClickTagEventToAnalytics}
+        color="secondary.200"
+      >
+        <Text textStyle="caption-2" color="secondary.700">
+          {tagName.toUpperCase()}
+        </Text>
+      </Button>
     </Link>
   )
 }
