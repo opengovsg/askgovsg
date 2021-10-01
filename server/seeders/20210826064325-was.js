@@ -67,6 +67,7 @@ module.exports = {
           longname: 'Work Allocation Singapore',
           logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
           email: 'enquiries@was.gov.sg',
+          website: 'https://www.was.gov.sg',
           createdAt: new Date(),
           updatedAt: new Date(),
         },

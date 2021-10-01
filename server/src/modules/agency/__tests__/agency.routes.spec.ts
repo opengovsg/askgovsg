@@ -27,6 +27,7 @@ describe('/agencies', () => {
       email: 'enquiries@was.gov.sg',
       logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
       noEnquiriesMessage: null,
+      website: null,
     })
     const agencyService = new AgencyService({ Agency })
     const controller = new AgencyController({ agencyService })

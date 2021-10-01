@@ -20,6 +20,7 @@ describe('AgencyService', () => {
       email: 'enquiries@was.gov.sg',
       logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
       noEnquiriesMessage: null,
+      website: null,
     })
     service = new AgencyService({ Agency })
   })
