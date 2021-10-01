@@ -37,6 +37,10 @@ export const defineAgency = (
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    website: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   })
   // Define associations for Agency
   Agency.hasMany(User)
