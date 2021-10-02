@@ -60,12 +60,9 @@ const SearchResults = () => {
         </div>
         {searchQuery ? (
           <div className="search-questions">
-            <span style={{ color: '#acb2b8', fontSize: '12px' }}>
-              Results for {searchQuery}
-            </span>
             <SearchBox
               agencyShortName={agencyShortName}
-              placeholder={'Search...'}
+              value={searchQuery}
               name={'search'}
               pt={'mt8'}
             />
@@ -77,7 +74,14 @@ const SearchResults = () => {
           {foundPosts.length > 0 ? (
             foundPosts.map((post) => <PostItem key={post.id} post={post} />)
           ) : (
-            <div className="no-results">{`No results found for "${searchQuery}".`}</div>
+            <>
+              <div className="no-results">
+                {`No results found for "${searchQuery}".`}
+              </div>
+              <div>
+                {`Try rephrasing your question, or check your spelling.`}
+              </div>
+            </>
           )}
         </div>
       </div>

@@ -52,7 +52,8 @@
 
     .no-results {
       @include body-1;
-      color: $neutral-600;
+      color: var(--chakra-colors-gray-800);
+      font-weight: 600;
     }
   }
 }
