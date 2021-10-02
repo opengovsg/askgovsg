@@ -85,7 +85,7 @@ const SearchResults = () => {
           )}
         </div>
       </div>
-      <Spacer minH={10} />
+      <Spacer minH={20} />
       <CitizenRequest
         agency={
           agency
