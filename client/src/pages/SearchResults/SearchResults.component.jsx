@@ -1,19 +1,24 @@
+import { Spacer } from '@chakra-ui/react'
 import Fuse from 'fuse.js'
 import { Fragment } from 'react'
 import { useQuery } from 'react-query'
 import { useLocation } from 'react-router-dom'
-import PageTitle from '../../components/PageTitle/PageTitle.component'
 import { BackToHome } from '../../components/BackToHome/BackToHome'
+import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
+import PageTitle from '../../components/PageTitle/PageTitle.component'
 import PostItem from '../../components/PostItem/PostItem.component'
 import SearchBox from '../../components/SearchBox/SearchBox.component'
-import { Spacer } from '@chakra-ui/react'
 import Spinner from '../../components/Spinner/Spinner.component'
+import {
+  getAgencyByShortName,
+  GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
+} from '../../services/AgencyService'
 import {
   listPosts,
   LIST_POSTS_FOR_SEARCH_QUERY_KEY,
 } from '../../services/PostService'
-import './SearchResults.styles.scss'
 import { sortByCreatedAt } from '../../util/date'
+import './SearchResults.styles.scss'
 
 const SearchResults = () => {
   const { search } = useLocation()
@@ -23,6 +28,11 @@ const SearchResults = () => {
   const { data, isLoading } = useQuery(
     [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agencyShortName],
     listPosts(undefined, agencyShortName),
+  )
+  const { data: agency } = useQuery(
+    [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
+    () => getAgencyByShortName({ shortname: agencyShortName }),
+    { enabled: !!agencyShortName },
   )
 
   const foundPosts = new Fuse(data?.posts ?? [], {
@@ -71,7 +81,20 @@ const SearchResults = () => {
           )}
         </div>
       </div>
-      <Spacer minH={20} />
+      <Spacer />
+      <CitizenRequest
+        agency={
+          agency
+            ? agency
+            : {
+                id: '',
+                email: 'enquiries@ask.gov.sg',
+                shortname: 'AskGov',
+                longname: 'AskGov',
+                logo: '',
+              }
+        }
+      />
     </Fragment>
   )
 }
