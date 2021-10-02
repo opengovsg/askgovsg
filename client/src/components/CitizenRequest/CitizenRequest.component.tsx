@@ -79,7 +79,7 @@ const CitizenRequest = ({ agency }: { agency?: Agency }): JSX.Element => {
       backgroundColor="primary.100"
     >
       <Text textStyle="h2" align="center" mb="24px">
-        Can’t find what you’re looking for?
+        Can't find your answer?
       </Text>
       <Button
         backgroundColor="primary.500"
@@ -90,7 +90,7 @@ const CitizenRequest = ({ agency }: { agency?: Agency }): JSX.Element => {
         color="white"
         onClick={onClick}
       >
-        {agency?.noEnquiriesMessage ? 'More information' : 'Submit an enquiry'}
+        Contact Us
       </Button>
       <EnquiryModal
         isOpen={!Boolean(agency?.noEnquiriesMessage) && isEnquiryModalOpen}
