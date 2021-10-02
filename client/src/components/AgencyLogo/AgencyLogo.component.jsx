@@ -1,10 +1,10 @@
-import { Image, Box } from '@chakra-ui/react'
+import { Box, Image, Link } from '@chakra-ui/react'
 import { useQuery } from 'react-query'
+import { Link as RouterLink, useParams } from 'react-router-dom'
 import {
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
 } from '../../services/AgencyService'
-import { useParams } from 'react-router-dom'
 
 const AgencyLogo = () => {
   const { agency: agencyShortName } = useParams()
@@ -27,30 +27,37 @@ const AgencyLogo = () => {
       borderRadius="10px"
       bg="#fff"
     >
-      <Box
+      <Link
         width="100%"
         height="100%"
-        display="flex"
-        alignItems="center"
-        overflow="hidden"
-        border="1px solid #DADCE3"
-        borderRadius="10px"
+        as={RouterLink}
+        to={agency ? `/agency/${agency.shortname}` : '/'}
       >
-        {agency && (
-          <Image
-            src={agency.logo}
-            alt="Agency Logo"
-            loading="lazy"
-            display="inline"
-            htmlWidth="120px"
-            htmlHeight="120px"
-            maxW="100%"
-            maxH="100%"
-            width="auto"
-            height="auto"
-          />
-        )}
-      </Box>
+        <Box
+          width="100%"
+          height="100%"
+          display="flex"
+          alignItems="center"
+          overflow="hidden"
+          border="1px solid #DADCE3"
+          borderRadius="10px"
+        >
+          {agency && (
+            <Image
+              src={agency.logo}
+              alt="Agency Logo"
+              loading="lazy"
+              display="inline"
+              htmlWidth="120px"
+              htmlHeight="120px"
+              maxW="100%"
+              maxH="100%"
+              width="auto"
+              height="auto"
+            />
+          )}
+        </Box>
+      </Link>
     </Box>
   )
 }
