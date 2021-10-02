@@ -27,7 +27,12 @@ const AgencyLogo = () => {
       borderRadius="10px"
       bg="#fff"
     >
-      <Link as={RouterLink} to={agency ? `/agency/${agency.shortname}` : '/'}>
+      <Link
+        width="100%"
+        height="100%"
+        as={RouterLink}
+        to={agency ? `/agency/${agency.shortname}` : '/'}
+      >
         <Box
           width="100%"
           height="100%"
