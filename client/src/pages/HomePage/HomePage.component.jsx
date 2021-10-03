@@ -148,7 +148,9 @@ const HomePage = ({ match }) => {
               mb={{ base: '20px', sm: 0 }}
               mr={{ base: 0, sm: '20px' }}
             >
-              {queryState ? `Questions tagged: ${queryState}` : 'All Questions'}
+              {queryState
+                ? `Questions related to: ${queryState}`
+                : 'All Questions'}
             </Text>
             {/* Dropdown stuff */}
             {/* Hidden for officer because of the subcomponents in officer dashboard */}
