@@ -10,9 +10,12 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
+import * as FullStory from '@fullstory/browser'
 import { ReactElement } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
+import { TagType } from '~shared/types/base'
+import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   Agency,
   getAgencyByShortName,
@@ -25,9 +28,6 @@ import {
   GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/tag.service'
 import { getRedirectURL } from '../../util/urlparser'
-import { TagType } from '~shared/types/base'
-import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
-import * as FullStory from '@fullstory/browser'
 
 const TagPanel = (): ReactElement => {
   const { agency: agencyShortName } = useParams<{ agency: string }>()
