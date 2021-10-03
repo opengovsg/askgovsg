@@ -14,6 +14,7 @@ import {
   Container,
 } from '@chakra-ui/react'
 
+import { format } from 'date-fns-tz'
 // Credits: CheckFirst
 
 const Footer = (): JSX.Element => {
@@ -136,8 +137,8 @@ const Footer = (): JSX.Element => {
                 color: 'primary.500',
               }}
             >
-              © 2020 Open Government Products, Government Technology Agency of
-              Singapore
+              © {format(Date.now(), 'yyyy')} Open Government Products,
+              Government Technology Agency of Singapore
             </Text>
           </Link>
         </VStack>
