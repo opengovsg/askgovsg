@@ -1,4 +1,4 @@
-import { Spacer } from '@chakra-ui/react'
+import { Flex, Spacer } from '@chakra-ui/react'
 import Fuse from 'fuse.js'
 import { Fragment } from 'react'
 import { useQuery } from 'react-query'
@@ -52,7 +52,12 @@ const SearchResults = () => {
         ''
       )}
       <div id="mainbar" className="questions-page fc-black-800">
-        <BackToHome />
+        <Flex
+          mt={{ base: '32px', sm: '60px' }}
+          mb={{ base: '32px', sm: '54px' }}
+        >
+          <BackToHome mainPageName={agencyShortName} />
+        </Flex>
         <div className="questions-grid">
           <h3 className="questions-headline">
             {searchQuery ? 'Search Results' : 'All Questions'}
