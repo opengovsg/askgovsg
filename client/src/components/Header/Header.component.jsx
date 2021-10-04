@@ -12,6 +12,11 @@ import { useQuery } from 'react-query'
 import { matchPath, useLocation, Link as RouterLink } from 'react-router-dom'
 import { ReactComponent as Logo } from '../../assets/logo-white-alpha.svg'
 import { useAuth } from '../../contexts/AuthContext'
+import { TagType } from '~shared/types/base'
+import {
+  getPostById,
+  GET_POST_BY_ID_QUERY_KEY,
+} from '../../services/PostService'
 import {
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
@@ -24,11 +29,27 @@ const Header = () => {
 
   const location = useLocation()
   const { search } = useLocation()
+  const searchParams = new URLSearchParams(search)
   const match = matchPath(location.pathname, {
     path: '/agency/:agency',
   })
-  const searchParams = new URLSearchParams(search)
-  const agencyShortName = match?.params?.agency || searchParams.get('agency')
+  const matchPost = matchPath(location.pathname, {
+    path: '/questions/:id',
+  })
+  const postId = matchPost?.params?.id
+  const { data: post } = useQuery([GET_POST_BY_ID_QUERY_KEY, postId], () =>
+    getPostById(postId, 3),
+  )
+  // Similar logic to find agency as login component
+  // if post is linked to multiple agencies via agencyTag
+  // take the first agencyTag found as agency
+  const firstAgencyTagLinkedToPost = post?.tags?.find(
+    (tag) => tag.tagType === TagType.Agency,
+  )
+  const agencyShortName =
+    match?.params?.agency ||
+    searchParams.get('agency') ||
+    firstAgencyTagLinkedToPost?.tagname
   const { isLoading, data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
     () => getAgencyByShortName({ shortname: agencyShortName }),
