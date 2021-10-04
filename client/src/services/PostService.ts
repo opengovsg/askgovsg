@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios'
 import {
   ApiClient,
   CreatePostReqDto,
@@ -57,17 +58,19 @@ export const updatePost = async (
   id: number,
   update: UpdatePostReqDto,
 ): Promise<UpdatePostResDto> => {
-  return ApiClient.put<UpdatePostResDto>(`${POST_API_BASE}/${id}`, update).then(
-    ({ data }) => data,
-  )
+  return ApiClient.put<UpdatePostReqDto, AxiosResponse<UpdatePostResDto>>(
+    `${POST_API_BASE}/${id}`,
+    update,
+  ).then(({ data }) => data)
 }
 
 export const createPost = async (
   postData: CreatePostReqDto,
 ): Promise<CreatePostResDto> => {
-  return ApiClient.post<CreatePostResDto>(`${POST_API_BASE}`, postData).then(
-    ({ data }) => data,
-  )
+  return ApiClient.post<CreatePostReqDto, AxiosResponse<CreatePostResDto>>(
+    `${POST_API_BASE}`,
+    postData,
+  ).then(({ data }) => data)
 }
 
 export const deletePost = async (postId: number): Promise<unknown> => {

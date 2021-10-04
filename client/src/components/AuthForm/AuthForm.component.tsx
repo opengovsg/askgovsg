@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
@@ -47,8 +47,10 @@ const AuthForm = (): JSX.Element => {
       auth.verifyOtp.mutate(data, {
         onError: (error) => {
           if (axios.isAxiosError(error)) {
+            const data = (error as AxiosError<{ message: string }>).response
+              ?.data || { message: undefined }
             if (
-              error.response?.data.message ===
+              data.message ===
               'You have hit the max number of attempts. Please request for a new OTP.'
             ) {
               setOtpState(0)

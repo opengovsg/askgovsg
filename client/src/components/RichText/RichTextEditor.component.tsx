@@ -15,6 +15,7 @@ import { LinkControl } from './LinkControl'
 import { ApiClient, getApiErrorMessage } from '../../api'
 import { useStyledToast } from '../StyledToast/StyledToast'
 import { PreviewLinkDecorator } from './LinkDecorator'
+import { FileUploadDto } from '~shared/types/api'
 
 type UploadCallback = (
   file: File,
@@ -96,7 +97,10 @@ export const RichTextEditor: FC<{
     const formData = new FormData()
     formData.append('file', file, file.name)
     try {
-      return ApiClient.post('/files', formData)
+      return ApiClient.post<FormData, { data: FileUploadDto }>(
+        '/files',
+        formData,
+      )
     } catch (error) {
       toast({
         status: 'error',
