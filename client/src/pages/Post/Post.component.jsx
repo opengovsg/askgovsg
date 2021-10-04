@@ -1,9 +1,11 @@
 import { Center, Flex, Spacer, Stack, Text, VStack } from '@chakra-ui/layout'
 import { format, utcToZonedTime } from 'date-fns-tz'
-import { BiArrowBack, BiXCircle } from 'react-icons/bi'
+import { BiXCircle } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { Link, useHistory, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
+import sanitizeHtml from 'sanitize-html'
 import { PostStatus, TagType } from '~shared/types/base'
+import { BackToHome } from '../../components/BackToHome/BackToHome'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import EditButton from '../../components/EditButton/EditButton.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
@@ -26,7 +28,6 @@ import {
 import AnswerSection from './AnswerSection/AnswerSection.component'
 import './Post.styles.scss'
 import QuestionSection from './QuestionSection/QuestionSection.component'
-import sanitizeHtml from 'sanitize-html'
 
 const Post = () => {
   const { id: postId } = useParams()
@@ -105,7 +106,9 @@ const Post = () => {
         >
           <div className="post-page">
             <Flex pb="14px" align="center">
-              <BackButtonForPostDetail agencyShortName={agencyShortName} />
+              <Flex mt={{ base: '32px', sm: '60px' }}>
+                <BackToHome mainPageName={agencyShortName} />
+              </Flex>
               <Spacer />
               {isAgencyMember && (
                 <div className="post-side-with-edit">
@@ -196,29 +199,6 @@ const Post = () => {
         }
       />
     </Flex>
-  )
-}
-
-const BackButtonForPostDetail = ({ agencyShortName }) => {
-  const history = useHistory()
-
-  return (
-    <div className="back-to-home">
-      <button
-        onClick={() =>
-          history.push(`/agency/${encodeURIComponent(agencyShortName)}`)
-        }
-      >
-        <BiArrowBack
-          style={{ marginRight: '8px' }}
-          size="24"
-          color="secondary.400"
-        />
-        <div className="back-text">
-          Back to {agencyShortName.toUpperCase()} questions
-        </div>
-      </button>
-    </div>
   )
 }
 
