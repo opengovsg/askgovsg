@@ -1,15 +1,6 @@
-import React, { Fragment } from 'react'
+import { Button, Center, Flex, Heading, Spacer, Text } from '@chakra-ui/react'
+import { Fragment } from 'react'
 import { Link as ReachLink } from 'react-router-dom'
-import {
-  Spacer,
-  Heading,
-  Text,
-  Button,
-  Center,
-  Flex,
-  Container,
-} from '@chakra-ui/react'
-
 import { BackToHome } from '../../components/BackToHome/BackToHome'
 
 const NotFound = (): JSX.Element => {
@@ -18,7 +9,7 @@ const NotFound = (): JSX.Element => {
     <Fragment>
       <Flex
         mt={{ base: '32px', sm: '60px' }}
-        mb={{ base: '32px', sm: '54px' }}
+        mb={{ base: '32px', sm: '50px' }}
         px={pagePX}
       >
         <BackToHome mainPageName={null} />

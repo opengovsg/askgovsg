@@ -54,7 +54,7 @@ const SearchResults = () => {
       <div id="mainbar" className="questions-page fc-black-800">
         <Flex
           mt={{ base: '32px', sm: '60px' }}
-          mb={{ base: '32px', sm: '54px' }}
+          mb={{ base: '32px', sm: '50px' }}
         >
           <BackToHome mainPageName={agencyShortName} />
         </Flex>

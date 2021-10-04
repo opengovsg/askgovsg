@@ -105,8 +105,11 @@ const Post = () => {
           spacing={{ base: '20px', lg: '88px' }}
         >
           <div className="post-page">
-            <Flex pb="14px" align="center">
-              <Flex mt={{ base: '32px', sm: '60px' }}>
+            <Flex align="center">
+              <Flex
+                mt={{ base: '32px', sm: '60px' }}
+                mb={{ base: '32px', sm: '50px' }}
+              >
                 <BackToHome mainPageName={agencyShortName} />
               </Flex>
               <Spacer />
