@@ -62,6 +62,8 @@ import { datadogConfig } from './config/datadog'
 import { passportConfig } from './passport'
 import sessionMiddleware from './session'
 
+import cheerio from 'cheerio'
+
 export { sequelize } from './sequelize'
 export const app = express()
 
@@ -114,13 +116,14 @@ const mailService = new MailService({
 const postService = new PostService({ Answer, Post, PostTag, Tag, User })
 const enquiryService = new EnquiryService({ Agency, mailService })
 const recaptchaService = new RecaptchaService({ axios, ...recaptchaConfig })
+const answersService = new AnswersService()
 
 const apiOptions = {
   agency: new AgencyController({ agencyService }),
   answers: {
     controller: new AnswersController({
       authService,
-      answersService: new AnswersService(),
+      answersService: answersService,
     }),
     authMiddleware,
   },
@@ -194,9 +197,91 @@ if (baseConfig.nodeEnv === Environment.Prod) {
     path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
   )
 
-  app.get('*', (_req, res) =>
-    res.header('content-type', 'text/html').send(index),
-  )
+  app.get('/agency/:shortname', (req, res) => {
+    const $ = cheerio.load(index)
+
+    $('title').text(`${req.params.shortname.toUpperCase()} FAQ - AskGov`)
+    $('meta[property="og:title"]').attr(
+      'content',
+      `${req.params.shortname.toUpperCase()} FAQ - AskGov`,
+    )
+    $('meta[property="og:url"]').attr('content', `${req.url.toLowerCase()}`)
+
+    const agencyPromise = async () => {
+      return await agencyService.findOneByName({
+        shortname: req.params.shortname,
+      })
+    }
+    ;(async () => {
+      const agency = await agencyPromise()
+      if (agency.isOk()) {
+        $('meta[name="description"]').attr(
+          'content',
+          `Answers from ${
+            agency.value.longname
+          } (${req.params.shortname.toUpperCase()})`,
+        )
+        $('meta[property="og:description"]').attr(
+          'content',
+          `Answers from ${
+            agency.value.longname
+          } (${req.params.shortname.toUpperCase()})`,
+        )
+        $('meta[property="og:image"]').attr('content', `${agency.value.logo}`)
+      } else {
+        $('meta[name="description"]').attr(
+          'content',
+          `Answers from ${req.params.shortname.toUpperCase()}`,
+        )
+        $('meta[property="og:description"]').attr(
+          'content',
+          `Answers from ${req.params.shortname.toUpperCase()}`,
+        )
+      }
+      res.header('content-type', 'text/html').send($.html())
+    })()
+  })
+
+  app.get('/questions/:id', (req, res) => {
+    const $ = cheerio.load(index)
+
+    $('meta[property="og:type"]').attr('content', 'article')
+    $('meta[property="og:url"]').attr('content', `${req.url.toLowerCase()}`)
+
+    const postId: number = +req.params.id
+    const postPromise = async () => {
+      return await postService.getSinglePost(postId)
+    }
+    const answersPromise = async () => {
+      return await answersService.listAnswers(postId)
+    }
+    ;(async () => {
+      const post = await postPromise()
+      $('title').text(`${post.title} - AskGov`)
+      $('meta[property="og:title"]').attr('content', `${post.title} - AskGov`)
+      const answers = await answersPromise()
+      if (answers && answers.length > 0) {
+        $('meta[name="description"]').attr('content', `${answers[0].body}`)
+        $('meta[property="og:description"]').attr(
+          'content',
+          `${answers[0].body}`,
+        )
+      } else {
+        $('meta[name="description"]').attr('content', `${post.description}`)
+        $('meta[property="og:description"]').attr(
+          'content',
+          `${post.description}`,
+        )
+      }
+      res.header('content-type', 'text/html').send($.html())
+    })()
+  })
+
+  app.get('*', (req, res) => {
+    const $ = cheerio.load(index)
+    $('meta[property="og:url"]').attr('content', `${req.url.toLowerCase()}`)
+    res.header('content-type', 'text/html').send($.html())
+  })
 }
 
 export default app
