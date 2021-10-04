@@ -139,7 +139,7 @@ const HomePage = ({ match }) => {
         </Box>
         <Box flex="5">
           {queryState ? (
-            <Flex mb="5px">
+            <Flex mb={{ base: '32px', sm: '50px' }}>
               <BackToHome
                 mainPageName={match.params.agency || agency?.shortname}
               />
