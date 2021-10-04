@@ -12,6 +12,6 @@ export type Mail = {
   captchaResponse: string
 }
 
-export const postMail = (mail: Mail): Promise<void> => {
+export const postMail = (mail: Mail): Promise<Mail> => {
   return ApiClient.post(`/enquiries/`, mail).then(({ data }) => data)
 }
