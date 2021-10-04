@@ -23,10 +23,12 @@ const Header = () => {
   const { user, logout } = useAuth()
 
   const location = useLocation()
+  const { search } = useLocation()
   const match = matchPath(location.pathname, {
     path: '/agency/:agency',
   })
-  const agencyShortName = match?.params?.agency
+  const searchParams = new URLSearchParams(search)
+  const agencyShortName = match?.params?.agency || searchParams.get('agency')
   const { isLoading, data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
     () => getAgencyByShortName({ shortname: agencyShortName }),
