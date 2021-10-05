@@ -206,7 +206,10 @@ if (baseConfig.nodeEnv === Environment.Prod) {
       'content',
       `${req.params.shortname.toUpperCase()} FAQ - AskGov`,
     )
-    $('meta[property="og:url"]').attr('content', `${req.url.toLowerCase()}`)
+    $('meta[property="og:url"]').attr(
+      'content',
+      `${req.protocol}://${req.hostname}${req.originalUrl.toLowerCase()}`,
+    )
 
     const agencyPromise = async () => {
       return await agencyService.findOneByName({
@@ -246,7 +249,10 @@ if (baseConfig.nodeEnv === Environment.Prod) {
     const $ = cheerio.load(index)
 
     $('meta[property="og:type"]').attr('content', 'article')
-    $('meta[property="og:url"]').attr('content', `${req.url.toLowerCase()}`)
+    $('meta[property="og:url"]').attr(
+      'content',
+      `${req.protocol}://${req.hostname}${req.originalUrl.toLowerCase()}`,
+    )
 
     const postId: number = +req.params.id
     const postPromise = async () => {
@@ -280,7 +286,10 @@ if (baseConfig.nodeEnv === Environment.Prod) {
 
   app.get('*', (req, res) => {
     const $ = cheerio.load(index)
-    $('meta[property="og:url"]').attr('content', `${req.url.toLowerCase()}`)
+    $('meta[property="og:url"]').attr(
+      'content',
+      `${req.protocol}://${req.hostname}${req.originalUrl.toLowerCase()}`,
+    )
     res.header('content-type', 'text/html').send($.html())
   })
 }
