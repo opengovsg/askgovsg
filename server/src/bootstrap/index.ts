@@ -63,6 +63,7 @@ import { passportConfig } from './passport'
 import sessionMiddleware from './session'
 
 import cheerio from 'cheerio'
+import sanitizeHtml from 'sanitize-html'
 
 export { sequelize } from './sequelize'
 export const app = express()
@@ -261,11 +262,12 @@ if (baseConfig.nodeEnv === Environment.Prod) {
       $('meta[property="og:title"]').attr('content', `${post.title} - AskGov`)
       const answers = await answersPromise()
       if (answers && answers.length > 0) {
-        $('meta[name="description"]').attr('content', `${answers[0].body}`)
-        $('meta[property="og:description"]').attr(
-          'content',
-          `${answers[0].body}`,
-        )
+        const answerBody = sanitizeHtml(answers[0].body, {
+          allowedTags: [],
+          allowedAttributes: {},
+        })
+        $('meta[name="description"]').attr('content', `${answerBody}`)
+        $('meta[property="og:description"]').attr('content', `${answerBody}`)
       } else {
         $('meta[name="description"]').attr('content', `${post.description}`)
         $('meta[property="og:description"]').attr(
