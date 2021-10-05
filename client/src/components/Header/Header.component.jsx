@@ -37,9 +37,12 @@ const Header = () => {
     path: '/questions/:id',
   })
   const postId = matchPost?.params?.id
-  const { data: post } = useQuery([GET_POST_BY_ID_QUERY_KEY, postId], () =>
-    getPostById(postId, 3),
-  )
+  const { data: post } = postId
+    ? useQuery([GET_POST_BY_ID_QUERY_KEY, postId], () => getPostById(postId, 3))
+    : {
+        data: undefined,
+      }
+
   // Similar logic to find agency as login component
   // if post is linked to multiple agencies via agencyTag
   // take the first agencyTag found as agency
