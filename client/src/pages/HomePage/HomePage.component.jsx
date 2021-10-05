@@ -15,6 +15,7 @@ import { BiChevronDown, BiChevronUp } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { useLocation, useParams } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
+import { BackToHome } from '../../components/BackToHome/BackToHome'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import OfficerDashboardComponent from '../../components/OfficerDashboard/OfficerDashboard.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
@@ -137,6 +138,13 @@ const HomePage = ({ match }) => {
           <TagPanel />
         </Box>
         <Box flex="5">
+          {queryState ? (
+            <Flex mb={{ base: '32px', sm: '50px' }}>
+              <BackToHome
+                mainPageName={match.params.agency || agency?.shortname}
+              />
+            </Flex>
+          ) : null}
           <Flex
             flexDir={{ base: 'column', sm: 'row' }}
             mb={5}
