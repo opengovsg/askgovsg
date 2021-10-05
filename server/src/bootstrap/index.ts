@@ -228,7 +228,6 @@ if (baseConfig.nodeEnv === Environment.Prod) {
             agency.value.longname
           } (${req.params.shortname.toUpperCase()})`,
         )
-        $('meta[property="og:image"]').attr('content', `${agency.value.logo}`)
       } else {
         $('meta[name="description"]').attr(
           'content',
