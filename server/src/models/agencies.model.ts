@@ -39,6 +39,15 @@ export const defineAgency = (
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    // Enforces a display order for categories
+    // belonging to an agency
+    displayOrder: {
+      type: DataTypes.JSON,
+      validate: {
+        isArray: true,
+      },
+      allowNull: true,
+    },
   })
   // Define associations for Agency
   Agency.hasMany(User)

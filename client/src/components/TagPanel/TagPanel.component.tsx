@@ -14,7 +14,7 @@ import * as FullStory from '@fullstory/browser'
 import { ReactElement } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
-import { TagType } from '~shared/types/base'
+import { Tag, TagType } from '~shared/types/base'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   Agency,
@@ -65,6 +65,25 @@ const TagPanel = (): ReactElement => {
       )
     : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
 
+  const bySpecifiedOrder =
+    agency && Array.isArray(agency.displayOrder)
+      ? (a: Tag, b: Tag) => {
+          const aDisplayOrder = (agency.displayOrder || []).indexOf(a.id)
+          const bDisplayOrder = (agency.displayOrder || []).indexOf(b.id)
+          if (aDisplayOrder !== -1 && bDisplayOrder !== -1) {
+            return aDisplayOrder > bDisplayOrder ? 1 : -1
+          } else if (aDisplayOrder !== -1) {
+            // a has an enforced display order, so a should be further up
+            return -1
+          } else if (bDisplayOrder !== -1) {
+            // b has an enforced display order, so a should be further down
+            return 1
+          } else {
+            return a.tagname > b.tagname ? 1 : -1
+          }
+        }
+      : (a: Tag, b: Tag) => (a.tagname > b.tagname ? 1 : -1)
+
   // TODO - create an AccordionItem for agency tags
   return (
     <Accordion defaultIndex={[0]} allowMultiple>
@@ -98,7 +117,7 @@ const TagPanel = (): ReactElement => {
             <VStack align="left" spacing={0} marginLeft="-1px">
               {tags
                 .filter(({ tagType }) => tagType === TagType.Topic)
-                .sort((a, b) => (a.tagname > b.tagname ? 1 : -1))
+                .sort(bySpecifiedOrder)
                 .map((tag) => {
                   const { tagType, tagname } = tag
                   return (
