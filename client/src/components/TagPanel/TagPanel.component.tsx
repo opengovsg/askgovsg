@@ -86,7 +86,7 @@ const TagPanel = (): ReactElement => {
 
   // TODO - create an AccordionItem for agency tags
   return (
-    <Accordion defaultIndex={[0]} allowMultiple>
+    <Accordion minW="20vw" defaultIndex={[0]} allowMultiple>
       <AccordionItem border="none">
         <h2>
           <AccordionButton

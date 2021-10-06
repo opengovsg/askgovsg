@@ -131,10 +131,14 @@ const HomePage = ({ match }) => {
         w="100vw"
         pt={agency ? { base: '44px', md: '104px', xl: '80px' } : '44px'}
         px={{ base: 8, md: 12 }}
-        direction={{ base: 'column', md: 'row' }}
+        direction={{ base: 'column', lg: 'row' }}
       >
-        {/* Hide TagPanel on mobile */}
-        <Box flex="1" mr={{ md: 88 }} d={{ base: 'none', xl: 'block' }}>
+        <Box
+          flex="1"
+          mr={{ lg: '3vw' }}
+          mb="10"
+          d={{ base: queryState ? 'none' : 'block', lg: 'block' }}
+        >
           <TagPanel />
         </Box>
         <Box flex="5">
