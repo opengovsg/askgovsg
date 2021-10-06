@@ -1,15 +1,13 @@
-import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
-import { Agency as AgencyBaseDto } from '~shared/types/base'
-import { User } from './users.model'
-
-export interface Agency extends Model, AgencyBaseDto {}
+import { DataTypes, Sequelize } from 'sequelize'
+import { Agency, User } from '~shared/types/base'
+import { ModelDef } from '../types/sequelize'
 
 // constructor
 export const defineAgency = (
   sequelize: Sequelize,
-  { User }: { User: ModelCtor<User> },
-): ModelCtor<Agency> => {
-  const Agency: ModelCtor<Agency> = sequelize.define('agency', {
+  { User }: { User: ModelDef<User> },
+): ModelDef<Agency> => {
+  const Agency: ModelDef<Agency> = sequelize.define('agency', {
     shortname: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -39,6 +37,15 @@ export const defineAgency = (
     },
     website: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    // Enforces a display order for categories
+    // belonging to an agency
+    displayOrder: {
+      type: DataTypes.JSON,
+      validate: {
+        isArray: true,
+      },
       allowNull: true,
     },
   })

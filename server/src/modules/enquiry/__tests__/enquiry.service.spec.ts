@@ -1,15 +1,21 @@
-import { ModelCtor, Sequelize } from 'sequelize'
-import { Agency as AgencyModel } from '../../../models'
+import { Sequelize } from 'sequelize'
+
+import { ModelDef } from '../../../types/sequelize'
+import { Agency } from '~shared/types/base'
 import { Enquiry } from '../../../types/mail-type'
-import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
+import {
+  createTestDatabase,
+  getModelDef,
+  ModelName,
+} from '../../../util/jest-db'
 import { EnquiryService } from '../enquiry.service'
 
 describe('EnquiryService', () => {
   let db: Sequelize
-  let Agency: ModelCtor<AgencyModel>
+  let Agency: ModelDef<Agency>
   let enquiryService: EnquiryService
-  let mockAgency1: AgencyModel
-  let mockAgency2: AgencyModel
+  let mockAgency1: Agency
+  let mockAgency2: Agency
 
   const mailService = { sendEnquiry: jest.fn(), sendLoginOtp: jest.fn() }
 
@@ -21,18 +27,24 @@ describe('EnquiryService', () => {
 
   beforeAll(async () => {
     db = await createTestDatabase()
-    Agency = getModel<AgencyModel>(db, ModelName.Agency)
+    Agency = getModelDef<Agency>(db, ModelName.Agency)
     mockAgency1 = await Agency.create({
       shortname: '1',
       longname: '',
       logo: 'www.url.com',
       email: 'agency1@ask.gov.sg',
+      noEnquiriesMessage: null,
+      website: null,
+      displayOrder: null,
     })
     mockAgency2 = await Agency.create({
       shortname: '2',
       longname: '',
       logo: 'www.url.com',
       email: 'agency2@ask.gov.sg',
+      noEnquiriesMessage: null,
+      website: null,
+      displayOrder: null,
     })
     enquiryService = new EnquiryService({ Agency, mailService })
   })

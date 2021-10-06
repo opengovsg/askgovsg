@@ -1,14 +1,5 @@
+import { Tag } from '~shared/types/base'
 import { ApiClient } from '../api'
-
-// TODO: refactor into shared types between frontend and backend
-export interface Tag {
-  id: number
-  tagname: string
-  description: string
-  link: string
-  hasPilot: boolean
-  tagType: string
-}
 
 export const fetchTags = async (): Promise<Tag[]> =>
   ApiClient.get('/tags').then(({ data }) => data)
