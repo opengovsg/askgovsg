@@ -1,11 +1,16 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { ModelCtor, Sequelize } from 'sequelize'
+import { Sequelize } from 'sequelize'
 import supertest from 'supertest'
-import { Agency as AgencyModel } from '../../../models'
+import { ModelDef } from '../../../types/sequelize'
+import { Agency } from '~shared/types/base'
 import { RecaptchaService } from '../../../services/recaptcha/recaptcha.service'
-import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
+import {
+  createTestDatabase,
+  getModelDef,
+  ModelName,
+} from '../../../util/jest-db'
 import { MailService } from '../../mail/mail.service'
 import { EnquiryController } from '../enquiry.controller'
 import { routeEnquiries } from '../enquiry.routes'
@@ -19,10 +24,10 @@ describe('/enquiries', () => {
 
   // Set up sequelize
   let db: Sequelize
-  let Agency: ModelCtor<AgencyModel>
+  let Agency: ModelDef<Agency>
   let enquiryService: EnquiryService
   let enquiryController: EnquiryController
-  let mockAgency1: AgencyModel
+  let mockAgency1: Agency
 
   const axios = { get: jest.fn() }
   const googleRecaptchaURL = 'https://recaptcha.net'
@@ -41,12 +46,15 @@ describe('/enquiries', () => {
 
   beforeAll(async () => {
     db = await createTestDatabase()
-    Agency = getModel<AgencyModel>(db, ModelName.Agency)
+    Agency = getModelDef<Agency>(db, ModelName.Agency)
     mockAgency1 = await Agency.create({
       shortname: '1',
       longname: '',
       logo: 'www.url.com',
       email: 'agency1@ask.gov.sg',
+      noEnquiriesMessage: null,
+      website: null,
+      displayOrder: null,
     })
     enquiryService = new EnquiryService({ Agency, mailService })
     enquiryController = new EnquiryController({

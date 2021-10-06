@@ -21,6 +21,7 @@ describe('AgencyService', () => {
       logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
       noEnquiriesMessage: null,
       website: null,
+      displayOrder: null,
     })
     service = new AgencyService({ Agency })
   })
