@@ -25,11 +25,11 @@ export class EnquiryService {
   }): Promise<void> => {
     const agencyEmail = await Promise.all(
       agencyId.map(
-        async (Id) =>
+        async (id) =>
           (
             await this.Agency.findOne({
               attributes: ['email'],
-              where: { Id },
+              where: { id },
             })
           )?.email ?? '',
       ),
