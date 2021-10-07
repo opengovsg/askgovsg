@@ -17,7 +17,6 @@ import {
   listPosts,
   LIST_POSTS_FOR_SEARCH_QUERY_KEY,
 } from '../../services/PostService'
-import { sortByCreatedAt } from '../../util/date'
 import './SearchResults.styles.scss'
 
 const SearchResults = () => {
@@ -40,7 +39,6 @@ const SearchResults = () => {
   })
     .search(searchQuery)
     .map((res) => res.item)
-    .sort(sortByCreatedAt)
 
   return isLoading ? (
     <Spinner centerHeight="200px" />
