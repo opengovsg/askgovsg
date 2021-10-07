@@ -1,5 +1,5 @@
 import { RichTextPreview } from '../../../../components/RichText/RichTextEditor.component'
-import './AnswerItem.styles.scss'
+import { Flex, Text } from '@chakra-ui/react'
 
 const AnswerItem = ({
   answer: { body },
@@ -7,12 +7,18 @@ const AnswerItem = ({
   answer: { body: string }
 }): JSX.Element => {
   return (
-    <div className="answer-item">
-      <div className="answer-body">
-        <p>ANSWER</p>
-        <RichTextPreview value={body} />
-      </div>
-    </div>
+    <Flex
+      direction="column"
+      border="1px"
+      borderRadius="5px"
+      p="30px"
+      borderColor="neutral.300"
+    >
+      <Text color="secondary.500" textStyle="subhead-3">
+        ANSWER
+      </Text>
+      <RichTextPreview value={body} />
+    </Flex>
   )
 }
 
