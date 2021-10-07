@@ -6,8 +6,6 @@ import { AgencyService } from '../agency/agency.service'
 import { AnswersService } from '../answers/answers.service'
 import { PostService } from '../post/post.service'
 import { WebService } from './web.service'
-import { MissingAgencyError } from '../agency/agency.errors'
-import { err } from 'neverthrow'
 
 const logger = createLogger(module)
 
@@ -62,19 +60,26 @@ export class WebController {
         return res.status(StatusCodes.OK).send(agencyPage)
       } else {
         logger.error({
-          message: 'Error while getting agency page',
+          message: `${
+            agency.error.name ?? 'Error'
+          } while getting agency page: ${agency.error.message}`,
           meta: {
             function: 'getAgencyPage',
             shortname: req.params.shortname,
           },
+          error: agency.error,
         })
-        if (String(agency.error.statusCode === StatusCodes.NOT_FOUND))
+        if (agency.error.statusCode === StatusCodes.NOT_FOUND) {
           return res.status(StatusCodes.NOT_FOUND).redirect('/not-found')
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
+        } else {
+          return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
+        }
       }
     } catch (error) {
       logger.error({
-        message: 'Error while getting agency page',
+        message: `${error.name ?? 'Error'} while getting agency page: ${
+          error.message
+        }`,
         meta: {
           function: 'getAgencyPage',
           shortname: req.params.shortname,
@@ -115,7 +120,9 @@ export class WebController {
       }
     } catch (error) {
       logger.error({
-        message: 'Error while getting post page',
+        message: `${error.name ?? 'Error'} while getting post page: ${
+          error.message
+        }`,
         meta: {
           function: 'getPostPage',
           shortname: req.params.id,
