@@ -102,7 +102,7 @@ export class WebController {
       if (!errors.isEmpty()) {
         return res.status(StatusCodes.BAD_REQUEST).send(this.index)
       }
-      const post = await this.postService.getSinglePost(req.params.id)
+      const post = await this.postService.getSinglePost(req.params.id, 0, false)
       const answers = await this.answersService.listAnswers(req.params.id)
       if (answers && answers.length > 0) {
         const postPage = await this.webService.getQuestionPage(
