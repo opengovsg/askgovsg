@@ -161,11 +161,11 @@ const index = fs.readFileSync(
 )
 
 const webController = new WebController({
-  index,
   agencyService,
   answersService,
   postService,
   webService: new WebService(),
+  index,
 })
 
 const moduleLogger = createLogger(module)
@@ -220,11 +220,15 @@ if (baseConfig.nodeEnv === Environment.Prod) {
     )
   }
 
-  app.get('*', (_req, res) =>
+  app.get('/not-found', (_req, res) =>
     res
       .header('content-type', 'text/html')
       .status(StatusCodes.NOT_FOUND)
       .send(index),
+  )
+
+  app.get('*', (_req, res) =>
+    res.header('content-type', 'text/html').redirect('/not-found'),
   )
 }
 

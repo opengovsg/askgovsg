@@ -6,6 +6,8 @@ import { AgencyService } from '../agency/agency.service'
 import { AnswersService } from '../answers/answers.service'
 import { PostService } from '../post/post.service'
 import { WebService } from './web.service'
+import { MissingAgencyError } from '../agency/agency.errors'
+import { err } from 'neverthrow'
 
 const logger = createLogger(module)
 
@@ -66,6 +68,8 @@ export class WebController {
             shortname: req.params.shortname,
           },
         })
+        if (String(agency.error.statusCode === StatusCodes.NOT_FOUND))
+          return res.status(StatusCodes.NOT_FOUND).redirect('/not-found')
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
       }
     } catch (error) {
@@ -106,6 +110,8 @@ export class WebController {
           answers[0].body,
         )
         return res.status(StatusCodes.OK).send(postPage)
+      } else {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
       }
     } catch (error) {
       logger.error({
@@ -116,7 +122,7 @@ export class WebController {
         },
         error,
       })
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
+      return res.status(StatusCodes.NOT_FOUND).redirect('/not-found')
     }
   }
 }
