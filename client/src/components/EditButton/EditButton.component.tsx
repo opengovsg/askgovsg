@@ -15,6 +15,7 @@ import { getApiErrorMessage } from '../../api'
 import {
   deletePost,
   LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
+  GET_POST_BY_ID_QUERY_KEY,
 } from '../../services/PostService'
 import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.component'
 import { useStyledToast } from '../StyledToast/StyledToast'
@@ -40,6 +41,7 @@ const EditButton = ({ postId, onDeleteLink }: EditButtonProps): JSX.Element => {
       queryClient.invalidateQueries(
         LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
       )
+      queryClient.invalidateQueries([GET_POST_BY_ID_QUERY_KEY, postId])
       toast({
         status: 'success',
         description: `Post has been deleted`,
