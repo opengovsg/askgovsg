@@ -77,9 +77,7 @@ export class WebController {
       }
     } catch (error) {
       logger.error({
-        message: `${error.name ?? 'Error'} while getting agency page: ${
-          error.message
-        }`,
+        message: 'Error while getting agency page',
         meta: {
           function: 'getAgencyPage',
           shortname: req.params.shortname,
@@ -120,9 +118,7 @@ export class WebController {
       }
     } catch (error) {
       logger.error({
-        message: `${error.name ?? 'Error'} while getting post page: ${
-          error.message
-        }`,
+        message: 'Error while getting post page',
         meta: {
           function: 'getPostPage',
           shortname: req.params.id,
