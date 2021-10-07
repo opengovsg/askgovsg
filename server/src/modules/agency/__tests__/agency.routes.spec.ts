@@ -28,6 +28,7 @@ describe('/agencies', () => {
       logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
       noEnquiriesMessage: null,
       website: null,
+      displayOrder: null,
     })
     const agencyService = new AgencyService({ Agency })
     const controller = new AgencyController({ agencyService })

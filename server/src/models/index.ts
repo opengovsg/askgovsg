@@ -1,4 +1,4 @@
-export { Agency, defineAgency } from './agencies.model'
+export { defineAgency } from './agencies.model'
 export { Answer, defineAnswer } from './answers.model'
 export { Post, PostTag, definePostAndPostTag } from './posts.model'
 export { Tag, defineTag } from './tags.model'

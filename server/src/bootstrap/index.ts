@@ -1,65 +1,62 @@
-import helmet from 'helmet'
-import cors from 'cors'
-import compression from 'compression'
-import fs from 'fs'
-import path from 'path'
 import axios from 'axios'
-
+import compression from 'compression'
 import connectDatadog from 'connect-datadog'
-import { StatsD } from 'hot-shots'
-
+import cors from 'cors'
 import express from 'express'
-
+import fs from 'fs'
+import helmet from 'helmet'
+import { StatsD } from 'hot-shots'
+import { StatusCodes } from 'http-status-codes'
 import { createTransport } from 'nodemailer'
-
-import { api } from '../routes'
-import { EnvController } from '../modules/environment/env.controller'
+import path from 'path'
 import { AgencyController } from '../modules/agency/agency.controller'
-import { AnswersController } from '../modules/answers/answers.controller'
-import { PostController } from '../modules/post/post.controller'
-import { AuthController } from '../modules/auth/auth.controller'
-import { TagsController } from '../modules/tags/tags.controller'
-import { MailService } from '../modules/mail/mail.service'
-import { EnquiryController } from '../modules/enquiry/enquiry.controller'
 import { AgencyService } from '../modules/agency/agency.service'
-import { UserService } from '../modules/user/user.service'
-import { AuthService } from '../modules/auth/auth.service'
-import { TagsService } from '../modules/tags/tags.service'
+import { AnswersController } from '../modules/answers/answers.controller'
 import { AnswersService } from '../modules/answers/answers.service'
-import { PostService } from '../modules/post/post.service'
+import { AuthController } from '../modules/auth/auth.controller'
 import { AuthMiddleware } from '../modules/auth/auth.middleware'
-import { baseConfig, Environment } from './config/base'
+import { AuthService } from '../modules/auth/auth.service'
+import { EnquiryController } from '../modules/enquiry/enquiry.controller'
+import { EnquiryService } from '../modules/enquiry/enquiry.service'
+import { EnvController } from '../modules/environment/env.controller'
+import { FileController } from '../modules/file/file.controller'
+import { FileService } from '../modules/file/file.service'
+import { MailService } from '../modules/mail/mail.service'
+import { PostController } from '../modules/post/post.controller'
+import { PostService } from '../modules/post/post.service'
+import { TagsController } from '../modules/tags/tags.controller'
+import { TagsService } from '../modules/tags/tags.service'
+import { UserService } from '../modules/user/user.service'
+import { WebController } from '../modules/web/web.controller'
+import { routeWeb } from '../modules/web/web.routes'
+import { WebService } from '../modules/web/web.service'
+import { api } from '../routes'
+import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
 import { bannerConfig } from './config/banner'
-import { googleAnalyticsConfig } from './config/googleAnalytics'
-import { fullStoryConfig } from './config/fullstory'
-import { mailConfig } from './config/mail'
+import { baseConfig, Environment } from './config/base'
+import { datadogConfig } from './config/datadog'
 import { fileConfig } from './config/file'
+import { fullStoryConfig } from './config/fullstory'
+import { googleAnalyticsConfig } from './config/googleAnalytics'
+import { mailConfig } from './config/mail'
 import { recaptchaConfig } from './config/recaptcha'
+import { emailValidator } from './email-validator'
+import { helmetOptions } from './helmet-options'
 import { createLogger } from './logging'
 import { requestLoggingMiddleware } from './logging/request-logging'
-
-import { helmetOptions } from './helmet-options'
-import { emailValidator } from './email-validator'
-import { EnquiryService } from '../modules/enquiry/enquiry.service'
+import { passportConfig } from './passport'
+import { bucket, host, s3 } from './s3'
 import {
   Agency,
   Answer,
   Permission,
   Post,
   PostTag,
-  Tag,
-  User,
-  Token,
   sequelize,
+  Tag,
+  Token,
+  User,
 } from './sequelize'
-import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
-
-import { s3, bucket, host } from './s3'
-import { FileController } from '../modules/file/file.controller'
-import { FileService } from '../modules/file/file.service'
-import { datadogConfig } from './config/datadog'
-
-import { passportConfig } from './passport'
 import sessionMiddleware from './session'
 
 export { sequelize } from './sequelize'
@@ -114,13 +111,14 @@ const mailService = new MailService({
 const postService = new PostService({ Answer, Post, PostTag, Tag, User })
 const enquiryService = new EnquiryService({ Agency, mailService })
 const recaptchaService = new RecaptchaService({ axios, ...recaptchaConfig })
+const answersService = new AnswersService()
 
 const apiOptions = {
   agency: new AgencyController({ agencyService }),
   answers: {
     controller: new AnswersController({
       authService,
-      answersService: new AnswersService(),
+      answersService,
     }),
     authMiddleware,
   },
@@ -137,7 +135,7 @@ const apiOptions = {
   post: {
     controller: new PostController({
       authService,
-      postService: postService,
+      postService,
     }),
     authMiddleware,
   },
@@ -157,6 +155,18 @@ const apiOptions = {
   },
   enquiries: new EnquiryController({ enquiryService, recaptchaService }),
 }
+
+const index = fs.readFileSync(
+  path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
+)
+
+const webController = new WebController({
+  agencyService,
+  answersService,
+  postService,
+  webService: new WebService(),
+  index,
+})
 
 const moduleLogger = createLogger(module)
 
@@ -190,12 +200,35 @@ if (baseConfig.nodeEnv === Environment.Prod) {
     express.static(path.resolve(__dirname, '../../..', 'client', 'build')),
   )
 
-  const index = fs.readFileSync(
-    path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
+  app.use('/', routeWeb({ controller: webController }))
+
+  // iterate through list of possible paths to serve index file
+  const allStaticPaths = [
+    '/',
+    '/questions',
+    '/login',
+    '/add/question',
+    '/edit/question/:id',
+    '/terms',
+    '/agency-terms',
+    '/privacy',
+    '/agency-privacy',
+  ]
+  for (const path of allStaticPaths) {
+    app.get(path, (_req, res) =>
+      res.header('content-type', 'text/html').send(index),
+    )
+  }
+
+  app.get('/not-found', (_req, res) =>
+    res
+      .header('content-type', 'text/html')
+      .status(StatusCodes.NOT_FOUND)
+      .send(index),
   )
 
   app.get('*', (_req, res) =>
-    res.header('content-type', 'text/html').send(index),
+    res.header('content-type', 'text/html').redirect('/not-found'),
   )
 }
 

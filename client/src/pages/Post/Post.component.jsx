@@ -179,7 +179,12 @@ const Post = () => {
             </Text>
             {post.relatedPosts.map((relatedPost) => (
               <Link to={`/questions/${relatedPost.id}`}>
-                <Text mb="24px" textStyle="subhead-2" fontWeight="normal">
+                <Text
+                  mb="24px"
+                  color="primary.900"
+                  textStyle="subhead-2"
+                  fontWeight="normal"
+                >
                   {relatedPost.title}
                 </Text>
               </Link>

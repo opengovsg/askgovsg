@@ -1,16 +1,16 @@
-import { ModelCtor } from 'sequelize/types'
-import { Agency } from '../../models'
+import { Agency } from '~shared/types/base'
 import { Enquiry } from '../../types/mail-type'
+import { ModelDef } from '../../types/sequelize'
 import { MailService } from '../mail/mail.service'
 
 export class EnquiryService {
-  private Agency: ModelCtor<Agency>
+  private Agency: ModelDef<Agency>
   private mailService: Public<MailService>
   constructor({
     Agency,
     mailService,
   }: {
-    Agency: ModelCtor<Agency>
+    Agency: ModelDef<Agency>
     mailService: Public<MailService>
   }) {
     this.Agency = Agency
@@ -25,11 +25,11 @@ export class EnquiryService {
   }): Promise<void> => {
     const agencyEmail = await Promise.all(
       agencyId.map(
-        async (Id) =>
+        async (id) =>
           (
             await this.Agency.findOne({
               attributes: ['email'],
-              where: { Id },
+              where: { id },
             })
           )?.email ?? '',
       ),

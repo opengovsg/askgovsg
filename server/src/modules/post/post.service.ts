@@ -391,21 +391,23 @@ export class PostService {
   getSinglePost = async (
     postId: number,
     noOfRelatedPosts = 0,
+    updateViewCount = true,
   ): Promise<
     PostWithUserTagRelations | PostWithUserTagRelatedPostRelations
   > => {
-    await this.Post.increment(
-      {
-        views: +1,
-      },
-      {
-        where: {
-          id: postId,
+    if (updateViewCount) {
+      await this.Post.increment(
+        {
+          views: +1,
         },
-        silent: true,
-      },
-    )
-
+        {
+          where: {
+            id: postId,
+          },
+          silent: true,
+        },
+      )
+    }
     const post = (await this.Post.findOne({
       where: {
         id: postId,

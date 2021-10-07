@@ -1,11 +1,10 @@
-import { Switch, Alert, AlertIcon } from '@chakra-ui/react'
-import React, { useMemo } from 'react'
+import { Alert, AlertIcon, Switch } from '@chakra-ui/react'
+import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useHistory } from 'react-router-dom'
 import Select from 'react-select'
+import { Tag, TagType } from '~shared/types/base'
 import { RichTextEditor } from '../../../components/RichText/RichTextEditor.component'
-import { Tag } from '../../../services/tag.service'
-import { TagType } from '~shared/types/base'
 import './AskForm.styles.scss'
 
 export type AskFormSubmission = {
