@@ -11,11 +11,10 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-import { BiChevronDown, BiChevronUp } from 'react-icons/bi'
+import { BiSort } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { useLocation, useParams } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
-import { BackToHome } from '../../components/BackToHome/BackToHome'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import OfficerDashboardComponent from '../../components/OfficerDashboard/OfficerDashboard.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
@@ -23,6 +22,7 @@ import PostQuestionButton from '../../components/PostQuestionButton/PostQuestion
 import QuestionsListComponent from '../../components/QuestionsList/QuestionsList.component'
 import SearchBoxComponent from '../../components/SearchBox/SearchBox.component'
 import TagPanel from '../../components/TagPanel/TagPanel.component'
+import TagMenu from '../../components/TagMenu/TagMenu.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
@@ -86,83 +86,86 @@ const HomePage = ({ match }) => {
       >
         <Flex
           direction="row"
-          mx="auto"
-          px={{ base: '32px', md: '48px' }}
-          maxW="1504px"
-          justifyContent="space-between"
+          // mx="auto"
+          // px={{ base: '32px', md: '36px' }}
+          // maxW="680px"
+          // alignItems="flex-start"
+          justifyContent="flex-start"
           className="home-search"
         >
           {/* TODO: might need to do some enforcing to ensure you can only */}
           {/* enter a single agency in the URL */}
 
           {match.params.agency || agency ? (
-            <Flex
-              flex="1"
-              mt="56px"
-              mr={{ base: '48px', xl: '88px' }}
+            <Box
+              // flex="1"
+              mt="28px"
+              px="36px"
+              // mr={{ base: '36px', xl: '36px' }}
               display={{ base: 'none', md: 'flex' }}
             >
               <AgencyLogo
                 agencyShortName={match.params.agency || agency.shortname}
               />
-            </Flex>
+            </Box>
           ) : null}
-
-          <Box
-            flex="5"
-            h="58px"
+          <Flex
+            h="56px"
+            m="auto"
+            // justifyContent="center"
             mt={
               agency
                 ? { base: '20px', md: '56px' }
                 : { base: '4px', xl: '56px' }
             }
-            mx={agency ? 0 : 'auto'}
-            maxW={{ base: '100%', xl: '80%' }}
+            px={agency ? { base: '24px', md: 'auto' } : 'auto'}
+            // mr={agency ? { md: '380px' } : 'auto'}
+            maxW="680px"
+            w="100%"
           >
             <SearchBoxComponent
               agencyShortName={match.params.agency || agency?.shortname}
             />
-          </Box>
+          </Flex>
         </Flex>
       </Box>
+      <Box flex="1" d={{ base: queryState ? 'none' : 'block' }}>
+        <TagPanel />
+      </Box>
+      <Box flex="1" d={{ base: queryState ? 'block' : 'none' }}>
+        <TagMenu />
+      </Box>
       <Flex
-        maxW="1504px"
+        maxW="680px"
         m="auto"
-        w="100vw"
+        w="100%"
         pt={agency ? { base: '44px', md: '104px', xl: '80px' } : '44px'}
-        px={{ base: 8, md: 12 }}
+        px={{ base: 8 }}
         direction={{ base: 'column', lg: 'row' }}
       >
+        {/* TagPanel for desktop view
         <Box
           flex="1"
           mr={{ lg: '3vw' }}
           mb="10"
-          d={{ base: queryState ? 'none' : 'block', lg: 'block' }}
+          d={{ base: queryState ? 'none' : 'none', xl: 'block' }}
         >
           <TagPanel />
-        </Box>
+        </Box> */}
         <Box flex="5">
-          {queryState ? (
-            <Flex mb={{ base: '32px', sm: '50px' }}>
-              <BackToHome
-                mainPageName={match.params.agency || agency?.shortname}
-              />
-            </Flex>
-          ) : null}
           <Flex
             flexDir={{ base: 'column', sm: 'row' }}
             mb={5}
             justifyContent="space-between"
           >
             <Text
-              color="primary.800"
-              textStyle="h1"
+              color="secondary.500"
+              textStyle="body-1"
               mb={{ base: '20px', sm: 0 }}
               mr={{ base: 0, sm: '20px' }}
+              d={{ base: 'none', sm: 'block' }}
             >
-              {queryState
-                ? `Questions related to: ${queryState}`
-                : 'All Questions'}
+              {queryState ? `Questions on this topic` : 'Top Questions'}
             </Text>
             {/* Dropdown stuff */}
             {/* Hidden for officer because of the subcomponents in officer dashboard */}
@@ -181,22 +184,15 @@ const HomePage = ({ match }) => {
                       color="secondary.500"
                       borderRadius="4px"
                       borderWidth="1px"
-                      w={{ base: '100%', sm: '168px' }}
-                      textStyle="subhead-1"
+                      w={{ base: '100%', sm: '171px' }}
+                      textStyle="body-1"
                       textAlign="left"
-                      rightIcon={
-                        isOpen ? (
-                          <Box h="20px" textColor="secondary.500">
-                            <BiChevronUp size="16" />
-                          </Box>
-                        ) : (
-                          <Box h="20px" textColor="secondary.500">
-                            <BiChevronDown size="16" />
-                          </Box>
-                        )
-                      }
+                      d={{ base: queryState ? 'block' : 'none' }}
                     >
-                      {sortState.label}
+                      <Flex justifyContent="space-between" alignItems="center">
+                        <Text textStyle="body-1">{sortState.label}</Text>
+                        <BiSort />
+                      </Flex>
                     </MenuButton>
                     <MenuList
                       minW={0}
