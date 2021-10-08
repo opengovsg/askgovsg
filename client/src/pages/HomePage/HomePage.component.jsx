@@ -159,12 +159,16 @@ const HomePage = ({ match }) => {
           >
             <Text
               color="secondary.500"
-              textStyle="body-1"
+              textStyle="subhead-3"
               mb={{ base: '20px', sm: 0 }}
               mr={{ base: 0, sm: '20px' }}
               d={{ base: 'none', sm: 'block' }}
             >
-              {queryState ? `Questions on this topic` : 'Top Questions'}
+              {hasTagsKey
+                ? queryState
+                  ? 'QUESTIONS ON THIS TOPIC'
+                  : 'ALL QUESTIONS'
+                : 'TOP QUESTIONS'}
             </Text>
             {/* Dropdown stuff */}
             {/* Hidden for officer because of the subcomponents in officer dashboard */}
