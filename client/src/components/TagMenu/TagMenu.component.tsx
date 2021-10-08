@@ -113,9 +113,11 @@ const TagMenu = (): ReactElement => {
                 <Text
                   _groupHover={{ color: 'primary.600' }}
                   textStyle="h3"
+                  fontWeight={queryState ? '600' : '400'}
+                  color="secondary.500"
                   pt="8px"
                 >
-                  {queryState ? queryState : ''}
+                  {queryState ? queryState : 'Select a Topic'}
                 </Text>
               </Stack>
               <Spacer />

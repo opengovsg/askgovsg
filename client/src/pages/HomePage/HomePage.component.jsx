@@ -13,7 +13,7 @@ import {
 import { useEffect, useState } from 'react'
 import { BiSort } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useHistory, useParams } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import OfficerDashboardComponent from '../../components/OfficerDashboard/OfficerDashboard.component'
@@ -36,15 +36,19 @@ import {
 } from '../../services/AgencyService'
 import { isUserPublicOfficer } from '../../services/user.service'
 import { mergeTags } from '../../util/tagsmerger'
-import { getTagsQuery } from '../../util/urlparser'
+import { getTagsQuery, isSpecified } from '../../util/urlparser'
 
 const HomePage = ({ match }) => {
+  const [hasTagsKey, setHasTagsKey] = useState(false)
+  const history = useHistory()
   // check URL
   const location = useLocation()
   // TODO (#259): make into custom hook
   useEffect(() => {
     setQueryState(getTagsQuery(location.search))
-  }, [location])
+    const tagsSpecified = isSpecified(location.search, 'tags')
+    setHasTagsKey(tagsSpecified)
+  }, [location, hasTagsKey])
 
   const { user } = useAuth()
 
@@ -129,12 +133,7 @@ const HomePage = ({ match }) => {
           </Box>
         ) : null}
       </Box>
-      <Box flex="1" d={{ base: queryState ? 'none' : 'block' }}>
-        <TagPanel />
-      </Box>
-      <Box flex="1" d={{ base: queryState ? 'block' : 'none' }}>
-        <TagMenu />
-      </Box>
+      <Box flex="1">{hasTagsKey ? <TagMenu /> : <TagPanel />}</Box>
       <Flex
         maxW="680px"
         m="auto"
@@ -189,7 +188,7 @@ const HomePage = ({ match }) => {
                       w={{ base: '100%', sm: '171px' }}
                       textStyle="body-1"
                       textAlign="left"
-                      d={{ base: queryState ? 'block' : 'none' }}
+                      d={{ base: hasTagsKey ? 'block' : 'none' }}
                     >
                       <Flex justifyContent="space-between" alignItems="center">
                         <Text textStyle="body-1">{sortState.label}</Text>
@@ -248,7 +247,22 @@ const HomePage = ({ match }) => {
               sort={sortState.value}
               agency={match.params.agency}
               tags={queryState}
-              pageSize={30}
+              pageSize={hasTagsKey ? 30 : 10}
+              footerControl={
+                hasTagsKey ? undefined : (
+                  <Button
+                    variant="outline"
+                    color="primary.500"
+                    borderColor="primary.500"
+                    onClick={() => {
+                      window.scrollTo(0, 0)
+                      history.push('?tags=')
+                    }}
+                  >
+                    <Text textStyle="subhead-1">View all questions</Text>
+                  </Button>
+                )
+              }
             />
           )}
         </Box>

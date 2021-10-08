@@ -1,5 +1,4 @@
 import { Center } from '@chakra-ui/layout'
-import { Button, Text } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import { useQuery } from 'react-query'
 import { listPosts, LIST_POSTS_QUERY_KEY } from '../../services/PostService'
@@ -13,6 +12,7 @@ interface QuestionsListProps {
   agency: string
   tags: string
   pageSize: number
+  footerControl?: JSX.Element
 }
 
 const QuestionsList = ({
@@ -20,6 +20,7 @@ const QuestionsList = ({
   agency,
   tags,
   pageSize,
+  footerControl,
 }: QuestionsListProps): JSX.Element => {
   // Pagination
   const [page, setPage] = useState(1)
@@ -53,22 +54,13 @@ const QuestionsList = ({
         alertIfMoreThanDays={undefined}
       />
       <Center my={5}>
-        {expanded ? (
+        {footerControl ?? (
           <Pagination
             totalCount={data?.totalItems ?? 0}
             pageSize={pageSize}
             onPageChange={handlePageChange}
             currentPage={page}
-          />
-        ) : (
-          <Button
-            variant="outline"
-            color="primary.500"
-            borderColor="primary.500"
-            onClick={() => setExpanded(true)}
-          >
-            <Text textStyle="subhead-1">View all questions</Text>
-          </Button>
+          ></Pagination>
         )}
       </Center>
     </>
