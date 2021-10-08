@@ -244,9 +244,8 @@ const HomePage = ({ match }) => {
           ) : (
             <QuestionsListComponent
               sort={sortState.value}
-              agency={match.params.agency}
-              tags={queryState}
-              pageSize={30}
+              tags={agencyAndTags}
+              pageSize={50}
             />
           )}
         </Box>
