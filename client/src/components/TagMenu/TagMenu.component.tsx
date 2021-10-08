@@ -91,6 +91,7 @@ const TagMenu = (): ReactElement => {
             h="104px"
             shadow="md"
             _expanded={{ shadow: 'none' }}
+            _hover={{ bg: 'primary.200' }}
           >
             <Flex
               maxW="680px"
@@ -98,12 +99,22 @@ const TagMenu = (): ReactElement => {
               w="100%"
               px={{ base: 8, md: 8 }}
               textAlign="left"
+              role="group"
             >
               <Stack spacing={1}>
-                <Text textStyle="subhead-3" color="secondary.500" pt="8px">
+                <Text
+                  textStyle="subhead-3"
+                  color="secondary.500"
+                  pt="8px"
+                  _groupHover={{ color: 'primary.600' }}
+                >
                   TOPIC
                 </Text>
-                <Text textStyle="h3" color="secondary.500">
+                <Text
+                  _groupHover={{ color: 'primary.600' }}
+                  textStyle="h3"
+                  pt="8px"
+                >
                   {queryState ? queryState : ''}
                 </Text>
               </Stack>
@@ -132,9 +143,10 @@ const TagMenu = (): ReactElement => {
                       textAlign="center"
                       textStyle="h4"
                       borderBottomWidth="1px"
+                      role="group"
                       _hover={{ bg: 'primary.100' }}
                       _focus={{
-                        color: 'primary.500',
+                        color: 'primary.600',
                       }}
                       as={RouterLink}
                       key={tag.id}
@@ -151,7 +163,9 @@ const TagMenu = (): ReactElement => {
                         w="100%"
                         px={{ base: 8, md: 8 }}
                       >
-                        <Text>{tag.tagname}</Text>
+                        <Text _groupHover={{ color: 'primary.600' }}>
+                          {tag.tagname}
+                        </Text>
                         <Spacer />
                         <BiRightArrowAlt />
                       </Flex>

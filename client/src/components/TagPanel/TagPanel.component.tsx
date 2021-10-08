@@ -128,6 +128,7 @@ const TagPanel = (): ReactElement => {
                       textAlign="center"
                       textStyle="h4"
                       borderBottomWidth="1px"
+                      role="group"
                       _hover={{ bg: 'primary.100' }}
                       as={RouterLink}
                       key={tag.id}
@@ -140,7 +141,9 @@ const TagPanel = (): ReactElement => {
                         w="100%"
                         px={{ base: 8, md: 8 }}
                       >
-                        <Text>{tag.tagname}</Text>
+                        <Text _groupHover={{ color: 'primary.600' }}>
+                          {tag.tagname}
+                        </Text>
                         <Spacer />
                         <BiRightArrowAlt />
                       </Flex>
