@@ -4,7 +4,6 @@ import { useAuth } from '../../contexts/AuthContext'
 import { TagType } from '~shared/types/base'
 import EditButton from '../EditButton/EditButton.component'
 import { RichTextFrontPreview } from '../RichText/RichTextEditor.component'
-import TagBadge from '../TagBadge/TagBadge.component'
 import './PostItem.styles.scss'
 
 // Note: PostItem is the component for the homepage
@@ -40,27 +39,6 @@ const PostItem = ({
           </h2>
           <div className="post-description-container">
             {description && <RichTextFrontPreview value={description} />}
-          </div>
-        </div>
-        <div className="stats-wrapper">
-          <div className="post-bottom-info">
-            <div className="post-tags">
-              {tags &&
-                tags.map((tag, i) => {
-                  return (
-                    <TagBadge
-                      tagName={tag.tagname}
-                      tagType={tag.tagType}
-                      size={'s-tag'}
-                      float={'left'}
-                      key={i}
-                      agency={agency}
-                    />
-                  )
-                })}
-            </div>
-            {/* TODO: reinstate after parking experiment + add styles */}
-            {/* <p className={`post-date`}>{dateToDaysAgoString(createdAt)}</p> */}
           </div>
         </div>
       </div>
