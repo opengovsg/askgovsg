@@ -143,17 +143,15 @@ const HomePage = ({ match }) => {
         direction={{ base: 'column', lg: 'row' }}
       >
         <Box flex="5">
-          {queryState
-            ? tags
-                .filter(({ tagname }) => tagname === queryState)
-                .map((tag) => {
-                  return (
-                    <Text textStyle="body-1" color="secondary.900" mb="50px">
-                      {tag.description}
-                    </Text>
-                  )
-                })
-            : null}
+          {(tags ?? [])
+            .filter(({ tagname }) => tagname === queryState)
+            .map((tag) => {
+              return (
+                <Text textStyle="body-1" color="secondary.900" mb="50px">
+                  {tag.description}
+                </Text>
+              )
+            })}
           <Flex
             flexDir={{ base: 'column', sm: 'row' }}
             mb={5}
