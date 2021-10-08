@@ -138,7 +138,7 @@ const HomePage = ({ match }) => {
         maxW="680px"
         m="auto"
         w="100%"
-        pt={agency ? { base: '44px', md: '104px', xl: '80px' } : '44px'}
+        pt="40px"
         px={{ base: 8 }}
         direction={{ base: 'column', lg: 'row' }}
       >
@@ -146,11 +146,11 @@ const HomePage = ({ match }) => {
           {(tags ?? [])
             .filter(({ tagname }) => tagname === queryState)
             .map((tag) => {
-              return (
+              return tag.description ? (
                 <Text textStyle="body-1" color="secondary.900" mb="50px">
                   {tag.description}
                 </Text>
-              )
+              ) : null
             })}
           <Flex
             flexDir={{ base: 'column', sm: 'row' }}
