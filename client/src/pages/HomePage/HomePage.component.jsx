@@ -25,6 +25,12 @@ import TagPanel from '../../components/TagPanel/TagPanel.component'
 import TagMenu from '../../components/TagMenu/TagMenu.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
+  fetchTags,
+  FETCH_TAGS_QUERY_KEY,
+  getTagsUsedByAgency,
+  GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
+} from '../../services/tag.service'
+import {
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
 } from '../../services/AgencyService'
@@ -48,6 +54,11 @@ const HomePage = ({ match }) => {
     () => getAgencyByShortName({ shortname: agencyShortName }),
     { enabled: !!agencyShortName },
   )
+  const { data: tags } = agency
+    ? useQuery(GET_TAGS_USED_BY_AGENCY_QUERY_KEY, () =>
+        getTagsUsedByAgency(agency.id),
+      )
+    : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
 
   // dropdown options
   const options = [
@@ -133,6 +144,17 @@ const HomePage = ({ match }) => {
         direction={{ base: 'column', lg: 'row' }}
       >
         <Box flex="5">
+          {queryState
+            ? tags
+                .filter(({ tagname }) => tagname === queryState)
+                .map((tag) => {
+                  return (
+                    <Text textStyle="body-1" color="secondary.900" mb="50px">
+                      {tag.description}
+                    </Text>
+                  )
+                })
+            : null}
           <Flex
             flexDir={{ base: 'column', sm: 'row' }}
             mb={5}
