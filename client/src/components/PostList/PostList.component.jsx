@@ -11,7 +11,7 @@ import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import * as FullStory from '@fullstory/browser'
 import { useEffect, useRef } from 'react'
 
-const PostList = ({ posts, defaultText, alertIfMoreThanDays, showViews }) => {
+const PostList = ({ posts, defaultText, alertIfMoreThanDays }) => {
   const { agency: agencyShortName } = useParams()
   const { data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
@@ -79,7 +79,6 @@ const PostList = ({ posts, defaultText, alertIfMoreThanDays, showViews }) => {
               key={post.id}
               post={post}
               alertIfMoreThanDays={alertIfMoreThanDays}
-              showViews={showViews}
               agency={agency}
             />
           ))}

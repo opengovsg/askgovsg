@@ -11,7 +11,6 @@ import EditButton from '../../components/EditButton/EditButton.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import Spinner from '../../components/Spinner/Spinner.component'
 import TagBadge from '../../components/TagBadge/TagBadge.component'
-import ViewCount from '../../components/ViewCount/ViewCount.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
@@ -140,7 +139,6 @@ const Post = () => {
                     )
                   })}
                 </div>
-                <ViewCount views={post.views} className="views-info center" />
               </div>
               {post.status === PostStatus.Private ? (
                 <div className="private-subtitle">

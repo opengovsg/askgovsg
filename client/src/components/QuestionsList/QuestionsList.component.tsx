@@ -51,7 +51,6 @@ const QuestionsList = ({
         posts={data?.posts.slice(0, expanded ? pageSize : 10)}
         defaultText={undefined}
         alertIfMoreThanDays={undefined}
-        showViews={undefined}
       />
       <Center my={5}>
         {expanded ? (

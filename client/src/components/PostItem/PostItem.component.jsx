@@ -5,7 +5,6 @@ import { TagType } from '~shared/types/base'
 import EditButton from '../EditButton/EditButton.component'
 import { RichTextFrontPreview } from '../RichText/RichTextEditor.component'
 import TagBadge from '../TagBadge/TagBadge.component'
-import ViewCount from '../ViewCount/ViewCount.component'
 import './PostItem.styles.scss'
 
 // Note: PostItem is the component for the homepage
@@ -63,18 +62,10 @@ const PostItem = ({
             {/* TODO: reinstate after parking experiment + add styles */}
             {/* <p className={`post-date`}>{dateToDaysAgoString(createdAt)}</p> */}
           </div>
-          <div className="post-side-info">
-            {!isAgencyMember && (
-              <ViewCount views={views} className="views-info" />
-            )}
-          </div>
         </div>
       </div>
       {isAgencyMember && (
         <div className="post-side-with-edit">
-          <div className="view">
-            <ViewCount views={views} className="views-info" />
-          </div>
           <EditButton postId={id} />
         </div>
       )}
