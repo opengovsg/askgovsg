@@ -86,40 +86,22 @@ const HomePage = ({ match }) => {
       >
         <Flex
           direction="row"
-          // mx="auto"
-          // px={{ base: '32px', md: '36px' }}
-          // maxW="680px"
-          // alignItems="flex-start"
           justifyContent="flex-start"
           className="home-search"
         >
           {/* TODO: might need to do some enforcing to ensure you can only */}
           {/* enter a single agency in the URL */}
 
-          {match.params.agency || agency ? (
-            <Box
-              // flex="1"
-              mt="28px"
-              px="36px"
-              // mr={{ base: '36px', xl: '36px' }}
-              display={{ base: 'none', md: 'flex' }}
-            >
-              <AgencyLogo
-                agencyShortName={match.params.agency || agency.shortname}
-              />
-            </Box>
-          ) : null}
           <Flex
             h="56px"
             m="auto"
-            // justifyContent="center"
             mt={
               agency
                 ? { base: '20px', md: '56px' }
                 : { base: '4px', xl: '56px' }
             }
+            pt="!52px"
             px={agency ? { base: '24px', md: 'auto' } : 'auto'}
-            // mr={agency ? { md: '380px' } : 'auto'}
             maxW="680px"
             w="100%"
           >
@@ -128,6 +110,13 @@ const HomePage = ({ match }) => {
             />
           </Flex>
         </Flex>
+        {match.params.agency || agency ? (
+          <Box px="36px" mt="-20px" display={{ base: 'none', lg: 'flex' }}>
+            <AgencyLogo
+              agencyShortName={match.params.agency || agency.shortname}
+            />
+          </Box>
+        ) : null}
       </Box>
       <Box flex="1" d={{ base: queryState ? 'none' : 'block' }}>
         <TagPanel />
@@ -143,15 +132,6 @@ const HomePage = ({ match }) => {
         px={{ base: 8 }}
         direction={{ base: 'column', lg: 'row' }}
       >
-        {/* TagPanel for desktop view
-        <Box
-          flex="1"
-          mr={{ lg: '3vw' }}
-          mb="10"
-          d={{ base: queryState ? 'none' : 'none', xl: 'block' }}
-        >
-          <TagPanel />
-        </Box> */}
         <Box flex="5">
           <Flex
             flexDir={{ base: 'column', sm: 'row' }}
