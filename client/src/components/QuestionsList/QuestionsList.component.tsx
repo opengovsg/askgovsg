@@ -1,5 +1,5 @@
 import { Center } from '@chakra-ui/layout'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery } from 'react-query'
 import { listPosts, LIST_POSTS_QUERY_KEY } from '../../services/PostService'
 import { mergeTags } from '../../util/tagsmerger'
@@ -24,17 +24,11 @@ const QuestionsList = ({
 }: QuestionsListProps): JSX.Element => {
   // Pagination
   const [page, setPage] = useState(1)
-  const [expanded, setExpanded] = useState(tags.length > 0)
-
-  useEffect(() => {
-    setExpanded(tags.length > 0)
-  }, [tags])
-
   const agencyAndTags = mergeTags(agency, tags)
 
   const { data, isLoading } = useQuery(
     [LIST_POSTS_QUERY_KEY, { sort, agencyAndTags, page, pageSize }],
-    () => listPosts(sort, tags, page, pageSize),
+    () => listPosts(sort, agencyAndTags, page, pageSize),
     { keepPreviousData: true },
   )
 
@@ -49,7 +43,7 @@ const QuestionsList = ({
   ) : (
     <>
       <PostListComponent
-        posts={data?.posts.slice(0, expanded ? pageSize : 10)}
+        posts={data?.posts.slice(0, pageSize)}
         defaultText={undefined}
         alertIfMoreThanDays={undefined}
       />
