@@ -12,6 +12,9 @@ export const getTagsQuery = (search: string): string => {
   return ''
 }
 
+export const isSpecified = (search: string, key: string): boolean =>
+  key in queryString.parse(search)
+
 export const getRedirectURL = (
   tagType: string,
   tagName: string,

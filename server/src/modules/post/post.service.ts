@@ -57,7 +57,7 @@ export class PostService {
 
   private sortFunction = (sortType: SortType): OrderItem => {
     if (sortType === SortType.Basic) {
-      return ['createdAt', 'DESC']
+      return ['updatedAt', 'DESC']
     }
     return ['views', 'DESC']
   }
