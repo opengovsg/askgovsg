@@ -141,7 +141,6 @@ const TagMenu = (): ReactElement => {
                     <Link
                       py="24px"
                       w="100%"
-                      h="72px"
                       textAlign="left"
                       textStyle="h4"
                       borderBottomWidth="1px"

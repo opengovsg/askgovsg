@@ -89,26 +89,17 @@ const TagPanel = (): ReactElement => {
   return (
     <Accordion defaultIndex={[0]} allowMultiple>
       <AccordionItem border="none">
-        <h2>
-          <AccordionButton
-            h="72px"
-            px="0px"
-            py="0px"
-            _expanded={!agency ? { color: 'primary.500' } : undefined}
-          >
-            <Flex
-              maxW="680px"
-              m="auto"
-              w="100%"
-              px={{ base: 8, md: 8 }}
-              textAlign="left"
-            >
-              <Text textStyle="subhead-3" color="secondary.500" mt="36px">
-                TOPICS
-              </Text>
-            </Flex>
-          </AccordionButton>
-        </h2>
+        <AccordionButton
+          px="0px"
+          py="0px"
+          _expanded={!agency ? { color: 'primary.500' } : undefined}
+        >
+          <Flex maxW="680px" m="auto" w="100%" px={8} textAlign="left">
+            <Text textStyle="subhead-3" color="secondary.500" mt="36px">
+              TOPICS
+            </Text>
+          </Flex>
+        </AccordionButton>
         <AccordionPanel p={0} shadow="md">
           {isLoading && <Spinner />}
           {tags && (
@@ -122,7 +113,6 @@ const TagPanel = (): ReactElement => {
                     <Link
                       py="24px"
                       w="100%"
-                      h="72px"
                       textAlign="left"
                       textStyle="h4"
                       borderBottomWidth="1px"
