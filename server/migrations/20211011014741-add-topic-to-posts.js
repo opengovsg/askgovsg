@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     queryInterface.addColumn('posts', 'topicId', {
-      allowNull: true, //to change to false once we implement this across all agencies
+      allowNull: true,
       type: Sequelize.INTEGER,
       references: {
         model: 'topics',
