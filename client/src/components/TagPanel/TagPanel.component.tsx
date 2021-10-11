@@ -3,14 +3,12 @@ import {
   AccordionButton,
   AccordionItem,
   AccordionPanel,
-  Box,
   Link,
   Spinner,
   Text,
   VStack,
   Flex,
   Spacer,
-  Center,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
@@ -125,7 +123,7 @@ const TagPanel = (): ReactElement => {
                       py="24px"
                       w="100%"
                       h="72px"
-                      textAlign="center"
+                      textAlign="left"
                       textStyle="h4"
                       borderBottomWidth="1px"
                       role="group"

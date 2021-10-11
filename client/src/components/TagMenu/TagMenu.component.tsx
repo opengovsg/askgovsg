@@ -142,7 +142,7 @@ const TagMenu = (): ReactElement => {
                       py="24px"
                       w="100%"
                       h="72px"
-                      textAlign="center"
+                      textAlign="left"
                       textStyle="h4"
                       borderBottomWidth="1px"
                       role="group"
