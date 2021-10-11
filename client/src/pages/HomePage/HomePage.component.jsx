@@ -11,11 +11,10 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-import { BiChevronDown, BiChevronUp } from 'react-icons/bi'
+import { BiSort } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useHistory, useParams } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
-import { BackToHome } from '../../components/BackToHome/BackToHome'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import OfficerDashboardComponent from '../../components/OfficerDashboard/OfficerDashboard.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
@@ -23,22 +22,33 @@ import PostQuestionButton from '../../components/PostQuestionButton/PostQuestion
 import QuestionsListComponent from '../../components/QuestionsList/QuestionsList.component'
 import SearchBoxComponent from '../../components/SearchBox/SearchBox.component'
 import TagPanel from '../../components/TagPanel/TagPanel.component'
+import TagMenu from '../../components/TagMenu/TagMenu.component'
 import { useAuth } from '../../contexts/AuthContext'
+import {
+  fetchTags,
+  FETCH_TAGS_QUERY_KEY,
+  getTagsUsedByAgency,
+  GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
+} from '../../services/tag.service'
 import {
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
 } from '../../services/AgencyService'
 import { isUserPublicOfficer } from '../../services/user.service'
 import { mergeTags } from '../../util/tagsmerger'
-import { getTagsQuery } from '../../util/urlparser'
+import { getTagsQuery, isSpecified } from '../../util/urlparser'
 
 const HomePage = ({ match }) => {
+  const [hasTagsKey, setHasTagsKey] = useState(false)
+  const history = useHistory()
   // check URL
   const location = useLocation()
   // TODO (#259): make into custom hook
   useEffect(() => {
     setQueryState(getTagsQuery(location.search))
-  }, [location])
+    const tagsSpecified = isSpecified(location.search, 'tags')
+    setHasTagsKey(tagsSpecified)
+  }, [location, hasTagsKey])
 
   const { user } = useAuth()
 
@@ -48,6 +58,11 @@ const HomePage = ({ match }) => {
     () => getAgencyByShortName({ shortname: agencyShortName }),
     { enabled: !!agencyShortName },
   )
+  const { data: tags } = agency
+    ? useQuery(GET_TAGS_USED_BY_AGENCY_QUERY_KEY, () =>
+        getTagsUsedByAgency(agency.id),
+      )
+    : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
 
   // dropdown options
   const options = [
@@ -86,79 +101,74 @@ const HomePage = ({ match }) => {
       >
         <Flex
           direction="row"
-          mx="auto"
-          px={{ base: '32px', md: '48px' }}
-          maxW="1504px"
-          justifyContent="space-between"
+          justifyContent="flex-start"
           className="home-search"
         >
           {/* TODO: might need to do some enforcing to ensure you can only */}
           {/* enter a single agency in the URL */}
 
-          {match.params.agency || agency ? (
-            <Flex
-              flex="1"
-              mt="56px"
-              mr={{ base: '48px', xl: '88px' }}
-              display={{ base: 'none', md: 'flex' }}
-            >
-              <AgencyLogo
-                agencyShortName={match.params.agency || agency.shortname}
-              />
-            </Flex>
-          ) : null}
-
-          <Box
-            flex="5"
-            h="58px"
+          <Flex
+            h="56px"
+            m="auto"
             mt={
               agency
                 ? { base: '20px', md: '56px' }
                 : { base: '4px', xl: '56px' }
             }
-            mx={agency ? 0 : 'auto'}
-            maxW={{ base: '100%', xl: '80%' }}
+            pt="!52px"
+            px={{ base: '24px', md: 'auto' }}
+            maxW="680px"
+            w="100%"
           >
             <SearchBoxComponent
               agencyShortName={match.params.agency || agency?.shortname}
             />
-          </Box>
+          </Flex>
         </Flex>
+        {match.params.agency || agency ? (
+          <Box px="36px" mt="-20px" display={{ base: 'none', lg: 'flex' }}>
+            <AgencyLogo
+              agencyShortName={match.params.agency || agency.shortname}
+            />
+          </Box>
+        ) : null}
       </Box>
+      <Box flex="1">{hasTagsKey ? <TagMenu /> : <TagPanel />}</Box>
       <Flex
-        maxW="1504px"
+        maxW="680px"
         m="auto"
-        w="100vw"
-        pt={agency ? { base: '44px', md: '104px', xl: '80px' } : '44px'}
-        px={{ base: 8, md: 12 }}
-        direction={{ base: 'column', md: 'row' }}
+        w="100%"
+        pt="40px"
+        px={{ base: 8 }}
+        direction={{ base: 'column', lg: 'row' }}
       >
-        {/* Hide TagPanel on mobile */}
-        <Box flex="1" mr={{ md: 88 }} d={{ base: 'none', xl: 'block' }}>
-          <TagPanel />
-        </Box>
         <Box flex="5">
-          {queryState ? (
-            <Flex mb={{ base: '32px', sm: '50px' }}>
-              <BackToHome
-                mainPageName={match.params.agency || agency?.shortname}
-              />
-            </Flex>
-          ) : null}
+          {(tags ?? [])
+            .filter(({ tagname }) => tagname === queryState)
+            .map((tag) => {
+              return tag.description ? (
+                <Text textStyle="body-1" color="secondary.900" mb="50px">
+                  {tag.description}
+                </Text>
+              ) : null
+            })}
           <Flex
             flexDir={{ base: 'column', sm: 'row' }}
             mb={5}
             justifyContent="space-between"
           >
             <Text
-              color="primary.800"
-              textStyle="h1"
+              color="secondary.500"
+              textStyle="subhead-3"
               mb={{ base: '20px', sm: 0 }}
               mr={{ base: 0, sm: '20px' }}
+              d={{ base: 'none', sm: 'block' }}
             >
-              {queryState
-                ? `Questions related to: ${queryState}`
-                : 'All Questions'}
+              {hasTagsKey
+                ? queryState
+                  ? 'QUESTIONS ON THIS TOPIC'
+                  : 'ALL QUESTIONS'
+                : 'TOP QUESTIONS'}
             </Text>
             {/* Dropdown stuff */}
             {/* Hidden for officer because of the subcomponents in officer dashboard */}
@@ -177,22 +187,15 @@ const HomePage = ({ match }) => {
                       color="secondary.500"
                       borderRadius="4px"
                       borderWidth="1px"
-                      w={{ base: '100%', sm: '168px' }}
-                      textStyle="subhead-1"
+                      w={{ base: '100%', sm: '171px' }}
+                      textStyle="body-1"
                       textAlign="left"
-                      rightIcon={
-                        isOpen ? (
-                          <Box h="20px" textColor="secondary.500">
-                            <BiChevronUp size="16" />
-                          </Box>
-                        ) : (
-                          <Box h="20px" textColor="secondary.500">
-                            <BiChevronDown size="16" />
-                          </Box>
-                        )
-                      }
+                      d={{ base: hasTagsKey ? 'block' : 'none' }}
                     >
-                      {sortState.label}
+                      <Flex justifyContent="space-between" alignItems="center">
+                        <Text textStyle="body-1">{sortState.label}</Text>
+                        <BiSort />
+                      </Flex>
                     </MenuButton>
                     <MenuList
                       minW={0}
@@ -246,7 +249,22 @@ const HomePage = ({ match }) => {
               sort={sortState.value}
               agency={match.params.agency}
               tags={queryState}
-              pageSize={30}
+              pageSize={hasTagsKey ? 30 : 10}
+              footerControl={
+                hasTagsKey ? undefined : (
+                  <Button
+                    variant="outline"
+                    color="primary.500"
+                    borderColor="primary.500"
+                    onClick={() => {
+                      window.scrollTo(0, 0)
+                      history.push('?tags=')
+                    }}
+                  >
+                    <Text textStyle="subhead-1">View all questions</Text>
+                  </Button>
+                )
+              }
             />
           )}
         </Box>

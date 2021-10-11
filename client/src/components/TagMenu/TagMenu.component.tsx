@@ -1,23 +1,23 @@
 import {
   Accordion,
   AccordionButton,
+  AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Box,
   Link,
   Spinner,
   Text,
   VStack,
   Flex,
   Spacer,
-  Center,
+  Stack,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
-import { ReactElement } from 'react'
+import { useEffect, useState, ReactElement, createRef } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
-import { Tag, TagType } from '~shared/types/base'
+import { TagType } from '~shared/types/base'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   Agency,
@@ -30,9 +30,10 @@ import {
   getTagsUsedByAgency,
   GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/tag.service'
+import { getTagsQuery } from '../../util/urlparser'
 import { getRedirectURL } from '../../util/urlparser'
 
-const TagPanel = (): ReactElement => {
+const TagMenu = (): ReactElement => {
   const { agency: agencyShortName } = useParams<{ agency: string }>()
   const { data: agency } = useQuery<Agency>(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
@@ -41,6 +42,14 @@ const TagPanel = (): ReactElement => {
     // If agency URL param is not present, agencyShortName is undefined
     { enabled: agencyShortName !== undefined },
   )
+
+  const [queryState, setQueryState] = useState('')
+  // TODO (#259): make into custom hook
+  useEffect(() => {
+    setQueryState(getTagsQuery(location.search))
+  })
+
+  const accordionRef: React.LegacyRef<HTMLButtonElement> = createRef()
 
   const googleAnalytics = useGoogleAnalytics()
 
@@ -68,35 +77,21 @@ const TagPanel = (): ReactElement => {
       )
     : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
 
-  const bySpecifiedOrder =
-    agency && Array.isArray(agency.displayOrder)
-      ? (a: Tag, b: Tag) => {
-          const aDisplayOrder = (agency.displayOrder || []).indexOf(a.id)
-          const bDisplayOrder = (agency.displayOrder || []).indexOf(b.id)
-          if (aDisplayOrder !== -1 && bDisplayOrder !== -1) {
-            return aDisplayOrder > bDisplayOrder ? 1 : -1
-          } else if (aDisplayOrder !== -1) {
-            // a has an enforced display order, so a should be further up
-            return -1
-          } else if (bDisplayOrder !== -1) {
-            // b has an enforced display order, so a should be further down
-            return 1
-          } else {
-            return a.tagname > b.tagname ? 1 : -1
-          }
-        }
-      : (a: Tag, b: Tag) => (a.tagname > b.tagname ? 1 : -1)
-
   // TODO - create an AccordionItem for agency tags
   return (
-    <Accordion defaultIndex={[0]} allowMultiple>
+    <Accordion allowMultiple allowToggle>
       <AccordionItem border="none">
         <h2>
           <AccordionButton
-            h="72px"
+            ref={accordionRef}
+            borderBottomWidth="1px"
             px="0px"
             py="0px"
-            _expanded={!agency ? { color: 'primary.500' } : undefined}
+            bg="primary.100"
+            h="104px"
+            shadow="md"
+            _expanded={{ shadow: 'none' }}
+            _hover={{ bg: 'primary.200' }}
           >
             <Flex
               maxW="680px"
@@ -104,10 +99,29 @@ const TagPanel = (): ReactElement => {
               w="100%"
               px={{ base: 8, md: 8 }}
               textAlign="left"
+              role="group"
             >
-              <Text textStyle="subhead-3" color="secondary.500" mt="36px">
-                TOPICS
-              </Text>
+              <Stack spacing={1}>
+                <Text
+                  textStyle="subhead-3"
+                  color="secondary.500"
+                  pt="8px"
+                  _groupHover={{ color: 'primary.600' }}
+                >
+                  TOPIC
+                </Text>
+                <Text
+                  _groupHover={{ color: 'primary.600' }}
+                  textStyle="h3"
+                  fontWeight={queryState ? '600' : '400'}
+                  color="secondary.500"
+                  pt="8px"
+                >
+                  {queryState ? queryState : 'Select a Topic'}
+                </Text>
+              </Stack>
+              <Spacer />
+              <AccordionIcon mt="48px" />
             </Flex>
           </AccordionButton>
         </h2>
@@ -116,8 +130,11 @@ const TagPanel = (): ReactElement => {
           {tags && (
             <VStack align="left" spacing={0}>
               {tags
-                .filter(({ tagType }) => tagType === TagType.Topic)
-                .sort(bySpecifiedOrder)
+                .filter(
+                  ({ tagType, tagname }) =>
+                    tagType === TagType.Topic && tagname !== queryState,
+                )
+                .sort((a, b) => (a.tagname > b.tagname ? 1 : -1))
                 .map((tag) => {
                   const { tagType, tagname } = tag
                   return (
@@ -130,10 +147,17 @@ const TagPanel = (): ReactElement => {
                       borderBottomWidth="1px"
                       role="group"
                       _hover={{ bg: 'primary.100' }}
+                      _focus={{
+                        color: 'primary.600',
+                      }}
                       as={RouterLink}
                       key={tag.id}
                       to={getRedirectURL(tagType, tagname, agency)}
-                      onClick={() => sendClickTagEventToAnalytics(tagname)}
+                      onClick={() => {
+                        sendClickTagEventToAnalytics(tagname)
+                        setQueryState(tagname)
+                        accordionRef.current?.click()
+                      }}
                     >
                       <Flex
                         maxW="680px"
@@ -158,4 +182,4 @@ const TagPanel = (): ReactElement => {
   )
 }
 
-export default TagPanel
+export default TagMenu
