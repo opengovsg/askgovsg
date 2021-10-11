@@ -86,9 +86,9 @@ const TagMenu = (): ReactElement => {
             ref={accordionRef}
             borderBottomWidth="1px"
             px="0px"
-            py="0px"
+            pt="24px"
+            pb="16px"
             bg="primary.100"
-            h="104px"
             shadow="md"
             _expanded={{ shadow: 'none' }}
             _hover={{ bg: 'primary.200' }}
@@ -97,7 +97,7 @@ const TagMenu = (): ReactElement => {
               maxW="680px"
               m="auto"
               w="100%"
-              px={{ base: 8, md: 8 }}
+              px={8}
               textAlign="left"
               role="group"
             >
@@ -158,12 +158,7 @@ const TagMenu = (): ReactElement => {
                         accordionRef.current?.click()
                       }}
                     >
-                      <Flex
-                        maxW="680px"
-                        m="auto"
-                        w="100%"
-                        px={{ base: 8, md: 8 }}
-                      >
+                      <Flex maxW="680px" m="auto" w="100%" px={8}>
                         <Text _groupHover={{ color: 'primary.600' }}>
                           {tag.tagname}
                         </Text>

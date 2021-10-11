@@ -139,7 +139,7 @@ const HomePage = ({ match }) => {
         m="auto"
         w="100%"
         pt="40px"
-        px={{ base: 8 }}
+        px={8}
         direction={{ base: 'column', lg: 'row' }}
       >
         <Box flex="5">
