@@ -116,7 +116,7 @@ const HomePage = ({ match }) => {
                 : { base: '4px', xl: '56px' }
             }
             pt="!52px"
-            px={agency ? { base: '24px', md: 'auto' } : 'auto'}
+            px={{ base: '24px', md: 'auto' }}
             maxW="680px"
             w="100%"
           >
