@@ -2,15 +2,19 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    return queryInterface.createTable('categories', {
+    return queryInterface.createTable('topics', {
       id: {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      catname: {
+      name: {
         type: Sequelize.TEXT,
         allowNull: false,
+      },
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,
@@ -21,29 +25,28 @@ module.exports = {
         type: Sequelize.DATE,
       },
       agencyId: {
-        allowNull: true, //to change to false once we implement this across all agencies
+        allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: 'agencies',
           key: 'id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL', //Cascade?
       },
       parentId: {
         allowNull: true,
         type: Sequelize.INTEGER,
         references: {
-          model: 'categories',
+          model: 'topics',
           key: 'id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL', //Cascade?
+        onDelete: 'SET NULL',
       },
     })
   },
 
   down: async (queryInterface) => {
-    return queryInterface.dropTable('categories')
+    return queryInterface.dropTable('topics')
   },
 }

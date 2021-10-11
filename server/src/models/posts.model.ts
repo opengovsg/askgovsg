@@ -1,12 +1,6 @@
-import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
-
-import { User } from './users.model'
-import { Tag } from './tags.model'
-import { Category } from './categories.model'
-import { Post as PostBaseDto, PostStatus } from '~shared/types/base'
-
-// TODO (#225): Remove this and replace ModelCtor below with ModelDefined
-export interface Post extends Model, PostBaseDto {}
+import { Sequelize, DataTypes, Model } from 'sequelize'
+import { ModelDef } from '../types/sequelize'
+import { Post, PostStatus, Topic, User, Tag } from '~shared/types/base'
 
 export interface PostTag extends Model {
   postId: number
@@ -19,14 +13,14 @@ export const definePostAndPostTag = (
   {
     User,
     Tag,
-    Category,
+    Topic,
   }: {
-    User: ModelCtor<User>
-    Tag: ModelCtor<Tag>
-    Category: ModelCtor<Category>
+    User: ModelDef<User>
+    Tag: ModelDef<Tag>
+    Topic: ModelDef<Topic>
   },
-): { Post: ModelCtor<Post>; PostTag: ModelCtor<PostTag> } => {
-  const Post: ModelCtor<Post> = sequelize.define('post', {
+): { Post: ModelDef<Post>; PostTag: ModelDef<PostTag> } => {
+  const Post: ModelDef<Post> = sequelize.define('post', {
     title: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -49,13 +43,13 @@ export const definePostAndPostTag = (
     },
   })
 
-  const PostTag: ModelCtor<PostTag> = sequelize.define('posttag', {})
+  const PostTag: ModelDef<PostTag> = sequelize.define('posttag', {})
 
   // Define associations for Post
   User.hasMany(Post)
   Post.belongsTo(User)
-  Category.hasMany(Post)
-  Post.belongsTo(Category)
+  Topic.hasMany(Post)
+  Post.belongsTo(Topic)
   Post.belongsToMany(Tag, {
     through: PostTag,
   })

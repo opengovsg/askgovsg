@@ -7,7 +7,7 @@ import {
   defineTag,
   defineToken,
   defineUserAndPermission,
-  defineCategory,
+  defineTopic,
 } from '../models'
 import { dbConfig } from './config/database'
 
@@ -22,11 +22,11 @@ export const { User, Permission } = defineUserAndPermission(sequelize, {
   emailValidator,
 })
 export const Agency = defineAgency(sequelize, { User })
-export const Category = defineCategory(sequelize, { Agency })
+export const Topic = defineTopic(sequelize, { Agency })
 export const { Post, PostTag } = definePostAndPostTag(sequelize, {
   User,
   Tag,
-  Category,
+  Topic,
 })
 export const Answer = defineAnswer(sequelize, { User, Post })
 
