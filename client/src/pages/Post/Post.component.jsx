@@ -28,6 +28,7 @@ import './Post.styles.scss'
 import QuestionSection from './QuestionSection/QuestionSection.component'
 
 const Post = () => {
+  // Does not need to handle logic when public post with id postId is not found because this is handled by server
   const { id: postId } = useParams()
   const { data: post, isLoading } = useQuery(
     [GET_POST_BY_ID_QUERY_KEY, postId],
@@ -75,6 +76,7 @@ const Post = () => {
   const { _, data: answers } = useQuery(
     [GET_ANSWERS_FOR_POST_QUERY_KEY, post?.id],
     () => getAnswersForPost(post?.id),
+    { enabled: Boolean(post?.id) },
   )
 
   return isLoading ? (
