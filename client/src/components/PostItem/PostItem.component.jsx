@@ -1,7 +1,7 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
+import { Link, Text } from '@chakra-ui/react'
+import { Link as RouterLink } from 'react-router-dom'
 import { TagType } from '~shared/types/base'
+import { useAuth } from '../../contexts/AuthContext'
 import EditButton from '../EditButton/EditButton.component'
 import { RichTextFrontPreview } from '../RichText/RichTextEditor.component'
 import './PostItem.styles.scss'
@@ -33,10 +33,16 @@ const PostItem = ({
     <div className="post-with-stats flex">
       <div className="post-item">
         <div className="post-text">
-          <h2>
-            {/* Title display area */}
-            <Link to={`/questions/${id}`}>{title}</Link>
-          </h2>
+          {/* Title display area */}
+          <Link as={RouterLink} to={`/questions/${id}`}>
+            <Text
+              color="primary.900"
+              _hover={{ color: 'primary.600' }}
+              textStyle="h4"
+            >
+              {title}
+            </Text>
+          </Link>
           <div className="post-description-container">
             {description && <RichTextFrontPreview value={description} />}
           </div>
