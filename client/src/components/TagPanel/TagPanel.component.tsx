@@ -123,12 +123,7 @@ const TagPanel = (): ReactElement => {
                       to={getRedirectURL(tagType, tagname, agency)}
                       onClick={() => sendClickTagEventToAnalytics(tagname)}
                     >
-                      <Flex
-                        maxW="680px"
-                        m="auto"
-                        w="100%"
-                        px={{ base: 8, md: 8 }}
-                      >
+                      <Flex maxW="680px" m="auto" w="100%" px={8}>
                         <Text _groupHover={{ color: 'primary.600' }}>
                           {tag.tagname}
                         </Text>
