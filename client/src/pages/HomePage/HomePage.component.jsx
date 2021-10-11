@@ -153,16 +153,15 @@ const HomePage = ({ match }) => {
               ) : null
             })}
           <Flex
-            flexDir={{ base: 'column', sm: 'row' }}
+            flexDir={{ base: 'column-reverse', sm: 'row' }}
             mb={5}
             justifyContent="space-between"
           >
             <Text
               color="secondary.500"
               textStyle="subhead-3"
-              mb={{ base: '20px', sm: 0 }}
-              mr={{ base: 0, sm: '20px' }}
-              d={{ base: 'none', sm: 'block' }}
+              mt={{ base: '32px', sm: 0 }}
+              d="block"
             >
               {hasTagsKey
                 ? queryState
