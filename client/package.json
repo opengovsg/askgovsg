@@ -10,7 +10,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.3.0",
-    "axios": "^0.22.0",
+    "axios": "^0.23.0",
     "date-fns": "^2.25.0",
     "date-fns-tz": "^1.1.6",
     "downshift": "^6.1.7",
