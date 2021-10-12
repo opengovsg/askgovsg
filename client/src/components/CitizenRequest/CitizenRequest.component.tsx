@@ -73,7 +73,7 @@ const CitizenRequest = ({ agency }: { agency?: Agency }): JSX.Element => {
       direction="column"
       h="219px"
       px="24px"
-      mt={[null, null, '151px']}
+      mt={{ base: '48px', sm: '80px', xl: '90px' }}
       align="center"
       justify="center"
       backgroundColor="primary.100"
