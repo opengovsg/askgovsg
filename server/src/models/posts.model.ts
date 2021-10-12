@@ -1,8 +1,8 @@
 import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
-
+import { ModelDef } from '../types/sequelize'
 import { User } from './users.model'
 import { Tag } from './tags.model'
-import { Post as PostBaseDto, PostStatus } from '~shared/types/base'
+import { Post as PostBaseDto, PostStatus, Topic } from '~shared/types/base'
 
 // TODO (#225): Remove this and replace ModelCtor below with ModelDefined
 export interface Post extends Model, PostBaseDto {}
@@ -15,7 +15,11 @@ export interface PostTag extends Model {
 // constructor
 export const definePostAndPostTag = (
   sequelize: Sequelize,
-  { User, Tag }: { User: ModelCtor<User>; Tag: ModelCtor<Tag> },
+  {
+    User,
+    Tag,
+    Topic,
+  }: { User: ModelCtor<User>; Tag: ModelCtor<Tag>; Topic: ModelDef<Topic> },
 ): { Post: ModelCtor<Post>; PostTag: ModelCtor<PostTag> } => {
   const Post: ModelCtor<Post> = sequelize.define('post', {
     title: {
@@ -45,6 +49,8 @@ export const definePostAndPostTag = (
   // Define associations for Post
   User.hasMany(Post)
   Post.belongsTo(User)
+  Topic.hasMany(Post)
+  Post.belongsTo(Topic)
   Post.belongsToMany(Tag, {
     through: PostTag,
   })
