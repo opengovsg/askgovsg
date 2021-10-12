@@ -13,7 +13,8 @@ export const routeWeb = ({
    * Lists all answers to a post
    * @route   GET /agency/:shortname
    * @returns 200 with static agency page
-   * @returns 500 if agency does not exist
+   * @returns 404 if agency does not exist
+   * @returns 500 any other error
    * @access  Private
    */
   router.get('/agency/:shortname', controller.getAgencyPage)
@@ -22,7 +23,8 @@ export const routeWeb = ({
    * Lists all answers to a post
    * @route   GET /questions/:id
    * @returns 200 with static post page
-   * @returns 500 if post or answers do not exist
+   * @returns 404 if post does not exist
+   * @returns 500 if answers to post do not exist
    * @access  Public
    */
   router.get(

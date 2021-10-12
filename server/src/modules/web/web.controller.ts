@@ -40,7 +40,8 @@ export class WebController {
    * Gets static agency page
    * @param shortname agency shortname
    * @returns 200 with static agency page
-   * @returns 500 if agency does not exist
+   * @returns 404 if agency does not exist
+   * @returns 500 any other error
    */
   getAgencyPage: ControllerHandler<
     { shortname: string },
@@ -90,9 +91,10 @@ export class WebController {
 
   /**
    * Gets static post page
-   * @param postId post id
+   * @param id post id
    * @returns 200 with static post page
-   * @returns 500 if post or answers do not exist
+   * @returns 404 if post does not exist
+   * @returns 500 if answers to post do not exist
    */
   getQuestionPage: ControllerHandler<
     { id: number },
