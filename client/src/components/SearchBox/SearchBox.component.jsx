@@ -214,7 +214,7 @@ const SearchItem = ({
         backgroundColor:
           highlightedIndex === index
             ? // TODO use classes instead of inlining styles
-              '#e4e7f6' //using primary 200
+              'primary.200'
             : 'white',
       },
       className: 'search-item',
