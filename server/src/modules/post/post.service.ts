@@ -410,6 +410,7 @@ export class PostService {
     }
     const post = (await this.Post.findOne({
       where: {
+        status: PostStatus.Public,
         id: postId,
       },
       include: [this.Tag, { model: this.User, attributes: ['displayname'] }],
@@ -432,13 +433,13 @@ export class PostService {
         ],
       ],
     })) as PostWithUserTagRelatedPostRelations
-    if (noOfRelatedPosts > 0) {
-      const relatedPosts = await this.getRelatedPosts(post, noOfRelatedPosts)
-      post.setDataValue('relatedPosts', relatedPosts)
-    }
     if (!post) {
-      throw new Error('No post with this id')
+      throw new Error('No public post with this id')
     } else {
+      if (noOfRelatedPosts > 0) {
+        const relatedPosts = await this.getRelatedPosts(post, noOfRelatedPosts)
+        post.setDataValue('relatedPosts', relatedPosts)
+      }
       return post
     }
   }
