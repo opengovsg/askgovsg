@@ -122,11 +122,11 @@ const Post = () => {
                 </div>
               )}
             </Flex>
-            <Text textStyle="h1" color="primary.500" pb="14px">
+            <Text textStyle="h2" color="secondary.500">
               {post.title}
             </Text>
-            <div className="subtitle-bar">
-              {post.status === PostStatus.Private ? (
+            {post.status === PostStatus.Private ? (
+              <div className="subtitle-bar">
                 <div className="private-subtitle">
                   <BiXCircle
                     style={{ marginRight: '4px' }}
@@ -137,8 +137,8 @@ const Post = () => {
                     This question remains private until an answer is posted.
                   </span>
                 </div>
-              ) : null}
-            </div>
+              </div>
+            ) : null}
             <div className="question-main">
               <QuestionSection post={post} />
               <AnswerSection answers={answers} />
