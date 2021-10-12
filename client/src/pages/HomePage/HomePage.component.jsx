@@ -138,7 +138,7 @@ const HomePage = ({ match }) => {
         maxW="680px"
         m="auto"
         w="100%"
-        pt="40px"
+        pt={{ base: '32px', sm: '80px', xl: '90px' }}
         px={8}
         direction={{ base: 'column', lg: 'row' }}
       >
@@ -161,6 +161,7 @@ const HomePage = ({ match }) => {
               color="secondary.500"
               textStyle="subhead-3"
               mt={{ base: '32px', sm: 0 }}
+              mb={{ sm: '20px' }}
               d="block"
             >
               {hasTagsKey
