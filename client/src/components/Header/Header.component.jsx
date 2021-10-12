@@ -146,7 +146,9 @@ const Header = () => {
         </Stack>
       </Link>
       <Spacer />
-      {agency?.website && websiteLinks()}
+      <Flex d={{ base: 'none', sm: 'block' }}>
+        {agency?.website && websiteLinks()}
+      </Flex>
       {user && authLinks}
     </Flex>
   )
