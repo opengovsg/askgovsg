@@ -1,4 +1,4 @@
-import { Center } from '@chakra-ui/layout'
+import { Center, Flex } from '@chakra-ui/layout'
 import { useState } from 'react'
 import { useQuery } from 'react-query'
 import { listPosts, LIST_POSTS_QUERY_KEY } from '../../services/PostService'
@@ -49,12 +49,14 @@ const QuestionsList = ({
       />
       <Center my={5}>
         {footerControl ?? (
-          <Pagination
-            totalCount={data?.totalItems ?? 0}
-            pageSize={pageSize}
-            onPageChange={handlePageChange}
-            currentPage={page}
-          ></Pagination>
+          <Flex mt={{ base: '40px', sm: '48px', xl: '58px' }}>
+            <Pagination
+              totalCount={data?.totalItems ?? 0}
+              pageSize={pageSize}
+              onPageChange={handlePageChange}
+              currentPage={page}
+            ></Pagination>
+          </Flex>
         )}
       </Center>
     </>
