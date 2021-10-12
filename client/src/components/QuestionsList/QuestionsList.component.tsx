@@ -1,7 +1,12 @@
 import { Center, Flex } from '@chakra-ui/layout'
 import { useState } from 'react'
 import { useQuery } from 'react-query'
-import { listPosts, LIST_POSTS_QUERY_KEY } from '../../services/PostService'
+import {
+  listAnswerablePosts,
+  listPosts,
+  LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
+  LIST_POSTS_QUERY_KEY,
+} from '../../services/PostService'
 import { mergeTags } from '../../util/tagsmerger'
 import Pagination from '../Pagination'
 import PostListComponent from '../PostList/PostList.component'
@@ -13,6 +18,7 @@ interface QuestionsListProps {
   tags: string
   pageSize: number
   footerControl?: JSX.Element
+  listAnswerable?: boolean
 }
 
 const QuestionsList = ({
@@ -21,16 +27,38 @@ const QuestionsList = ({
   tags,
   pageSize,
   footerControl,
+  listAnswerable,
 }: QuestionsListProps): JSX.Element => {
   // Pagination
   const [page, setPage] = useState(1)
   const agencyAndTags = mergeTags(agency, tags)
 
-  const { data, isLoading } = useQuery(
-    [LIST_POSTS_QUERY_KEY, { sort, agencyAndTags, page, pageSize }],
-    () => listPosts(sort, agencyAndTags, page, pageSize),
-    { keepPreviousData: true },
-  )
+  const { queryKey, queryFn } = listAnswerable
+    ? {
+        queryKey: [
+          LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
+          { sort, tags: agencyAndTags, page, pageSize },
+        ],
+        queryFn: () =>
+          listAnswerablePosts({
+            withAnswers: true,
+            sort,
+            tags: agencyAndTags,
+            page,
+            size: pageSize,
+          }),
+      }
+    : {
+        queryKey: [
+          LIST_POSTS_QUERY_KEY,
+          { sort, agencyAndTags, page, pageSize },
+        ],
+        queryFn: () => listPosts(sort, agencyAndTags, page, pageSize),
+      }
+
+  const { data, isLoading } = useQuery(queryKey, queryFn, {
+    keepPreviousData: true,
+  })
 
   const handlePageChange = (nextPage: number) => {
     // -> request new data using the page number
