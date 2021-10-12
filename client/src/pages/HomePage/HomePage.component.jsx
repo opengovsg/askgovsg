@@ -252,6 +252,7 @@ const HomePage = ({ match }) => {
               footerControl={
                 hasTagsKey ? undefined : (
                   <Button
+                    mt={{ base: '40px', sm: '48px', xl: '58px' }}
                     variant="outline"
                     color="primary.500"
                     borderColor="primary.500"
