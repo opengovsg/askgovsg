@@ -1,4 +1,5 @@
-import { Request, Response } from 'express'
+import { EnvironmentDto } from '~shared/types/api'
+import { ControllerHandler } from '../../types/response-handler'
 
 export class EnvController {
   private bannerMessage: string
@@ -18,7 +19,10 @@ export class EnvController {
     this.googleAnalyticsId = googleAnalyticsId
     this.fullStoryOrgId = fullStoryOrgId
   }
-  getEnvironmentVars = (_req: Request, res: Response): Response => {
+  getEnvironmentVars: ControllerHandler<never, EnvironmentDto> = (
+    _req,
+    res,
+  ) => {
     return res.json({
       bannerMessage: this.bannerMessage,
       googleAnalyticsId: this.googleAnalyticsId,
