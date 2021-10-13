@@ -59,6 +59,7 @@ import {
   User,
 } from './sequelize'
 import sessionMiddleware from './session'
+import { SortType } from '../types/sort-type'
 
 export { sequelize } from './sequelize'
 export const app = express()
@@ -195,7 +196,7 @@ if (baseConfig.nodeEnv === Environment.Prod) {
 
 app.use('/api/v1', api(apiOptions))
 
-const getSitemapUrls = () => {
+const getSitemapUrls = async () => {
   const visibleStaticPaths = ['/', '/terms', '/privacy']
   const sitemapLeaves: SitemapLeaf[] = []
   for (const path of visibleStaticPaths) {
@@ -204,7 +205,16 @@ const getSitemapUrls = () => {
       lastMod: true,
     })
   }
-
+  const { posts: allPosts } = await postService.listPosts({
+    sort: SortType.Top,
+    tags: '',
+  })
+  for (const post of allPosts) {
+    sitemapLeaves.push({
+      url: `/questions/${post.id}`,
+      lastMod: true,
+    })
+  }
   return sitemapLeaves
 }
 
