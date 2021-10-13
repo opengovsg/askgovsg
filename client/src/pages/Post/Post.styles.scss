@@ -2,10 +2,6 @@
 @import '../../styles/text';
 @import '../../styles/colours';
 
-.back-to-home {
-  max-width: calc(796px + 48px * 2);
-}
-
 .post-page {
 
   .btn-bar {
@@ -40,9 +36,8 @@
     margin-top: 16px;
 
     .post-time {
-      @include body-2;
+      @include caption-1;
       color: $sec-400;
-      padding-left: 10px;
       padding-right: 20px;
     }
   }

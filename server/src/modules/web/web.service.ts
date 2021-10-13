@@ -9,10 +9,9 @@ const index = fs.readFileSync(
 export class WebService {
   /**
    * Returns agency page if agency exists
-   * @param index default index.html buffer
-   * @param req request made
-   * @param agencyService agency service initialised
-   * @returns html of agency page if agency exists
+   * @param shortname agency shortname
+   * @param longname agency longname
+   * @returns html of agency page
    */
   getAgencyPage = async (
     shortname: string,
@@ -39,10 +38,8 @@ export class WebService {
 
   /**
    * Returns post page
-   * @param index default index.html buffer
-   * @param req request made
-   * @param postService post service initialised
-   * @param answersService answers service initialised
+   * @param title post page title
+   * @param description post page description
    * @returns html of post page
    */
   getQuestionPage = async (

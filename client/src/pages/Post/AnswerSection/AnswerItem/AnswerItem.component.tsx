@@ -14,7 +14,7 @@ const AnswerItem = ({
       p="30px"
       borderColor="neutral.300"
     >
-      <Text color="secondary.500" textStyle="subhead-3">
+      <Text color="primary.500" textStyle="subhead-3">
         ANSWER
       </Text>
       <RichTextPreview value={body} />

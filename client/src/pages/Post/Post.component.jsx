@@ -1,13 +1,14 @@
 import { Center, Flex, Spacer, Stack, Text, VStack } from '@chakra-ui/layout'
 import { format, utcToZonedTime } from 'date-fns-tz'
+import { useEffect, useRef } from 'react'
 import { BiXCircle } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link, useParams } from 'react-router-dom'
 import sanitizeHtml from 'sanitize-html'
 import { PostStatus, TagType } from '~shared/types/base'
-import { BackToHome } from '../../components/BackToHome/BackToHome'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import EditButton from '../../components/EditButton/EditButton.component'
+import { NavBreadcrumb } from '../../components/NavBreadcrumb/NavBreadcrumb'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import Spinner from '../../components/Spinner/Spinner.component'
 import { useAuth } from '../../contexts/AuthContext'
@@ -28,6 +29,7 @@ import './Post.styles.scss'
 import QuestionSection from './QuestionSection/QuestionSection.component'
 
 const Post = () => {
+  // Does not need to handle logic when public post with id postId is not found because this is handled by server
   const { id: postId } = useParams()
   const { data: post, isLoading } = useQuery(
     [GET_POST_BY_ID_QUERY_KEY, postId],
@@ -75,7 +77,35 @@ const Post = () => {
   const { _, data: answers } = useQuery(
     [GET_ANSWERS_FOR_POST_QUERY_KEY, post?.id],
     () => getAnswersForPost(post?.id),
+    { enabled: Boolean(post?.id) },
   )
+
+  const breadcrumbContentRef = useRef([])
+
+  useEffect(() => {
+    if (post) {
+      let foundAgency = undefined
+      let foundTopic = undefined
+      for (const postTag of post.tags) {
+        if (!foundAgency && postTag.tagType === TagType.Agency) {
+          foundAgency = {
+            text: postTag.tagname.toUpperCase(),
+            link: `/agency/${postTag.tagname}`,
+          }
+        }
+        if (!foundTopic && postTag.tagType === TagType.Topic) {
+          foundTopic = {
+            text: postTag.tagname,
+            link: `/agency/${agencyShortName}?tags=${postTag.tagname}`,
+          }
+        }
+        if (foundTopic && foundAgency) break
+      }
+      breadcrumbContentRef.current = []
+      if (foundAgency) breadcrumbContentRef.current.push(foundAgency)
+      if (foundTopic) breadcrumbContentRef.current.push(foundTopic)
+    }
+  }, [post?.tags])
 
   return isLoading ? (
     <Spinner centerHeight="200px" />
@@ -98,18 +128,20 @@ const Post = () => {
       <Center>
         <Stack
           maxW="1188px"
-          px="48px"
+          px={{ base: '24px', sm: '88px' }}
           direction={{ base: 'column', lg: 'row' }}
           spacing={{ base: '20px', lg: '88px' }}
         >
           <div className="post-page">
             <Flex align="center">
-              <Flex
-                mt={{ base: '32px', sm: '60px' }}
-                mb={{ base: '32px', sm: '50px' }}
-              >
-                <BackToHome mainPageName={agencyShortName} />
-              </Flex>
+              {breadcrumbContentRef.current.length > 0 ? (
+                <Flex
+                  mt={{ base: '32px', sm: '60px' }}
+                  mb={{ base: '32px', sm: '50px' }}
+                >
+                  <NavBreadcrumb navOrder={breadcrumbContentRef.current} />
+                </Flex>
+              ) : null}
               <Spacer />
               {isAgencyMember && (
                 <div className="post-side-with-edit">
@@ -120,11 +152,11 @@ const Post = () => {
                 </div>
               )}
             </Flex>
-            <Text textStyle="h1" color="primary.500" pb="14px">
+            <Text textStyle="h2" color="secondary.500">
               {post.title}
             </Text>
-            <div className="subtitle-bar">
-              {post.status === PostStatus.Private ? (
+            {post.status === PostStatus.Private ? (
+              <div className="subtitle-bar">
                 <div className="private-subtitle">
                   <BiXCircle
                     style={{ marginRight: '4px' }}
@@ -135,8 +167,8 @@ const Post = () => {
                     This question remains private until an answer is posted.
                   </span>
                 </div>
-              ) : null}
-            </div>
+              </div>
+            ) : null}
             <div className="question-main">
               <QuestionSection post={post} />
               <AnswerSection answers={answers} />
@@ -150,22 +182,21 @@ const Post = () => {
           <VStack
             w={{ base: 'auto', lg: '240px' }}
             minW={{ base: 'auto', lg: '240px' }}
-            pt={{ base: '0px', lg: '152px' }}
-            px={{ base: '20px', lg: '0px' }}
-            pb="40px"
+            pt={{ base: '36px', sm: '60px', lg: '152px' }}
             align="left"
             color="secondary.400"
           >
-            <Text mb="8px" textStyle="subhead-3">
-              Related
+            <Text mb={{ base: '16px', sm: '0px' }} textStyle="subhead-3">
+              Related Questions
             </Text>
             {post.relatedPosts.map((relatedPost) => (
               <Link to={`/questions/${relatedPost.id}`}>
                 <Text
-                  mb="24px"
+                  py={{ base: '24px', sm: '32px' }}
                   color="primary.900"
                   textStyle="subhead-2"
                   fontWeight="normal"
+                  borderBottomWidth="1px"
                 >
                   {relatedPost.title}
                 </Text>

@@ -1,4 +1,3 @@
-@import '../../styles/colours';
 @import '../../styles/misc';
 @import '../../styles/text';
 
@@ -17,9 +16,8 @@
       flex: 1;
 
       .search-box {
-        color: $neutral-900;
-        background-color: $white;
-        border: 1px solid var(--chakra-colors-gray-800);
+        color: var(--chakra-colors-neutral-900);
+        background-color: white;
         border-radius: 4px;
         width: 100%;
         height: 100%;
@@ -30,7 +28,7 @@
       }
 
       .search-box .search-input::placeholder{
-        color: $neutral-500
+        color: var(--chakra-colors-neutral-500);
       }
 
       .search-results {
@@ -50,16 +48,12 @@
       .search-item {
         display: flex;
         align-items: center;
-        padding: 0 16px;
-        height: 50px;
+        padding: 10px 16px;
         box-sizing: border-box;
         width: 100%;
 
         .search-item-text {
-          color: $neutral-800;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          overflow: hidden;
+          color: var(--chakra-colors-neutral-800);
         }
       }
     }
