@@ -3,6 +3,7 @@ import compression from 'compression'
 import connectDatadog from 'connect-datadog'
 import cors from 'cors'
 import express from 'express'
+import expressSitemapXml, { SitemapLeaf } from 'express-sitemap-xml'
 import fs from 'fs'
 import helmet from 'helmet'
 import { StatsD } from 'hot-shots'
@@ -194,11 +195,26 @@ if (baseConfig.nodeEnv === Environment.Prod) {
 
 app.use('/api/v1', api(apiOptions))
 
+const getSitemapUrls = () => {
+  const visibleStaticPaths = ['/', '/terms', '/privacy']
+  const sitemapLeaves: SitemapLeaf[] = []
+  for (const path of visibleStaticPaths) {
+    sitemapLeaves.push({
+      url: path,
+      lastMod: true,
+    })
+  }
+
+  return sitemapLeaves
+}
+
 // connection with client setup
 if (baseConfig.nodeEnv === Environment.Prod) {
   app.use(
     express.static(path.resolve(__dirname, '../../..', 'client', 'build')),
   )
+
+  app.use(expressSitemapXml(getSitemapUrls, baseConfig.hostUrl))
 
   app.use('/', routeWeb({ controller: webController }))
 
