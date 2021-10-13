@@ -3,7 +3,6 @@ import compression from 'compression'
 import connectDatadog from 'connect-datadog'
 import cors from 'cors'
 import express from 'express'
-import expressSitemapXml, { SitemapLeaf } from 'express-sitemap-xml'
 import fs from 'fs'
 import helmet from 'helmet'
 import { StatsD } from 'hot-shots'
@@ -33,7 +32,6 @@ import { routeWeb } from '../modules/web/web.routes'
 import { WebService } from '../modules/web/web.service'
 import { api } from '../routes'
 import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
-import { SortType } from '../types/sort-type'
 import { bannerConfig } from './config/banner'
 import { baseConfig, Environment } from './config/base'
 import { datadogConfig } from './config/datadog'
@@ -196,44 +194,11 @@ if (baseConfig.nodeEnv === Environment.Prod) {
 
 app.use('/api/v1', api(apiOptions))
 
-const getSitemapUrls = async () => {
-  const visibleStaticPaths = ['/', '/terms', '/privacy']
-  const sitemapLeaves: SitemapLeaf[] = []
-  for (const path of visibleStaticPaths) {
-    sitemapLeaves.push({
-      url: path,
-      lastMod: true,
-    })
-  }
-  const { posts: allPosts } = await postService.listPosts({
-    sort: SortType.Top,
-    tags: '',
-  })
-  const allAgencyShortnames = await agencyService.listAgencyShortnames()
-  for (const post of allPosts) {
-    sitemapLeaves.push({
-      url: `/questions/${post.id}`,
-      lastMod: true,
-    })
-  }
-  if (allAgencyShortnames.isOk()) {
-    for (const agency of allAgencyShortnames.value) {
-      sitemapLeaves.push({
-        url: `/agency/${agency.shortname}`,
-        lastMod: true,
-      })
-    }
-  }
-  return sitemapLeaves
-}
-
 // connection with client setup
 if (baseConfig.nodeEnv === Environment.Prod) {
   app.use(
     express.static(path.resolve(__dirname, '../../..', 'client', 'build')),
   )
-
-  app.use(expressSitemapXml(getSitemapUrls, baseConfig.hostUrl))
 
   app.use('/', routeWeb({ controller: webController }))
 
