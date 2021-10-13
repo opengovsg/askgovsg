@@ -34,7 +34,16 @@ const PreviewLinkSpan = ({
   entityKey: string
 }): JSX.Element => {
   const { url } = contentState.getEntity(entityKey).getData()
-  const protocol = new URL(url).protocol.toString()
+  let protocol
+  try {
+    protocol = new URL(url).protocol.toString()
+  } catch {
+    // If we fail to parse the URL, assume that it is bad,
+    // and default to https
+    // TODO: Find a way to flag this both to the public viewer
+    // and the public servant
+    protocol = 'https:'
+  }
   if (protocol in targetOptions) {
     return (
       <span className="rdw-link-decorator-wrapper">
