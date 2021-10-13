@@ -33,6 +33,7 @@ import { routeWeb } from '../modules/web/web.routes'
 import { WebService } from '../modules/web/web.service'
 import { api } from '../routes'
 import { RecaptchaService } from '../services/recaptcha/recaptcha.service'
+import { SortType } from '../types/sort-type'
 import { bannerConfig } from './config/banner'
 import { baseConfig, Environment } from './config/base'
 import { datadogConfig } from './config/datadog'
@@ -59,7 +60,6 @@ import {
   User,
 } from './sequelize'
 import sessionMiddleware from './session'
-import { SortType } from '../types/sort-type'
 
 export { sequelize } from './sequelize'
 export const app = express()
@@ -209,11 +209,20 @@ const getSitemapUrls = async () => {
     sort: SortType.Top,
     tags: '',
   })
+  const allAgencyShortnames = await agencyService.listAgencyShortnames()
   for (const post of allPosts) {
     sitemapLeaves.push({
       url: `/questions/${post.id}`,
       lastMod: true,
     })
+  }
+  if (allAgencyShortnames.isOk()) {
+    for (const agency of allAgencyShortnames.value) {
+      sitemapLeaves.push({
+        url: `/agency/${agency.shortname}`,
+        lastMod: true,
+      })
+    }
   }
   return sitemapLeaves
 }

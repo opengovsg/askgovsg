@@ -17,6 +17,7 @@ describe('AgencyController', () => {
   const agencyService = {
     findOneByName: jest.fn(),
     findOneById: jest.fn(),
+    listAgencyShortnames: jest.fn(),
   }
   const agencyController = new AgencyController({ agencyService })
 
