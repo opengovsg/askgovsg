@@ -128,7 +128,7 @@ const Post = () => {
       <Center>
         <Stack
           maxW="1188px"
-          px="48px"
+          px={{ base: '24px', sm: '88px' }}
           direction={{ base: 'column', lg: 'row' }}
           spacing={{ base: '20px', lg: '88px' }}
         >
