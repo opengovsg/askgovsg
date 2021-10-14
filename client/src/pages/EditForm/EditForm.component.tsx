@@ -19,7 +19,7 @@ import {
 import {
   getTagsByUser,
   GET_TAGS_BY_USER_QUERY_KEY,
-} from '../../services/tag.service'
+} from '../../services/TagService'
 import AskForm, {
   AskFormSubmission,
 } from '../PostForm/AskForm/AskForm.component'
