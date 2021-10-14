@@ -8,6 +8,8 @@ export type AgencyQuery = {
 }
 
 export const getAgencyByShortName = (query: AgencyQuery): Promise<Agency> => {
-  return ApiClient.get(`/agencies/`, { params: query }).then(({ data }) => data)
+  return ApiClient.get<Agency>(`/agencies/`, { params: query }).then(
+    ({ data }) => data,
+  )
 }
 export const GET_AGENCY_BY_SHORTNAME_QUERY_KEY = 'getAgencyByShortName'

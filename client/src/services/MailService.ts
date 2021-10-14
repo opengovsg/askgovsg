@@ -1,17 +1,10 @@
+import { AxiosResponse } from 'axios'
+import { ErrorDto as ResponseDto, EnquiryRequest } from '~shared/types/api'
 import { ApiClient } from '../api'
 
-export type Enquiry = {
-  questionTitle: string
-  description: string
-  senderEmail: string
-}
-
-export type Mail = {
-  agencyId: number[]
-  enquiry: Enquiry
-  captchaResponse: string
-}
-
-export const postMail = (mail: Mail): Promise<Mail> => {
-  return ApiClient.post(`/enquiries/`, mail).then(({ data }) => data)
+export const postMail = (request: EnquiryRequest): Promise<ResponseDto> => {
+  return ApiClient.post<EnquiryRequest, AxiosResponse<ResponseDto>>(
+    `/enquiries/`,
+    request,
+  ).then(({ data }) => data)
 }

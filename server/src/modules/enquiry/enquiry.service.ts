@@ -1,5 +1,5 @@
 import { Agency } from '~shared/types/base'
-import { Enquiry } from '../../types/mail-type'
+import { Enquiry } from '~shared/types/api'
 import { ModelDef } from '../../types/sequelize'
 import { MailService } from '../mail/mail.service'
 

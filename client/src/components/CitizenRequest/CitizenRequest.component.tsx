@@ -15,7 +15,8 @@ import * as FullStory from '@fullstory/browser'
 import { getApiErrorMessage } from '../../api'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import { Agency } from '../../services/AgencyService'
-import { Enquiry, Mail, postMail } from '../../services/MailService'
+import { Enquiry, EnquiryRequest } from '~shared/types/api'
+import { postMail } from '../../services/MailService'
 import { EnquiryModal } from '../EnquiryModal/EnquiryModal.component'
 import { RichTextPreview } from '../RichText/RichTextEditor.component'
 import { useStyledToast } from '../StyledToast/StyledToast'
@@ -49,7 +50,7 @@ const CitizenRequest = ({ agency }: { agency?: Agency }): JSX.Element => {
     enquiry: Enquiry,
     captchaResponse: string,
   ): Promise<void> => {
-    const mail: Mail = {
+    const mail: EnquiryRequest = {
       agencyId: agency?.id ? [agency?.id] : [],
       enquiry: enquiry,
       captchaResponse: captchaResponse,

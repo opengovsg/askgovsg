@@ -11,7 +11,7 @@ import * as PostService from '../../services/PostService'
 import {
   getTagsByUser,
   GET_TAGS_BY_USER_QUERY_KEY,
-} from '../../services/tag.service'
+} from '../../services/TagService'
 import AskForm, { AskFormSubmission } from './AskForm/AskForm.component'
 import './PostForm.styles.scss'
 

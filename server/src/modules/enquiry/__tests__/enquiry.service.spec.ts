@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize'
 
 import { ModelDef } from '../../../types/sequelize'
 import { Agency } from '~shared/types/base'
-import { Enquiry } from '../../../types/mail-type'
+import { Enquiry } from '~shared/types/api'
 import {
   createTestDatabase,
   getModelDef,

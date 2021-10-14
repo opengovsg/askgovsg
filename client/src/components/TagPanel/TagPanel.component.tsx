@@ -27,7 +27,7 @@ import {
   FETCH_TAGS_QUERY_KEY,
   getTagsUsedByAgency,
   GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
-} from '../../services/tag.service'
+} from '../../services/TagService'
 import { getRedirectURL } from '../../util/urlparser'
 
 const TagPanel = (): ReactElement => {
