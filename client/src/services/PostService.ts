@@ -47,7 +47,7 @@ export const listAnswerablePosts = async ({
   page?: number
   size?: number
 }): Promise<GetPostsDto> => {
-  return ApiClient.get(`${POST_API_BASE}/answerable`, {
+  return ApiClient.get<GetPostsDto>(`${POST_API_BASE}/answerable`, {
     params: { withAnswers, sort, tags, page, size },
   }).then(({ data }) => data)
 }
