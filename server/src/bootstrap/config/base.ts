@@ -10,6 +10,7 @@ export type BaseConfig = {
   nodeEnv: Environment
   serverPort: number
   logoHost: string
+  hostUrl: string
 }
 
 const baseSchema: Schema<BaseConfig> = {
@@ -30,6 +31,12 @@ const baseSchema: Schema<BaseConfig> = {
     format: String,
     default: 'https://s3-ap-southeast-1.amazonaws.com/',
     env: 'LOGOS_HOST',
+  },
+  hostUrl: {
+    doc: 'Host url',
+    format: String,
+    default: 'https://ask.gov.sg',
+    env: 'HOST_URL',
   },
 }
 

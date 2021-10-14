@@ -1,5 +1,7 @@
 import express from 'express'
+import expressSitemapXml from 'express-sitemap-xml'
 import { param } from 'express-validator'
+import { baseConfig } from '../../bootstrap/config/base'
 import { WebController } from './web.controller'
 
 export const routeWeb = ({
@@ -32,6 +34,14 @@ export const routeWeb = ({
     [param('id').isInt().toInt()],
     controller.getQuestionPage,
   )
+
+  /**
+   * Serves sitemap
+   * @route   USE /sitemap.xml
+   * @returns sitemap
+   * @access  Public
+   */
+  router.use(expressSitemapXml(controller.getSitemapUrls, baseConfig.hostUrl))
 
   return router
 }
