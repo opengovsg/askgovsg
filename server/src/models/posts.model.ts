@@ -1,13 +1,8 @@
-import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
+import { Sequelize, DataTypes } from 'sequelize'
 import { ModelDef } from '../types/sequelize'
-import { User } from './users.model'
-import { Tag } from './tags.model'
-import { Post as PostBaseDto, PostStatus, Topic } from '~shared/types/base'
+import { Post, PostStatus, Topic, User, Tag } from '~shared/types/base'
 
-// TODO (#225): Remove this and replace ModelCtor below with ModelDefined
-export interface Post extends Model, PostBaseDto {}
-
-export interface PostTag extends Model {
+export interface PostTag {
   postId: number
   tagId: number
 }
@@ -19,9 +14,9 @@ export const definePostAndPostTag = (
     User,
     Tag,
     Topic,
-  }: { User: ModelCtor<User>; Tag: ModelCtor<Tag>; Topic: ModelDef<Topic> },
-): { Post: ModelCtor<Post>; PostTag: ModelCtor<PostTag> } => {
-  const Post: ModelCtor<Post> = sequelize.define('post', {
+  }: { User: ModelDef<User>; Tag: ModelDef<Tag>; Topic: ModelDef<Topic> },
+): { Post: ModelDef<Post>; PostTag: ModelDef<PostTag> } => {
+  const Post: ModelDef<Post> = sequelize.define('post', {
     title: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -44,7 +39,11 @@ export const definePostAndPostTag = (
     },
   })
 
-  const PostTag: ModelCtor<PostTag> = sequelize.define('posttag', {})
+  // Silence tsc errors since we will be adding the relevant
+  // foreign key relations to PostTag later on
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const PostTag: ModelDef<PostTag> = sequelize.define('posttag', {})
 
   // Define associations for Post
   User.hasMany(Post)
