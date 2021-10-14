@@ -56,6 +56,7 @@ export class WebController {
       })
       if (agency.isOk()) {
         const agencyPage = await this.webService.getAgencyPage(
+          this.index,
           req.params.shortname,
           agency.value.longname,
         )
@@ -111,6 +112,7 @@ export class WebController {
       const answers = await this.answersService.listAnswers(req.params.id)
       if (answers && answers.length > 0) {
         const postPage = await this.webService.getQuestionPage(
+          this.index,
           post.title,
           answers[0].body,
         )
