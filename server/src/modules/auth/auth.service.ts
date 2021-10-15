@@ -153,7 +153,7 @@ export class AuthService {
   isOfficerEmail = (email: string): boolean => this.emailValidator.match(email)
 
   /**
-   * Check if a user is able to create/update/delete a topic
+   * Check if a user is able to update/delete a topic
    * @param userId id of user
    * @param topicId id of topic
    * @returns true if user can create/update/delete topic

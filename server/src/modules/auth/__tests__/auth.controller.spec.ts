@@ -27,6 +27,8 @@ const authService = {
   getDisallowedTagsForUser: jest.fn(),
   verifyUserCanViewPost: jest.fn(),
   isOfficerEmail: jest.fn(),
+  verifyUserCanModifyTopic: jest.fn(),
+  verifyUserInAgency: jest.fn(),
 }
 const userService = {
   createOfficer: jest.fn(),

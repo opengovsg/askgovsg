@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import minimatch from 'minimatch'
 import session from 'express-session'
 import { ModelCtor, Sequelize } from 'sequelize'
+import { ModelDef } from '../../../types/sequelize'
 import supertest, { Session } from 'supertest-session'
 import { passportConfig } from '../../../bootstrap/passport'
 import {
@@ -11,6 +12,7 @@ import {
   Permission as PermissionModel,
   PostTag as PostTagModel,
 } from '../../../models'
+import { Topic } from '~shared/types/base'
 import { createAuthedSession, logoutSession } from '../../../../tests/mock-auth'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { AuthController } from '../auth.controller'
@@ -45,6 +47,7 @@ describe('/auth', () => {
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
   let PostTag: ModelCtor<PostTagModel>
+  let Topic: ModelDef<Topic>
   let mockUser: UserModel
 
   beforeAll(async () => {
@@ -57,7 +60,13 @@ describe('/auth', () => {
       username: VALID_EMAIL,
       displayname: '',
     })
-    authService = new AuthService({ emailValidator, User, Permission, PostTag })
+    authService = new AuthService({
+      emailValidator,
+      User,
+      Permission,
+      PostTag,
+      Topic,
+    })
     authController = new AuthController({
       mailService,
       authService,
