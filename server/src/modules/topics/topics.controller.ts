@@ -1,5 +1,6 @@
 import { validationResult } from 'express-validator'
 import { TopicsService } from './topics.service'
+import { AuthService } from '../auth/auth.service'
 import { Topic } from '~shared/types/base'
 import { UpdateTopicRequestDto } from '../../types/topic-type'
 import { Message } from '../../types/message-type'
@@ -8,9 +9,17 @@ import { ControllerHandler } from '../../types/response-handler'
 import { TopicWithChildRelations } from './topics.service'
 
 export class TopicsController {
+  private authService: Public<AuthService>
   private topicsService: Public<TopicsService>
 
-  constructor({ topicsService }: { topicsService: Public<TopicsService> }) {
+  constructor({
+    authService,
+    topicsService,
+  }: {
+    authService: Public<AuthService>
+    topicsService: Public<TopicsService>
+  }) {
+    this.authService = authService
     this.topicsService = topicsService
   }
 
@@ -67,7 +76,17 @@ export class TopicsController {
         .json({ message: 'User not signed in' })
     }
 
-    // TODO: check permissions here and return 403 error
+    // Check if user and topic share the same agency
+    const userId = req.user?.id
+    const hasPermission = await this.authService.verifyUserInAgency(
+      userId,
+      req.body.agencyId,
+    )
+    if (!hasPermission) {
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: 'You do not have permission to create this topic' })
+    }
 
     return this.topicsService
       .createTopic({
@@ -102,7 +121,17 @@ export class TopicsController {
         .json({ message: 'User not signed in' })
     }
 
-    // TODO: check permissions here and return 403 error
+    // Check if user and topic share the same agency
+    const userId = req.user?.id
+    const hasPermission = await this.authService.verifyUserCanModifyTopic(
+      topicId,
+      userId,
+    )
+    if (!hasPermission) {
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: 'You do not have permission to delete this topic' })
+    }
 
     return this.topicsService
       .deleteTopicById(topicId)
@@ -140,7 +169,17 @@ export class TopicsController {
         .json({ message: 'User not signed in' })
     }
 
-    // TODO: check permissions here and return 403 error
+    // Check if user and topic share the same agency
+    const userId = req.user?.id
+    const hasPermission = await this.authService.verifyUserCanModifyTopic(
+      topicId,
+      userId,
+    )
+    if (!hasPermission) {
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: 'You do not have permission to update this topic' })
+    }
 
     return this.topicsService
       .updateTopicById({

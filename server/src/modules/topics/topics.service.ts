@@ -54,7 +54,9 @@ export class TopicsService {
   /**
    * Find an agency's topics by their agencyid
    * @param agencyId id of agency
-   * @returns nested list of topics
+   * @returns ok(nested list of topics) if successful
+   * @returns err(DatabaseError) if database errors occur while retrieving list of topics
+   * @returns err(MissingTopicError) if agency does not have any topics in the database
    */
 
   listTopicsUsedByAgency = (

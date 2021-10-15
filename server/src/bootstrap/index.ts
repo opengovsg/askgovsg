@@ -105,6 +105,7 @@ const authService = new AuthService({
   User,
   Permission,
   PostTag,
+  Topic,
 })
 const authMiddleware = new AuthMiddleware()
 const mailService = new MailService({
@@ -153,6 +154,7 @@ const apiOptions = {
   topics: {
     controller: new TopicsController({
       topicsService,
+      authService,
     }),
     authMiddleware,
   },
