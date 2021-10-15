@@ -1,11 +1,20 @@
 import { Sequelize, DataTypes } from 'sequelize'
-import { ModelDef } from '../types/sequelize'
+import { ModelDef, Creation } from '../types/sequelize'
 import { Post, PostStatus, Topic, User, Tag } from '~shared/types/base'
 
 export interface PostTag {
   postId: number
   tagId: number
 }
+
+// We explicitly make views optional because Sequelize
+// is lacking in its type support such that it blindly takes your
+// creation attributes as canonical, not inferring defaults as optional
+export type PostCreation = Creation<
+  Omit<Post, 'views'> & {
+    views?: number
+  }
+>
 
 // constructor
 export const definePostAndPostTag = (
@@ -15,8 +24,8 @@ export const definePostAndPostTag = (
     Tag,
     Topic,
   }: { User: ModelDef<User>; Tag: ModelDef<Tag>; Topic: ModelDef<Topic> },
-): { Post: ModelDef<Post>; PostTag: ModelDef<PostTag> } => {
-  const Post: ModelDef<Post> = sequelize.define('post', {
+): { Post: ModelDef<Post, PostCreation>; PostTag: ModelDef<PostTag> } => {
+  const Post: ModelDef<Post, PostCreation> = sequelize.define('post', {
     title: {
       type: DataTypes.STRING,
       allowNull: false,

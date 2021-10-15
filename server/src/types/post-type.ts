@@ -1,4 +1,4 @@
-import { Post } from '../models'
+import { Post } from '~shared/types/base'
 
 export type PostEditType = {
   id: number

@@ -1,35 +1,41 @@
 import { ModelCtor, Sequelize } from 'sequelize/types'
 import {
   Answer as AnswerModel,
-  Post as PostModel,
   Tag as TagModel,
-  PostTag as PostTagModel,
+  PostTag,
   User as UserModel,
   Permission as PermissionModel,
 } from '../../../models'
-import { PermissionType, PostStatus, TagType } from '~shared/types/base'
+import { PermissionType, Post, PostStatus, TagType } from '~shared/types/base'
 import { SortType } from '../../../types/sort-type'
-import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
+import {
+  createTestDatabase,
+  getModel,
+  getModelDef,
+  ModelName,
+} from '../../../util/jest-db'
 import { PostService } from '../post.service'
+import { ModelDef } from '../../../types/sequelize'
+import { PostCreation } from '../../../models/posts.model'
 
 describe('PostService', () => {
   let db: Sequelize
   let Answer: ModelCtor<AnswerModel>
-  let Post: ModelCtor<PostModel>
-  let PostTag: ModelCtor<PostTagModel>
+  let Post: ModelDef<Post, PostCreation>
+  let PostTag: ModelDef<PostTag>
   let Tag: ModelCtor<TagModel>
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
   let postService: PostService
-  const mockPosts: PostModel[] = []
+  const mockPosts: Post[] = []
   let mockUser: UserModel
   let mockTag: TagModel
 
   beforeAll(async () => {
     db = await createTestDatabase()
     Answer = getModel<AnswerModel>(db, ModelName.Answer)
-    Post = getModel<PostModel>(db, ModelName.Post)
-    PostTag = getModel<PostTagModel>(db, ModelName.PostTag)
+    Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
+    PostTag = getModelDef<PostTag>(db, ModelName.PostTag)
     Tag = getModel<TagModel>(db, ModelName.Tag)
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
@@ -48,6 +54,7 @@ describe('PostService', () => {
     for (let title = 1; title <= 20; title++) {
       const mockPost = await Post.create({
         title: title.toString(),
+        description: null,
         status: PostStatus.Public,
         userId: mockUser.id,
       })
