@@ -11,7 +11,7 @@ export const NavBreadcrumb = ({
   navOrder,
 }: {
   navOrder: { text: string; link: string }[]
-}) => {
+}): JSX.Element => {
   return (
     <Breadcrumb spacing="8px" separator={<BiChevronRight color="gray.500" />}>
       {navOrder.map((value, index) => {

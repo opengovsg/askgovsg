@@ -1,4 +1,10 @@
 import { validationResult } from 'express-validator'
+import { StatusCodes } from 'http-status-codes'
+import { Post } from '~shared/types/base'
+import { createLogger } from '../../bootstrap/logging'
+import { Message } from '../../types/message-type'
+import { UpdatePostRequestDto } from '../../types/post-type'
+import { ControllerHandler } from '../../types/response-handler'
 import { SortType } from '../../types/sort-type'
 import { createValidationErrMessage } from '../../util/validation-error'
 import { AuthService } from '../auth/auth.service'
@@ -7,13 +13,6 @@ import {
   PostWithUserTagRelatedPostRelations,
   PostWithUserTagRelations,
 } from './post.service'
-
-import { Message } from '../../types/message-type'
-import { UpdatePostRequestDto } from '../../types/post-type'
-import { createLogger } from '../../bootstrap/logging'
-import { ControllerHandler } from '../../types/response-handler'
-import { Post } from '../../models'
-import { StatusCodes } from 'http-status-codes'
 
 const logger = createLogger(module)
 

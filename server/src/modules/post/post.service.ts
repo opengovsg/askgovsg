@@ -1,7 +1,15 @@
-import Sequelize, { ModelCtor, Op, OrderItem, ProjectionAlias } from 'sequelize'
-import { Answer, Post, PostTag, Tag, User } from '../../models'
-import { PostStatus } from '~shared/types/base'
+import Sequelize, {
+  Model,
+  ModelCtor,
+  Op,
+  OrderItem,
+  ProjectionAlias,
+} from 'sequelize'
+import { PostCreation } from 'src/models/posts.model'
+import { Post, PostStatus } from '~shared/types/base'
+import { Answer, PostTag, Tag, User } from '../../models'
 import { PostEditType } from '../../types/post-type'
+import { ModelDef } from '../../types/sequelize'
 import { SortType } from '../../types/sort-type'
 import { PostWithRelations } from '../auth/auth.service'
 
@@ -9,10 +17,11 @@ export type UserWithTagRelations = {
   getTags: () => Tag[]
 }
 
-export type PostWithUserTagRelations = PostWithRelations & {
-  countAnswers: () => number
-  tags: Tag[]
-}
+export type PostWithUserTagRelations = Model &
+  PostWithRelations & {
+    countAnswers: () => number
+    tags: Tag[]
+  }
 
 export type PostWithUserTagRelatedPostRelations = PostWithRelations &
   PostWithUserTagRelations & {
@@ -21,8 +30,8 @@ export type PostWithUserTagRelatedPostRelations = PostWithRelations &
 
 export class PostService {
   private Answer: ModelCtor<Answer>
-  private Post: ModelCtor<Post>
-  private PostTag: ModelCtor<PostTag>
+  private Post: ModelDef<Post, PostCreation>
+  private PostTag: ModelDef<PostTag>
   private Tag: ModelCtor<Tag>
   private User: ModelCtor<User>
   constructor({
@@ -33,8 +42,8 @@ export class PostService {
     User,
   }: {
     Answer: ModelCtor<Answer>
-    Post: ModelCtor<Post>
-    PostTag: ModelCtor<PostTag>
+    Post: ModelDef<Post, PostCreation>
+    PostTag: ModelDef<PostTag>
     Tag: ModelCtor<Tag>
     User: ModelCtor<User>
   }) {
@@ -489,7 +498,7 @@ export class PostService {
    */
   deletePost = async (id: number): Promise<void> => {
     const update = await this.Post.update(
-      { status: 'ARCHIVED' },
+      { status: PostStatus.Archived },
       { where: { id: id } },
     )
     if (!update) {

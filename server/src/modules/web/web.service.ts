@@ -2,8 +2,7 @@ import cheerio from 'cheerio'
 import { SitemapLeaf } from 'express-sitemap-xml'
 import fs from 'fs'
 import path from 'path'
-import { Agency } from '~shared/types/base'
-import { Post } from '../../models'
+import { Post, Agency } from '~shared/types/base'
 
 const index = fs.readFileSync(
   path.resolve(__dirname, '../../../..', 'client', 'build', 'index.html'),

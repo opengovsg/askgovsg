@@ -6,7 +6,7 @@ const PageTitle = ({
 }: {
   title: string | undefined
   description: string | undefined
-}) => {
+}): JSX.Element => {
   const defaultTitle = 'AskGov'
   const defaultDescription = 'Answers from the Singapore Government'
 

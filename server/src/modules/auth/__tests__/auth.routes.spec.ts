@@ -1,20 +1,26 @@
 import express from 'express'
+import session from 'express-session'
 import { StatusCodes } from 'http-status-codes'
 import minimatch from 'minimatch'
-import session from 'express-session'
 import { ModelCtor, Sequelize } from 'sequelize'
 import { ModelDef } from '../../../types/sequelize'
 import supertest, { Session } from 'supertest-session'
+import { createAuthedSession, logoutSession } from '../../../../tests/mock-auth'
 import { passportConfig } from '../../../bootstrap/passport'
 import {
+  Permission as PermissionModel,
+  PostTag,
   Token as TokenModel,
   User as UserModel,
-  Permission as PermissionModel,
-  PostTag as PostTagModel,
 } from '../../../models'
 import { Topic } from '~shared/types/base'
-import { createAuthedSession, logoutSession } from '../../../../tests/mock-auth'
-import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
+import { ModelDef } from '../../../types/sequelize'
+import {
+  createTestDatabase,
+  getModel,
+  getModelDef,
+  ModelName,
+} from '../../../util/jest-db'
 import { AuthController } from '../auth.controller'
 import { AuthMiddleware } from '../auth.middleware'
 import { routeAuth } from '../auth.routes'
@@ -46,8 +52,8 @@ describe('/auth', () => {
   let Token: ModelCtor<TokenModel>
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
-  let PostTag: ModelCtor<PostTagModel>
   let Topic: ModelDef<Topic>
+  let PostTag: ModelDef<PostTag>
   let mockUser: UserModel
 
   beforeAll(async () => {
@@ -55,7 +61,7 @@ describe('/auth', () => {
     Token = getModel<TokenModel>(db, ModelName.Token)
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
-    PostTag = getModel<PostTagModel>(db, ModelName.PostTag)
+    PostTag = getModelDef<PostTag>(db, ModelName.PostTag)
     mockUser = await User.create({
       username: VALID_EMAIL,
       displayname: '',
