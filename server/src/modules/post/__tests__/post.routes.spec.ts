@@ -5,7 +5,13 @@ import { Sequelize } from 'sequelize'
 import { ModelCtor } from 'sequelize/types'
 import { ModelDef } from '../../../types/sequelize'
 import supertest from 'supertest'
-import { PermissionType, Post, PostStatus, TagType, Topic } from '~shared/types/base'
+import {
+  PermissionType,
+  Post,
+  PostStatus,
+  TagType,
+  Topic,
+} from '~shared/types/base'
 import {
   Answer as AnswerModel,
   Permission as PermissionModel,
@@ -15,7 +21,6 @@ import {
 } from '../../../models'
 import { PostCreation } from '../../../models/posts.model'
 import { ControllerHandler } from '../../../types/response-handler'
-import { ModelDef } from '../../../types/sequelize'
 import { SortType } from '../../../types/sort-type'
 import {
   createTestDatabase,

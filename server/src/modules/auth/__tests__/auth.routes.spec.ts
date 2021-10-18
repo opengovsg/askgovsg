@@ -14,7 +14,6 @@ import {
   User as UserModel,
 } from '../../../models'
 import { Topic } from '~shared/types/base'
-import { ModelDef } from '../../../types/sequelize'
 import {
   createTestDatabase,
   getModel,
