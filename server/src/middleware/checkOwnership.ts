@@ -5,8 +5,8 @@ import {
   User as UserModel,
 } from '../bootstrap/sequelize'
 import { Request, Response, NextFunction } from 'express'
-import { Answer, Post, Tag } from '../models'
-import { TagType } from '~shared/types/base'
+import { Answer, Tag } from '../models'
+import { TagType, Post } from '~shared/types/base'
 import { StatusCodes } from 'http-status-codes'
 
 type AnswerWithRelations = Answer & {

@@ -4,18 +4,19 @@ import {
   Agency as AgencyModel,
   Answer as AnswerModel,
 } from '../../bootstrap/sequelize'
-import { PostStatus } from '~shared/types/base'
-import { Answer, Post } from '../../models'
-import { FindOptions } from 'sequelize/types'
+import { PostStatus, Post } from '~shared/types/base'
+import { Answer } from '../../models'
+import { FindOptions, Model } from 'sequelize'
 
 type AnswerWithRelations = Answer & {
   postId: number
   userId: number
 }
 
-type PostWithRelations = Post & {
-  getAnswers: (options: FindOptions) => AnswerWithRelations[]
-}
+type PostWithRelations = Model &
+  Post & {
+    getAnswers: (options: FindOptions) => AnswerWithRelations[]
+  }
 
 type AnswerJSON = Pick<Answer, 'body'> & {
   user: {

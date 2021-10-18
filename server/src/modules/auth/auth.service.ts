@@ -1,17 +1,14 @@
 import minimatch from 'minimatch'
 
-import { PermissionType, PostStatus } from '~shared/types/base'
-import { Permission, Post, PostTag, Tag, User } from '../../models'
+import { PermissionType, Post, PostStatus } from '~shared/types/base'
+import { Permission, PostTag, Tag, User } from '../../models'
 import { createLogger } from '../../bootstrap/logging'
 import { ModelCtor } from 'sequelize/types'
+import { ModelDef } from 'src/types/sequelize'
 
 const logger = createLogger(module)
 
 export type PermissionWithRelations = Permission & {
-  tagId: number
-}
-
-export type PostTagWithRelations = PostTag & {
   tagId: number
 }
 
@@ -22,7 +19,7 @@ export type PostWithRelations = Post & {
 export class AuthService {
   private emailValidator
   private User: ModelCtor<User>
-  private PostTag: ModelCtor<PostTag>
+  private PostTag: ModelDef<PostTag>
   private Permission: ModelCtor<Permission>
 
   constructor({
@@ -33,7 +30,7 @@ export class AuthService {
   }: {
     emailValidator: minimatch.IMinimatch
     User: ModelCtor<User>
-    PostTag: ModelCtor<PostTag>
+    PostTag: ModelDef<PostTag>
     Permission: ModelCtor<Permission>
   }) {
     this.emailValidator = emailValidator
@@ -77,9 +74,9 @@ export class AuthService {
     const userTags = (await this.Permission.findAll({
       where: { userId },
     })) as PermissionWithRelations[]
-    const postTags = (await this.PostTag.findAll({
+    const postTags = await this.PostTag.findAll({
       where: { postId },
-    })) as PostTagWithRelations[]
+    })
 
     return postTags.every((postTag) => {
       const permission = userTags.find(
