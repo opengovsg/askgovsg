@@ -25,16 +25,16 @@ export class TopicsController {
 
   /**
    * Lists all topics in an agency
-   * @param id agencyId
+   * @param agencyId agencyId
    * @returns 200 with topics
    * @returns 404 if topics are not found
    * @returns 500 if database error
    */
   listTopicsUsedByAgency: ControllerHandler<
-    { id: number },
+    { agencyId: number },
     TopicWithChildRelations[] | Message
   > = async (req, res) => {
-    const agencyId = Number(req.params.id)
+    const agencyId = Number(req.params.agencyId)
     return this.topicsService
       .listTopicsUsedByAgency(agencyId)
       .map((data) => res.status(StatusCodes.OK).json(data))

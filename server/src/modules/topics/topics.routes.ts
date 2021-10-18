@@ -1,6 +1,6 @@
 import { AuthMiddleware } from '../auth/auth.middleware'
 import express from 'express'
-import { check } from 'express-validator'
+import { check, param } from 'express-validator'
 import { TopicsController } from './topics.controller'
 
 export const routeTopics = ({
@@ -15,10 +15,14 @@ export const routeTopics = ({
   /**
    * Lists all topics corresponding to an agency
    * @route   GET /api/topics/agency/:agencyId
-   * @returns 200 with list of topics
+   * @returns 200 with list of nested topics
    * @returns 400 with database error
    */
-  router.get('/agency/:agencyId([0-9]+$)', controller.listTopicsUsedByAgency)
+  router.get(
+    '/:agencyId',
+    param('agencyId').isInt().toInt(),
+    controller.listTopicsUsedByAgency,
+  )
 
   /**
    * Create a new topic

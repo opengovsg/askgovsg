@@ -7,8 +7,12 @@ import { DatabaseError } from '../core/core.errors'
 
 const logger = createLogger(module)
 
+// export type TopicWithChildRelations = Topic & {
+//   children: Topic[]
+// }
+
 export type TopicWithChildRelations = Topic & {
-  children: Topic[]
+  children?: TopicWithChildRelations[]
 }
 
 export class TopicsService {
@@ -83,7 +87,7 @@ export class TopicsService {
         return new DatabaseError()
       },
     ).andThen((agencyTopics) => {
-      if (!agencyTopics) {
+      if (agencyTopics.length === 0) {
         return errAsync(new MissingTopicError())
       }
       const hashTable = Object.create(null)
