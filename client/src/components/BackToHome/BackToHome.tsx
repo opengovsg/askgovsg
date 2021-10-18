@@ -6,7 +6,7 @@ export const BackToHome = ({
   mainPageName,
 }: {
   mainPageName: string | null
-}) => {
+}): JSX.Element => {
   return (
     <Link as={RouterLink} to={mainPageName ? `/agency/${mainPageName}` : '/'}>
       <Center color="secondary.600">
