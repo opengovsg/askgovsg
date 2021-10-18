@@ -1,6 +1,6 @@
 import minimatch from 'minimatch'
 
-import { PermissionType, Post, PostStatus } from '~shared/types/base'
+import { PermissionType, Post, PostStatus, Topic } from '~shared/types/base'
 import { Permission, PostTag, Tag, User } from '../../models'
 import { createLogger } from '../../bootstrap/logging'
 import { ModelCtor } from 'sequelize/types'
@@ -21,22 +21,26 @@ export class AuthService {
   private User: ModelCtor<User>
   private PostTag: ModelDef<PostTag>
   private Permission: ModelCtor<Permission>
+  private Topic: ModelDef<Topic>
 
   constructor({
     emailValidator,
     User,
     PostTag,
     Permission,
+    Topic,
   }: {
     emailValidator: minimatch.IMinimatch
     User: ModelCtor<User>
     PostTag: ModelDef<PostTag>
     Permission: ModelCtor<Permission>
+    Topic: ModelDef<Topic>
   }) {
     this.emailValidator = emailValidator
     this.User = User
     this.PostTag = PostTag
     this.Permission = Permission
+    this.Topic = Topic
   }
 
   /**
@@ -143,4 +147,38 @@ export class AuthService {
    * @returns true if user has validated email
    */
   isOfficerEmail = (email: string): boolean => this.emailValidator.match(email)
+
+  /**
+   * Check if a user is able to update/delete a topic
+   * @param userId id of user
+   * @param topicId id of topic
+   * @returns true if user can create/update/delete topic
+   */
+  verifyUserCanModifyTopic = async (
+    topicId: number,
+    userId: number,
+  ): Promise<boolean> => {
+    const topic = await this.Topic.findOne({ where: { id: topicId } })
+    const topicAgency = topic?.agencyId
+    const user = await this.User.findOne({ where: { id: userId } })
+    const userAgency = user?.agencyId
+
+    return topicAgency === userAgency
+  }
+
+  /**
+   * Check if a user belongs to an agency
+   * @param userId id of user
+   * @param agencyId id of agency
+   * @returns true if user belongs to specified agency
+   */
+  verifyUserInAgency = async (
+    userId: number,
+    agencyId: number,
+  ): Promise<boolean> => {
+    const user = await this.User.findOne({ where: { id: userId } })
+    const userAgency = user?.agencyId
+
+    return userAgency === agencyId
+  }
 }

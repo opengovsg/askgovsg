@@ -3,6 +3,7 @@ import session from 'express-session'
 import { StatusCodes } from 'http-status-codes'
 import minimatch from 'minimatch'
 import { ModelCtor, Sequelize } from 'sequelize'
+import { ModelDef } from '../../../types/sequelize'
 import supertest, { Session } from 'supertest-session'
 import { createAuthedSession, logoutSession } from '../../../../tests/mock-auth'
 import { passportConfig } from '../../../bootstrap/passport'
@@ -12,7 +13,7 @@ import {
   Token as TokenModel,
   User as UserModel,
 } from '../../../models'
-import { ModelDef } from '../../../types/sequelize'
+import { Topic } from '~shared/types/base'
 import {
   createTestDatabase,
   getModel,
@@ -50,6 +51,7 @@ describe('/auth', () => {
   let Token: ModelCtor<TokenModel>
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
+  let Topic: ModelDef<Topic>
   let PostTag: ModelDef<PostTag>
   let mockUser: UserModel
 
@@ -63,7 +65,13 @@ describe('/auth', () => {
       username: VALID_EMAIL,
       displayname: '',
     })
-    authService = new AuthService({ emailValidator, User, Permission, PostTag })
+    authService = new AuthService({
+      emailValidator,
+      User,
+      Permission,
+      PostTag,
+      Topic,
+    })
     authController = new AuthController({
       mailService,
       authService,

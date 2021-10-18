@@ -13,6 +13,8 @@ describe('PostController', () => {
     getDisallowedTagsForUser: jest.fn(),
     verifyUserCanViewPost: jest.fn(),
     isOfficerEmail: jest.fn(),
+    verifyUserCanModifyTopic: jest.fn(),
+    verifyUserInAgency: jest.fn(),
   }
   const postService = {
     listAnswerablePosts: jest.fn(),

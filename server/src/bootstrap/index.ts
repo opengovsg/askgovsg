@@ -26,6 +26,8 @@ import { PostController } from '../modules/post/post.controller'
 import { PostService } from '../modules/post/post.service'
 import { TagsController } from '../modules/tags/tags.controller'
 import { TagsService } from '../modules/tags/tags.service'
+import { TopicsController } from '../modules/topics/topics.controller'
+import { TopicsService } from '../modules/topics/topics.service'
 import { UserService } from '../modules/user/user.service'
 import { WebController } from '../modules/web/web.controller'
 import { routeWeb } from '../modules/web/web.routes'
@@ -56,6 +58,7 @@ import {
   Tag,
   Token,
   User,
+  Topic,
 } from './sequelize'
 import sessionMiddleware from './session'
 
@@ -102,6 +105,7 @@ const authService = new AuthService({
   User,
   Permission,
   PostTag,
+  Topic,
 })
 const authMiddleware = new AuthMiddleware()
 const mailService = new MailService({
@@ -112,9 +116,13 @@ const postService = new PostService({ Answer, Post, PostTag, Tag, User })
 const enquiryService = new EnquiryService({ Agency, mailService })
 const recaptchaService = new RecaptchaService({ axios, ...recaptchaConfig })
 const answersService = new AnswersService()
+const topicsService = new TopicsService({ Topic })
 
 const apiOptions = {
-  agency: new AgencyController({ agencyService }),
+  agency: {
+    controller: new AgencyController({ agencyService }),
+    topicsController: new TopicsController({ topicsService, authService }),
+  },
   answers: {
     controller: new AnswersController({
       authService,
@@ -143,6 +151,13 @@ const apiOptions = {
     controller: new TagsController({
       authService,
       tagsService: new TagsService(),
+    }),
+    authMiddleware,
+  },
+  topics: {
+    controller: new TopicsController({
+      topicsService,
+      authService,
     }),
     authMiddleware,
   },

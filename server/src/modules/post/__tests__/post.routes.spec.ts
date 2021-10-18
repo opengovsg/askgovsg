@@ -3,8 +3,15 @@ import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { Sequelize } from 'sequelize'
 import { ModelCtor } from 'sequelize/types'
+import { ModelDef } from '../../../types/sequelize'
 import supertest from 'supertest'
-import { PermissionType, Post, PostStatus, TagType } from '~shared/types/base'
+import {
+  PermissionType,
+  Post,
+  PostStatus,
+  TagType,
+  Topic,
+} from '~shared/types/base'
 import {
   Answer as AnswerModel,
   Permission as PermissionModel,
@@ -14,7 +21,6 @@ import {
 } from '../../../models'
 import { PostCreation } from '../../../models/posts.model'
 import { ControllerHandler } from '../../../types/response-handler'
-import { ModelDef } from '../../../types/sequelize'
 import { SortType } from '../../../types/sort-type'
 import {
   createTestDatabase,
@@ -34,6 +40,7 @@ describe('/posts', () => {
   let Tag: ModelCtor<TagModel>
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
+  let Topic: ModelDef<Topic>
 
   let postService: PostService
   let controller: PostController
@@ -49,6 +56,8 @@ describe('/posts', () => {
     getDisallowedTagsForUser: jest.fn(),
     verifyUserCanViewPost: jest.fn(),
     isOfficerEmail: jest.fn(),
+    verifyUserCanModifyTopic: jest.fn(),
+    verifyUserInAgency: jest.fn(),
   }
 
   const authenticate: ControllerHandler = (req, res, next) => {
