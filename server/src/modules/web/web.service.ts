@@ -1,12 +1,6 @@
 import cheerio from 'cheerio'
 import { SitemapLeaf } from 'express-sitemap-xml'
-import fs from 'fs'
-import path from 'path'
 import { Post, Agency } from '~shared/types/base'
-
-const index = fs.readFileSync(
-  path.resolve(__dirname, '../../../..', 'client', 'build', 'index.html'),
-)
 
 export class WebService {
   /**
@@ -16,9 +10,10 @@ export class WebService {
    * @returns html of agency page
    */
   getAgencyPage = async (
+    index: Buffer,
     shortname: string,
     longname: string,
-  ): Promise<string | undefined> => {
+  ): Promise<string> => {
     const $ = cheerio.load(index)
 
     $('title').text(`${shortname.toUpperCase()} FAQ - AskGov`)
@@ -45,9 +40,10 @@ export class WebService {
    * @returns html of post page
    */
   getQuestionPage = async (
+    index: Buffer,
     title: string,
     description: string,
-  ): Promise<string | undefined> => {
+  ): Promise<string> => {
     const $ = cheerio.load(index)
 
     $('meta[property="og:type"]').attr('content', 'article')

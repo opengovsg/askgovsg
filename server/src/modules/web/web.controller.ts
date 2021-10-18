@@ -1,5 +1,6 @@
 import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
+import sanitizeHtml from 'sanitize-html'
 import { createLogger } from '../../bootstrap/logging'
 import { ControllerHandler } from '../../types/response-handler'
 import { SortType } from '../../types/sort-type'
@@ -56,6 +57,7 @@ export class WebController {
       })
       if (agency.isOk()) {
         const agencyPage = await this.webService.getAgencyPage(
+          this.index,
           req.params.shortname,
           agency.value.longname,
         )
@@ -110,18 +112,23 @@ export class WebController {
       const post = await this.postService.getSinglePost(req.params.id, 0, false)
       const answers = await this.answersService.listAnswers(req.params.id)
       if (answers && answers.length > 0) {
-        const postPage = await this.webService.getQuestionPage(
+        const answerBody = sanitizeHtml(answers[0].body, {
+          allowedTags: [],
+          allowedAttributes: {},
+        })
+        const questionPage = await this.webService.getQuestionPage(
+          this.index,
           post.title,
-          answers[0].body,
+          answerBody,
         )
-        return res.status(StatusCodes.OK).send(postPage)
+        return res.status(StatusCodes.OK).send(questionPage)
       } else
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
     } catch (error) {
       logger.error({
         message: 'Error while getting post page',
         meta: {
-          function: 'getPostPage',
+          function: 'getQuestionPage',
           shortname: req.params.id,
         },
         error,
