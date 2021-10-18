@@ -13,18 +13,6 @@ export const routeTopics = ({
   const router = express.Router()
 
   /**
-   * Lists all topics corresponding to an agency
-   * @route   GET /api/topics/agency/:agencyId
-   * @returns 200 with list of nested topics
-   * @returns 400 with database error
-   */
-  router.get(
-    '/:agencyId',
-    param('agencyId').isInt().toInt(),
-    controller.listTopicsUsedByAgency,
-  )
-
-  /**
    * Create a new topic
    * @route  POST /api/topics
    * @return 200 if topic is created

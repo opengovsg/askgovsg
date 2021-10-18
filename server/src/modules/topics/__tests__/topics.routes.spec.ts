@@ -108,12 +108,10 @@ describe('/topics', () => {
     await db.close()
   })
 
-  describe(`/:agencyId`, () => {
-    it('returns 200 and nested list of posts corresponding to an agency on request', async () => {
-      const { id } = mockAgency
-      const response = await request.get(`${path}/${id}`)
-      expect(response.status).toEqual(StatusCodes.OK)
-      expect(response.body.length).toStrictEqual(mockTopics.length)
+  //TODO: Add unit tests for create/update/delete topic
+  describe(`/`, () => {
+    it('returns 200 if topic is successfully created', async () => {
+      return
     })
   })
 })

@@ -119,7 +119,10 @@ const answersService = new AnswersService()
 const topicsService = new TopicsService({ Topic })
 
 const apiOptions = {
-  agency: new AgencyController({ agencyService }),
+  agency: {
+    controller: new AgencyController({ agencyService }),
+    topicsController: new TopicsController({ topicsService, authService }),
+  },
   answers: {
     controller: new AnswersController({
       authService,
