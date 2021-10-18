@@ -106,4 +106,6 @@ describe('TopicsController', () => {
       )
     })
   })
+
+  //TODO: add remaining unit tests for createTopic, deleteTopic, updateTopic
 })

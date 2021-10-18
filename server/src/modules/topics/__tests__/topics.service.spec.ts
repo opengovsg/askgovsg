@@ -99,4 +99,6 @@ describe('TopicsService', () => {
       expect(actualTopic._unsafeUnwrapErr()).toEqual(new MissingTopicError())
     })
   })
+
+  //TODO: add remaining unit tests for createTopic, deleteTopicById, updateTopicById
 })
