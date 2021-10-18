@@ -16,7 +16,6 @@ import { useQuery } from 'react-query'
 import { useLocation, useHistory, useParams } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
-import OfficerDashboardComponent from '../../components/OfficerDashboard/OfficerDashboard.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import PostQuestionButton from '../../components/PostQuestionButton/PostQuestionButton.component'
 import QuestionsListComponent from '../../components/QuestionsList/QuestionsList.component'
@@ -29,7 +28,7 @@ import {
   FETCH_TAGS_QUERY_KEY,
   getTagsUsedByAgency,
   GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
-} from '../../services/tag.service'
+} from '../../services/TagService'
 import {
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
@@ -238,36 +237,29 @@ const HomePage = ({ match }) => {
             </Stack>
           </Flex>
           {/* List of Posts depending on whether user is citizen or agency officer */}
-          {isAuthenticatedOfficer ? (
-            <OfficerDashboardComponent
-              sort={sortState.value}
-              tags={agencyAndTags}
-              pageSize={50}
-            />
-          ) : (
-            <QuestionsListComponent
-              sort={sortState.value}
-              agency={match.params.agency}
-              tags={queryState}
-              pageSize={hasTagsKey ? 30 : 10}
-              footerControl={
-                hasTagsKey ? undefined : (
-                  <Button
-                    mt={{ base: '40px', sm: '48px', xl: '58px' }}
-                    variant="outline"
-                    color="primary.500"
-                    borderColor="primary.500"
-                    onClick={() => {
-                      window.scrollTo(0, 0)
-                      history.push('?tags=')
-                    }}
-                  >
-                    <Text textStyle="subhead-1">View all questions</Text>
-                  </Button>
-                )
-              }
-            />
-          )}
+          <QuestionsListComponent
+            sort={sortState.value}
+            agency={match.params.agency}
+            tags={queryState}
+            pageSize={isAuthenticatedOfficer ? 50 : hasTagsKey ? 30 : 10}
+            listAnswerable={isAuthenticatedOfficer}
+            footerControl={
+              isAuthenticatedOfficer || hasTagsKey ? undefined : (
+                <Button
+                  mt={{ base: '40px', sm: '48px', xl: '58px' }}
+                  variant="outline"
+                  color="primary.500"
+                  borderColor="primary.500"
+                  onClick={() => {
+                    window.scrollTo(0, 0)
+                    history.push('?tags=')
+                  }}
+                >
+                  <Text textStyle="subhead-1">View all questions</Text>
+                </Button>
+              )
+            }
+          />
         </Box>
       </Flex>
       <Spacer />

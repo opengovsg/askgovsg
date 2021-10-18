@@ -1,6 +1,6 @@
 import { Transporter } from 'nodemailer'
 import { renderLoginOtpBody } from './mail.util'
-import { Enquiry } from '../../types/mail-type'
+import { Enquiry } from '~shared/types/api'
 export class MailService {
   private mailFromEmail: string
   private transport: Pick<Transporter, 'sendMail'>

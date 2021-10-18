@@ -1,8 +1,7 @@
 import { createLogger } from '../../bootstrap/logging'
 import { ControllerHandler } from '../../types/response-handler'
-import { Enquiry } from '../../types/mail-type'
 import { EnquiryService } from './enquiry.service'
-import { Message } from '../../types/message-type'
+import { EnquiryRequest, ErrorDto } from '~shared/types/api'
 import { RecaptchaService } from '../../services/recaptcha/recaptcha.service'
 import { mapRouteError } from '../../services/recaptcha/recaptcha.util'
 import { StatusCodes } from 'http-status-codes'
@@ -30,15 +29,10 @@ export class EnquiryController {
    * @returns 400 if error while sending mail
    * @returns 500 if unable to match captcha error
    */
-  postEnquiry: ControllerHandler<
-    unknown,
-    Message,
-    {
-      agencyId: number[]
-      enquiry: Enquiry
-      captchaResponse: string
-    }
-  > = async (req, res) => {
+  postEnquiry: ControllerHandler<unknown, ErrorDto, EnquiryRequest> = async (
+    req,
+    res,
+  ) => {
     // Check Captcha
     const captchaResult = await this.recaptchaService.verifyCaptchaResponse(
       req.body.captchaResponse,

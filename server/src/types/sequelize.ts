@@ -1,6 +1,5 @@
 import { Model, ModelCtor } from 'sequelize'
 
-export type ModelDef<
-  M,
-  C = Omit<M, 'createdAt' | 'updatedAt' | 'id'>,
-> = ModelCtor<Model<M, C> & M>
+export type Creation<M> = Omit<M, 'createdAt' | 'updatedAt' | 'id'>
+
+export type ModelDef<M, C = Creation<M>> = ModelCtor<Model<M, C> & M>

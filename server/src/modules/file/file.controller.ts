@@ -1,4 +1,3 @@
-import { Request, Response } from 'express'
 import { ControllerHandler } from '../../types/response-handler'
 import { createLogger } from '../../bootstrap/logging'
 import { FileService } from './file.service'

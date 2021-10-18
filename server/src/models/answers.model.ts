@@ -1,7 +1,8 @@
 import { Sequelize, DataTypes, Model, ModelCtor } from 'sequelize'
-import { Answer as AnswerBaseDto } from '~shared/types/base'
+import { ModelDef } from '../types/sequelize'
+import { Post, Answer as AnswerBaseDto } from '~shared/types/base'
 import { User } from './users.model'
-import { Post } from './posts.model'
+import { PostCreation } from './posts.model'
 
 // TODO (#225): Remove this and replace ModelCtor below with ModelDefined
 export interface Answer extends Model, AnswerBaseDto {}
@@ -9,7 +10,7 @@ export interface Answer extends Model, AnswerBaseDto {}
 // constructor
 export const defineAnswer = (
   sequelize: Sequelize,
-  { User, Post }: { User: ModelCtor<User>; Post: ModelCtor<Post> },
+  { User, Post }: { User: ModelCtor<User>; Post: ModelDef<Post, PostCreation> },
 ): ModelCtor<Answer> => {
   const Answer: ModelCtor<Answer> = sequelize.define('answer', {
     body: {

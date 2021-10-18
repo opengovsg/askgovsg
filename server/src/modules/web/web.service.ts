@@ -1,6 +1,8 @@
 import cheerio from 'cheerio'
+import { SitemapLeaf } from 'express-sitemap-xml'
 import fs from 'fs'
 import path from 'path'
+import { Post, Agency } from '~shared/types/base'
 
 const index = fs.readFileSync(
   path.resolve(__dirname, '../../../..', 'client', 'build', 'index.html'),
@@ -57,5 +59,38 @@ export class WebService {
     $('meta[property="og:description"]').attr('content', `${description}`)
 
     return $.html()
+  }
+
+  /**
+   * Returns list of sitemap urls
+   * @param allPosts list of public posts
+   * @param allAgencies list of agencies
+   * @returns list of sitemap urls
+   */
+  getSitemapUrls = async (
+    allPosts: Post[],
+    allAgencies: Agency[],
+  ): Promise<SitemapLeaf[]> => {
+    const visibleStaticPaths = ['/', '/terms', '/privacy']
+    const sitemapLeaves: SitemapLeaf[] = []
+    for (const path of visibleStaticPaths) {
+      sitemapLeaves.push({
+        url: path,
+        lastMod: true,
+      })
+    }
+    for (const post of allPosts) {
+      sitemapLeaves.push({
+        url: `/questions/${post.id}`,
+        lastMod: true,
+      })
+    }
+    for (const agency of allAgencies) {
+      sitemapLeaves.push({
+        url: `/agency/${agency.shortname}`,
+        lastMod: true,
+      })
+    }
+    return sitemapLeaves
   }
 }

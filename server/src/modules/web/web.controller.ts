@@ -2,6 +2,7 @@ import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
 import { createLogger } from '../../bootstrap/logging'
 import { ControllerHandler } from '../../types/response-handler'
+import { SortType } from '../../types/sort-type'
 import { AgencyService } from '../agency/agency.service'
 import { AnswersService } from '../answers/answers.service'
 import { PostService } from '../post/post.service'
@@ -70,11 +71,10 @@ export class WebController {
           },
           error: agency.error,
         })
-        if (agency.error.statusCode === StatusCodes.NOT_FOUND) {
+        if (agency.error.statusCode === StatusCodes.NOT_FOUND)
           return res.status(StatusCodes.NOT_FOUND).redirect('/not-found')
-        } else {
+        else
           return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
-        }
       }
     } catch (error) {
       logger.error({
@@ -115,9 +115,8 @@ export class WebController {
           answers[0].body,
         )
         return res.status(StatusCodes.OK).send(postPage)
-      } else {
+      } else
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
-      }
     } catch (error) {
       logger.error({
         message: 'Error while getting post page',
@@ -128,6 +127,36 @@ export class WebController {
         error,
       })
       return res.status(StatusCodes.NOT_FOUND).redirect('/not-found')
+    }
+  }
+
+  /**
+   * Gets sitemap urls
+   * @returns list of sitemap urls
+   */
+  getSitemapUrls = async () => {
+    try {
+      const { posts: allPosts } = await this.postService.listPosts({
+        sort: SortType.Top,
+        tags: '',
+      })
+      const allAgencyShortnames =
+        await this.agencyService.listAgencyShortnames()
+      if (allAgencyShortnames.isOk())
+        return await this.webService.getSitemapUrls(
+          allPosts,
+          allAgencyShortnames.value,
+        )
+      else return []
+    } catch (error) {
+      logger.error({
+        message: 'Error while getting sitemap urls',
+        meta: {
+          function: 'getSitemapUrls',
+        },
+        error,
+      })
+      return []
     }
   }
 }

@@ -81,4 +81,25 @@ export class AgencyService {
       return okAsync(agency)
     })
   }
+
+  listAgencyShortnames = (): ResultAsync<Agency[], DatabaseError> => {
+    return ResultAsync.fromPromise(
+      this.Agency.findAll({ attributes: ['shortname'] }),
+      (error) => {
+        logger.error({
+          message: 'Database error while retrieving all agency shortnames',
+          meta: {
+            function: 'listAgencyShortnames',
+          },
+          error,
+        })
+        return new DatabaseError()
+      },
+    ).andThen((agencyShortnames) => {
+      if (!agencyShortnames) {
+        return errAsync(new MissingAgencyError())
+      }
+      return okAsync(agencyShortnames)
+    })
+  }
 }

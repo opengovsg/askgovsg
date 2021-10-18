@@ -4,18 +4,24 @@ import { StatusCodes } from 'http-status-codes'
 import { Sequelize } from 'sequelize'
 import { ModelCtor } from 'sequelize/types'
 import supertest from 'supertest'
+import { PermissionType, Post, PostStatus, TagType } from '~shared/types/base'
 import {
   Answer as AnswerModel,
   Permission as PermissionModel,
-  Post as PostModel,
-  PostTag as PostTagModel,
+  PostTag,
   Tag as TagModel,
   User as UserModel,
 } from '../../../models'
-import { PermissionType, PostStatus, TagType } from '~shared/types/base'
+import { PostCreation } from '../../../models/posts.model'
 import { ControllerHandler } from '../../../types/response-handler'
+import { ModelDef } from '../../../types/sequelize'
 import { SortType } from '../../../types/sort-type'
-import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
+import {
+  createTestDatabase,
+  getModel,
+  getModelDef,
+  ModelName,
+} from '../../../util/jest-db'
 import { PostController } from '../post.controller'
 import { routePosts } from '../post.routes'
 import { PostService } from '../post.service'
@@ -23,8 +29,8 @@ import { PostService } from '../post.service'
 describe('/posts', () => {
   let db: Sequelize
   let Answer: ModelCtor<AnswerModel>
-  let Post: ModelCtor<PostModel>
-  let PostTag: ModelCtor<PostTagModel>
+  let Post: ModelDef<Post, PostCreation>
+  let PostTag: ModelDef<PostTag>
   let Tag: ModelCtor<TagModel>
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
@@ -32,7 +38,7 @@ describe('/posts', () => {
   let postService: PostService
   let controller: PostController
 
-  const mockPosts: PostModel[] = []
+  const mockPosts: Post[] = []
   let mockUser: UserModel
   let mockTag: TagModel
 
@@ -64,8 +70,8 @@ describe('/posts', () => {
   beforeAll(async () => {
     db = await createTestDatabase()
     Answer = getModel<AnswerModel>(db, ModelName.Answer)
-    Post = getModel<PostModel>(db, ModelName.Post)
-    PostTag = getModel<PostTagModel>(db, ModelName.PostTag)
+    Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
+    PostTag = getModelDef<PostTag>(db, ModelName.PostTag)
     Tag = getModel<TagModel>(db, ModelName.Tag)
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
@@ -84,6 +90,7 @@ describe('/posts', () => {
     for (let title = 1; title <= 20; title++) {
       const mockPost = await Post.create({
         title: title.toString(),
+        description: null,
         status: PostStatus.Public,
         userId: mockUser.id,
       })

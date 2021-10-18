@@ -1,6 +1,6 @@
 import minimatch from 'minimatch'
 import { Model, ModelCtor, Sequelize } from 'sequelize'
-import { ModelDef } from '../types/sequelize'
+import { Creation, ModelDef } from '../types/sequelize'
 import {
   defineAgency,
   defineAnswer,
@@ -56,9 +56,9 @@ export function getModel<T extends Model>(
   return sequelize.models[modelName] as ModelCtor<T>
 }
 
-export function getModelDef<T>(
+export function getModelDef<T, C = Creation<T>>(
   sequelize: Sequelize,
   modelName: ModelName,
-): ModelDef<T> {
-  return sequelize.models[modelName] as ModelDef<T>
+): ModelDef<T, C> {
+  return sequelize.models[modelName] as ModelDef<T, C>
 }
