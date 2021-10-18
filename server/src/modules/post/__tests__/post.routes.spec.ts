@@ -11,6 +11,7 @@ import {
   Post,
   PostStatus,
   TagType,
+  Topic,
 } from '~shared/types/base'
 import {
   Answer as AnswerModel,
@@ -42,6 +43,7 @@ describe('/posts', () => {
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
   let Agency: ModelDef<Agency>
+  let Topic: ModelDef<Topic>
 
   let userService: UserService
   let postService: PostService
@@ -87,7 +89,7 @@ describe('/posts', () => {
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
     userService = new UserService({ User, Tag, Agency })
-    postService = new PostService({ Answer, Post, PostTag, Tag, User })
+    postService = new PostService({ Answer, Post, PostTag, Tag, User, Topic })
     const { id: agencyId } = await Agency.create({
       shortname: 'was',
       longname: 'Work Allocation Singapore',
@@ -116,6 +118,7 @@ describe('/posts', () => {
         status: PostStatus.Public,
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
+        topicId: null,
       })
       mockPosts.push(mockPost)
       await PostTag.create({ postId: mockPost.id, tagId: mockTag.id })

@@ -12,6 +12,7 @@ import {
   Post,
   PostStatus,
   TagType,
+  Topic,
 } from '~shared/types/base'
 import { SortType } from '../../../types/sort-type'
 import {
@@ -33,6 +34,7 @@ describe('PostService', () => {
   let Tag: ModelCtor<TagModel>
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
+  let Topic: ModelDef<Topic>
   let postService: PostService
   const mockPosts: Post[] = []
   let mockUser: UserModel
@@ -47,7 +49,8 @@ describe('PostService', () => {
     Tag = getModel<TagModel>(db, ModelName.Tag)
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
-    postService = new PostService({ Answer, Post, PostTag, Tag, User })
+    Topic = getModelDef<Topic>(db, ModelName.Topic)
+    postService = new PostService({ Answer, Post, PostTag, Tag, User, Topic })
     const { id: agencyId } = await Agency.create({
       shortname: 'was',
       longname: 'Work Allocation Singapore',

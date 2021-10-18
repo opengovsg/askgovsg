@@ -60,7 +60,7 @@ export const routePosts = ({
   )
 
   /**
-   * Get a single post and all the tags and users associated with it
+   * Get a single post and all the tags, topic and users associated with it
    * @route  GET /api/posts/:id
    * @return 200 with post
    * @return 403 if user does not have permission to access post

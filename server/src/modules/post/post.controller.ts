@@ -11,8 +11,8 @@ import { AuthService } from '../auth/auth.service'
 import { UserService } from '../user/user.service'
 import {
   PostService,
-  PostWithUserTagRelatedPostRelations,
-  PostWithUserTagRelations,
+  PostWithUserTopicTagRelatedPostRelations,
+  PostWithUserTopicTagRelations,
 } from './post.service'
 
 const logger = createLogger(module)
@@ -157,7 +157,7 @@ export class PostController {
   }
 
   /**
-   * Get a single post and all the tags and users associated with it
+   * Get a single post and all the tags, topic and users associated with it
    * @param postId Id of the post
    * @query relatedPosts if true, return related posts
    * @return 200 with post
@@ -166,7 +166,9 @@ export class PostController {
    */
   getSinglePost: ControllerHandler<
     { id: number },
-    PostWithUserTagRelations | PostWithUserTagRelatedPostRelations | Message,
+    | PostWithUserTopicTagRelations
+    | PostWithUserTopicTagRelatedPostRelations
+    | Message,
     undefined,
     { relatedPosts?: number }
   > = async (req, res) => {

@@ -6,21 +6,25 @@ import Sequelize, {
   ProjectionAlias,
 } from 'sequelize'
 import { PostCreation } from 'src/models/posts.model'
-import { Post, PostStatus } from '~shared/types/base'
+import { Post, PostStatus, Topic } from '~shared/types/base'
 import { Answer, PostTag, Tag, User } from '../../models'
 import { PostEditType } from '../../types/post-type'
 import { ModelDef } from '../../types/sequelize'
 import { SortType } from '../../types/sort-type'
 import { PostWithRelations } from '../auth/auth.service'
 
-export type PostWithUserTagRelations = Model &
+export type UserWithTagRelations = {
+  getTags: () => Tag[]
+}
+
+export type PostWithUserTopicTagRelations = Model &
   PostWithRelations & {
     countAnswers: () => number
     tags: Tag[]
   }
 
-export type PostWithUserTagRelatedPostRelations = PostWithRelations &
-  PostWithUserTagRelations & {
+export type PostWithUserTopicTagRelatedPostRelations = PostWithRelations &
+  PostWithUserTopicTagRelations & {
     getRelatedPosts: Post[]
   }
 
@@ -30,24 +34,28 @@ export class PostService {
   private PostTag: ModelDef<PostTag>
   private Tag: ModelCtor<Tag>
   private User: ModelCtor<User>
+  private Topic: ModelDef<Topic>
   constructor({
     Answer,
     Post,
     PostTag,
     Tag,
     User,
+    Topic,
   }: {
     Answer: ModelCtor<Answer>
     Post: ModelDef<Post, PostCreation>
     PostTag: ModelDef<PostTag>
     Tag: ModelCtor<Tag>
     User: ModelCtor<User>
+    Topic: ModelDef<Topic>
   }) {
     this.Answer = Answer
     this.Post = Post
     this.PostTag = PostTag
     this.Tag = Tag
     this.User = User
+    this.Topic = Topic
   }
 
   private answerCountLiteral: ProjectionAlias = [
@@ -68,7 +76,7 @@ export class PostService {
   }
 
   private filterPostsWithoutAnswers = async (
-    data?: PostWithUserTagRelations[],
+    data?: PostWithUserTopicTagRelations[],
   ): Promise<Post[]> => {
     if (!data) {
       return []
@@ -91,7 +99,7 @@ export class PostService {
    * @returns posts that are related to the one provided
    */
   private getRelatedPosts = async (
-    post: PostWithUserTagRelations,
+    post: PostWithUserTopicTagRelations,
     numberOfRelatedPosts: number,
   ): Promise<Post[]> => {
     const tags = post.tags.map((tag) => tag.id)
@@ -172,6 +180,7 @@ export class PostService {
    * Lists all post
    * @param sort Sort by popularity or recent
    * @param tags Tags to filter by
+   * @param topic to filter by
    * @param size Number of posts to return
    * @param page If size is given, specify which page to return
    */
@@ -227,7 +236,7 @@ export class PostService {
         this.Answer,
       ],
       attributes: ['id'],
-    })) as PostWithUserTagRelations[]
+    })) as PostWithUserTopicTagRelations[]
 
     if (!posts) {
       return { posts: [], totalItems: 0 }
@@ -323,7 +332,7 @@ export class PostService {
       },
       order: [this.sortFunction(sort)],
       include: [this.Tag, { model: this.Answer, required: withAnswers }],
-    })) as PostWithUserTagRelations[]
+    })) as PostWithUserTopicTagRelations[]
 
     // Duplicate of logic from retrieveAll
     // TODO: Optimize to merge the 2 requests into one
@@ -377,7 +386,7 @@ export class PostService {
   }
 
   /**
-   * Get a single post and all the tags and users associated with it
+   * Get a single post and all the tags, topic and users associated with it
    * @param postId Id of the post
    * @param noOfRelatedPosts number of related posts to show
    */
@@ -386,7 +395,7 @@ export class PostService {
     noOfRelatedPosts = 0,
     updateViewCount = true,
   ): Promise<
-    PostWithUserTagRelations | PostWithUserTagRelatedPostRelations
+    PostWithUserTopicTagRelations | PostWithUserTopicTagRelatedPostRelations
   > => {
     if (updateViewCount) {
       await this.Post.increment(
@@ -406,7 +415,11 @@ export class PostService {
         status: PostStatus.Public,
         id: postId,
       },
-      include: [this.Tag, { model: this.User, attributes: ['displayname'] }],
+      include: [
+        this.Tag,
+        { model: this.User, attributes: ['displayname'] },
+        { model: this.Topic },
+      ],
       attributes: [
         'id',
         'userId',
@@ -425,8 +438,9 @@ export class PostService {
           )`),
           'answerCount',
         ],
+        'topicId',
       ],
-    })) as PostWithUserTagRelatedPostRelations
+    })) as PostWithUserTopicTagRelatedPostRelations
     if (!post) {
       throw new Error('No public post with this id')
     } else {
@@ -449,6 +463,7 @@ export class PostService {
     userId: number
     agencyId: number
     tagname: string[]
+    topicname: string
   }): Promise<number> => {
     const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
 
@@ -462,6 +477,7 @@ export class PostService {
         userId: newPost.userId,
         agencyId: newPost.agencyId,
         status: PostStatus.Private,
+        topicId: null,
       })
       for (const tag of tagList) {
         // Create a posttag for each tag
