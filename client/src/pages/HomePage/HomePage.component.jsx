@@ -11,7 +11,7 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-import { BiSort } from 'react-icons/bi'
+import { BiSortAlt2 } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { useLocation, useHistory, useParams } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
@@ -193,7 +193,7 @@ const HomePage = ({ match }) => {
                     >
                       <Flex justifyContent="space-between" alignItems="center">
                         <Text textStyle="body-1">{sortState.label}</Text>
-                        <BiSort />
+                        <BiSortAlt2 />
                       </Flex>
                     </MenuButton>
                     <MenuList
