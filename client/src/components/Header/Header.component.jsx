@@ -1,26 +1,33 @@
 import {
+  Box,
   Button,
+  Fade,
   Flex,
   Image,
   Link,
   Stack,
-  Spacer,
   Text,
+  useDisclosure,
+  useBreakpointValue,
 } from '@chakra-ui/react'
+import { useEffect } from 'react'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { matchPath, useLocation, Link as RouterLink } from 'react-router-dom'
-import { ReactComponent as Logo } from '../../assets/logo-white-alpha.svg'
-import { useAuth } from '../../contexts/AuthContext'
+import { Link as RouterLink, matchPath, useLocation } from 'react-router-dom'
 import { TagType } from '~shared/types/base'
-import {
-  getPostById,
-  GET_POST_BY_ID_QUERY_KEY,
-} from '../../services/PostService'
+import { ReactComponent as Logo } from '../../assets/logo-white-alpha.svg'
+import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
+import Masthead from '../../components/Masthead/Masthead.component'
+import SearchBoxComponent from '../../components/SearchBox/SearchBox.component'
+import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
 } from '../../services/AgencyService'
+import {
+  getPostById,
+  GET_POST_BY_ID_QUERY_KEY,
+} from '../../services/PostService'
 import LinkButton from '../LinkButton/LinkButton.component'
 import Spinner from '../Spinner/Spinner.component'
 
@@ -56,7 +63,7 @@ const Header = () => {
   const { isLoading, data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
     () => getAgencyByShortName({ shortname: agencyShortName }),
-    { enabled: !!agencyShortName },
+    { enabled: Boolean(agencyShortName) },
   )
 
   const authLinks = (
@@ -103,53 +110,152 @@ const Header = () => {
     )
   }
 
+  // look for /questions to catch search result and post pages
+  const matchQuestions = matchPath(location.pathname, {
+    path: '/questions',
+  })
+  const {
+    isOpen: headerIsOpen,
+    onOpen: openHeader,
+    onClose: closeHeader,
+  } = useDisclosure({ defaultIsOpen: true })
+
+  const checkHeaderState = () => {
+    if (window.pageYOffset > 280) closeHeader()
+    else openHeader()
+  }
+
+  // useSticky is implemented with window.innerWidth instead of useBreakpointValue
+  // as useBreakpointValue switches value to true between 345px - 465px for some reason
+  const useSticky = window.innerWidth < 1440 ? false : true // 1440px = 90em is the breakpoint for desktop
+
+  useEffect(() => {
+    if (!matchQuestions && useSticky) {
+      openHeader()
+      window.addEventListener('scroll', checkHeaderState)
+      return () => window.removeEventListener('scroll', checkHeaderState)
+    } else {
+      closeHeader()
+    }
+  }, [matchQuestions, useSticky])
+
+  const expandedSearch = () => {
+    return (
+      <Box
+        bg="primary.500"
+        h={
+          agency
+            ? { base: '120px', md: '176px' }
+            : { base: '120px', xl: '176px' }
+        }
+        className="top-background"
+      >
+        <Flex
+          direction="row"
+          justifyContent="flex-start"
+          className="home-search"
+        >
+          {/* TODO: might need to do some enforcing to ensure you can only */}
+          {/* enter a single agency in the URL */}
+
+          <Flex
+            h="56px"
+            m="auto"
+            mt={
+              agency
+                ? { base: '20px', md: '56px' }
+                : { base: '4px', xl: '56px' }
+            }
+            pt="!52px"
+            px={{ base: '24px', md: 'auto' }}
+            maxW="680px"
+            w="100%"
+          >
+            <SearchBoxComponent agencyShortName={agency?.shortname} />
+          </Flex>
+        </Flex>
+        {Boolean(agency) ? (
+          <Box px="36px" mt="-20px" display={{ base: 'none', lg: 'flex' }}>
+            <AgencyLogo agency={agency} />
+          </Box>
+        ) : null}
+      </Box>
+    )
+  }
   return (
     <Flex
-      background="primary.500"
-      display="flex"
-      justify="space-between"
-      align="center"
-      px={8}
-      py={4}
-      shrink={0}
+      direction="column"
+      sx={{
+        position: { base: 'static', xl: '-webkit-sticky' } /* Safari */,
+        position: { base: 'static', xl: 'sticky' },
+        top: '0',
+        'z-index': '999',
+      }}
     >
-      <Link as={RouterLink} to={agency ? `/agency/${agency.shortname}` : '/'}>
-        <Stack
-          direction={{ base: 'column', md: 'row' }}
-          textDecor="none"
-          align={{ base: 'flex-start', md: 'center' }}
-          position="relative"
-        >
-          <Logo />
-          {agency ? (
-            <>
-              <Text
-                d={{ base: 'none', md: 'block' }}
-                px={{ base: 0, md: 2 }}
-                textStyle="h4"
-                fontWeight={300}
-                color="white"
-              >
-                |
-              </Text>
-              <Text
-                position={{ base: 'relative', md: 'static' }}
-                top={{ base: '-6px', md: 0 }}
-                textStyle="h4"
-                fontWeight={400}
-                color="white"
-              >
-                {agency.longname}
-              </Text>
-            </>
-          ) : null}
-        </Stack>
-      </Link>
-      <Spacer />
-      <Flex d={{ base: 'none', sm: 'block' }}>
-        {agency?.website && websiteLinks()}
+      <Masthead />
+      <Flex
+        background="primary.500"
+        justify="space-between"
+        align="center"
+        px={8}
+        py={4}
+        shrink={0}
+      >
+        <Link as={RouterLink} to={agency ? `/agency/${agency.shortname}` : '/'}>
+          <Stack
+            direction={{ base: 'column', md: 'row' }}
+            textDecor="none"
+            align={{ base: 'flex-start', md: 'center' }}
+            position="relative"
+          >
+            <Logo />
+            {agency ? (
+              <>
+                <Text
+                  d={{ base: 'none', md: 'block' }}
+                  px={{ base: 0, md: 2 }}
+                  textStyle="h4"
+                  fontWeight={300}
+                  color="white"
+                >
+                  |
+                </Text>
+                <Text
+                  position={{ base: 'relative', md: 'static' }}
+                  top={{ base: '-6px', md: 0 }}
+                  textStyle="h4"
+                  fontWeight={400}
+                  color="white"
+                >
+                  {agency.shortname.toUpperCase()}
+                </Text>
+              </>
+            ) : null}
+          </Stack>
+        </Link>
+        <Flex d={{ base: 'none', sm: 'block' }}>
+          {agency?.website && websiteLinks()}
+        </Flex>
+        {user && authLinks}
       </Flex>
-      {user && authLinks}
+      {(useSticky && !headerIsOpen) || matchQuestions ? (
+        <Flex
+          h="56px"
+          m="auto"
+          px={{ base: '24px', md: 'auto' }}
+          maxW="680px"
+          w="100%"
+          mt="-68px"
+          d={{ base: 'none', xl: 'block' }}
+        >
+          <SearchBoxComponent agencyShortName={agency?.shortname} />
+        </Flex>
+      ) : null}
+      {!matchQuestions && useSticky ? (
+        <Fade in={headerIsOpen}>{expandedSearch()}</Fade>
+      ) : matchQuestions ? null : (
+        expandedSearch()
+      )}
     </Flex>
   )
 }
