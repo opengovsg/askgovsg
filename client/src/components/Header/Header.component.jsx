@@ -1,16 +1,15 @@
 import {
   Box,
   Button,
-  Fade,
+  Collapse,
   Flex,
   Image,
   Link,
   Stack,
   Text,
   useDisclosure,
-  useBreakpointValue,
 } from '@chakra-ui/react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, matchPath, useLocation } from 'react-router-dom'
@@ -110,7 +109,7 @@ const Header = () => {
     )
   }
 
-  // look for /questions to catch search result and post pages
+  // Look for /questions to catch search result and post pages
   const matchQuestions = matchPath(location.pathname, {
     path: '/questions',
   })
@@ -122,32 +121,62 @@ const Header = () => {
 
   const checkHeaderState = () => {
     if (window.pageYOffset > 280) closeHeader()
-    else openHeader()
+    else if (window.pageYOffset < 5) openHeader()
   }
 
-  // useSticky is implemented with window.innerWidth instead of useBreakpointValue
-  // as useBreakpointValue switches value to true between 345px - 465px for some reason
-  const useSticky = window.innerWidth < 1440 ? false : true // 1440px = 90em is the breakpoint for desktop
+  const device = {
+    mobile: 'mobile',
+    tablet: 'tablet',
+    desktop: 'desktop',
+  }
+
+  // Responsive styling based on viewport width is implemented with window.innerWidth
+  // instead of useBreakpointValue as useBreakpointValue switches value to true between
+  // 345px - 465px for some reason.
+  // 480 px = 30em if the breakpoint for mobile
+  // 1440px = 90em is the breakpoint for desktop
+  const [deviceType, setDeviceType] = useState(
+    window.innerWidth < 480
+      ? device.mobile
+      : window.innerWidth < 1440
+      ? device.tablet
+      : device.desktop,
+  )
+
+  const checkViewportSize = () => {
+    setDeviceType(
+      window.innerWidth < 480
+        ? device.mobile
+        : window.innerWidth < 1440
+        ? device.tablet
+        : device.desktop,
+    )
+  }
 
   useEffect(() => {
-    if (!matchQuestions && useSticky) {
+    window.addEventListener('resize', checkViewportSize)
+    return () => window.removeEventListener('resize', checkViewportSize)
+  }, [])
+
+  // attach to matchQuestions?.path instead of matchQuestions because matchQuestions is
+  // an object and will trigger the callback without values within the object changing
+  useEffect(() => {
+    if (deviceType !== device.tablet && !matchQuestions) {
       openHeader()
       window.addEventListener('scroll', checkHeaderState)
-      return () => window.removeEventListener('scroll', checkHeaderState)
+      return () => {
+        window.removeEventListener('scroll', checkHeaderState)
+      }
     } else {
       closeHeader()
     }
-  }, [matchQuestions, useSticky])
+  }, [matchQuestions?.path, deviceType])
 
   const expandedSearch = () => {
     return (
       <Box
         bg="primary.500"
-        h={
-          agency
-            ? { base: '120px', md: '176px' }
-            : { base: '120px', xl: '176px' }
-        }
+        h={{ base: '100px', md: '152px' }}
         className="top-background"
       >
         <Flex
@@ -161,12 +190,7 @@ const Header = () => {
           <Flex
             h="56px"
             m="auto"
-            mt={
-              agency
-                ? { base: '20px', md: '56px' }
-                : { base: '4px', xl: '56px' }
-            }
-            pt="!52px"
+            mt={{ base: '20px', md: '64px' }}
             px={{ base: '24px', md: 'auto' }}
             maxW="680px"
             w="100%"
@@ -175,24 +199,16 @@ const Header = () => {
           </Flex>
         </Flex>
         {Boolean(agency) ? (
-          <Box px="36px" mt="-20px" display={{ base: 'none', lg: 'flex' }}>
+          <Box px="36px" mt="-55px" display={{ base: 'none', lg: 'flex' }}>
             <AgencyLogo agency={agency} />
           </Box>
         ) : null}
       </Box>
     )
   }
-  return (
-    <Flex
-      direction="column"
-      sx={{
-        position: { base: 'static', xl: '-webkit-sticky' } /* Safari */,
-        position: { base: 'static', xl: 'sticky' },
-        top: '0',
-        'z-index': '999',
-      }}
-    >
-      <Masthead />
+
+  const askgovLogoBar = () => {
+    return (
       <Flex
         background="primary.500"
         justify="space-between"
@@ -238,7 +254,36 @@ const Header = () => {
         </Flex>
         {user && authLinks}
       </Flex>
-      {(useSticky && !headerIsOpen) || matchQuestions ? (
+    )
+  }
+
+  return (
+    <Flex
+      direction="column"
+      sx={{
+        position: {
+          base: '-webkit-sticky',
+          sm: 'static',
+          xl: '-webkit-sticky',
+        } /* Safari */,
+        position: {
+          base: 'sticky',
+          sm: 'static',
+          xl: 'sticky',
+        },
+        top: '0',
+        'z-index': '999',
+      }}
+    >
+      <Masthead />
+      {deviceType !== device.mobile ? (
+        askgovLogoBar()
+      ) : matchQuestions ? null : (
+        <Collapse in={headerIsOpen} animateOpacity={false}>
+          {askgovLogoBar()}
+        </Collapse>
+      )}
+      {deviceType === device.desktop && !headerIsOpen ? (
         <Flex
           h="56px"
           m="auto"
@@ -251,9 +296,11 @@ const Header = () => {
           <SearchBoxComponent agencyShortName={agency?.shortname} />
         </Flex>
       ) : null}
-      {!matchQuestions && useSticky ? (
-        <Fade in={headerIsOpen}>{expandedSearch()}</Fade>
-      ) : matchQuestions ? null : (
+      {!matchQuestions && deviceType === device.desktop ? (
+        <Collapse in={headerIsOpen} animateOpacity={false}>
+          {expandedSearch()}
+        </Collapse>
+      ) : matchQuestions && deviceType !== device.mobile ? null : (
         expandedSearch()
       )}
     </Flex>
