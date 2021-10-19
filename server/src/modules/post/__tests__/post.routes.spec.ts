@@ -6,11 +6,11 @@ import { ModelCtor } from 'sequelize/types'
 import { ModelDef } from '../../../types/sequelize'
 import supertest from 'supertest'
 import {
+  Agency,
   PermissionType,
   Post,
   PostStatus,
   TagType,
-  Topic,
 } from '~shared/types/base'
 import {
   Answer as AnswerModel,
@@ -40,7 +40,7 @@ describe('/posts', () => {
   let Tag: ModelCtor<TagModel>
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
-  let Topic: ModelDef<Topic>
+  let Agency: ModelDef<Agency>
 
   let postService: PostService
   let controller: PostController
@@ -48,6 +48,11 @@ describe('/posts', () => {
   const mockPosts: Post[] = []
   let mockUser: UserModel
   let mockTag: TagModel
+
+  const userService = {
+    loadUser: jest.fn(),
+    createOfficer: jest.fn(),
+  }
 
   // Set up service, controller and route
   const authService = {
@@ -79,15 +84,26 @@ describe('/posts', () => {
   beforeAll(async () => {
     db = await createTestDatabase()
     Answer = getModel<AnswerModel>(db, ModelName.Answer)
+    Agency = getModelDef<Agency>(db, ModelName.Agency)
     Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
     PostTag = getModelDef<PostTag>(db, ModelName.PostTag)
     Tag = getModel<TagModel>(db, ModelName.Tag)
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
     postService = new PostService({ Answer, Post, PostTag, Tag, User })
+    const { id: agencyId } = await Agency.create({
+      shortname: 'was',
+      longname: 'Work Allocation Singapore',
+      email: 'enquiries@was.gov.sg',
+      website: null,
+      noEnquiriesMessage: null,
+      logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
+      displayOrder: [],
+    })
     mockUser = await User.create({
       username: 'answerer@test.gov.sg',
       displayname: '',
+      agencyId,
     })
     mockTag = await Tag.create({
       tagname: 'test',
@@ -102,6 +118,7 @@ describe('/posts', () => {
         description: null,
         status: PostStatus.Public,
         userId: mockUser.id,
+        agencyId: mockUser.agencyId,
       })
       mockPosts.push(mockPost)
       await PostTag.create({ postId: mockPost.id, tagId: mockTag.id })
@@ -111,7 +128,7 @@ describe('/posts', () => {
       tagId: mockTag.id,
       role: PermissionType.Answerer,
     })
-    controller = new PostController({ authService, postService })
+    controller = new PostController({ userService, authService, postService })
     app.use(path, routePosts({ controller, authMiddleware }))
   })
 

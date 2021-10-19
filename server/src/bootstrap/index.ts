@@ -117,6 +117,7 @@ const enquiryService = new EnquiryService({ Agency, mailService })
 const recaptchaService = new RecaptchaService({ axios, ...recaptchaConfig })
 const answersService = new AnswersService()
 const topicsService = new TopicsService({ Topic })
+const userService = new UserService()
 
 const apiOptions = {
   agency: {
@@ -134,7 +135,7 @@ const apiOptions = {
     controller: new AuthController({
       mailService,
       authService,
-      userService: new UserService(),
+      userService,
       Token,
     }),
     authMiddleware,
@@ -144,6 +145,7 @@ const apiOptions = {
     controller: new PostController({
       authService,
       postService,
+      userService,
     }),
     authMiddleware,
   },

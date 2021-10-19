@@ -28,7 +28,16 @@ describe('PostController', () => {
     listPosts: jest.fn(),
   }
 
-  const controller = new PostController({ authService, postService })
+  const userService = {
+    loadUser: jest.fn(),
+    createOfficer: jest.fn(),
+  }
+
+  const controller = new PostController({
+    authService,
+    postService,
+    userService,
+  })
 
   // Set up auth middleware to inject user
   let user: Express.User | undefined = { id: 1 }

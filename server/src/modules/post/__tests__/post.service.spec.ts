@@ -6,7 +6,13 @@ import {
   User as UserModel,
   Permission as PermissionModel,
 } from '../../../models'
-import { PermissionType, Post, PostStatus, TagType } from '~shared/types/base'
+import {
+  Agency,
+  PermissionType,
+  Post,
+  PostStatus,
+  TagType,
+} from '~shared/types/base'
 import { SortType } from '../../../types/sort-type'
 import {
   createTestDatabase,
@@ -20,6 +26,7 @@ import { PostCreation } from '../../../models/posts.model'
 
 describe('PostService', () => {
   let db: Sequelize
+  let Agency: ModelDef<Agency>
   let Answer: ModelCtor<AnswerModel>
   let Post: ModelDef<Post, PostCreation>
   let PostTag: ModelDef<PostTag>
@@ -33,6 +40,7 @@ describe('PostService', () => {
 
   beforeAll(async () => {
     db = await createTestDatabase()
+    Agency = getModelDef<Agency>(db, ModelName.Agency)
     Answer = getModel<AnswerModel>(db, ModelName.Answer)
     Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
     PostTag = getModelDef<PostTag>(db, ModelName.PostTag)
@@ -40,9 +48,19 @@ describe('PostService', () => {
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
     postService = new PostService({ Answer, Post, PostTag, Tag, User })
+    const { id: agencyId } = await Agency.create({
+      shortname: 'was',
+      longname: 'Work Allocation Singapore',
+      email: 'enquiries@was.gov.sg',
+      website: null,
+      noEnquiriesMessage: null,
+      logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
+      displayOrder: [],
+    })
     mockUser = await User.create({
       username: 'answerer@test.gov.sg',
       displayname: '',
+      agencyId,
     })
     mockTag = await Tag.create({
       tagname: 'test',
@@ -57,6 +75,7 @@ describe('PostService', () => {
         description: null,
         status: PostStatus.Public,
         userId: mockUser.id,
+        agencyId: mockUser.agencyId,
       })
       mockPosts.push(mockPost)
       await PostTag.create({ postId: mockPost.id, tagId: mockTag.id })

@@ -462,6 +462,7 @@ export class PostService {
     title: string
     description: string
     userId: number
+    agencyId: number
     tagname: string[]
   }): Promise<number> => {
     const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
@@ -478,6 +479,7 @@ export class PostService {
         title: newPost.title,
         description: newPost.description,
         userId: newPost.userId,
+        agencyId: newPost.agencyId,
         status: PostStatus.Private,
       })
       for (const tag of tagList) {
