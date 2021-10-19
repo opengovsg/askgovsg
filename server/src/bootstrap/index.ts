@@ -104,7 +104,7 @@ const authService = new AuthService({
   emailValidator,
   User,
   Permission,
-  PostTag,
+  Post,
   Topic,
 })
 const authMiddleware = new AuthMiddleware()

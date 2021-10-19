@@ -10,7 +10,6 @@ describe('PostController', () => {
   const authService = {
     checkIfWhitelistedOfficer: jest.fn(),
     hasPermissionToAnswer: jest.fn(),
-    getDisallowedTagsForUser: jest.fn(),
     verifyUserCanViewPost: jest.fn(),
     isOfficerEmail: jest.fn(),
     verifyUserCanModifyTopic: jest.fn(),

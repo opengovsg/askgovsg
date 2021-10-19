@@ -246,22 +246,6 @@ export class PostController {
     }
 
     try {
-      // check permissions
-      const listOfDisallowedTags =
-        await this.authService.getDisallowedTagsForUser(
-          req.user?.id,
-          await this.postService.getExistingTagsFromRequestTags(
-            req.body.tagname,
-          ),
-        )
-      if (listOfDisallowedTags.length > 0) {
-        return res.status(StatusCodes.FORBIDDEN).json({
-          message:
-            'You do not have permissions to post this question with the following tags: ' +
-            listOfDisallowedTags.map((x) => x.tagname).join(', '),
-        })
-      }
-
       const user = await this.userService.loadUser(req.user?.id)
 
       if (!user?.agencyId) {

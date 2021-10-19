@@ -1,10 +1,10 @@
 import minimatch from 'minimatch'
-
-import { PermissionType, Post, PostStatus, Topic } from '~shared/types/base'
-import { Permission, PostTag, Tag, User } from '../../models'
-import { createLogger } from '../../bootstrap/logging'
 import { ModelCtor } from 'sequelize/types'
-import { ModelDef } from 'src/types/sequelize'
+import { PermissionType, Post, PostStatus, Topic } from '~shared/types/base'
+import { createLogger } from '../../bootstrap/logging'
+import { Permission, Tag, User } from '../../models'
+import { PostCreation } from '../../models/posts.model'
+import { ModelDef } from '../../types/sequelize'
 
 const logger = createLogger(module)
 
@@ -19,26 +19,26 @@ export type PostWithRelations = Post & {
 export class AuthService {
   private emailValidator
   private User: ModelCtor<User>
-  private PostTag: ModelDef<PostTag>
+  private Post: ModelDef<Post, PostCreation>
   private Permission: ModelCtor<Permission>
   private Topic: ModelDef<Topic>
 
   constructor({
     emailValidator,
     User,
-    PostTag,
+    Post,
     Permission,
     Topic,
   }: {
     emailValidator: minimatch.IMinimatch
     User: ModelCtor<User>
-    PostTag: ModelDef<PostTag>
+    Post: ModelDef<Post, PostCreation>
     Permission: ModelCtor<Permission>
     Topic: ModelDef<Topic>
   }) {
     this.emailValidator = emailValidator
     this.User = User
-    this.PostTag = PostTag
+    this.Post = Post
     this.Permission = Permission
     this.Topic = Topic
   }
@@ -75,40 +75,10 @@ export class AuthService {
     userId: number,
     postId: number,
   ): Promise<boolean> => {
-    const userTags = (await this.Permission.findAll({
-      where: { userId },
-    })) as PermissionWithRelations[]
-    const postTags = await this.PostTag.findAll({
-      where: { postId },
-    })
+    const user = await this.User.findByPk(userId)
+    const post = await this.Post.findByPk(postId)
 
-    return postTags.every((postTag) => {
-      const permission = userTags.find(
-        (userTag) => userTag.tagId === postTag.tagId,
-      )
-      return permission && permission.role === PermissionType.Answerer
-    })
-  }
-
-  /**
-   * Get all tags that user does not have permission to add
-   * @param userId of user
-   * @param tagList list of tags
-   * @returns subset of tagList that user is not allowed to add
-   */
-  getDisallowedTagsForUser = async (
-    userId: number,
-    tagList: Tag[],
-  ): Promise<Tag[]> => {
-    const userTags = (await this.Permission.findAll({
-      where: { userId },
-    })) as PermissionWithRelations[]
-    return tagList.filter((postTag) => {
-      const permission = userTags.find(
-        (userTag) => userTag.tagId === postTag.id,
-      )
-      return !(permission && permission.role === PermissionType.Answerer)
-    })
+    return Boolean(post && user && post.agencyId === user.agencyId)
   }
 
   /**

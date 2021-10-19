@@ -83,10 +83,6 @@ export class PostService {
     }
   }
 
-  private checkOneAgency = (arr: Tag[]): boolean => {
-    return arr.some((e) => e.tagType === 'AGENCY')
-  }
-
   /**
    * Get posts related to the one provided
    * There is room to improve on finding related posts, using a better algorithm
@@ -470,10 +466,6 @@ export class PostService {
     if (newPost.tagname.length !== tagList.length) {
       throw new Error('At least one tag does not exist')
     } else {
-      // check if at least one agency tag exists
-      if (!this.checkOneAgency(tagList)) {
-        throw new Error('At least one tag must be an agency tag')
-      }
       // Only create post if tag exists
       const post = await this.Post.create({
         title: newPost.title,
