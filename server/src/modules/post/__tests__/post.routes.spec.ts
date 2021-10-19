@@ -31,6 +31,7 @@ import {
 import { PostController } from '../post.controller'
 import { routePosts } from '../post.routes'
 import { PostService } from '../post.service'
+import { UserService } from '../../user/user.service'
 
 describe('/posts', () => {
   let db: Sequelize
@@ -42,17 +43,13 @@ describe('/posts', () => {
   let Permission: ModelCtor<PermissionModel>
   let Agency: ModelDef<Agency>
 
+  let userService: UserService
   let postService: PostService
   let controller: PostController
 
   const mockPosts: Post[] = []
   let mockUser: UserModel
   let mockTag: TagModel
-
-  const userService = {
-    loadUser: jest.fn(),
-    createOfficer: jest.fn(),
-  }
 
   // Set up service, controller and route
   const authService = {
@@ -65,7 +62,7 @@ describe('/posts', () => {
   }
 
   const authenticate: ControllerHandler = (req, res, next) => {
-    req.user = { id: 1 }
+    req.user = { id: mockUser.id }
     next()
   }
 
@@ -89,6 +86,7 @@ describe('/posts', () => {
     Tag = getModel<TagModel>(db, ModelName.Tag)
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
+    userService = new UserService({ User, Tag })
     postService = new PostService({ Answer, Post, PostTag, Tag, User })
     const { id: agencyId } = await Agency.create({
       shortname: 'was',
@@ -139,7 +137,7 @@ describe('/posts', () => {
     await db.close()
   })
 
-  describe('/posts', () => {
+  describe('GET /posts', () => {
     it('returns 200 and data on posts on request', async () => {
       // Act
       const response = await request.get(path)
@@ -151,7 +149,7 @@ describe('/posts', () => {
     })
   })
 
-  describe('/posts/answerable', () => {
+  describe('GET /posts/answerable', () => {
     it('returns 200 and data on posts on request', async () => {
       // Act
       const response = await request.get(path + '/answerable').query({
@@ -163,6 +161,29 @@ describe('/posts', () => {
       expect(response.status).toEqual(StatusCodes.OK)
       expect(response.body.posts.length).toStrictEqual(mockPosts.length)
       expect(response.body.totalItems).toStrictEqual(mockPosts.length)
+    })
+  })
+
+  describe('POST /posts', () => {
+    it('returns 200 and creates a post on request', async () => {
+      const body = {
+        title: 'A title of at least 15 characters',
+        description: null,
+        tagname: [mockTag.tagname],
+      }
+
+      // Act
+      const {
+        status,
+        body: { data: postId },
+      } = await request.post(path).send(body)
+      const post = await Post.findByPk(postId)
+      const postTags = await PostTag.findAll({ where: { postId } })
+
+      // Assert
+      expect(status).toEqual(StatusCodes.OK)
+      expect(post).toBeDefined()
+      expect(postTags.length).toBe(1)
     })
   })
 })

@@ -203,4 +203,35 @@ describe('PostService', () => {
       expect(result.posts[4].title).toStrictEqual(mockPosts[19].title)
     })
   })
+
+  describe('createPost', () => {
+    it('throws on bad tag', async () => {
+      const badPost = {
+        title: 'Bad',
+        description: 'Bad',
+        userId: mockUser.id,
+        agencyId: mockUser.agencyId,
+        tagname: ['badtag'],
+      }
+      await expect(postService.createPost(badPost)).rejects.toStrictEqual(
+        new Error('At least one tag does not exist'),
+      )
+    })
+    it('creates post on good input', async () => {
+      const postParams = {
+        title: 'Title',
+        description: 'Description',
+        userId: mockUser.id,
+        agencyId: mockUser.agencyId,
+        tagname: [mockTag.tagname],
+      }
+
+      const postId = await postService.createPost(postParams)
+
+      const post = await Post.findByPk(postId)
+      const postTags = await PostTag.findAll({ where: { postId } })
+      expect(post).toBeDefined()
+      expect(postTags.length).toBe(postParams.tagname.length)
+    })
+  })
 })

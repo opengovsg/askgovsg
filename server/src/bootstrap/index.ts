@@ -117,7 +117,7 @@ const enquiryService = new EnquiryService({ Agency, mailService })
 const recaptchaService = new RecaptchaService({ axios, ...recaptchaConfig })
 const answersService = new AnswersService()
 const topicsService = new TopicsService({ Topic })
-const userService = new UserService()
+const userService = new UserService({ User, Tag })
 
 const apiOptions = {
   agency: {

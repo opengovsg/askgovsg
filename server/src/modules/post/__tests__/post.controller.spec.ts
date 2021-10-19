@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
@@ -46,12 +45,16 @@ describe('PostController', () => {
   }
 
   const app = express()
-  app.use(bodyParser.json())
+  app.use(express.json())
   app.use(middleware)
   app.get(path, controller.listPosts)
   app.get(path + '/answerable', controller.listAnswerablePosts)
+  app.post(path, controller.createPost)
   const request = supertest(app)
 
+  beforeEach(() => {
+    user = { id: 1 }
+  })
   afterEach(async () => {
     jest.clearAllMocks()
   })
@@ -141,7 +144,77 @@ describe('PostController', () => {
       // Assert
       expect(response.status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
       expect(response.body).toStrictEqual({
-        message: 'Something went wrong, please try again.',
+        message: 'Sorry, something went wrong. Please try again.',
+      })
+    })
+  })
+  describe('createPost', () => {
+    const agencyId = 21
+    const postId = 13
+    beforeEach(() => {
+      userService.loadUser.mockResolvedValue({ agencyId })
+      postService.createPost.mockResolvedValue(postId)
+    })
+    it('returns 401 on no user', async () => {
+      user = undefined
+
+      const response = await request.post(path)
+
+      expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
+      expect(response.body).toStrictEqual({
+        message: 'User not signed in',
+      })
+      expect(postService.createPost).not.toHaveBeenCalled()
+    })
+    it('returns 500 on user with no agency', async () => {
+      userService.loadUser.mockReturnValue({})
+
+      const response = await request.post(path)
+
+      expect(response.status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
+      expect(response.body).toStrictEqual({
+        message: 'The current user is not associated with an agency',
+      })
+      expect(postService.createPost).not.toHaveBeenCalled()
+    })
+    it('returns 500 on userService problem', async () => {
+      userService.loadUser.mockRejectedValue(new Error('bad user'))
+
+      const response = await request.post(path)
+
+      expect(response.status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
+      expect(response.body).toStrictEqual({
+        message: 'Server error',
+      })
+      expect(postService.createPost).not.toHaveBeenCalled()
+    })
+    it('returns 500 on postService problem', async () => {
+      const body = { title: 'Title', description: null, tagname: [] }
+      postService.createPost.mockRejectedValue(new Error('bad post'))
+
+      const response = await request.post(path).send(body)
+
+      expect(response.status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
+      expect(response.body).toStrictEqual({
+        message: 'Server error',
+      })
+      expect(postService.createPost).toHaveBeenCalledWith({
+        ...body,
+        userId: user?.id,
+        agencyId,
+      })
+    })
+    it('returns 200 on successful creation', async () => {
+      const body = { title: 'Title', description: null, tagname: [] }
+
+      const response = await request.post(path).send(body)
+
+      expect(response.status).toEqual(StatusCodes.OK)
+      expect(response.body).toStrictEqual({ data: postId })
+      expect(postService.createPost).toHaveBeenCalledWith({
+        ...body,
+        userId: user?.id,
+        agencyId,
       })
     })
   })
