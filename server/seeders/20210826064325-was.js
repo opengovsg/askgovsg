@@ -100,6 +100,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 15,
@@ -109,6 +110,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 16,
@@ -119,6 +121,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 17,
@@ -128,6 +131,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 18,
@@ -138,6 +142,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
 
         {
@@ -148,6 +153,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
 
         {
@@ -160,6 +166,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
 
         {
@@ -171,6 +178,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 22,
@@ -181,6 +189,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 23,
@@ -190,6 +199,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 24,
@@ -199,6 +209,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 25,
@@ -210,6 +221,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
 
         {
@@ -222,6 +234,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 27,
@@ -232,6 +245,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 28,
@@ -242,6 +256,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 29,
@@ -251,6 +266,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
         {
           id: 30,
@@ -261,6 +277,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
           userId: 4,
+          agencyId: 4,
         },
       ],
       {},
