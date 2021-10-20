@@ -40,6 +40,7 @@ export class PostController {
    * Lists all post
    * @query sort Sort by popularity or recent
    * @query tags Tags to filter by
+   * @query topics Agency's topics to filter by
    * @query size Number of posts to return
    * @query agency Agency shortname to filter by
    * @query page If size is given, specify which page to return
@@ -56,15 +57,24 @@ export class PostController {
       size?: number
       sort?: SortType
       tags?: string
-      agency?: string
+      topics?: string
+      agency?: number
     }
   > = async (req, res) => {
-    const { page, size, sort = SortType.Top, tags = '', agency } = req.query
+    const {
+      page,
+      size,
+      sort = SortType.Top,
+      tags = '',
+      topics = '',
+      agency,
+    } = req.query
     try {
       const data = await this.postService.listPosts({
         sort: sort as SortType,
-        agency: agency as string,
+        agency: agency as number,
         tags: tags as string,
+        topics: topics as string,
         page: page,
         size: size,
       })

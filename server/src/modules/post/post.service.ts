@@ -18,9 +18,10 @@ export type UserWithTagRelations = {
 }
 
 export type PostWithUserTopicTagRelations = Model &
-  PostWithRelations & {
+  Post & {
     countAnswers: () => number
     tags: Tag[]
+    topics: Topic[]
   }
 
 export type PostWithUserTopicTagRelatedPostRelations = PostWithRelations &
@@ -193,43 +194,52 @@ export class PostService {
     topicName: string,
     agencyId: number,
   ): Promise<Topic | null> => {
-    const existingTopic: Topic | null = await this.Topic.findOne({
+    const existingTopic = await this.Topic.findOne({
       where: { name: topicName, agencyId: agencyId },
     })
     return existingTopic
   }
 
-  getChildTopicsFromRequestTopic = async (
+  // returns list of topics that exist in the DB
+  getExistingTopicsFromRequestTopics = async (
+    topics: string[],
     agencyId: number,
-    topicName: string,
   ): Promise<Topic[]> => {
-    const parentTopic = await this.Topic.findOne({
-      where: { name: topicName },
+    const existingTopics = await this.Topic.findAll({
+      where: { name: topics, agencyId: agencyId },
     })
+    return existingTopics
+  }
 
-    //Get list of topics belonging to agency
+  // returns list of topics comprising topics in query, and their descendant topics if they exist
+  getChildTopicsFromRequestTopics = async (
+    topics: Topic[],
+    agencyId: number,
+  ): Promise<Topic[]> => {
+    // extract Ids from topics
+    const existingTopicIds = topics.map((topic) => topic.id)
+
+    // get list of topics belonging to agency
     const agencyTopics: Topic[] = await this.Topic.findAll({
       where: {
         agencyId: agencyId,
       },
     })
 
-    let parentAndChildTopics: Topic[] = []
+    let parentAndChildTopics: Topic[] = topics
 
-    if (parentTopic) {
-      parentAndChildTopics.push(parentTopic)
-
+    if (topics) {
       let currGenChildTopics = agencyTopics.filter(
-        (topic) => topic.parentId === parentTopic.id,
+        (topic) =>
+          !!topic.parentId && existingTopicIds.includes(topic.parentId),
       )
       parentAndChildTopics = parentAndChildTopics.concat(currGenChildTopics)
 
-      while (currGenChildTopics !== []) {
-        // let nextGenChildTopics: Topic[] = []
+      while (currGenChildTopics.length) {
         const currGenChildTopicIds = currGenChildTopics.map((topic) => topic.id)
         const nextGenChildTopics = agencyTopics.filter(
           (topic) =>
-            topic.parentId && currGenChildTopicIds.includes(topic.parentId),
+            !!topic.parentId && currGenChildTopicIds.includes(topic.parentId),
         )
         parentAndChildTopics = parentAndChildTopics.concat(nextGenChildTopics)
         currGenChildTopics = nextGenChildTopics
@@ -241,9 +251,9 @@ export class PostService {
   /**
    * Lists all post
    * @param sort Sort by popularity or recent
-   * @param agency Agency shortname to filter by
+   * @param agency Agency id to filter by
    * @param tags Tags to filter by
-   * @param topic Topic to filter by
+   * @param topics Topic to filter by
    * @param size Number of posts to return
    * @param page If size is given, specify which page to return
    */
@@ -251,49 +261,70 @@ export class PostService {
     sort,
     agency,
     tags,
+    topics,
     page,
     size,
   }: {
     sort: SortType
-    agency: string
+    agency: number
     tags: string
+    topics: string
     page?: number
     size?: number
   }): Promise<{
     posts: Post[]
     totalItems: number
   }> => {
-    // check for valid agency
-    const validAgency = await this.Agency.findOne({
-      where: { shortname: agency || null },
-    })
-
     // split tags
-    let tags_unchecked: string[] = []
+    let tagsUnchecked: string[] = []
 
     if (tags) {
-      tags_unchecked = tags.split(',')
+      tagsUnchecked = tags.split(',')
     }
 
     // returns length of tags that are valid in DB
-    const tagList = await this.getExistingTagsFromRequestTags(tags_unchecked)
+    const tagList = await this.getExistingTagsFromRequestTags(tagsUnchecked)
     // convert back to raw tags in array form
     const rawTags = tagList.map((element) => element.tagname)
 
-    // prevent search if query is invalid
-    if (tagList.length != tags_unchecked.length) {
+    // prevent search if tags query is invalid
+    if (tagList.length != tagsUnchecked.length) {
       throw new Error('Invalid tags used in request')
     }
+
+    // topics
+    let topicsUnchecked: string[] = []
+    if (topics) {
+      topicsUnchecked = topics.split(',')
+    }
+
+    // returns length of topics that are valid in DB
+    const topicList = agency
+      ? await this.getExistingTopicsFromRequestTopics(topicsUnchecked, agency)
+      : []
+
+    if (topicList.length != topicsUnchecked.length) {
+      throw new Error('Invalid topics used in request')
+    }
+
+    // returns length of topics and their child topics
+    // since we also want to list posts belonging to subtopics of current topics
+    const topicAndChildTopics = agency
+      ? await this.getChildTopicsFromRequestTopics(topicList, agency)
+      : []
+
+    const rawTopicIds: number[] = topicAndChildTopics.map((topic) => topic.id)
 
     const whereobj = {
       status: PostStatus.Public,
       ...(tagList.length ? { '$tags.tagname$': { [Op.in]: rawTags } } : {}),
-      ...(validAgency ? { agencyId: validAgency?.id } : {}),
+      ...(agency ? { agencyId: agency } : {}),
+      ...(topicList.length ? { topicId: rawTopicIds } : {}),
     }
 
     const orderarray = this.sortFunction(sort)
 
-    //return posts filtered by agency and tags
+    //return posts filtered by agency, topics and tags
     const posts = (await this.Post.findAll({
       where: whereobj,
       order: [orderarray],
@@ -305,6 +336,11 @@ export class PostService {
         },
         { model: this.User, required: true, attributes: ['username'] },
         this.Answer,
+        {
+          model: this.Topic,
+          required: false,
+          attributes: ['name', 'description'],
+        },
       ],
       attributes: [
         'id',
@@ -321,6 +357,7 @@ export class PostService {
         )`),
           'answerCount',
         ],
+        'topicId',
       ],
     })) as PostWithUserTopicTagRelations[]
 

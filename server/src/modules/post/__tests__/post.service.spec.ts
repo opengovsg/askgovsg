@@ -121,7 +121,8 @@ describe('PostService', () => {
       const result = await postService.listPosts({
         sort: SortType.Top,
         tags: mockTag.tagname,
-        agency: mockAgency.shortname,
+        agency: mockAgency.id,
+        topics: mockTopic.name,
       })
 
       // Assert
@@ -133,8 +134,9 @@ describe('PostService', () => {
       // Act
       const result = await postService.listPosts({
         sort: SortType.Top,
-        agency: mockAgency.shortname,
+        agency: mockAgency.id,
         tags: '',
+        topics: '',
         page: 1,
         size: 10,
       })
@@ -148,8 +150,9 @@ describe('PostService', () => {
       // Act
       const result = await postService.listPosts({
         sort: SortType.Top,
-        agency: mockAgency.shortname,
+        agency: mockAgency.id,
         tags: '',
+        topics: '',
         page: 3,
         size: 5,
       })

@@ -7,15 +7,15 @@ import {
   LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
   LIST_POSTS_QUERY_KEY,
 } from '../../services/PostService'
-import { mergeTags } from '../../util/tagsmerger'
 import Pagination from '../Pagination'
 import PostListComponent from '../PostList/PostList.component'
 import Spinner from '../Spinner/Spinner.component'
 
 interface QuestionsListProps {
   sort: string
-  agency: string
+  agency: number
   tags: string
+  topics: string
   pageSize: number
   footerControl?: JSX.Element
   listAnswerable?: boolean
@@ -25,25 +25,25 @@ const QuestionsList = ({
   sort,
   agency,
   tags,
+  topics,
   pageSize,
   footerControl,
   listAnswerable,
 }: QuestionsListProps): JSX.Element => {
   // Pagination
   const [page, setPage] = useState(1)
-  const agencyAndTags = mergeTags(agency, tags)
 
   const { queryKey, queryFn } = listAnswerable
     ? {
         queryKey: [
           LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
-          { sort, tags: agencyAndTags, page, pageSize },
+          { sort, tags, page, pageSize },
         ],
         queryFn: () =>
           listAnswerablePosts({
             withAnswers: true,
             sort,
-            tags: agencyAndTags,
+            tags,
             page,
             size: pageSize,
           }),
@@ -51,9 +51,9 @@ const QuestionsList = ({
     : {
         queryKey: [
           LIST_POSTS_QUERY_KEY,
-          { sort, agency, tags, page, pageSize },
+          { sort, agency, tags, topics, page, pageSize },
         ],
-        queryFn: () => listPosts(sort, agency, tags, page, pageSize),
+        queryFn: () => listPosts(sort, agency, tags, topics, page, pageSize),
       }
 
   const { data, isLoading } = useQuery(queryKey, queryFn, {

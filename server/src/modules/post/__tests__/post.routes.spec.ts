@@ -135,7 +135,7 @@ describe('/posts', () => {
         status: PostStatus.Public,
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
-        topicId: null,
+        topicId: mockTopic.id,
       })
       mockPosts.push(mockPost)
       await PostTag.create({ postId: mockPost.id, tagId: mockTag.id })
