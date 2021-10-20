@@ -13,28 +13,25 @@ import {
 import { useEffect, useState } from 'react'
 import { BiSortAlt2 } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { useLocation, useHistory, useParams } from 'react-router-dom'
-import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import PostQuestionButton from '../../components/PostQuestionButton/PostQuestionButton.component'
 import QuestionsListComponent from '../../components/QuestionsList/QuestionsList.component'
-import SearchBoxComponent from '../../components/SearchBox/SearchBox.component'
-import TagPanel from '../../components/TagPanel/TagPanel.component'
 import TagMenu from '../../components/TagMenu/TagMenu.component'
+import TagPanel from '../../components/TagPanel/TagPanel.component'
 import { useAuth } from '../../contexts/AuthContext'
+import {
+  getAgencyByShortName,
+  GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
+} from '../../services/AgencyService'
 import {
   fetchTags,
   FETCH_TAGS_QUERY_KEY,
   getTagsUsedByAgency,
   GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/TagService'
-import {
-  getAgencyByShortName,
-  GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
-} from '../../services/AgencyService'
 import { isUserPublicOfficer } from '../../services/user.service'
-import { mergeTags } from '../../util/tagsmerger'
 import { getTagsQuery, isSpecified } from '../../util/urlparser'
 
 const HomePage = ({ match }) => {
@@ -72,7 +69,6 @@ const HomePage = ({ match }) => {
   const [sortState, setSortState] = useState(options[1])
   const [queryState, setQueryState] = useState('')
 
-  const agencyAndTags = mergeTags(match.params.agency, queryState)
   const isAuthenticatedOfficer = isUserPublicOfficer(user)
 
   return (
@@ -89,49 +85,6 @@ const HomePage = ({ match }) => {
             : undefined
         }
       />
-      <Box
-        bg="primary.500"
-        h={
-          agency
-            ? { base: '120px', md: '176px' }
-            : { base: '120px', xl: '176px' }
-        }
-        className="top-background"
-      >
-        <Flex
-          direction="row"
-          justifyContent="flex-start"
-          className="home-search"
-        >
-          {/* TODO: might need to do some enforcing to ensure you can only */}
-          {/* enter a single agency in the URL */}
-
-          <Flex
-            h="56px"
-            m="auto"
-            mt={
-              agency
-                ? { base: '20px', md: '56px' }
-                : { base: '4px', xl: '56px' }
-            }
-            pt="!52px"
-            px={{ base: '24px', md: 'auto' }}
-            maxW="680px"
-            w="100%"
-          >
-            <SearchBoxComponent
-              agencyShortName={match.params.agency || agency?.shortname}
-            />
-          </Flex>
-        </Flex>
-        {match.params.agency || agency ? (
-          <Box px="36px" mt="-20px" display={{ base: 'none', lg: 'flex' }}>
-            <AgencyLogo
-              agencyShortName={match.params.agency || agency.shortname}
-            />
-          </Box>
-        ) : null}
-      </Box>
       <Box flex="1">{hasTagsKey ? <TagMenu /> : <TagPanel />}</Box>
       <Flex
         maxW="680px"
