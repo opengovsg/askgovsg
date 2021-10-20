@@ -27,6 +27,7 @@ describe('AuthService', () => {
   let authService: AuthService
   let mockUser: UserModel
   let mockAgency: ModelInstance<Agency>
+  let mockTopic: Topic
 
   beforeAll(async () => {
     db = await createTestDatabase()
@@ -34,6 +35,7 @@ describe('AuthService', () => {
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
     Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
+    Topic = getModelDef<Topic>(db, ModelName.Topic)
     mockAgency = await Agency.create({
       shortname: 'was',
       longname: 'Work Allocation Singapore',
@@ -47,6 +49,12 @@ describe('AuthService', () => {
       username: 'enquiries@was.gov.sg',
       displayname: '',
       agencyId: mockAgency.id,
+    })
+    mockTopic = await Topic.create({
+      name: 'test',
+      description: '',
+      agencyId: mockAgency.id,
+      parentId: null,
     })
     authService = new AuthService({
       emailValidator,
@@ -67,6 +75,7 @@ describe('AuthService', () => {
         status: PostStatus.Public,
         title: 'Question belonging to mock agency',
         userId: mockUser.id,
+        topicId: mockTopic.id,
       })
 
       const hasPermission = await authService.hasPermissionToAnswer(
@@ -92,6 +101,7 @@ describe('AuthService', () => {
         status: PostStatus.Public,
         title: 'Question belonging to mock agency',
         userId: mockUser.id,
+        topicId: mockTopic.id,
       })
 
       const hasPermission = await authService.hasPermissionToAnswer(

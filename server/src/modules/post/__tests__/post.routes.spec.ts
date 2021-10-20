@@ -52,6 +52,7 @@ describe('/posts', () => {
   const mockPosts: Post[] = []
   let mockUser: UserModel
   let mockTag: TagModel
+  let mockTopic: Topic
 
   // Set up service, controller and route
   const authService = {
@@ -89,6 +90,7 @@ describe('/posts', () => {
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
     userService = new UserService({ User, Tag, Agency })
+    Topic = getModelDef<Topic>(db, ModelName.Topic)
     postService = new PostService({ Answer, Post, PostTag, Tag, User, Topic })
     const { id: agencyId } = await Agency.create({
       shortname: 'was',
@@ -110,6 +112,12 @@ describe('/posts', () => {
       link: '',
       hasPilot: true,
       tagType: TagType.Topic,
+    })
+    mockTopic = await Topic.create({
+      name: 'test',
+      description: '',
+      agencyId: mockUser.agencyId,
+      parentId: null,
     })
     for (let title = 1; title <= 20; title++) {
       const mockPost = await Post.create({
@@ -173,6 +181,7 @@ describe('/posts', () => {
         title: 'A title of at least 15 characters',
         description: null,
         tagname: [mockTag.tagname],
+        topicname: mockTopic.name,
       }
 
       // Act

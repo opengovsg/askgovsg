@@ -39,6 +39,7 @@ describe('PostService', () => {
   const mockPosts: Post[] = []
   let mockUser: UserModel
   let mockTag: TagModel
+  let mockTopic: Topic
 
   beforeAll(async () => {
     db = await createTestDatabase()
@@ -72,6 +73,12 @@ describe('PostService', () => {
       hasPilot: true,
       tagType: TagType.Topic,
     })
+    mockTopic = await Topic.create({
+      name: 'mock',
+      description: '',
+      agencyId: mockUser.agencyId,
+      parentId: null,
+    })
     for (let title = 1; title <= 20; title++) {
       const mockPost = await Post.create({
         title: title.toString(),
@@ -79,6 +86,7 @@ describe('PostService', () => {
         status: PostStatus.Public,
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
+        topicId: mockTopic.id,
       })
       mockPosts.push(mockPost)
       await PostTag.create({ postId: mockPost.id, tagId: mockTag.id })
@@ -208,16 +216,43 @@ describe('PostService', () => {
   })
 
   describe('createPost', () => {
-    it('throws on bad tag', async () => {
+    it('throws when at least one tag and topic does not exist', async () => {
       const badPost = {
         title: 'Bad',
         description: 'Bad',
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
         tagname: ['badtag'],
+        topicname: 'badtopic',
       }
       await expect(postService.createPost(badPost)).rejects.toStrictEqual(
+        new Error('At least one valid tag or topic is required'),
+      )
+    })
+    it('throws on bad tag', async () => {
+      const badTagPost = {
+        title: 'Bad',
+        description: 'Bad',
+        userId: mockUser.id,
+        agencyId: mockUser.agencyId,
+        tagname: ['badtag'],
+        topicname: mockTopic.name,
+      }
+      await expect(postService.createPost(badTagPost)).rejects.toStrictEqual(
         new Error('At least one tag does not exist'),
+      )
+    })
+    it('throws on bad topic', async () => {
+      const badTopicPost = {
+        title: 'Bad',
+        description: 'Bad',
+        userId: mockUser.id,
+        agencyId: mockUser.agencyId,
+        tagname: [mockTag.tagname],
+        topicname: 'badtopic',
+      }
+      await expect(postService.createPost(badTopicPost)).rejects.toStrictEqual(
+        new Error('Topic does not exist'),
       )
     })
     it('creates post on good input', async () => {
@@ -227,6 +262,7 @@ describe('PostService', () => {
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
         tagname: [mockTag.tagname],
+        topicname: mockTopic.name,
       }
 
       const postId = await postService.createPost(postParams)

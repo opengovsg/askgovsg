@@ -176,11 +176,69 @@ export class PostService {
     return existingTags
   }
 
+  getTopicsUsedByAgencyFlatlist = async (
+    agencyId: number,
+  ): Promise<Topic[]> => {
+    const topics = await this.Topic.findAll({
+      where: { agencyId: agencyId },
+    })
+    return topics
+  }
+
+  getExistingTopicFromRequestTopic = async (
+    topicName: string,
+    agencyId: number,
+  ): Promise<Topic | null> => {
+    const existingTopic: Topic | null = await this.Topic.findOne({
+      where: { name: topicName, agencyId: agencyId },
+    })
+    return existingTopic
+  }
+
+  getChildTopicsFromRequestTopic = async (
+    agencyId: number,
+    topicName: string,
+  ): Promise<Topic[]> => {
+    const parentTopic = await this.Topic.findOne({
+      where: { name: topicName },
+    })
+
+    //Get list of topics belonging to agency
+    const agencyTopics: Topic[] = await this.Topic.findAll({
+      where: {
+        agencyId: agencyId,
+      },
+    })
+
+    let parentAndChildTopics: Topic[] = []
+
+    if (parentTopic) {
+      parentAndChildTopics.push(parentTopic)
+
+      let currGenChildTopics = agencyTopics.filter(
+        (topic) => topic.parentId === parentTopic.id,
+      )
+      parentAndChildTopics = parentAndChildTopics.concat(currGenChildTopics)
+
+      while (currGenChildTopics !== []) {
+        // let nextGenChildTopics: Topic[] = []
+        const currGenChildTopicIds = currGenChildTopics.map((topic) => topic.id)
+        const nextGenChildTopics = agencyTopics.filter(
+          (topic) =>
+            topic.parentId && currGenChildTopicIds.includes(topic.parentId),
+        )
+        parentAndChildTopics = parentAndChildTopics.concat(nextGenChildTopics)
+        currGenChildTopics = nextGenChildTopics
+      }
+    }
+    return parentAndChildTopics
+  }
+
   /**
    * Lists all post
    * @param sort Sort by popularity or recent
    * @param tags Tags to filter by
-   * @param topic to filter by
+   * @param topic Topic to filter by
    * @param size Number of posts to return
    * @param page If size is given, specify which page to return
    */
@@ -351,7 +409,9 @@ export class PostService {
     const filteredPostIds = postsToMap.map(({ id }) => id)
 
     const returnPosts = await this.Post.findAll({
-      where: { id: filteredPostIds },
+      where: {
+        id: filteredPostIds,
+      },
       order: [this.sortFunction(sort)],
       include: [
         {
@@ -466,18 +526,28 @@ export class PostService {
     topicname: string
   }): Promise<number> => {
     const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
+    const topicValid = await this.getExistingTopicFromRequestTopic(
+      newPost.topicname,
+      newPost.agencyId,
+    )
 
-    if (newPost.tagname.length !== tagList.length) {
-      throw new Error('At least one tag does not exist')
+    // Only create post if tag or topic exists
+    if (!topicValid && newPost.tagname.length !== tagList.length) {
+      throw new Error('At least one valid tag or topic is required')
     } else {
-      // Only create post if tag exists
+      if (newPost.tagname.length !== tagList.length) {
+        throw new Error('At least one tag does not exist')
+      }
+      if (!topicValid && newPost.topicname) {
+        throw new Error('Topic does not exist')
+      }
       const post = await this.Post.create({
         title: newPost.title,
         description: newPost.description,
         userId: newPost.userId,
         agencyId: newPost.agencyId,
         status: PostStatus.Private,
-        topicId: null,
+        topicId: topicValid?.id ?? null,
       })
       for (const tag of tagList) {
         // Create a posttag for each tag
