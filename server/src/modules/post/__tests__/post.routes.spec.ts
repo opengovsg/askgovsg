@@ -53,6 +53,7 @@ describe('/posts', () => {
   let mockUser: UserModel
   let mockTag: TagModel
   let mockTopic: Topic
+  let mockAgency: Agency
 
   // Set up service, controller and route
   const authService = {
@@ -91,8 +92,16 @@ describe('/posts', () => {
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
     userService = new UserService({ User, Tag, Agency })
     Topic = getModelDef<Topic>(db, ModelName.Topic)
-    postService = new PostService({ Answer, Post, PostTag, Tag, User, Topic })
-    const { id: agencyId } = await Agency.create({
+    postService = new PostService({
+      Answer,
+      Post,
+      PostTag,
+      Tag,
+      User,
+      Topic,
+      Agency,
+    })
+    mockAgency = await Agency.create({
       shortname: 'was',
       longname: 'Work Allocation Singapore',
       email: 'enquiries@was.gov.sg',
@@ -104,7 +113,7 @@ describe('/posts', () => {
     mockUser = await User.create({
       username: 'answerer@test.gov.sg',
       displayname: '',
-      agencyId,
+      agencyId: mockAgency.id,
     })
     mockTag = await Tag.create({
       tagname: 'test',

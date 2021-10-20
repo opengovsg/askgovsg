@@ -1,6 +1,6 @@
 import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
-import { Post } from '~shared/types/base'
+import { Agency, Post } from '~shared/types/base'
 import { createLogger } from '../../bootstrap/logging'
 import { Message } from '../../types/message-type'
 import { UpdatePostRequestDto } from '../../types/post-type'
@@ -41,6 +41,7 @@ export class PostController {
    * @query sort Sort by popularity or recent
    * @query tags Tags to filter by
    * @query size Number of posts to return
+   * @query agency Agency shortname to filter by
    * @query page If size is given, specify which page to return
    * @return 200 with posts and totalItem for pagination
    * @return 422 if invalid tags are used in request
@@ -55,12 +56,14 @@ export class PostController {
       size?: number
       sort?: SortType
       tags?: string
+      agency?: string
     }
   > = async (req, res) => {
-    const { page, size, sort = SortType.Top, tags = '' } = req.query
+    const { page, size, sort = SortType.Top, tags = '', agency } = req.query
     try {
       const data = await this.postService.listPosts({
         sort: sort as SortType,
+        agency: agency as string,
         tags: tags as string,
         page: page,
         size: size,

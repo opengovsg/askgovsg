@@ -6,7 +6,7 @@ import Sequelize, {
   ProjectionAlias,
 } from 'sequelize'
 import { PostCreation } from 'src/models/posts.model'
-import { Post, PostStatus, Topic } from '~shared/types/base'
+import { Post, PostStatus, Topic, Agency } from '~shared/types/base'
 import { Answer, PostTag, Tag, User } from '../../models'
 import { PostEditType } from '../../types/post-type'
 import { ModelDef } from '../../types/sequelize'
@@ -35,6 +35,7 @@ export class PostService {
   private Tag: ModelCtor<Tag>
   private User: ModelCtor<User>
   private Topic: ModelDef<Topic>
+  private Agency: ModelDef<Agency>
   constructor({
     Answer,
     Post,
@@ -42,6 +43,7 @@ export class PostService {
     Tag,
     User,
     Topic,
+    Agency,
   }: {
     Answer: ModelCtor<Answer>
     Post: ModelDef<Post, PostCreation>
@@ -49,6 +51,7 @@ export class PostService {
     Tag: ModelCtor<Tag>
     User: ModelCtor<User>
     Topic: ModelDef<Topic>
+    Agency: ModelDef<Agency>
   }) {
     this.Answer = Answer
     this.Post = Post
@@ -56,6 +59,7 @@ export class PostService {
     this.Tag = Tag
     this.User = User
     this.Topic = Topic
+    this.Agency = Agency
   }
 
   private answerCountLiteral: ProjectionAlias = [
@@ -237,6 +241,7 @@ export class PostService {
   /**
    * Lists all post
    * @param sort Sort by popularity or recent
+   * @param agency Agency shortname to filter by
    * @param tags Tags to filter by
    * @param topic Topic to filter by
    * @param size Number of posts to return
@@ -244,11 +249,13 @@ export class PostService {
    */
   listPosts = async ({
     sort,
+    agency,
     tags,
     page,
     size,
   }: {
     sort: SortType
+    agency: string
     tags: string
     page?: number
     size?: number
@@ -256,7 +263,12 @@ export class PostService {
     posts: Post[]
     totalItems: number
   }> => {
-    // basic
+    // check for valid agency
+    const validAgency = await this.Agency.findOne({
+      where: { shortname: agency || null },
+    })
+
+    // split tags
     let tags_unchecked: string[] = []
 
     if (tags) {
@@ -275,12 +287,13 @@ export class PostService {
 
     const whereobj = {
       status: PostStatus.Public,
-      ...(tagList.length ? { '$tags.tagname$': rawTags } : {}),
+      ...(tagList.length ? { '$tags.tagname$': { [Op.in]: rawTags } } : {}),
+      ...(validAgency ? { agencyId: validAgency?.id } : {}),
     }
 
     const orderarray = this.sortFunction(sort)
 
-    // OR search and retrieve IDs of the respective posts
+    //return posts filtered by agency and tags
     const posts = (await this.Post.findAll({
       where: whereobj,
       order: [orderarray],
@@ -288,65 +301,33 @@ export class PostService {
         {
           model: this.Tag,
           required: true,
-          attributes: ['tagname', 'description'],
+          attributes: ['tagname', 'description', 'tagType'],
         },
         { model: this.User, required: true, attributes: ['username'] },
         this.Answer,
       ],
-      attributes: ['id'],
+      attributes: [
+        'id',
+        'userId',
+        'title',
+        'description',
+        'createdAt',
+        'views',
+        [
+          Sequelize.literal(`(
+          SELECT COUNT(DISTINCT answers.id)
+          FROM answers 
+          WHERE answers.postId = post.id
+        )`),
+          'answerCount',
+        ],
+      ],
     })) as PostWithUserTopicTagRelations[]
 
     if (!posts) {
       return { posts: [], totalItems: 0 }
     } else {
-      // TODO: Optimize to merge the 2 requests into one
-      // Two queries used as when I search for specific tags, the response
-      // will only return tags which are matching, not all tags associated
-      // with a question
-
-      // get only the IDs we need via filtering
-      let id_array = []
-      if (tagList.length > 0) {
-        const filterPosts = posts.filter(
-          (e) => e.tags.length == tagList.length || !tagList.length,
-        )
-        // store IDs in an array
-        id_array = filterPosts.map((element) => element.id)
-      } else {
-        id_array = posts.map((element) => element.id)
-      }
-      // get posts based on id, displaying all properties
-      const returnPosts = await this.Post.findAll({
-        where: { id: id_array },
-        order: [orderarray],
-        include: [
-          {
-            model: this.Tag,
-            required: true,
-            attributes: ['tagname', 'description', 'tagType'],
-          },
-          { model: this.User, required: true, attributes: ['username'] },
-          this.Answer,
-        ],
-        attributes: [
-          'id',
-          'userId',
-          'agencyId',
-          'title',
-          'description',
-          'createdAt',
-          'views',
-          [
-            Sequelize.literal(`(
-            SELECT COUNT(DISTINCT answers.id)
-            FROM answers 
-            WHERE answers.postId = post.id
-          )`),
-            'answerCount',
-          ],
-        ],
-      })
-      return this.getPaginatedPosts(returnPosts, page, size)
+      return this.getPaginatedPosts(posts, page, size)
     }
   }
 

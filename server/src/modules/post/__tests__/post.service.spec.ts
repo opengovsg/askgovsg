@@ -40,6 +40,7 @@ describe('PostService', () => {
   let mockUser: UserModel
   let mockTag: TagModel
   let mockTopic: Topic
+  let mockAgency: Agency
 
   beforeAll(async () => {
     db = await createTestDatabase()
@@ -51,8 +52,16 @@ describe('PostService', () => {
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
     Topic = getModelDef<Topic>(db, ModelName.Topic)
-    postService = new PostService({ Answer, Post, PostTag, Tag, User, Topic })
-    const { id: agencyId } = await Agency.create({
+    postService = new PostService({
+      Answer,
+      Post,
+      PostTag,
+      Tag,
+      User,
+      Topic,
+      Agency,
+    })
+    mockAgency = await Agency.create({
       shortname: 'was',
       longname: 'Work Allocation Singapore',
       email: 'enquiries@was.gov.sg',
@@ -64,7 +73,7 @@ describe('PostService', () => {
     mockUser = await User.create({
       username: 'answerer@test.gov.sg',
       displayname: '',
-      agencyId,
+      agencyId: mockAgency.id,
     })
     mockTag = await Tag.create({
       tagname: 'test',
@@ -112,6 +121,7 @@ describe('PostService', () => {
       const result = await postService.listPosts({
         sort: SortType.Top,
         tags: mockTag.tagname,
+        agency: mockAgency.shortname,
       })
 
       // Assert
@@ -123,6 +133,7 @@ describe('PostService', () => {
       // Act
       const result = await postService.listPosts({
         sort: SortType.Top,
+        agency: mockAgency.shortname,
         tags: '',
         page: 1,
         size: 10,
@@ -137,6 +148,7 @@ describe('PostService', () => {
       // Act
       const result = await postService.listPosts({
         sort: SortType.Top,
+        agency: mockAgency.shortname,
         tags: '',
         page: 3,
         size: 5,

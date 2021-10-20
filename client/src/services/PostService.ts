@@ -23,12 +23,13 @@ export const GET_POST_BY_ID_QUERY_KEY = 'getPostById'
 
 export const listPosts = async (
   sort?: string,
+  agency?: string,
   joinedTags?: string,
   page?: number,
   size?: number,
 ): Promise<GetPostsDto> => {
   return ApiClient.get<GetPostsDto>(`${POST_API_BASE}`, {
-    params: { sort, tags: joinedTags, page, size },
+    params: { sort, agency, tags: joinedTags, page, size },
   }).then(({ data }) => data)
 }
 export const LIST_POSTS_QUERY_KEY = 'listPosts'

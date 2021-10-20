@@ -51,9 +51,9 @@ const QuestionsList = ({
     : {
         queryKey: [
           LIST_POSTS_QUERY_KEY,
-          { sort, agencyAndTags, page, pageSize },
+          { sort, agency, tags, page, pageSize },
         ],
-        queryFn: () => listPosts(sort, agencyAndTags, page, pageSize),
+        queryFn: () => listPosts(sort, agency, tags, page, pageSize),
       }
 
   const { data, isLoading } = useQuery(queryKey, queryFn, {
