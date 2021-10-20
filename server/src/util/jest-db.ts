@@ -38,6 +38,7 @@ export const createTestDatabase = async (): Promise<Sequelize> => {
   const Agency = defineAgency(sequelize, { User })
   const Topic = defineTopic(sequelize, { Agency })
   const { Post, PostTag } = definePostAndPostTag(sequelize, {
+    Agency,
     User,
     Tag,
     Topic,

@@ -1,6 +1,6 @@
-import { Sequelize, DataTypes } from 'sequelize'
-import { ModelDef, Creation } from '../types/sequelize'
-import { Post, PostStatus, Topic, User, Tag } from '~shared/types/base'
+import { DataTypes, Sequelize } from 'sequelize'
+import { Agency, Post, PostStatus, Tag, Topic, User } from '~shared/types/base'
+import { Creation, ModelDef } from '../types/sequelize'
 
 export interface PostTag {
   postId: number
@@ -21,9 +21,15 @@ export const definePostAndPostTag = (
   sequelize: Sequelize,
   {
     User,
+    Agency,
     Tag,
     Topic,
-  }: { User: ModelDef<User>; Tag: ModelDef<Tag>; Topic: ModelDef<Topic> },
+  }: {
+    User: ModelDef<User>
+    Agency: ModelDef<Agency>
+    Tag: ModelDef<Tag>
+    Topic: ModelDef<Topic>
+  },
 ): { Post: ModelDef<Post, PostCreation>; PostTag: ModelDef<PostTag> } => {
   const Post: ModelDef<Post, PostCreation> = sequelize.define('post', {
     title: {
@@ -57,6 +63,8 @@ export const definePostAndPostTag = (
   // Define associations for Post
   User.hasMany(Post)
   Post.belongsTo(User)
+  Agency.hasMany(Post)
+  Post.belongsTo(Agency)
   Topic.hasMany(Post)
   Post.belongsTo(Topic)
   Post.belongsToMany(Tag, {

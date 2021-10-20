@@ -8,6 +8,7 @@ import { ControllerHandler } from '../../types/response-handler'
 import { SortType } from '../../types/sort-type'
 import { createValidationErrMessage } from '../../util/validation-error'
 import { AuthService } from '../auth/auth.service'
+import { UserService } from '../user/user.service'
 import {
   PostService,
   PostWithUserTagRelatedPostRelations,
@@ -19,16 +20,20 @@ const logger = createLogger(module)
 export class PostController {
   private authService: Public<AuthService>
   private postService: Public<PostService>
+  private userService: Public<UserService>
 
   constructor({
     authService,
     postService,
+    userService,
   }: {
     authService: Public<AuthService>
     postService: Public<PostService>
+    userService: Public<UserService>
   }) {
     this.authService = authService
     this.postService = postService
+    this.userService = userService
   }
 
   /**
@@ -241,19 +246,11 @@ export class PostController {
     }
 
     try {
-      // check permissions
-      const listOfDisallowedTags =
-        await this.authService.getDisallowedTagsForUser(
-          req.user?.id,
-          await this.postService.getExistingTagsFromRequestTags(
-            req.body.tagname,
-          ),
-        )
-      if (listOfDisallowedTags.length > 0) {
-        return res.status(StatusCodes.FORBIDDEN).json({
-          message:
-            'You do not have permissions to post this question with the following tags: ' +
-            listOfDisallowedTags.map((x) => x.tagname).join(', '),
+      const user = await this.userService.loadUser(req.user?.id)
+
+      if (!user?.agencyId) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message: 'The current user is not associated with an agency',
         })
       }
 
@@ -261,6 +258,7 @@ export class PostController {
         title: req.body.title,
         description: req.body.description,
         userId: req.user?.id,
+        agencyId: user?.agencyId,
         tagname: req.body.tagname,
       })
 

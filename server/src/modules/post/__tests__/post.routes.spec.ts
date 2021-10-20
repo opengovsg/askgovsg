@@ -6,11 +6,11 @@ import { ModelCtor } from 'sequelize/types'
 import { ModelDef } from '../../../types/sequelize'
 import supertest from 'supertest'
 import {
+  Agency,
   PermissionType,
   Post,
   PostStatus,
   TagType,
-  Topic,
 } from '~shared/types/base'
 import {
   Answer as AnswerModel,
@@ -31,6 +31,7 @@ import {
 import { PostController } from '../post.controller'
 import { routePosts } from '../post.routes'
 import { PostService } from '../post.service'
+import { UserService } from '../../user/user.service'
 
 describe('/posts', () => {
   let db: Sequelize
@@ -40,8 +41,9 @@ describe('/posts', () => {
   let Tag: ModelCtor<TagModel>
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
-  let Topic: ModelDef<Topic>
+  let Agency: ModelDef<Agency>
 
+  let userService: UserService
   let postService: PostService
   let controller: PostController
 
@@ -53,7 +55,6 @@ describe('/posts', () => {
   const authService = {
     checkIfWhitelistedOfficer: jest.fn(),
     hasPermissionToAnswer: jest.fn(),
-    getDisallowedTagsForUser: jest.fn(),
     verifyUserCanViewPost: jest.fn(),
     isOfficerEmail: jest.fn(),
     verifyUserCanModifyTopic: jest.fn(),
@@ -61,7 +62,7 @@ describe('/posts', () => {
   }
 
   const authenticate: ControllerHandler = (req, res, next) => {
-    req.user = { id: 1 }
+    req.user = { id: mockUser.id }
     next()
   }
 
@@ -79,15 +80,27 @@ describe('/posts', () => {
   beforeAll(async () => {
     db = await createTestDatabase()
     Answer = getModel<AnswerModel>(db, ModelName.Answer)
+    Agency = getModelDef<Agency>(db, ModelName.Agency)
     Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
     PostTag = getModelDef<PostTag>(db, ModelName.PostTag)
     Tag = getModel<TagModel>(db, ModelName.Tag)
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
+    userService = new UserService({ User, Tag })
     postService = new PostService({ Answer, Post, PostTag, Tag, User })
+    const { id: agencyId } = await Agency.create({
+      shortname: 'was',
+      longname: 'Work Allocation Singapore',
+      email: 'enquiries@was.gov.sg',
+      website: null,
+      noEnquiriesMessage: null,
+      logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
+      displayOrder: [],
+    })
     mockUser = await User.create({
       username: 'answerer@test.gov.sg',
       displayname: '',
+      agencyId,
     })
     mockTag = await Tag.create({
       tagname: 'test',
@@ -102,6 +115,7 @@ describe('/posts', () => {
         description: null,
         status: PostStatus.Public,
         userId: mockUser.id,
+        agencyId: mockUser.agencyId,
       })
       mockPosts.push(mockPost)
       await PostTag.create({ postId: mockPost.id, tagId: mockTag.id })
@@ -111,7 +125,7 @@ describe('/posts', () => {
       tagId: mockTag.id,
       role: PermissionType.Answerer,
     })
-    controller = new PostController({ authService, postService })
+    controller = new PostController({ userService, authService, postService })
     app.use(path, routePosts({ controller, authMiddleware }))
   })
 
@@ -123,7 +137,7 @@ describe('/posts', () => {
     await db.close()
   })
 
-  describe('/posts', () => {
+  describe('GET /posts', () => {
     it('returns 200 and data on posts on request', async () => {
       // Act
       const response = await request.get(path)
@@ -135,7 +149,7 @@ describe('/posts', () => {
     })
   })
 
-  describe('/posts/answerable', () => {
+  describe('GET /posts/answerable', () => {
     it('returns 200 and data on posts on request', async () => {
       // Act
       const response = await request.get(path + '/answerable').query({
@@ -147,6 +161,29 @@ describe('/posts', () => {
       expect(response.status).toEqual(StatusCodes.OK)
       expect(response.body.posts.length).toStrictEqual(mockPosts.length)
       expect(response.body.totalItems).toStrictEqual(mockPosts.length)
+    })
+  })
+
+  describe('POST /posts', () => {
+    it('returns 200 and creates a post on request', async () => {
+      const body = {
+        title: 'A title of at least 15 characters',
+        description: null,
+        tagname: [mockTag.tagname],
+      }
+
+      // Act
+      const {
+        status,
+        body: { data: postId },
+      } = await request.post(path).send(body)
+      const post = await Post.findByPk(postId)
+      const postTags = await PostTag.findAll({ where: { postId } })
+
+      // Assert
+      expect(status).toEqual(StatusCodes.OK)
+      expect(post).toBeDefined()
+      expect(postTags.length).toBe(1)
     })
   })
 })

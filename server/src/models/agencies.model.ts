@@ -43,9 +43,6 @@ export const defineAgency = (
     // belonging to an agency
     displayOrder: {
       type: DataTypes.JSON,
-      validate: {
-        isArray: true,
-      },
       allowNull: true,
     },
   })

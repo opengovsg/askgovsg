@@ -24,6 +24,7 @@ export const { User, Permission } = defineUserAndPermission(sequelize, {
 export const Agency = defineAgency(sequelize, { User })
 export const Topic = defineTopic(sequelize, { Agency })
 export const { Post, PostTag } = definePostAndPostTag(sequelize, {
+  Agency,
   User,
   Tag,
   Topic,
