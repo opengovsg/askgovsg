@@ -14,7 +14,6 @@ export type PermissionWithRelations = Permission & {
 
 export type PostWithRelations = Post & {
   userId: number
-  topicId: number
 }
 
 export class AuthService {

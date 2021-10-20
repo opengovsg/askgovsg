@@ -9,6 +9,7 @@ export type BasePostDto = BaseModelParams & {
   description: string
   views: number
   status: PostStatus
+  topicId: number | null
 }
 
 // Backend does not select updatedAt

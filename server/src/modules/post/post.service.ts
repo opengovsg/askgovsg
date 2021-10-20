@@ -478,7 +478,7 @@ export class PostService {
       include: [
         this.Tag,
         { model: this.User, attributes: ['displayname'] },
-        { model: this.Topic },
+        { model: this.Topic, attributes: ['name', 'description'] },
       ],
       attributes: [
         'id',
