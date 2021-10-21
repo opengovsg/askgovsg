@@ -13,10 +13,6 @@ import { ModelDef } from '../../types/sequelize'
 import { SortType } from '../../types/sort-type'
 import { PostWithRelations } from '../auth/auth.service'
 
-export type UserWithTagRelations = {
-  getTags: () => Tag[]
-}
-
 export type PostWithUserTagRelations = Model &
   PostWithRelations & {
     countAnswers: () => number
@@ -268,6 +264,7 @@ export class PostService {
         attributes: [
           'id',
           'userId',
+          'agencyId',
           'title',
           'description',
           'createdAt',
@@ -313,24 +310,14 @@ export class PostService {
     posts: Post[]
     totalItems: number
   }> => {
-    const user = (await this.User.findOne({
-      where: { id: userId },
-    })) as UserWithTagRelations | null
+    const user = await this.User.findByPk(userId)
     if (!user) {
       throw new Error('Unable to find user with given ID')
     }
 
-    const tagInstances = await user.getTags()
-    const tagIds = tagInstances.map((t) => t.id)
-
-    const postTagInstances = await this.PostTag.findAll({
-      where: { tagId: tagIds },
-    })
-    const postIds = postTagInstances.map((p) => p.postId)
-
     const posts = (await this.Post.findAll({
       where: {
-        id: postIds,
+        agencyId: user.agencyId,
         status: { [Op.ne]: PostStatus.Archived },
         ...(tags ? { '$tags.tagname$': tags } : {}),
       },
@@ -369,6 +356,7 @@ export class PostService {
       attributes: [
         'id',
         'userId',
+        'agencyId',
         'title',
         'description',
         'createdAt',
@@ -422,6 +410,7 @@ export class PostService {
       attributes: [
         'id',
         'userId',
+        'agencyId',
         'title',
         'description',
         'createdAt',
