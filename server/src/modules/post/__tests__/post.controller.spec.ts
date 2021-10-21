@@ -93,6 +93,21 @@ describe('PostController', () => {
       expect(response.body).toStrictEqual({ message: error.message })
     })
 
+    it('should return 422 on invalid topics used in request', async () => {
+      // Arrange
+      const error = new Error('Invalid topics used in request')
+      postService.listPosts.mockImplementation(() => {
+        throw error
+      })
+
+      // Act
+      const response = await request.get(path)
+
+      // Assert
+      expect(response.status).toEqual(422)
+      expect(response.body).toStrictEqual({ message: error.message })
+    })
+
     it('should return 500 on any other errors', async () => {
       // Arrange
       const error = new Error('Database error')

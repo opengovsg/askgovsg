@@ -253,7 +253,7 @@ export class PostService {
    * @param sort Sort by popularity or recent
    * @param agency Agency id to filter by
    * @param tags Tags to filter by
-   * @param topics Topic to filter by
+   * @param topics Topics to filter by
    * @param size Number of posts to return
    * @param page If size is given, specify which page to return
    */

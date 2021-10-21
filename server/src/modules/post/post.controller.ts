@@ -42,10 +42,11 @@ export class PostController {
    * @query tags Tags to filter by
    * @query topics Agency's topics to filter by
    * @query size Number of posts to return
-   * @query agency Agency shortname to filter by
+   * @query agency Agency id to filter by
    * @query page If size is given, specify which page to return
    * @return 200 with posts and totalItem for pagination
    * @return 422 if invalid tags are used in request
+   * @return 422 if invalid topics are used in request
    * @return 500 when database error occurs
    */
   listPosts: ControllerHandler<
@@ -82,6 +83,8 @@ export class PostController {
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === 'Invalid tags used in request') {
+          return res.status(422).json({ message: error.message })
+        } else if (error.message === 'Invalid topics used in request') {
           return res.status(422).json({ message: error.message })
         } else {
           logger.error({
