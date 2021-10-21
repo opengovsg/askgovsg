@@ -16,9 +16,11 @@ import { PostController } from '../modules/post/post.controller'
 import { routePosts } from '../modules/post/post.routes'
 import { TagsController } from '../modules/tags/tags.controller'
 import { routeTags } from '../modules/tags/tags.routes'
+import { TopicsController } from '../modules/topics/topics.controller'
+import { routeTopics } from '../modules/topics/topics.routes'
 
 type ApiRouterOptions = {
-  agency: AgencyController
+  agency: { controller: AgencyController; topicsController: TopicsController }
   answers: {
     controller: AnswersController
     authMiddleware: AuthMiddleware
@@ -42,6 +44,10 @@ type ApiRouterOptions = {
     authMiddleware: AuthMiddleware
     maxFileSize: number
   }
+  topics: {
+    controller: TopicsController
+    authMiddleware: AuthMiddleware
+  }
 }
 
 export const api = (options: ApiRouterOptions): express.Router => {
@@ -53,8 +59,9 @@ export const api = (options: ApiRouterOptions): express.Router => {
   router.use('/files', routeFiles(options.file))
   router.use('/environment', routeEnv({ controller: options.env }))
   router.use('/posts/answers', routeAnswers(options.answers))
-  router.use('/agencies', routeAgencies({ controller: options.agency }))
+  router.use('/agencies', routeAgencies(options.agency))
   router.use('/enquiries', routeEnquiries({ controller: options.enquiries }))
+  router.use('/topics', routeTopics(options.topics))
 
   return router
 }

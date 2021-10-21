@@ -32,7 +32,7 @@ export class RecaptchaService {
     response?: unknown,
     remoteip?: string,
   ): ResultAsync<
-    true,
+    boolean,
     CaptchaConnectionError | VerifyCaptchaError | MissingCaptchaError
   > => {
     if (!response || typeof response !== 'string') {

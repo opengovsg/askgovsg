@@ -3,16 +3,17 @@ import session from 'express-session'
 import { StatusCodes } from 'http-status-codes'
 import minimatch from 'minimatch'
 import { ModelCtor, Sequelize } from 'sequelize'
+import { PostCreation } from 'src/models/posts.model'
 import supertest, { Session } from 'supertest-session'
+import { Agency, Post, Topic } from '~shared/types/base'
 import { createAuthedSession, logoutSession } from '../../../../tests/mock-auth'
 import { passportConfig } from '../../../bootstrap/passport'
 import {
   Permission as PermissionModel,
-  PostTag,
   Token as TokenModel,
   User as UserModel,
 } from '../../../models'
-import { ModelDef } from '../../../types/sequelize'
+import { ModelDef, ModelInstance } from '../../../types/sequelize'
 import {
   createTestDatabase,
   getModel,
@@ -48,22 +49,42 @@ describe('/auth', () => {
   // Set up sequelize
   let db: Sequelize
   let Token: ModelCtor<TokenModel>
+  let Agency: ModelDef<Agency>
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
-  let PostTag: ModelDef<PostTag>
+  let Topic: ModelDef<Topic>
+  let Post: ModelDef<Post, PostCreation>
   let mockUser: UserModel
+  let mockAgency: ModelInstance<Agency>
 
   beforeAll(async () => {
     db = await createTestDatabase()
     Token = getModel<TokenModel>(db, ModelName.Token)
+    Agency = getModelDef<Agency>(db, ModelName.Agency)
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
-    PostTag = getModelDef<PostTag>(db, ModelName.PostTag)
+    Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
+    mockAgency = await Agency.create({
+      shortname: 'was',
+      longname: 'Work Allocation Singapore',
+      email: 'enquiries@was.gov.sg',
+      website: null,
+      noEnquiriesMessage: null,
+      logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
+      displayOrder: [],
+    })
     mockUser = await User.create({
       username: VALID_EMAIL,
       displayname: '',
+      agencyId: mockAgency.id,
     })
-    authService = new AuthService({ emailValidator, User, Permission, PostTag })
+    authService = new AuthService({
+      emailValidator,
+      User,
+      Permission,
+      Post,
+      Topic,
+    })
     authController = new AuthController({
       mailService,
       authService,

@@ -36,6 +36,7 @@ import { promises as fs } from 'fs'
 // Agency ID is the ID of agency tag
 const user = { id: 4 }
 const agencyTag = { id: 5 }
+const agencyId = 5
 const fileName = 'example_data.csv'
 // **********************************
 
@@ -117,6 +118,7 @@ const fileName = 'example_data.csv'
           description: description,
           status: PostStatus.Public,
           userId: user.id,
+          agencyId,
         },
         { transaction: t },
       )

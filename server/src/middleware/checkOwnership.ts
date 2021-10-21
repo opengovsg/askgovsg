@@ -1,19 +1,16 @@
+import { NextFunction, Request, Response } from 'express'
+import { StatusCodes } from 'http-status-codes'
+import { Post } from '~shared/types/base'
 import {
   Answer as AnswerModel,
   Post as PostModel,
-  Tag as TagModel,
   User as UserModel,
 } from '../bootstrap/sequelize'
-import { Request, Response, NextFunction } from 'express'
-import { Answer, Tag } from '../models'
-import { TagType, Post } from '~shared/types/base'
-import { StatusCodes } from 'http-status-codes'
+import { Answer } from '../models'
 
 type AnswerWithRelations = Answer & {
   userId: number
-  post: Post & {
-    tags: Tag[]
-  }
+  post: Post
 }
 
 const checkOwnership = async (
@@ -27,7 +24,6 @@ const checkOwnership = async (
     include: [
       {
         model: PostModel,
-        include: [{ model: TagModel, where: { tagType: TagType.Agency } }],
       },
     ],
   })) as AnswerWithRelations
@@ -42,9 +38,7 @@ const checkOwnership = async (
       .json({ message: 'User not signed in' })
   }
 
-  const user = (await UserModel.findByPk(req.user.id, {
-    include: [{ model: TagModel, where: { tagType: TagType.Agency } }],
-  })) as { tags: Tag[] } | null
+  const user = await UserModel.findByPk(req.user.id)
 
   if (!user) {
     return res.status(StatusCodes.FORBIDDEN).json({
@@ -52,18 +46,8 @@ const checkOwnership = async (
     })
   }
 
-  const userAgencyTagIds = user.tags.map((userTag) => userTag.id)
-  const postAgencyTagIds = results.post.tags.map((postTag) => postTag.id)
-  const intersectingTagIds = userAgencyTagIds.filter((id) =>
-    postAgencyTagIds.includes(id),
-  )
-
-  if (intersectingTagIds.length === 0) {
-    const message = `User ${
-      req.user.id
-    } is not authorized to manage agencies ${results.post.tags
-      .map((postTag) => postTag.tagname)
-      .join(',')}`
+  if (user?.agencyId !== results.post.agencyId) {
+    const message = `User ${req.user.id} is not authorized to manage this question`
     return res.status(StatusCodes.FORBIDDEN).json({ message: message })
   }
 

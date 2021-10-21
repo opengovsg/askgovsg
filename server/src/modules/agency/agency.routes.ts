@@ -1,11 +1,14 @@
 import express from 'express'
 import { AgencyController } from './agency.controller'
-import { query } from 'express-validator'
+import { TopicsController } from '../topics/topics.controller'
+import { query, param } from 'express-validator'
 
 export const routeAgencies = ({
   controller,
+  topicsController,
 }: {
   controller: AgencyController
+  topicsController: TopicsController
 }): express.Router => {
   const router = express.Router()
 
@@ -32,5 +35,18 @@ export const routeAgencies = ({
    * @access Public
    */
   router.get('/:agencyId', controller.getSingleAgencyById)
+
+  /**
+   * Lists all topics corresponding to an agency
+   * @route   GET /api/agencies/:agencyId/topics
+   * @returns 200 with list of nested topics
+   * @returns 400 with database error
+   */
+  router.get(
+    '/:agencyId/topics',
+    param('agencyId').isInt().toInt(),
+    topicsController.listTopicsUsedByAgency,
+  )
+
   return router
 }
