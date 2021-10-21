@@ -86,7 +86,7 @@ describe('/posts', () => {
     Tag = getModel<TagModel>(db, ModelName.Tag)
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
-    userService = new UserService({ User, Tag })
+    userService = new UserService({ User, Tag, Agency })
     postService = new PostService({ Answer, Post, PostTag, Tag, User })
     const { id: agencyId } = await Agency.create({
       shortname: 'was',

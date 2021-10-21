@@ -8,26 +8,12 @@ import './PostItem.styles.scss'
 
 // Note: PostItem is the component for the homepage
 const PostItem = ({
-  post: { id, title, description, tags, views },
+  post: { id, title, description, tags, agencyId },
   agency,
 }) => {
   const { user } = useAuth()
 
-  const hasCommonAgencyTags = (user, tagsFromPost) => {
-    const { tags: userTags } = user
-    const userAgencyTagNames = userTags
-      .filter(({ tagType }) => tagType === TagType.Agency)
-      .map((userTag) => userTag.tagname)
-    const postAgencyTagNames = tagsFromPost
-      .filter(({ tagType }) => tagType === TagType.Agency)
-      .map((postTag) => postTag.tagname)
-    const interesectingTagNames = userAgencyTagNames.filter((tagName) =>
-      postAgencyTagNames.includes(tagName),
-    )
-    return interesectingTagNames.length > 0
-  }
-
-  const isAgencyMember = user && tags && hasCommonAgencyTags(user, tags)
+  const isAgencyMember = user && tags && user.agencyId === agencyId
 
   return (
     <div className="post-with-stats flex">
