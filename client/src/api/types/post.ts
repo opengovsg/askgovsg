@@ -4,6 +4,7 @@ import { User as UserBaseDto, PostStatus } from '~shared/types/base'
 
 export type BasePostDto = BaseModelParams & {
   userId: number
+  agencyId: number
   title: string
   description: string
   views: number

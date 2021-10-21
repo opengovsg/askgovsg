@@ -52,22 +52,8 @@ const Post = () => {
   // User can edit if it is authenticated whose agency tags intersect with
   // those found on posts
   const { user } = useAuth()
-  const hasCommonAgencyTags = (user, tagsFromPost) => {
-    const { tags: userTags } = user
-    const userAgencyTagNames = userTags
-      .filter(({ tagType }) => tagType === TagType.Agency)
-      .map((userTag) => userTag.tagname)
-    const postAgencyTagNames = tagsFromPost
-      .filter(({ tagType }) => tagType === TagType.Agency)
-      .map((postTag) => postTag.tagname)
-    const intersectingTagNames = userAgencyTagNames.filter((tagName) =>
-      postAgencyTagNames.includes(tagName),
-    )
-    return intersectingTagNames.length > 0
-  }
 
-  const isAgencyMember =
-    user && post?.tags && hasCommonAgencyTags(user, post?.tags)
+  const isAgencyMember = user && post && user.agencyId === post.agencyId
 
   const formattedTimeString = format(
     utcToZonedTime(post?.updatedAt ?? Date.now()),
