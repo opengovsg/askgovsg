@@ -82,7 +82,10 @@ export class AgencyService {
     })
   }
 
-  listAgencyShortnames = (): ResultAsync<Agency[], DatabaseError> => {
+  listAgencyShortnames = (): ResultAsync<
+    { shortname: string }[],
+    DatabaseError
+  > => {
     return ResultAsync.fromPromise(
       this.Agency.findAll({ attributes: ['shortname'] }),
       (error) => {

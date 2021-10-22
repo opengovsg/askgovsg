@@ -27,7 +27,7 @@ describe('WebService', () => {
       const agencyShortname = 'agency_shortname'
       const agencyLongname = 'agency_longname'
 
-      const result = await webService.getAgencyPage(
+      const result = webService.getAgencyPage(
         index,
         agencyShortname,
         agencyLongname,
@@ -79,7 +79,7 @@ describe('WebService', () => {
       const postTitle = 'post_title'
       const postDescription = 'post_description'
 
-      const result = await webService.getQuestionPage(
+      const result = webService.getQuestionPage(
         index,
         postTitle,
         postDescription,
@@ -196,7 +196,7 @@ describe('WebService', () => {
         },
       ]
 
-      const result = await webService.getSitemapUrls(mockPosts, mockAgencies)
+      const result = webService.getSitemapUrls(mockPosts, mockAgencies)
 
       expect(result.length).toStrictEqual(
         mockPosts.length + mockAgencies.length + 3,
