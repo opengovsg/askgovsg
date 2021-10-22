@@ -69,6 +69,7 @@ const EditForm = ({ match }: EditFormProps): JSX.Element => {
       description: data.postData.description,
       title: data.postData.title,
       tagname: data.tags,
+      topicname: '', //TODO: update when topics selection is introduced in frontend
     })
     await updateAnswer(answerData[0].id, data.answerData)
   }

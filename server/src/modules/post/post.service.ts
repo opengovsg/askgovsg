@@ -631,11 +631,26 @@ export class PostService {
    */
   updatePost = async ({
     id,
+    userid,
     tagname,
+    topicname,
     description,
     title,
   }: PostEditType): Promise<boolean> => {
-    await this.Post.update({ title, description }, { where: { id: id } })
+    const user = await this.User.findByPk(userid)
+
+    // retrieve topic
+    const topic = user?.agencyId
+      ? await this.getExistingTopicFromRequestTopic(topicname, user.agencyId)
+      : null
+    if (!!topicname && !topic) {
+      throw new Error('Topic does not exist')
+    }
+
+    await this.Post.update(
+      { title, description, topicId: topic?.id },
+      { where: { id: id } },
+    )
 
     const tagList = await this.getExistingTagsFromRequestTags(tagname)
 

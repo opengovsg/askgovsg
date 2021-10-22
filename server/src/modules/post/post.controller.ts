@@ -373,8 +373,8 @@ export class PostController {
     undefined
   > = async (req, res) => {
     const postId = Number(req.params.id)
+    const userId = req.user?.id
     try {
-      const userId = req.user?.id
       if (!userId) {
         logger.error({
           message: 'UserId is undefined after authenticated',
@@ -416,9 +416,11 @@ export class PostController {
     // Update post in database
     try {
       const updated = await this.postService.updatePost({
+        userid: userId,
         title: req.body.title,
         description: req.body.description ?? '',
         tagname: req.body.tagname,
+        topicname: req.body.topicname ?? '',
         id: postId,
       })
 
