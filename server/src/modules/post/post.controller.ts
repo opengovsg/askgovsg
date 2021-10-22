@@ -1,6 +1,6 @@
 import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
-import { Agency, Post } from '~shared/types/base'
+import { Post } from '~shared/types/base'
 import { createLogger } from '../../bootstrap/logging'
 import { Message } from '../../types/message-type'
 import { UpdatePostRequestDto } from '../../types/post-type'
@@ -107,6 +107,7 @@ export class PostController {
    * @query sort Sort by popularity or recent
    * @query withAnswers If false, show only posts without answers
    * @query tags Tags to filter by
+   * @query topics Topics to filter by
    * @query size Number of posts to return
    * @query page If size is given, specify which page to return
    * @return 200 with posts and totalItem for pagination
@@ -122,7 +123,8 @@ export class PostController {
     {
       withAnswers: boolean
       sort?: string
-      tags?: string[]
+      tags?: string
+      topics?: string
       page?: number
       size?: number
     }
@@ -148,12 +150,20 @@ export class PostController {
         .json({ message: 'Something went wrong, please try again.' })
     }
     try {
-      const { withAnswers, sort = SortType.Top, tags, page, size } = req.query
+      const {
+        withAnswers,
+        sort = SortType.Top,
+        tags,
+        topics,
+        page,
+        size,
+      } = req.query
       const data = await this.postService.listAnswerablePosts({
         userId,
         sort: sort as SortType,
         withAnswers,
         tags,
+        topics,
         page,
         size,
       })

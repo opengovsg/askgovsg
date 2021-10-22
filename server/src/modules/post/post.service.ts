@@ -277,20 +277,18 @@ export class PostService {
   }> => {
     // split tags
     let tagsUnchecked: string[] = []
-
     if (tags) {
       tagsUnchecked = tags.split(',')
     }
 
     // returns length of tags that are valid in DB
     const tagList = await this.getExistingTagsFromRequestTags(tagsUnchecked)
-    // convert back to raw tags in array form
-    const rawTags = tagList.map((element) => element.tagname)
-
     // prevent search if tags query is invalid
     if (tagList.length != tagsUnchecked.length) {
       throw new Error('Invalid tags used in request')
     }
+    // convert back to raw tags in array form
+    const rawTags = tagList.map((element) => element.tagname)
 
     // topics
     let topicsUnchecked: string[] = []
@@ -312,7 +310,7 @@ export class PostService {
     const topicAndChildTopics = agency
       ? await this.getChildTopicsFromRequestTopics(topicList, agency)
       : []
-
+    // returns topic ids
     const rawTopicIds: number[] = topicAndChildTopics.map((topic) => topic.id)
 
     const whereobj = {
@@ -372,8 +370,10 @@ export class PostService {
    * Lists all post answerable by the agency user
    * @param userId ID of user
    * @param sort Sort by popularity or recent
+   * @param Agency id to filter by
    * @param withAnswers If false, show only posts without answers
    * @param tags Tags to filter by
+   * @param topics Topics to filter by
    * @param size Number of posts to return
    * @param page If size is given, specify which page to return
    */
@@ -382,13 +382,15 @@ export class PostService {
     sort,
     withAnswers,
     tags,
+    topics,
     page,
     size,
   }: {
     userId: number
     sort: SortType
     withAnswers: boolean
-    tags?: string[]
+    tags?: string
+    topics?: string
     page?: number
     size?: number
   }): Promise<{
@@ -400,36 +402,57 @@ export class PostService {
       throw new Error('Unable to find user with given ID')
     }
 
+    // Same as in listPosts, except that agencyId is replaced by user's agencyId
+    // split tags
+    let tagsUnchecked: string[] = []
+    if (tags) {
+      tagsUnchecked = tags.split(',')
+    }
+
+    // returns length of tags that are valid in DB
+    const tagList = await this.getExistingTagsFromRequestTags(tagsUnchecked)
+    // prevent search if tags query is invalid
+    if (tagList.length != tagsUnchecked.length) {
+      throw new Error('Invalid tags used in request')
+    }
+    // convert back to raw tags in array form
+    const rawTags = tagList.map((element) => element.tagname)
+
+    // topics
+    let topicsUnchecked: string[] = []
+    if (topics) {
+      topicsUnchecked = topics.split(',')
+    }
+
+    // returns length of topics that are valid in DB
+    const topicList = user.agencyId
+      ? await this.getExistingTopicsFromRequestTopics(
+          topicsUnchecked,
+          user.agencyId,
+        )
+      : []
+
+    if (topicList.length != topicsUnchecked.length) {
+      throw new Error('Invalid topics used in request')
+    }
+
+    // returns length of topics and their child topics
+    // since we also want to list posts belonging to subtopics of current topics
+    const topicAndChildTopics = user.agencyId
+      ? await this.getChildTopicsFromRequestTopics(topicList, user.agencyId)
+      : []
+    // returns topic ids
+    const rawTopicIds: number[] = topicAndChildTopics.map((topic) => topic.id)
+
+    const whereobj = {
+      agencyId: user.agencyId,
+      status: { [Op.ne]: PostStatus.Archived },
+      ...(tagList.length ? { '$tags.tagname$': { [Op.in]: rawTags } } : {}),
+      ...(topicList.length ? { topicId: rawTopicIds } : {}),
+    }
+
     const posts = (await this.Post.findAll({
-      where: {
-        agencyId: user.agencyId,
-        status: { [Op.ne]: PostStatus.Archived },
-        ...(tags ? { '$tags.tagname$': tags } : {}),
-      },
-      order: [this.sortFunction(sort)],
-      include: [this.Tag, { model: this.Answer, required: withAnswers }],
-    })) as PostWithUserTopicTagRelations[]
-
-    // Duplicate of logic from retrieveAll
-    // TODO: Optimize to merge the 2 requests into one
-    // Two queries used as when I search for specific tags, the response
-    // will only return tags which are matching, not all tags associated
-    // with a question
-
-    // get only the IDs we need via filtering
-    const postsToMap =
-      tags && tags.length > 0
-        ? // filter posts further to contain ALL of the wanted tags from ANY of the tags
-          // since posts are already filtered for ANY of the wanted tags
-          // sufficient to filter posts that contain the same number of tags as wanted tags
-          posts.filter((posts) => posts.tags.length == tags.length)
-        : posts
-    const filteredPostIds = postsToMap.map(({ id }) => id)
-
-    const returnPosts = await this.Post.findAll({
-      where: {
-        id: filteredPostIds,
-      },
+      where: whereobj,
       order: [this.sortFunction(sort)],
       include: [
         {
@@ -438,7 +461,12 @@ export class PostService {
           attributes: ['tagname', 'description', 'tagType'],
         },
         { model: this.User, required: true, attributes: ['username'] },
-        this.Answer,
+        { model: this.Answer, required: withAnswers },
+        {
+          model: this.Topic,
+          required: false,
+          attributes: ['name', 'description'],
+        },
       ],
       attributes: [
         'id',
@@ -449,13 +477,14 @@ export class PostService {
         'createdAt',
         'views',
         this.answerCountLiteral,
+        'topicId',
       ],
-    })
+    })) as PostWithUserTopicTagRelations[]
 
     if (!posts) {
       return { posts: [], totalItems: 0 }
     } else if (withAnswers) {
-      return this.getPaginatedPosts(returnPosts, page, size)
+      return this.getPaginatedPosts(posts, page, size)
     } else {
       // posts without answers
       const filteredPosts = await this.filterPostsWithoutAnswers(posts)

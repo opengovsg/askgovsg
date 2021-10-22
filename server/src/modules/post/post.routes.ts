@@ -37,24 +37,6 @@ export const routePosts = ({
     [
       query('withAnswers').isBoolean().toBoolean(),
       query('sort').isIn(Object.values(SortType)),
-      query('tags').customSanitizer((value) => {
-        if (!value) {
-          return undefined
-        }
-        /*
-        Transform req.query.tags into a string array of tags
-        Accept a mixture of query param formats
-        1. comma separated eg. tags=ema,ogp
-        2. repeated query param eg. tags=ema&tags=ogp
-        
-        eg. if query params are tags=parking,parking-activate&tags=ogp
-        req.query.tags = ['parking, parking-activate', 'ogp'] as body-parser accept query param format 2
-        this custom santiser transforms req.query.tags into ['parking', 'parking-activate', 'ogp']
-        */
-        const tagsArray: string[] = [].concat(value)
-        const nestedTags = tagsArray.map((tags) => tags.split(','))
-        return ([] as string[]).concat(...nestedTags)
-      }),
     ],
     controller.listAnswerablePosts,
   )

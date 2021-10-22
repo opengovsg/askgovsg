@@ -13,7 +13,7 @@ import { dbConfig } from './config/database'
 
 import { emailValidator } from './email-validator'
 
-export const sequelize = new Sequelize({ ...dbConfig, logging: true })
+export const sequelize = new Sequelize({ ...dbConfig, logging: false })
 
 export const Token = defineToken(sequelize)
 export const Tag = defineTag(sequelize)

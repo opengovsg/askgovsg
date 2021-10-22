@@ -37,13 +37,14 @@ const QuestionsList = ({
     ? {
         queryKey: [
           LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
-          { sort, tags, page, pageSize },
+          { sort, tags, topics, page, pageSize },
         ],
         queryFn: () =>
           listAnswerablePosts({
             withAnswers: true,
             sort,
             tags,
+            topics,
             page,
             size: pageSize,
           }),
