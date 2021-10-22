@@ -235,15 +235,6 @@ export class PostService {
     return existingTags
   }
 
-  getTopicsUsedByAgencyFlatlist = async (
-    agencyId: number,
-  ): Promise<Topic[]> => {
-    const topics = await this.Topic.findAll({
-      where: { agencyId: agencyId },
-    })
-    return topics
-  }
-
   getExistingTopicFromRequestTopic = async (
     topicName: string,
     agencyId: number,

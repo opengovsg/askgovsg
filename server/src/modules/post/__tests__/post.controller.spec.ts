@@ -19,7 +19,6 @@ describe('PostController', () => {
     filterPostsWithoutAnswers: jest.fn(),
     checkOneAgency: jest.fn(),
     getExistingTagsFromRequestTags: jest.fn(),
-    getTopicsUsedByAgencyFlatlist: jest.fn(),
     getExistingTopicFromRequestTopic: jest.fn(),
     getExistingTopicsFromRequestTopics: jest.fn(),
     getChildTopicsFromRequestTopics: jest.fn(),
