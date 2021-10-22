@@ -11,7 +11,6 @@ import { Answer, PostTag, Tag, User } from '../../models'
 import { PostEditType } from '../../types/post-type'
 import { ModelDef } from '../../types/sequelize'
 import { SortType } from '../../types/sort-type'
-import { PostWithRelations } from '../auth/auth.service'
 
 export type UserWithTagRelations = {
   getTags: () => Tag[]
@@ -24,7 +23,7 @@ export type PostWithUserTopicTagRelations = Model &
     topics: Topic[]
   }
 
-export type PostWithUserTopicTagRelatedPostRelations = PostWithRelations &
+export type PostWithUserTopicTagRelatedPostRelations = Post &
   PostWithUserTopicTagRelations & {
     getRelatedPosts: Post[]
   }
