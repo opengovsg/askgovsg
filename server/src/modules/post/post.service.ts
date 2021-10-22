@@ -96,8 +96,10 @@ export class PostService {
    * There is room to improve on finding related posts, using a better algorithm
    * as discussed https://meta.stackexchange.com/questions/20473/how-are-related-questions-selected or
    * https://medium.com/analytics-vidhya/building-a-simple-stack-overflow-search-engine-to-predict-posts-related-to-given-query-post-56b3e508520c.
-   * As a preliminary step, it finds the posts with the
-   * most number of same tag, followed by number of views.
+   * As a preliminary step,
+   * it finds the posts belonging to the same topic (if topic exists),
+   * followed posts with the most number of same tags,
+   * followed by number of views.
    * @param post post to find related posts to
    * @param numberOfRelatedPosts number of posts to find
    * @returns posts that are related to the one provided
@@ -107,39 +109,92 @@ export class PostService {
     numberOfRelatedPosts: number,
   ): Promise<Post[]> => {
     const tags = post.tags.map((tag) => tag.id)
-    const relatedPosts = await this.Post.findAll({
-      attributes: {
-        include: [
-          [Sequelize.fn('COUNT', Sequelize.col('tags.id')), 'relatedTags'],
-        ],
-      },
-      where: {
-        status: PostStatus.Public,
-        id: {
-          [Op.ne]: post.id,
-        },
-      },
-      include: [
-        {
-          model: this.Tag,
-          attributes: [],
-          required: false,
-          through: {
-            attributes: [],
+    const topic = post.topicId
+
+    const relatedPosts = topic
+      ? await this.Post.findAll({
+          attributes: {
+            include: [
+              [
+                Sequelize.fn('COUNT', Sequelize.col('topicId')),
+                'relatedTopics',
+              ],
+              [Sequelize.fn('COUNT', Sequelize.col('tags.id')), 'relatedTags'],
+            ],
           },
           where: {
-            id: tags,
+            status: PostStatus.Public,
+            id: {
+              [Op.ne]: post.id,
+            },
           },
-        },
-      ],
-      group: 'id',
-      order: [
-        [Sequelize.col('relatedTags'), 'DESC'],
-        ['views', 'DESC'],
-      ],
-      subQuery: false,
-      limit: numberOfRelatedPosts,
-    })
+          include: [
+            {
+              model: this.Tag,
+              attributes: [],
+              required: false,
+              through: {
+                attributes: [],
+              },
+              where: {
+                id: tags,
+              },
+            },
+            {
+              model: this.Topic,
+              attributes: [],
+              required: false,
+              where: { id: post.topicId },
+            },
+          ],
+          group: 'id',
+          order: [
+            [Sequelize.col('relatedTopics'), 'DESC'],
+            [Sequelize.col('relatedTags'), 'DESC'],
+            ['views', 'DESC'],
+          ],
+          subQuery: false,
+          limit: numberOfRelatedPosts,
+        })
+      : await this.Post.findAll({
+          attributes: {
+            include: [
+              [Sequelize.fn('COUNT', Sequelize.col('tags.id')), 'relatedTags'],
+            ],
+          },
+          where: {
+            status: PostStatus.Public,
+            id: {
+              [Op.ne]: post.id,
+            },
+          },
+          include: [
+            {
+              model: this.Tag,
+              attributes: [],
+              required: false,
+              through: {
+                attributes: [],
+              },
+              where: {
+                id: tags,
+              },
+            },
+            {
+              model: this.Topic,
+              attributes: [],
+              required: false,
+              where: { id: post.topicId },
+            },
+          ],
+          group: 'id',
+          order: [
+            [Sequelize.col('relatedTags'), 'DESC'],
+            ['views', 'DESC'],
+          ],
+          subQuery: false,
+          limit: numberOfRelatedPosts,
+        })
 
     return relatedPosts
   }
