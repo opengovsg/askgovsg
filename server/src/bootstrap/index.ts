@@ -253,7 +253,9 @@ if (baseConfig.nodeEnv === Environment.Prod) {
   )
 
   app.get('*', (_req, res) =>
-    res.header('content-type', 'text/html').redirect('/not-found'),
+    res
+      .header('content-type', 'text/html')
+      .redirect(StatusCodes.MOVED_PERMANENTLY, '/not-found'),
   )
 }
 

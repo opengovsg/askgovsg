@@ -14,6 +14,13 @@ import { Answer, PostTag, Tag, User } from '../../models'
 import { PostEditType } from '../../types/post-type'
 import { ModelDef } from '../../types/sequelize'
 import { SortType } from '../../types/sort-type'
+import {
+  InvalidTagsError,
+  MissingPublicPostError,
+  MissingUserIdError,
+  PostUpdateError,
+  TagDoesNotExistError,
+} from './post.errors'
 
 export type UserWithTagRelations = {
   getTags: () => Tag[]
@@ -296,7 +303,7 @@ export class PostService {
     const tagList = tags ? await this.getExistingTagsFromRequestTags(tags) : []
     // prevent search if tags query is invalid
     if (tags && tagList.length !== tags.length) {
-      throw new Error('Invalid tags used in request')
+      throw new InvalidTagsError()
     }
     // convert back to raw tags in array form
     const rawTags = tagList.map((element) => element.tagname)
@@ -404,7 +411,7 @@ export class PostService {
   }> => {
     const user = await this.User.findByPk(userId)
     if (!user) {
-      throw new Error('Unable to find user with given ID')
+      throw new MissingUserIdError()
     }
 
     // returns length of tags that are valid in DB
@@ -539,7 +546,7 @@ export class PostService {
       ],
     })) as PostWithUserTopicTagRelatedPostRelations
     if (!post) {
-      throw new Error('No public post with this id')
+      throw new MissingPublicPostError()
     } else {
       if (noOfRelatedPosts > 0) {
         const relatedPosts = await this.getRelatedPosts(post, noOfRelatedPosts)
@@ -577,7 +584,7 @@ export class PostService {
       throw new Error('At least one valid tag or topic is required')
     } else {
       if (newPost.tagname?.length !== tagList.length) {
-        throw new Error('At least one tag does not exist')
+        throw new TagDoesNotExistError()
       }
       if (!topicValid && newPost.tagname) {
         throw new Error('Topic does not exist')
@@ -612,7 +619,7 @@ export class PostService {
       { where: { id: id } },
     )
     if (!update) {
-      throw new Error('Update failed')
+      throw new PostUpdateError()
     } else {
       return
     }
