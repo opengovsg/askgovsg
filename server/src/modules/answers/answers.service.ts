@@ -36,13 +36,12 @@ export class AnswersService {
   listAnswers = async (
     postId: number,
   ): Promise<
-    | {
-        body: string
-        username: string
-        userId: number
-        agencyLogo: string
-      }[]
-    | undefined
+    {
+      body: string
+      username: string
+      userId: number
+      agencyLogo: string
+    }[]
   > => {
     const post = (await PostModel.findOne({
       where: { id: postId },
@@ -75,7 +74,7 @@ export class AnswersService {
           agencyLogo: logo,
         }
       })
-    }
+    } else return []
   }
 
   /**
