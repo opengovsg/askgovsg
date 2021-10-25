@@ -586,7 +586,7 @@ export class PostService {
       if (newPost.tagname?.length !== tagList.length) {
         throw new TagDoesNotExistError()
       }
-      if (!topicValid && newPost.tagname) {
+      if (!topicValid && newPost.topicId) {
         throw new Error('Topic does not exist')
       }
       const post = await this.Post.create({
