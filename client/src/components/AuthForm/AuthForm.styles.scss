@@ -1,5 +1,5 @@
 @import '../../styles/text';
-@import '../../styles/colours';
+
 @import '../../styles/misc';
 @import '../../styles/sizes';
 
@@ -25,7 +25,7 @@
     .form-input {
       @include body-1;
       padding: 4px 8px;
-      border: 2px solid $neutral-400;
+      border: 2px solid var(--chakra-colors-neutral-400);
     }
     
     .form-input + .form-label {
@@ -33,15 +33,15 @@
     }
 
     .form-input::placeholder {
-      color: $neutral-500;
+      color: var(--chakra-colors-neutral-500);
     }
 
     #submit-button {
       @include body-1;
-      background-color: $pri-500;
+      background-color: var(--chakra-colors-primary-500);
       border: 0;
       border-radius: $btn-radius;
-      color: $white;
+      color: white;
       padding: 8px 8px;
       cursor: pointer;
     }

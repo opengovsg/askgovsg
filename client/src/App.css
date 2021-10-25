@@ -1,8 +1,3 @@
-:root {
-  --yellow-200: #675c37;
-  --yellow-050: #464236;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -17,7 +12,7 @@
 }
 
 body {
-  background-color: #ffffff;
+  background-color: white;
   padding-top: 0 !important;
 }
 

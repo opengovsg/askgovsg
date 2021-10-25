@@ -1,4 +1,3 @@
-@import '../../../styles/colours';
 @import '../../../styles/text';
 @import '../../../styles/misc';
 
@@ -11,14 +10,14 @@
 
         p {
           @include body-2;
-          color: $sec-400;
+          color: var(--chakra-colors-secondary-400);
           margin-bottom: 12px;
         }
       }
 
       .char-remain {
         @include body-2;
-        color: $sec-400;
+        color: var(--chakra-colors-secondary-400);
         margin: 8px 0px;
       }
 
@@ -28,11 +27,11 @@
         box-sizing: border-box;
         padding: 8px 16px;
         width: 100%;
-        border: 1px solid $neutral-400;
+        border: 1px solid var(--chakra-colors-neutral-400);
         border-radius: 3px;
 
         &::placeholder {
-          color: $neutral-500;
+          color: var(--chakra-colors-neutral-500);
         }
       }
     }
@@ -82,12 +81,12 @@
 
 #submit-button {
   @include body-1;
-  background-color: $pri-500;
+  background-color: var(--chakra-colors-primary-500);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 8px 16px;
-  color: $white;
+  color: white;
   border: 0;
   border-radius: $btn-radius;
   cursor: pointer;
@@ -104,7 +103,7 @@
     display: flex;
     div {
       @include body-2;
-      color: $neutral-700;
+      color: var(--chakra-colors-neutral-700);
       padding-left: 8px;
     }
   }
