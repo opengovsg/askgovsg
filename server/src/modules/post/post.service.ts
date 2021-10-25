@@ -683,39 +683,51 @@ export class PostService {
     title,
   }: PostEditType): Promise<boolean> => {
     const user = await this.User.findByPk(userid)
+    const tagList = tagname
+      ? await this.getExistingTagsFromRequestTags(tagname)
+      : []
+    const topicValid =
+      user?.agencyId && topicname
+        ? await this.getExistingTopicFromRequestTopic(topicname, user.agencyId)
+        : null
 
-    // retrieve topic
-    const topic = user?.agencyId
-      ? await this.getExistingTopicFromRequestTopic(topicname, user.agencyId)
-      : null
-    if (!!topicname && !topic) {
-      throw new Error('Topic does not exist')
+    // Only update post if tag or topic exists
+    if (!topicValid && tagList.length === 0) {
+      throw new Error('At least one valid tag or topic is required')
+    } else {
+      if (tagname && tagname.length !== tagList.length) {
+        throw new Error('At least one tag does not exist')
+      }
+      if (!topicValid && topicname) {
+        throw new Error('Topic does not exist')
+      }
+
+      let updated
+
+      updated = await this.Post.update(
+        { title, description, topicId: topicValid?.id },
+        { where: { id: id } },
+      )
+
+      if (tagList.length) {
+        await this.PostTag.destroy({ where: { postId: id } })
+
+        for (const tag of tagList) {
+          // Create a posttag for each tag
+          updated = await this.PostTag.create({
+            postId: id,
+            tagId: tag.id,
+          })
+        }
+      }
+
+      // easier way is to delete anything of the postId and recreate
+      // of course calculating the changes would be the way to go
+
+      if (updated) {
+        return true
+      }
+      return false
     }
-
-    await this.Post.update(
-      { title, description, topicId: topic?.id },
-      { where: { id: id } },
-    )
-
-    const tagList = await this.getExistingTagsFromRequestTags(tagname)
-
-    // easier way is to delete anything of the postId and recreate
-    // of course calculating the changes would be the way to go
-    await this.PostTag.destroy({ where: { postId: id } })
-
-    let updated
-
-    for (const tag of tagList) {
-      // Create a posttag for each tag
-      updated = await this.PostTag.create({
-        postId: id,
-        tagId: tag.id,
-      })
-    }
-
-    if (updated) {
-      return true
-    }
-    return false
   }
 }

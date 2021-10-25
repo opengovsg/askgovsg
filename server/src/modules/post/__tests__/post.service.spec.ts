@@ -288,4 +288,89 @@ describe('PostService', () => {
       expect(postTags.length).toBe(postParams.tagname.length)
     })
   })
+
+  describe('updatePost', () => {
+    it('throws when at least one valid tag or topic does not exist', async () => {
+      const badPost = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: ['badtag'],
+        topicname: 'badtopic',
+        description: '',
+        title: 'title',
+      }
+      await expect(postService.updatePost(badPost)).rejects.toStrictEqual(
+        new Error('At least one valid tag or topic is required'),
+      )
+    })
+    it('throws on bad tag', async () => {
+      const badTagPost = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: ['badtag'],
+        topicname: mockTopic.name,
+        description: '',
+        title: 'title',
+      }
+      await expect(postService.updatePost(badTagPost)).rejects.toStrictEqual(
+        new Error('At least one tag does not exist'),
+      )
+    })
+    it('throws on bad topic', async () => {
+      const badTopicPost = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: [mockTag.tagname],
+        topicname: 'badtopic',
+        description: '',
+        title: 'title',
+      }
+
+      await expect(postService.updatePost(badTopicPost)).rejects.toStrictEqual(
+        new Error('Topic does not exist'),
+      )
+    })
+
+    it('updates post on good tag input, no topic', async () => {
+      const postParams = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: [mockTag.tagname],
+        topicname: null,
+        description: 'new description',
+        title: 'new title',
+      }
+
+      const postUpdateStatus = await postService.updatePost(postParams)
+      expect(postUpdateStatus).toBeTruthy()
+    })
+
+    it('updates post on good topic input, no tag', async () => {
+      const postParams = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: [],
+        topicname: mockTopic.name,
+        description: 'new description',
+        title: 'new title',
+      }
+
+      const postUpdateStatus = await postService.updatePost(postParams)
+      expect(postUpdateStatus).toBeTruthy()
+    })
+
+    it('updates post on good input - valid tag and topic', async () => {
+      const postParams = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: [mockTag.tagname],
+        topicname: mockTopic.name,
+        description: 'new description',
+        title: 'new title',
+      }
+
+      const postUpdateStatus = await postService.updatePost(postParams)
+      expect(postUpdateStatus).toBeTruthy()
+    })
+  })
 })

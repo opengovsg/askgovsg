@@ -3,8 +3,8 @@ import { Post } from '~shared/types/base'
 export type PostEditType = {
   id: number
   userid: number
-  tagname: Array<string>
-  topicname: string
+  tagname: Array<string> | null
+  topicname: string | null
   description: string
   title: string
 }
