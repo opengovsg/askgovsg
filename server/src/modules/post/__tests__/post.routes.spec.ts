@@ -190,7 +190,7 @@ describe('/posts', () => {
         title: 'A title of at least 15 characters',
         description: null,
         tagname: [mockTag.tagname],
-        topicName: mockTopic.name,
+        topicId: mockTopic.id,
       }
 
       // Act

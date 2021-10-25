@@ -236,11 +236,11 @@ export class PostService {
   }
 
   getExistingTopicFromRequestTopic = async (
-    topicName: string,
+    topicId: number,
     agencyId: number,
   ): Promise<Topic | null> => {
     const existingTopic = await this.Topic.findOne({
-      where: { name: topicName, agencyId: agencyId },
+      where: { id: topicId, agencyId: agencyId },
     })
     return existingTopic
   }
@@ -613,23 +613,27 @@ export class PostService {
     description: string
     userId: number
     agencyId: number
-    tagname: string[]
-    topicName: string
+    tagname: string[] | null
+    topicId: number | null
   }): Promise<number> => {
-    const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
-    const topicValid = await this.getExistingTopicFromRequestTopic(
-      newPost.topicName,
-      newPost.agencyId,
-    )
+    const tagList = newPost.tagname
+      ? await this.getExistingTagsFromRequestTags(newPost.tagname)
+      : []
+    const topicValid = newPost.topicId
+      ? await this.getExistingTopicFromRequestTopic(
+          newPost.topicId,
+          newPost.agencyId,
+        )
+      : null
 
     // Only create post if tag or topic exists
-    if (!topicValid && newPost.tagname.length !== tagList.length) {
+    if (!topicValid && newPost.tagname?.length !== tagList.length) {
       throw new Error('At least one valid tag or topic is required')
     } else {
-      if (newPost.tagname.length !== tagList.length) {
+      if (newPost.tagname?.length !== tagList.length) {
         throw new Error('At least one tag does not exist')
       }
-      if (!topicValid && newPost.topicName) {
+      if (!topicValid && newPost.tagname) {
         throw new Error('Topic does not exist')
       }
       const post = await this.Post.create({
@@ -677,7 +681,7 @@ export class PostService {
     id,
     userid,
     tagname,
-    topicName,
+    topicId,
     description,
     title,
   }: PostEditType): Promise<boolean> => {
@@ -685,9 +689,10 @@ export class PostService {
     const tagList = tagname
       ? await this.getExistingTagsFromRequestTags(tagname)
       : []
+    // check that topic belongs to user's agency
     const topicValid =
-      user?.agencyId && topicName
-        ? await this.getExistingTopicFromRequestTopic(topicName, user.agencyId)
+      user?.agencyId && topicId
+        ? await this.getExistingTopicFromRequestTopic(topicId, user.agencyId)
         : null
 
     // Only update post if tag or topic exists
@@ -697,7 +702,7 @@ export class PostService {
       if (tagname && tagname.length !== tagList.length) {
         throw new Error('At least one tag does not exist')
       }
-      if (!topicValid && topicName) {
+      if (!topicValid && topicId) {
         throw new Error('Topic does not exist')
       }
 

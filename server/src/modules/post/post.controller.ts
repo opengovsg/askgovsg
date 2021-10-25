@@ -247,7 +247,7 @@ export class PostController {
    * @body title title of post
    * @body tagname tags of post
    * @body description description of post
-   * @body topicName topic of post
+   * @body topicId topic id of post
    * @return 200 if post is created
    * @return 400 if title and description is too short or long
    * @return 401 if user is not signed in
@@ -259,9 +259,9 @@ export class PostController {
     { data: number } | Message,
     {
       title: string
-      tagname: string[]
+      tagname: string[] | null
       description: string
-      topicName: string
+      topicId: number | null
     },
     undefined
   > = async (req, res) => {
@@ -290,7 +290,7 @@ export class PostController {
         userId: req.user?.id,
         agencyId: user?.agencyId,
         tagname: req.body.tagname,
-        topicName: req.body.topicName,
+        topicId: req.body.topicId,
       })
 
       return res.status(StatusCodes.OK).json({ data: data })
@@ -419,8 +419,8 @@ export class PostController {
         userid: userId,
         title: req.body.title,
         description: req.body.description ?? '',
-        tagname: req.body.tagname,
-        topicName: req.body.topicName ?? null,
+        tagname: req.body.tagname ?? null,
+        topicId: req.body.topicId ?? null,
         id: postId,
       })
 

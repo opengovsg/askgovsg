@@ -25,7 +25,7 @@ export type GetPostsDto = {
 
 export type CreatePostReqDto = Pick<BasePostDto, 'title' | 'description'> & {
   tagname: string[] | null
-  topicName: string | null
+  topicId: number | null
 }
 
 export type CreatePostResDto = MessageResponse & { data: number }
