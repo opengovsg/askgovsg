@@ -112,7 +112,15 @@ const mailService = new MailService({
   transport,
   mailFromEmail: mailConfig.senderConfig.mailFrom,
 })
-const postService = new PostService({ Answer, Post, PostTag, Tag, User })
+const postService = new PostService({
+  Answer,
+  Post,
+  PostTag,
+  Tag,
+  User,
+  Topic,
+  Agency,
+})
 const enquiryService = new EnquiryService({ Agency, mailService })
 const recaptchaService = new RecaptchaService({ axios, ...recaptchaConfig })
 const answersService = new AnswersService()

@@ -19,6 +19,10 @@ describe('PostController', () => {
     filterPostsWithoutAnswers: jest.fn(),
     checkOneAgency: jest.fn(),
     getExistingTagsFromRequestTags: jest.fn(),
+    getExistingTopicFromRequestTopic: jest.fn(),
+    getExistingTopicsFromRequestTopics: jest.fn(),
+    getChildTopicsFromRequestTopics: jest.fn(),
+    getChildTopicsFromSingleRequestTopic: jest.fn(),
     createPost: jest.fn(),
     deletePost: jest.fn(),
     updatePost: jest.fn(),
@@ -76,6 +80,21 @@ describe('PostController', () => {
     it('should return 422 on invalid tags used in request', async () => {
       // Arrange
       const error = new Error('Invalid tags used in request')
+      postService.listPosts.mockImplementation(() => {
+        throw error
+      })
+
+      // Act
+      const response = await request.get(path)
+
+      // Assert
+      expect(response.status).toEqual(422)
+      expect(response.body).toStrictEqual({ message: error.message })
+    })
+
+    it('should return 422 on invalid topics used in request', async () => {
+      // Arrange
+      const error = new Error('Invalid topics used in request')
       postService.listPosts.mockImplementation(() => {
         throw error
       })

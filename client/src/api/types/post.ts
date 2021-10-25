@@ -9,6 +9,7 @@ export type BasePostDto = BaseModelParams & {
   description: string
   views: number
   status: PostStatus
+  topicId: number | null
 }
 
 // Backend does not select updatedAt
@@ -23,7 +24,8 @@ export type GetPostsDto = {
 }
 
 export type CreatePostReqDto = Pick<BasePostDto, 'title' | 'description'> & {
-  tagname: string[]
+  tagname: string[] | null
+  topicId: number | null
 }
 
 export type CreatePostResDto = MessageResponse & { data: number }

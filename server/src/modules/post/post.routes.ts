@@ -12,6 +12,45 @@ export const routePosts = ({
   authMiddleware: Public<AuthMiddleware>
 }): express.Router => {
   const router = express.Router()
+
+  const sanitizeTagsandTopics = [
+    query('tags').customSanitizer((value) => {
+      if (!value) {
+        return undefined
+      }
+      /*
+      Transform req.query.tags into a string array of tags
+      Accept a mixture of query param formats
+      1. comma separated eg. tags=ema,ogp
+      2. repeated query param eg. tags=ema&tags=ogp
+      
+      eg. if query params are tags=parking,parking-activate&tags=ogp
+      req.query.tags = ['parking, parking-activate', 'ogp'] as body-parser accept query param format 2
+      this custom santiser transforms req.query.tags into ['parking', 'parking-activate', 'ogp']
+      */
+      const tagsArray: string[] = [].concat(value)
+      const nestedTags = tagsArray.map((tags) => tags.split(','))
+      return ([] as string[]).concat(...nestedTags)
+    }),
+    query('topics').customSanitizer((value) => {
+      if (!value) {
+        return undefined
+      }
+      /*
+      Transform req.query.topics into a string array of topics
+      Accept a mixture of query param formats
+      1. comma separated eg. tags=ema,ogp
+      2. repeated query param eg. topics=ema&topics=ogp
+      
+      eg. if query params are topics=parking,parking-activate&topics=ogp
+      req.query.topics = ['parking, parking-activate', 'ogp'] as body-parser accept query param format 2
+      this custom santiser transforms req.query.topics into ['parking', 'parking-activate', 'ogp']
+      */
+      const topicsArray: string[] = [].concat(value)
+      const nestedTopics = topicsArray.map((topics) => topics.split(','))
+      return ([] as string[]).concat(...nestedTopics)
+    }),
+  ]
   /**
    * Lists all post
    * @route   GET /api/posts
@@ -20,7 +59,7 @@ export const routePosts = ({
    * @returns 500 when database error occurs
    * @access  Public
    */
-  router.get('/', controller.listPosts)
+  router.get('/', sanitizeTagsandTopics, controller.listPosts)
 
   /**
    * Lists all post answerable by the agency user
@@ -37,30 +76,13 @@ export const routePosts = ({
     [
       query('withAnswers').isBoolean().toBoolean(),
       query('sort').isIn(Object.values(SortType)),
-      query('tags').customSanitizer((value) => {
-        if (!value) {
-          return undefined
-        }
-        /*
-        Transform req.query.tags into a string array of tags
-        Accept a mixture of query param formats
-        1. comma separated eg. tags=ema,ogp
-        2. repeated query param eg. tags=ema&tags=ogp
-        
-        eg. if query params are tags=parking,parking-activate&tags=ogp
-        req.query.tags = ['parking, parking-activate', 'ogp'] as body-parser accept query param format 2
-        this custom santiser transforms req.query.tags into ['parking', 'parking-activate', 'ogp']
-        */
-        const tagsArray: string[] = [].concat(value)
-        const nestedTags = tagsArray.map((tags) => tags.split(','))
-        return ([] as string[]).concat(...nestedTags)
-      }),
     ],
+    sanitizeTagsandTopics,
     controller.listAnswerablePosts,
   )
 
   /**
-   * Get a single post and all the tags and users associated with it
+   * Get a single post and all the tags, topic and users associated with it
    * @route  GET /api/posts/:id
    * @return 200 with post
    * @return 403 if user does not have permission to access post

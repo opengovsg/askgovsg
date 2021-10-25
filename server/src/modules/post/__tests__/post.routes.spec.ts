@@ -11,6 +11,7 @@ import {
   Post,
   PostStatus,
   TagType,
+  Topic,
 } from '~shared/types/base'
 import {
   Answer as AnswerModel,
@@ -42,6 +43,7 @@ describe('/posts', () => {
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
   let Agency: ModelDef<Agency>
+  let Topic: ModelDef<Topic>
 
   let userService: UserService
   let postService: PostService
@@ -50,6 +52,8 @@ describe('/posts', () => {
   const mockPosts: Post[] = []
   let mockUser: UserModel
   let mockTag: TagModel
+  let mockTopic: Topic
+  let mockAgency: Agency
 
   // Set up service, controller and route
   const authService = {
@@ -87,8 +91,17 @@ describe('/posts', () => {
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
     userService = new UserService({ User, Tag, Agency })
-    postService = new PostService({ Answer, Post, PostTag, Tag, User })
-    const { id: agencyId } = await Agency.create({
+    Topic = getModelDef<Topic>(db, ModelName.Topic)
+    postService = new PostService({
+      Answer,
+      Post,
+      PostTag,
+      Tag,
+      User,
+      Topic,
+      Agency,
+    })
+    mockAgency = await Agency.create({
       shortname: 'was',
       longname: 'Work Allocation Singapore',
       email: 'enquiries@was.gov.sg',
@@ -100,7 +113,7 @@ describe('/posts', () => {
     mockUser = await User.create({
       username: 'answerer@test.gov.sg',
       displayname: '',
-      agencyId,
+      agencyId: mockAgency.id,
     })
     mockTag = await Tag.create({
       tagname: 'test',
@@ -109,6 +122,12 @@ describe('/posts', () => {
       hasPilot: true,
       tagType: TagType.Topic,
     })
+    mockTopic = await Topic.create({
+      name: 'test',
+      description: '',
+      agencyId: mockUser.agencyId,
+      parentId: null,
+    })
     for (let title = 1; title <= 20; title++) {
       const mockPost = await Post.create({
         title: title.toString(),
@@ -116,6 +135,7 @@ describe('/posts', () => {
         status: PostStatus.Public,
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
+        topicId: mockTopic.id,
       })
       mockPosts.push(mockPost)
       await PostTag.create({ postId: mockPost.id, tagId: mockTag.id })
@@ -170,6 +190,7 @@ describe('/posts', () => {
         title: 'A title of at least 15 characters',
         description: null,
         tagname: [mockTag.tagname],
+        topicId: mockTopic.id,
       }
 
       // Act

@@ -1,4 +1,7 @@
+import { constants } from 'perf_hooks'
 import Sequelize, {
+  FindAttributeOptions,
+  FindOptions,
   Model,
   ModelCtor,
   Op,
@@ -6,12 +9,11 @@ import Sequelize, {
   ProjectionAlias,
 } from 'sequelize'
 import { PostCreation } from 'src/models/posts.model'
-import { Post, PostStatus } from '~shared/types/base'
+import { Post, PostStatus, Topic, Agency } from '~shared/types/base'
 import { Answer, PostTag, Tag, User } from '../../models'
 import { PostEditType } from '../../types/post-type'
 import { ModelDef } from '../../types/sequelize'
 import { SortType } from '../../types/sort-type'
-import { PostWithRelations } from '../auth/auth.service'
 import {
   InvalidTagsError,
   MissingPublicPostError,
@@ -20,14 +22,19 @@ import {
   TagDoesNotExistError,
 } from './post.errors'
 
-export type PostWithUserTagRelations = Model &
-  PostWithRelations & {
+export type UserWithTagRelations = {
+  getTags: () => Tag[]
+}
+
+export type PostWithUserTopicTagRelations = Model &
+  Post & {
     countAnswers: () => number
     tags: Tag[]
+    topics: Topic[]
   }
 
-export type PostWithUserTagRelatedPostRelations = PostWithRelations &
-  PostWithUserTagRelations & {
+export type PostWithUserTopicTagRelatedPostRelations = Post &
+  PostWithUserTopicTagRelations & {
     getRelatedPosts: Post[]
   }
 
@@ -37,24 +44,32 @@ export class PostService {
   private PostTag: ModelDef<PostTag>
   private Tag: ModelCtor<Tag>
   private User: ModelCtor<User>
+  private Topic: ModelDef<Topic>
+  private Agency: ModelDef<Agency>
   constructor({
     Answer,
     Post,
     PostTag,
     Tag,
     User,
+    Topic,
+    Agency,
   }: {
     Answer: ModelCtor<Answer>
     Post: ModelDef<Post, PostCreation>
     PostTag: ModelDef<PostTag>
     Tag: ModelCtor<Tag>
     User: ModelCtor<User>
+    Topic: ModelDef<Topic>
+    Agency: ModelDef<Agency>
   }) {
     this.Answer = Answer
     this.Post = Post
     this.PostTag = PostTag
     this.Tag = Tag
     this.User = User
+    this.Topic = Topic
+    this.Agency = Agency
   }
 
   private answerCountLiteral: ProjectionAlias = [
@@ -75,7 +90,7 @@ export class PostService {
   }
 
   private filterPostsWithoutAnswers = async (
-    data?: PostWithUserTagRelations[],
+    data?: PostWithUserTopicTagRelations[],
   ): Promise<Post[]> => {
     if (!data) {
       return []
@@ -91,23 +106,51 @@ export class PostService {
    * There is room to improve on finding related posts, using a better algorithm
    * as discussed https://meta.stackexchange.com/questions/20473/how-are-related-questions-selected or
    * https://medium.com/analytics-vidhya/building-a-simple-stack-overflow-search-engine-to-predict-posts-related-to-given-query-post-56b3e508520c.
-   * As a preliminary step, it finds the posts with the
-   * most number of same tag, followed by number of views.
+   * As a preliminary step,
+   * it finds the posts belonging to the same topic (if topic exists),
+   * followed posts with the most number of same tags,
+   * followed by number of views.
    * @param post post to find related posts to
    * @param numberOfRelatedPosts number of posts to find
    * @returns posts that are related to the one provided
    */
   private getRelatedPosts = async (
-    post: PostWithUserTagRelations,
+    post: PostWithUserTopicTagRelations,
     numberOfRelatedPosts: number,
   ): Promise<Post[]> => {
     const tags = post.tags.map((tag) => tag.id)
+
+    const findOptions = post.topicId
+      ? {
+          attributes: {
+            include: [
+              [
+                Sequelize.fn('COUNT', Sequelize.col('topicId')),
+                'relatedTopics',
+              ],
+              [Sequelize.fn('COUNT', Sequelize.col('tags.id')), 'relatedTags'],
+            ] as ProjectionAlias[],
+          },
+          order: [
+            [Sequelize.col('relatedTopics'), 'DESC'],
+            [Sequelize.col('relatedTags'), 'DESC'],
+            ['views', 'DESC'],
+          ] as OrderItem[],
+        }
+      : {
+          attributes: {
+            include: [
+              [Sequelize.fn('COUNT', Sequelize.col('tags.id')), 'relatedTags'],
+            ] as ProjectionAlias[],
+          },
+          order: [
+            [Sequelize.col('relatedTags'), 'DESC'],
+            ['views', 'DESC'],
+          ] as OrderItem[],
+        }
+
     const relatedPosts = await this.Post.findAll({
-      attributes: {
-        include: [
-          [Sequelize.fn('COUNT', Sequelize.col('tags.id')), 'relatedTags'],
-        ],
-      },
+      ...findOptions,
       where: {
         status: PostStatus.Public,
         id: {
@@ -128,10 +171,6 @@ export class PostService {
         },
       ],
       group: 'id',
-      order: [
-        [Sequelize.col('relatedTags'), 'DESC'],
-        ['views', 'DESC'],
-      ],
       subQuery: false,
       limit: numberOfRelatedPosts,
     })
@@ -175,52 +214,128 @@ export class PostService {
     return existingTags
   }
 
+  getExistingTopicFromRequestTopic = async (
+    topicId: number,
+    agencyId: number,
+  ): Promise<Topic | null> => {
+    const existingTopic = await this.Topic.findOne({
+      where: { id: topicId, agencyId: agencyId },
+    })
+    return existingTopic
+  }
+
+  // returns list of topics that exist in the DB
+  getExistingTopicsFromRequestTopics = async (
+    topics: string[],
+    agencyId: number,
+  ): Promise<Topic[]> => {
+    const existingTopics = await this.Topic.findAll({
+      where: { name: topics, agencyId: agencyId },
+    })
+    return existingTopics
+  }
+
+  // returns list of topics comprising topics in query, and their descendant topics if they exist
+  getChildTopicsFromRequestTopics = async (
+    topics: Topic[],
+    agencyId: number,
+  ): Promise<Topic[]> => {
+    // extract Ids from topics
+    const existingTopicIds = topics.map((topic) => topic.id)
+
+    // get list of topics belonging to agency
+    const agencyTopics: Topic[] = await this.Topic.findAll({
+      where: {
+        agencyId: agencyId,
+      },
+    })
+
+    let parentAndChildTopics: Topic[] = topics
+
+    if (topics) {
+      let currGenChildTopics = agencyTopics.filter(
+        (topic) =>
+          !!topic.parentId && existingTopicIds.includes(topic.parentId),
+      )
+      parentAndChildTopics = parentAndChildTopics.concat(currGenChildTopics)
+
+      while (currGenChildTopics.length) {
+        const currGenChildTopicIds = currGenChildTopics.map((topic) => topic.id)
+        const nextGenChildTopics = agencyTopics.filter(
+          (topic) =>
+            !!topic.parentId && currGenChildTopicIds.includes(topic.parentId),
+        )
+        parentAndChildTopics = parentAndChildTopics.concat(nextGenChildTopics)
+        currGenChildTopics = nextGenChildTopics
+      }
+    }
+    return parentAndChildTopics
+  }
+
   /**
    * Lists all post
    * @param sort Sort by popularity or recent
+   * @param agencyId Agency id to filter by
    * @param tags Tags to filter by
+   * @param topics Topics to filter by
    * @param size Number of posts to return
    * @param page If size is given, specify which page to return
    */
   listPosts = async ({
     sort,
+    agencyId,
     tags,
+    topics,
     page,
     size,
   }: {
     sort: SortType
-    tags: string
+    agencyId: number
+    tags?: string[]
+    topics?: string[]
     page?: number
     size?: number
   }): Promise<{
     posts: Post[]
     totalItems: number
   }> => {
-    // basic
-    let tags_unchecked: string[] = []
-
-    if (tags) {
-      tags_unchecked = tags.split(',')
-    }
-
     // returns length of tags that are valid in DB
-    const tagList = await this.getExistingTagsFromRequestTags(tags_unchecked)
+    const tagList = tags ? await this.getExistingTagsFromRequestTags(tags) : []
+    // prevent search if tags query is invalid
+    if (tags && tagList.length !== tags.length) {
+      throw new InvalidTagsError()
+    }
     // convert back to raw tags in array form
     const rawTags = tagList.map((element) => element.tagname)
 
-    // prevent search if query is invalid
-    if (tagList.length != tags_unchecked.length) {
-      throw new InvalidTagsError()
+    // returns length of topics that are valid in DB
+    const topicList =
+      agencyId && topics
+        ? await this.getExistingTopicsFromRequestTopics(topics, agencyId)
+        : []
+
+    if (topics && topicList.length !== topics.length) {
+      throw new Error('Invalid topics used in request')
     }
+
+    // returns length of topics and their child topics
+    // since we also want to list posts belonging to subtopics of current topics
+    const topicAndChildTopics = agencyId
+      ? await this.getChildTopicsFromRequestTopics(topicList, agencyId)
+      : []
+    // returns topic ids
+    const rawTopicIds: number[] = topicAndChildTopics.map((topic) => topic.id)
 
     const whereobj = {
       status: PostStatus.Public,
-      ...(tagList.length ? { '$tags.tagname$': rawTags } : {}),
+      ...(tagList.length ? { '$tags.tagname$': { [Op.in]: rawTags } } : {}),
+      ...(agencyId ? { agencyId: agencyId } : {}),
+      ...(topicList.length ? { topicId: rawTopicIds } : {}),
     }
 
     const orderarray = this.sortFunction(sort)
 
-    // OR search and retrieve IDs of the respective posts
+    //return posts filtered by agency, topics and tags
     const posts = (await this.Post.findAll({
       where: whereobj,
       order: [orderarray],
@@ -228,65 +343,39 @@ export class PostService {
         {
           model: this.Tag,
           required: true,
-          attributes: ['tagname', 'description'],
+          attributes: ['tagname', 'description', 'tagType'],
         },
         { model: this.User, required: true, attributes: ['username'] },
         this.Answer,
+        {
+          model: this.Topic,
+          required: false,
+          attributes: ['name', 'description'],
+        },
       ],
-      attributes: ['id'],
-    })) as PostWithUserTagRelations[]
+      attributes: [
+        'id',
+        'userId',
+        'title',
+        'description',
+        'createdAt',
+        'views',
+        [
+          Sequelize.literal(`(
+          SELECT COUNT(DISTINCT answers.id)
+          FROM answers 
+          WHERE answers.postId = post.id
+        )`),
+          'answerCount',
+        ],
+        'topicId',
+      ],
+    })) as PostWithUserTopicTagRelations[]
 
     if (!posts) {
       return { posts: [], totalItems: 0 }
     } else {
-      // TODO: Optimize to merge the 2 requests into one
-      // Two queries used as when I search for specific tags, the response
-      // will only return tags which are matching, not all tags associated
-      // with a question
-
-      // get only the IDs we need via filtering
-      let id_array = []
-      if (tagList.length > 0) {
-        const filterPosts = posts.filter(
-          (e) => e.tags.length == tagList.length || !tagList.length,
-        )
-        // store IDs in an array
-        id_array = filterPosts.map((element) => element.id)
-      } else {
-        id_array = posts.map((element) => element.id)
-      }
-      // get posts based on id, displaying all properties
-      const returnPosts = await this.Post.findAll({
-        where: { id: id_array },
-        order: [orderarray],
-        include: [
-          {
-            model: this.Tag,
-            required: true,
-            attributes: ['tagname', 'description', 'tagType'],
-          },
-          { model: this.User, required: true, attributes: ['username'] },
-          this.Answer,
-        ],
-        attributes: [
-          'id',
-          'userId',
-          'agencyId',
-          'title',
-          'description',
-          'createdAt',
-          'views',
-          [
-            Sequelize.literal(`(
-            SELECT COUNT(DISTINCT answers.id)
-            FROM answers 
-            WHERE answers.postId = post.id
-          )`),
-            'answerCount',
-          ],
-        ],
-      })
-      return this.getPaginatedPosts(returnPosts, page, size)
+      return this.getPaginatedPosts(posts, page, size)
     }
   }
 
@@ -296,6 +385,7 @@ export class PostService {
    * @param sort Sort by popularity or recent
    * @param withAnswers If false, show only posts without answers
    * @param tags Tags to filter by
+   * @param topics Topics to filter by
    * @param size Number of posts to return
    * @param page If size is given, specify which page to return
    */
@@ -304,6 +394,7 @@ export class PostService {
     sort,
     withAnswers,
     tags,
+    topics,
     page,
     size,
   }: {
@@ -311,6 +402,7 @@ export class PostService {
     sort: SortType
     withAnswers: boolean
     tags?: string[]
+    topics?: string[]
     page?: number
     size?: number
   }): Promise<{
@@ -322,34 +414,42 @@ export class PostService {
       throw new MissingUserIdError()
     }
 
+    // returns length of tags that are valid in DB
+    const tagList = tags ? await this.getExistingTagsFromRequestTags(tags) : []
+    // prevent search if tags query is invalid
+    if (tags && tagList.length !== tags.length) {
+      throw new Error('Invalid tags used in request')
+    }
+    // convert back to raw tags in array form
+    const rawTags = tagList.map((element) => element.tagname)
+
+    // returns length of topics that are valid in DB
+    const topicList =
+      user.agencyId && topics
+        ? await this.getExistingTopicsFromRequestTopics(topics, user.agencyId)
+        : []
+
+    if (topics && topicList.length !== topics.length) {
+      throw new Error('Invalid topics used in request')
+    }
+
+    // returns length of topics and their child topics
+    // since we also want to list posts belonging to subtopics of current topics
+    const topicAndChildTopics = user.agencyId
+      ? await this.getChildTopicsFromRequestTopics(topicList, user.agencyId)
+      : []
+    // returns topic ids
+    const rawTopicIds: number[] = topicAndChildTopics.map((topic) => topic.id)
+
+    const whereobj = {
+      agencyId: user.agencyId,
+      status: { [Op.ne]: PostStatus.Archived },
+      ...(tagList.length ? { '$tags.tagname$': { [Op.in]: rawTags } } : {}),
+      ...(topicList.length ? { topicId: rawTopicIds } : {}),
+    }
+
     const posts = (await this.Post.findAll({
-      where: {
-        agencyId: user.agencyId,
-        status: { [Op.ne]: PostStatus.Archived },
-        ...(tags ? { '$tags.tagname$': tags } : {}),
-      },
-      order: [this.sortFunction(sort)],
-      include: [this.Tag, { model: this.Answer, required: withAnswers }],
-    })) as PostWithUserTagRelations[]
-
-    // Duplicate of logic from retrieveAll
-    // TODO: Optimize to merge the 2 requests into one
-    // Two queries used as when I search for specific tags, the response
-    // will only return tags which are matching, not all tags associated
-    // with a question
-
-    // get only the IDs we need via filtering
-    const postsToMap =
-      tags && tags.length > 0
-        ? // filter posts further to contain ALL of the wanted tags from ANY of the tags
-          // since posts are already filtered for ANY of the wanted tags
-          // sufficient to filter posts that contain the same number of tags as wanted tags
-          posts.filter((posts) => posts.tags.length == tags.length)
-        : posts
-    const filteredPostIds = postsToMap.map(({ id }) => id)
-
-    const returnPosts = await this.Post.findAll({
-      where: { id: filteredPostIds },
+      where: whereobj,
       order: [this.sortFunction(sort)],
       include: [
         {
@@ -358,7 +458,12 @@ export class PostService {
           attributes: ['tagname', 'description', 'tagType'],
         },
         { model: this.User, required: true, attributes: ['username'] },
-        this.Answer,
+        { model: this.Answer, required: withAnswers },
+        {
+          model: this.Topic,
+          required: false,
+          attributes: ['name', 'description'],
+        },
       ],
       attributes: [
         'id',
@@ -369,13 +474,14 @@ export class PostService {
         'createdAt',
         'views',
         this.answerCountLiteral,
+        'topicId',
       ],
-    })
+    })) as PostWithUserTopicTagRelations[]
 
     if (!posts) {
       return { posts: [], totalItems: 0 }
     } else if (withAnswers) {
-      return this.getPaginatedPosts(returnPosts, page, size)
+      return this.getPaginatedPosts(posts, page, size)
     } else {
       // posts without answers
       const filteredPosts = await this.filterPostsWithoutAnswers(posts)
@@ -384,7 +490,7 @@ export class PostService {
   }
 
   /**
-   * Get a single post and all the tags and users associated with it
+   * Get a single post and all the tags, topic and users associated with it
    * @param postId Id of the post
    * @param noOfRelatedPosts number of related posts to show
    */
@@ -393,7 +499,7 @@ export class PostService {
     noOfRelatedPosts = 0,
     updateViewCount = true,
   ): Promise<
-    PostWithUserTagRelations | PostWithUserTagRelatedPostRelations
+    PostWithUserTopicTagRelations | PostWithUserTopicTagRelatedPostRelations
   > => {
     if (updateViewCount) {
       await this.Post.increment(
@@ -413,7 +519,11 @@ export class PostService {
         status: PostStatus.Public,
         id: postId,
       },
-      include: [this.Tag, { model: this.User, attributes: ['displayname'] }],
+      include: [
+        this.Tag,
+        { model: this.User, attributes: ['displayname'] },
+        { model: this.Topic, attributes: ['name', 'description'] },
+      ],
       attributes: [
         'id',
         'userId',
@@ -432,8 +542,9 @@ export class PostService {
           )`),
           'answerCount',
         ],
+        'topicId',
       ],
-    })) as PostWithUserTagRelatedPostRelations
+    })) as PostWithUserTopicTagRelatedPostRelations
     if (!post) {
       throw new MissingPublicPostError()
     } else {
@@ -455,20 +566,36 @@ export class PostService {
     description: string
     userId: number
     agencyId: number
-    tagname: string[]
+    tagname: string[] | null
+    topicId: number | null
   }): Promise<number> => {
-    const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
+    const tagList = newPost.tagname
+      ? await this.getExistingTagsFromRequestTags(newPost.tagname)
+      : []
+    const topicValid = newPost.topicId
+      ? await this.getExistingTopicFromRequestTopic(
+          newPost.topicId,
+          newPost.agencyId,
+        )
+      : null
 
-    if (newPost.tagname.length !== tagList.length) {
-      throw new TagDoesNotExistError()
+    // Only create post if tag or topic exists
+    if (!topicValid && newPost.tagname?.length !== tagList.length) {
+      throw new Error('At least one valid tag or topic is required')
     } else {
-      // Only create post if tag exists
+      if (newPost.tagname?.length !== tagList.length) {
+        throw new TagDoesNotExistError()
+      }
+      if (!topicValid && newPost.topicId) {
+        throw new Error('Topic does not exist')
+      }
       const post = await this.Post.create({
         title: newPost.title,
         description: newPost.description,
         userId: newPost.userId,
         agencyId: newPost.agencyId,
         status: PostStatus.Private,
+        topicId: topicValid?.id ?? null,
       })
       for (const tag of tagList) {
         // Create a posttag for each tag
@@ -505,31 +632,59 @@ export class PostService {
    */
   updatePost = async ({
     id,
+    userid,
     tagname,
+    topicId,
     description,
     title,
   }: PostEditType): Promise<boolean> => {
-    await this.Post.update({ title, description }, { where: { id: id } })
+    const user = await this.User.findByPk(userid)
+    const tagList = tagname
+      ? await this.getExistingTagsFromRequestTags(tagname)
+      : []
+    // check that topic belongs to user's agency
+    const topicValid =
+      user?.agencyId && topicId
+        ? await this.getExistingTopicFromRequestTopic(topicId, user.agencyId)
+        : null
 
-    const tagList = await this.getExistingTagsFromRequestTags(tagname)
+    // Only update post if tag or topic exists
+    if (!topicValid && tagList.length === 0) {
+      throw new Error('At least one valid tag or topic is required')
+    } else {
+      if (tagname && tagname.length !== tagList.length) {
+        throw new Error('At least one tag does not exist')
+      }
+      if (!topicValid && topicId) {
+        throw new Error('Topic does not exist')
+      }
 
-    // easier way is to delete anything of the postId and recreate
-    // of course calculating the changes would be the way to go
-    await this.PostTag.destroy({ where: { postId: id } })
+      let updated
 
-    let updated
+      updated = await this.Post.update(
+        { title, description, topicId: topicValid?.id },
+        { where: { id: id } },
+      )
 
-    for (const tag of tagList) {
-      // Create a posttag for each tag
-      updated = await this.PostTag.create({
-        postId: id,
-        tagId: tag.id,
-      })
+      if (tagList.length) {
+        await this.PostTag.destroy({ where: { postId: id } })
+
+        for (const tag of tagList) {
+          // Create a posttag for each tag
+          updated = await this.PostTag.create({
+            postId: id,
+            tagId: tag.id,
+          })
+        }
+      }
+
+      // easier way is to delete anything of the postId and recreate
+      // of course calculating the changes would be the way to go
+
+      if (updated) {
+        return true
+      }
+      return false
     }
-
-    if (updated) {
-      return true
-    }
-    return false
   }
 }

@@ -165,7 +165,9 @@ export class WebController {
     const postListResultAsync = await ResultAsync.fromPromise(
       this.postService.listPosts({
         sort: SortType.Top,
-        tags: '',
+        tags: [],
+        topics: [],
+        agencyId: 0,
       }),
       (err) => {
         logger.error({

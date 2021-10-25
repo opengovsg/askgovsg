@@ -12,6 +12,7 @@ import {
   Post,
   PostStatus,
   TagType,
+  Topic,
 } from '~shared/types/base'
 import { SortType } from '../../../types/sort-type'
 import {
@@ -33,10 +34,13 @@ describe('PostService', () => {
   let Tag: ModelCtor<TagModel>
   let User: ModelCtor<UserModel>
   let Permission: ModelCtor<PermissionModel>
+  let Topic: ModelDef<Topic>
   let postService: PostService
   const mockPosts: Post[] = []
   let mockUser: UserModel
   let mockTag: TagModel
+  let mockTopic: Topic
+  let mockAgency: Agency
 
   beforeAll(async () => {
     db = await createTestDatabase()
@@ -47,8 +51,17 @@ describe('PostService', () => {
     Tag = getModel<TagModel>(db, ModelName.Tag)
     User = getModel<UserModel>(db, ModelName.User)
     Permission = getModel<PermissionModel>(db, ModelName.Permission)
-    postService = new PostService({ Answer, Post, PostTag, Tag, User })
-    const { id: agencyId } = await Agency.create({
+    Topic = getModelDef<Topic>(db, ModelName.Topic)
+    postService = new PostService({
+      Answer,
+      Post,
+      PostTag,
+      Tag,
+      User,
+      Topic,
+      Agency,
+    })
+    mockAgency = await Agency.create({
       shortname: 'was',
       longname: 'Work Allocation Singapore',
       email: 'enquiries@was.gov.sg',
@@ -60,7 +73,7 @@ describe('PostService', () => {
     mockUser = await User.create({
       username: 'answerer@test.gov.sg',
       displayname: '',
-      agencyId,
+      agencyId: mockAgency.id,
     })
     mockTag = await Tag.create({
       tagname: 'test',
@@ -69,6 +82,12 @@ describe('PostService', () => {
       hasPilot: true,
       tagType: TagType.Topic,
     })
+    mockTopic = await Topic.create({
+      name: 'mock',
+      description: '',
+      agencyId: mockUser.agencyId,
+      parentId: null,
+    })
     for (let title = 1; title <= 20; title++) {
       const mockPost = await Post.create({
         title: title.toString(),
@@ -76,6 +95,7 @@ describe('PostService', () => {
         status: PostStatus.Public,
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
+        topicId: mockTopic.id,
       })
       mockPosts.push(mockPost)
       await PostTag.create({ postId: mockPost.id, tagId: mockTag.id })
@@ -100,7 +120,9 @@ describe('PostService', () => {
       // Act
       const result = await postService.listPosts({
         sort: SortType.Top,
-        tags: mockTag.tagname,
+        tags: [mockTag.tagname],
+        agencyId: mockAgency.id,
+        topics: [mockTopic.name],
       })
 
       // Assert
@@ -112,7 +134,9 @@ describe('PostService', () => {
       // Act
       const result = await postService.listPosts({
         sort: SortType.Top,
-        tags: '',
+        agencyId: mockAgency.id,
+        tags: [mockTag.tagname],
+        topics: [mockTopic.name],
         page: 1,
         size: 10,
       })
@@ -126,7 +150,9 @@ describe('PostService', () => {
       // Act
       const result = await postService.listPosts({
         sort: SortType.Top,
-        tags: '',
+        agencyId: mockAgency.id,
+        tags: [mockTag.tagname],
+        topics: [mockTopic.name],
         page: 3,
         size: 5,
       })
@@ -205,16 +231,43 @@ describe('PostService', () => {
   })
 
   describe('createPost', () => {
-    it('throws on bad tag', async () => {
+    it('throws when at least one tag and topic does not exist', async () => {
       const badPost = {
         title: 'Bad',
         description: 'Bad',
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
         tagname: ['badtag'],
+        topicId: mockTopic.id + 20,
       }
       await expect(postService.createPost(badPost)).rejects.toStrictEqual(
+        new Error('At least one valid tag or topic is required'),
+      )
+    })
+    it('throws on bad tag', async () => {
+      const badTagPost = {
+        title: 'Bad',
+        description: 'Bad',
+        userId: mockUser.id,
+        agencyId: mockUser.agencyId,
+        tagname: ['badtag'],
+        topicId: mockTopic.id,
+      }
+      await expect(postService.createPost(badTagPost)).rejects.toStrictEqual(
         new Error('At least one tag does not exist'),
+      )
+    })
+    it('throws on bad topic', async () => {
+      const badTopicPost = {
+        title: 'Bad',
+        description: 'Bad',
+        userId: mockUser.id,
+        agencyId: mockUser.agencyId,
+        tagname: [mockTag.tagname],
+        topicId: mockTopic.id + 20,
+      }
+      await expect(postService.createPost(badTopicPost)).rejects.toStrictEqual(
+        new Error('Topic does not exist'),
       )
     })
     it('creates post on good input', async () => {
@@ -224,6 +277,7 @@ describe('PostService', () => {
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
         tagname: [mockTag.tagname],
+        topicId: mockTopic.id,
       }
 
       const postId = await postService.createPost(postParams)
@@ -232,6 +286,91 @@ describe('PostService', () => {
       const postTags = await PostTag.findAll({ where: { postId } })
       expect(post).toBeDefined()
       expect(postTags.length).toBe(postParams.tagname.length)
+    })
+  })
+
+  describe('updatePost', () => {
+    it('throws when at least one valid tag or topic does not exist', async () => {
+      const badPost = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: ['badtag'],
+        topicId: mockTopic.id + 20,
+        description: '',
+        title: 'title',
+      }
+      await expect(postService.updatePost(badPost)).rejects.toStrictEqual(
+        new Error('At least one valid tag or topic is required'),
+      )
+    })
+    it('throws on bad tag', async () => {
+      const badTagPost = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: ['badtag'],
+        topicId: mockTopic.id,
+        description: '',
+        title: 'title',
+      }
+      await expect(postService.updatePost(badTagPost)).rejects.toStrictEqual(
+        new Error('At least one tag does not exist'),
+      )
+    })
+    it('throws on bad topic', async () => {
+      const badTopicPost = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: [mockTag.tagname],
+        topicId: mockTopic.id + 20,
+        description: '',
+        title: 'title',
+      }
+
+      await expect(postService.updatePost(badTopicPost)).rejects.toStrictEqual(
+        new Error('Topic does not exist'),
+      )
+    })
+
+    it('updates post on good tag input, no topic', async () => {
+      const postParams = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: [mockTag.tagname],
+        topicId: null,
+        description: 'new description',
+        title: 'new title',
+      }
+
+      const postUpdateStatus = await postService.updatePost(postParams)
+      expect(postUpdateStatus).toBeTruthy()
+    })
+
+    it('updates post on good topic input, no tag', async () => {
+      const postParams = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: [],
+        topicId: mockTopic.id,
+        description: 'new description',
+        title: 'new title',
+      }
+
+      const postUpdateStatus = await postService.updatePost(postParams)
+      expect(postUpdateStatus).toBeTruthy()
+    })
+
+    it('updates post on good input - valid tag and topic', async () => {
+      const postParams = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: [mockTag.tagname],
+        topicId: mockTopic.id,
+        description: 'new description',
+        title: 'new title',
+      }
+
+      const postUpdateStatus = await postService.updatePost(postParams)
+      expect(postUpdateStatus).toBeTruthy()
     })
   })
 })

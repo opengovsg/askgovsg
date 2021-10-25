@@ -6,6 +6,7 @@ import sequelize, {
   Permission,
   Agency,
   User,
+  Topic,
 } from '../bootstrap/sequelize'
 import { PostStatus } from '~shared/types/base'
 
@@ -101,8 +102,17 @@ const fileName = 'example_data.csv'
       question: string,
       answerInput: string,
       tagname: string,
+      topicName: string,
     ) => {
       // console.log('Creating: ', tagname, question, answer)
+
+      // find topic id
+      const topic = await Topic.findOne({
+        where: {
+          name: topicName,
+          agencyId: agencyId,
+        },
+      })
 
       // Create post
       // If title length exceeds 147 char, cut at 147 and add it to description
@@ -119,6 +129,7 @@ const fileName = 'example_data.csv'
           status: PostStatus.Public,
           userId: user.id,
           agencyId,
+          topicId: topic?.id || null,
         },
         { transaction: t },
       )
@@ -161,7 +172,7 @@ const fileName = 'example_data.csv'
 
     // Run it for every row
     for (const row of data) {
-      await processOneRow(row.question, row.answer, row.tag)
+      await processOneRow(row.question, row.answer, row.tag, row.topic)
     }
 
     // POST-UPDATE CHECKS

@@ -12,10 +12,6 @@ export type PermissionWithRelations = Permission & {
   tagId: number
 }
 
-export type PostWithRelations = Post & {
-  userId: number
-}
-
 export class AuthService {
   private emailValidator
   private User: ModelCtor<User>
@@ -88,7 +84,7 @@ export class AuthService {
    * @returns true if user can view post
    */
   verifyUserCanViewPost = async (
-    post: PostWithRelations,
+    post: Post,
     userId?: string,
   ): Promise<void> => {
     // If post is public, anyone can view

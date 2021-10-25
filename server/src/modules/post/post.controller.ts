@@ -11,8 +11,8 @@ import { AuthService } from '../auth/auth.service'
 import { UserService } from '../user/user.service'
 import {
   PostService,
-  PostWithUserTagRelatedPostRelations,
-  PostWithUserTagRelations,
+  PostWithUserTopicTagRelatedPostRelations,
+  PostWithUserTopicTagRelations,
 } from './post.service'
 
 const logger = createLogger(module)
@@ -40,10 +40,13 @@ export class PostController {
    * Lists all post
    * @query sort Sort by popularity or recent
    * @query tags Tags to filter by
+   * @query topics Agency's topics to filter by
    * @query size Number of posts to return
+   * @query agencyId Agency id to filter by
    * @query page If size is given, specify which page to return
    * @return 200 with posts and totalItem for pagination
    * @return 422 if invalid tags are used in request
+   * @return 422 if invalid topics are used in request
    * @return 500 when database error occurs
    */
   listPosts: ControllerHandler<
@@ -54,14 +57,25 @@ export class PostController {
       page?: number
       size?: number
       sort?: SortType
-      tags?: string
+      tags?: string[]
+      topics?: string[]
+      agencyId?: number
     }
   > = async (req, res) => {
-    const { page, size, sort = SortType.Top, tags = '' } = req.query
+    const {
+      page,
+      size,
+      sort = SortType.Top,
+      tags,
+      topics,
+      agencyId,
+    } = req.query
     try {
       const data = await this.postService.listPosts({
         sort: sort as SortType,
-        tags: tags as string,
+        agencyId: agencyId as number,
+        tags: tags,
+        topics: topics,
         page: page,
         size: size,
       })
@@ -69,6 +83,8 @@ export class PostController {
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === 'Invalid tags used in request') {
+          return res.status(422).json({ message: error.message })
+        } else if (error.message === 'Invalid topics used in request') {
           return res.status(422).json({ message: error.message })
         } else {
           logger.error({
@@ -91,6 +107,7 @@ export class PostController {
    * @query sort Sort by popularity or recent
    * @query withAnswers If false, show only posts without answers
    * @query tags Tags to filter by
+   * @query topics Topics to filter by
    * @query size Number of posts to return
    * @query page If size is given, specify which page to return
    * @return 200 with posts and totalItem for pagination
@@ -107,6 +124,7 @@ export class PostController {
       withAnswers: boolean
       sort?: string
       tags?: string[]
+      topics?: string[]
       page?: number
       size?: number
     }
@@ -132,12 +150,20 @@ export class PostController {
         .json({ message: 'Something went wrong, please try again.' })
     }
     try {
-      const { withAnswers, sort = SortType.Top, tags, page, size } = req.query
+      const {
+        withAnswers,
+        sort = SortType.Top,
+        tags,
+        topics,
+        page,
+        size,
+      } = req.query
       const data = await this.postService.listAnswerablePosts({
         userId,
         sort: sort as SortType,
         withAnswers,
         tags,
+        topics,
         page,
         size,
       })
@@ -157,7 +183,7 @@ export class PostController {
   }
 
   /**
-   * Get a single post and all the tags and users associated with it
+   * Get a single post and all the tags, topic and users associated with it
    * @param postId Id of the post
    * @query relatedPosts if true, return related posts
    * @return 200 with post
@@ -166,7 +192,9 @@ export class PostController {
    */
   getSinglePost: ControllerHandler<
     { id: number },
-    PostWithUserTagRelations | PostWithUserTagRelatedPostRelations | Message,
+    | PostWithUserTopicTagRelations
+    | PostWithUserTopicTagRelatedPostRelations
+    | Message,
     undefined,
     { relatedPosts?: number }
   > = async (req, res) => {
@@ -219,6 +247,7 @@ export class PostController {
    * @body title title of post
    * @body tagname tags of post
    * @body description description of post
+   * @body topicId topic id of post
    * @return 200 if post is created
    * @return 400 if title and description is too short or long
    * @return 401 if user is not signed in
@@ -230,8 +259,9 @@ export class PostController {
     { data: number } | Message,
     {
       title: string
-      tagname: string[]
+      tagname: string[] | null
       description: string
+      topicId: number | null
     },
     undefined
   > = async (req, res) => {
@@ -260,6 +290,7 @@ export class PostController {
         userId: req.user?.id,
         agencyId: user?.agencyId,
         tagname: req.body.tagname,
+        topicId: req.body.topicId,
       })
 
       return res.status(StatusCodes.OK).json({ data: data })
@@ -342,8 +373,8 @@ export class PostController {
     undefined
   > = async (req, res) => {
     const postId = Number(req.params.id)
+    const userId = req.user?.id
     try {
-      const userId = req.user?.id
       if (!userId) {
         logger.error({
           message: 'UserId is undefined after authenticated',
@@ -385,9 +416,11 @@ export class PostController {
     // Update post in database
     try {
       const updated = await this.postService.updatePost({
+        userid: userId,
         title: req.body.title,
         description: req.body.description ?? '',
-        tagname: req.body.tagname,
+        tagname: req.body.tagname ?? null,
+        topicId: req.body.topicId ?? null,
         id: postId,
       })
 

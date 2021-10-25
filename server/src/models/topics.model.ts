@@ -22,7 +22,7 @@ export const defineTopic = (
   Agency.hasMany(Topic)
   Topic.belongsTo(Agency)
   Topic.hasMany(Topic, { foreignKey: 'parentId' })
-  Topic.belongsTo(Topic)
+  Topic.belongsTo(Topic, { foreignKey: 'parentId' })
 
   return Topic
 }

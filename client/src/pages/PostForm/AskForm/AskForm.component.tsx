@@ -11,6 +11,7 @@ export type AskFormSubmission = {
   postData: { title: string; description: string }
   answerData: { text: string }
   tags: string[]
+  topic?: string
 }
 
 interface AskFormProps {
