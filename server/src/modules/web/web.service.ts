@@ -1,6 +1,6 @@
 import cheerio from 'cheerio'
 import { SitemapLeaf } from 'express-sitemap-xml'
-import { Post, Agency } from '~shared/types/base'
+import { Post } from '~shared/types/base'
 
 export class WebService {
   /**
@@ -9,11 +9,11 @@ export class WebService {
    * @param longname agency longname
    * @returns html of agency page
    */
-  getAgencyPage = async (
+  getAgencyPage = (
     index: Buffer,
     shortname: string,
     longname: string,
-  ): Promise<string> => {
+  ): string => {
     const $ = cheerio.load(index)
 
     $('title').text(`${shortname.toUpperCase()} FAQ - AskGov`)
@@ -39,11 +39,11 @@ export class WebService {
    * @param description post page description
    * @returns html of post page
    */
-  getQuestionPage = async (
+  getQuestionPage = (
     index: Buffer,
     title: string,
     description: string,
-  ): Promise<string> => {
+  ): string => {
     const $ = cheerio.load(index)
 
     $('meta[property="og:type"]').attr('content', 'article')
@@ -63,10 +63,10 @@ export class WebService {
    * @param allAgencies list of agencies
    * @returns list of sitemap urls
    */
-  getSitemapUrls = async (
+  getSitemapUrls = (
     allPosts: Post[],
-    allAgencies: Agency[],
-  ): Promise<SitemapLeaf[]> => {
+    allAgencies: { shortname: string }[],
+  ): SitemapLeaf[] => {
     const visibleStaticPaths = ['/', '/terms', '/privacy']
     const sitemapLeaves: SitemapLeaf[] = []
     for (const path of visibleStaticPaths) {

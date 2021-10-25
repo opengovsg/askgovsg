@@ -12,6 +12,13 @@ import { PostEditType } from '../../types/post-type'
 import { ModelDef } from '../../types/sequelize'
 import { SortType } from '../../types/sort-type'
 import { PostWithRelations } from '../auth/auth.service'
+import {
+  InvalidTagsError,
+  MissingPublicPostError,
+  MissingUserIdError,
+  PostUpdateError,
+  TagDoesNotExistError,
+} from './post.errors'
 
 export type PostWithUserTagRelations = Model &
   PostWithRelations & {
@@ -203,7 +210,7 @@ export class PostService {
 
     // prevent search if query is invalid
     if (tagList.length != tags_unchecked.length) {
-      throw new Error('Invalid tags used in request')
+      throw new InvalidTagsError()
     }
 
     const whereobj = {
@@ -312,7 +319,7 @@ export class PostService {
   }> => {
     const user = await this.User.findByPk(userId)
     if (!user) {
-      throw new Error('Unable to find user with given ID')
+      throw new MissingUserIdError()
     }
 
     const posts = (await this.Post.findAll({
@@ -428,7 +435,7 @@ export class PostService {
       ],
     })) as PostWithUserTagRelatedPostRelations
     if (!post) {
-      throw new Error('No public post with this id')
+      throw new MissingPublicPostError()
     } else {
       if (noOfRelatedPosts > 0) {
         const relatedPosts = await this.getRelatedPosts(post, noOfRelatedPosts)
@@ -453,7 +460,7 @@ export class PostService {
     const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
 
     if (newPost.tagname.length !== tagList.length) {
-      throw new Error('At least one tag does not exist')
+      throw new TagDoesNotExistError()
     } else {
       // Only create post if tag exists
       const post = await this.Post.create({
@@ -485,7 +492,7 @@ export class PostService {
       { where: { id: id } },
     )
     if (!update) {
-      throw new Error('Update failed')
+      throw new PostUpdateError()
     } else {
       return
     }
