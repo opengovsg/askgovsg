@@ -1,4 +1,7 @@
+import { constants } from 'perf_hooks'
 import Sequelize, {
+  FindAttributeOptions,
+  FindOptions,
   Model,
   ModelCtor,
   Op,
@@ -109,10 +112,9 @@ export class PostService {
     numberOfRelatedPosts: number,
   ): Promise<Post[]> => {
     const tags = post.tags.map((tag) => tag.id)
-    const topic = post.topicId
 
-    const relatedPosts = topic
-      ? await this.Post.findAll({
+    const findOptions = post.topicId
+      ? {
           attributes: {
             include: [
               [
@@ -120,81 +122,51 @@ export class PostService {
                 'relatedTopics',
               ],
               [Sequelize.fn('COUNT', Sequelize.col('tags.id')), 'relatedTags'],
-            ],
+            ] as ProjectionAlias[],
           },
-          where: {
-            status: PostStatus.Public,
-            id: {
-              [Op.ne]: post.id,
-            },
-          },
-          include: [
-            {
-              model: this.Tag,
-              attributes: [],
-              required: false,
-              through: {
-                attributes: [],
-              },
-              where: {
-                id: tags,
-              },
-            },
-            {
-              model: this.Topic,
-              attributes: [],
-              required: false,
-              where: { id: post.topicId },
-            },
-          ],
-          group: 'id',
           order: [
             [Sequelize.col('relatedTopics'), 'DESC'],
             [Sequelize.col('relatedTags'), 'DESC'],
             ['views', 'DESC'],
-          ],
-          subQuery: false,
-          limit: numberOfRelatedPosts,
-        })
-      : await this.Post.findAll({
+          ] as OrderItem[],
+        }
+      : {
           attributes: {
             include: [
               [Sequelize.fn('COUNT', Sequelize.col('tags.id')), 'relatedTags'],
-            ],
+            ] as ProjectionAlias[],
           },
-          where: {
-            status: PostStatus.Public,
-            id: {
-              [Op.ne]: post.id,
-            },
-          },
-          include: [
-            {
-              model: this.Tag,
-              attributes: [],
-              required: false,
-              through: {
-                attributes: [],
-              },
-              where: {
-                id: tags,
-              },
-            },
-            {
-              model: this.Topic,
-              attributes: [],
-              required: false,
-              where: { id: post.topicId },
-            },
-          ],
-          group: 'id',
           order: [
             [Sequelize.col('relatedTags'), 'DESC'],
             ['views', 'DESC'],
-          ],
-          subQuery: false,
-          limit: numberOfRelatedPosts,
-        })
+          ] as OrderItem[],
+        }
+
+    const relatedPosts = await this.Post.findAll({
+      ...findOptions,
+      where: {
+        status: PostStatus.Public,
+        id: {
+          [Op.ne]: post.id,
+        },
+      },
+      include: [
+        {
+          model: this.Tag,
+          attributes: [],
+          required: false,
+          through: {
+            attributes: [],
+          },
+          where: {
+            id: tags,
+          },
+        },
+      ],
+      group: 'id',
+      subQuery: false,
+      limit: numberOfRelatedPosts,
+    })
 
     return relatedPosts
   }
