@@ -1,5 +1,5 @@
 import express from 'express'
-import { SitemapLeaf } from 'express-sitemap-xml'
+import expressSitemapXml, { SitemapLeaf } from 'express-sitemap-xml'
 import { param } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
 import { errAsync, okAsync } from 'neverthrow'
@@ -10,18 +10,17 @@ import {
   Post as PostType,
   PostStatus,
 } from '~shared/types/base'
+import { baseConfig } from '../../../bootstrap/config/base'
 import { Answer as AnswerModel, User as UserModel } from '../../../models'
+import { SortType } from '../../../types/sort-type'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { MissingAgencyError } from '../../agency/agency.errors'
 import { DatabaseError } from '../../core/core.errors'
-import { WebController } from '../web.controller'
-import expressSitemapXml from 'express-sitemap-xml'
-import { baseConfig } from '../../../bootstrap/config/base'
-import { SortType } from '../../../types/sort-type'
 import {
   InvalidTagsError,
   MissingPublicPostError,
 } from '../../post/post.errors'
+import { WebController } from '../web.controller'
 
 describe('WebController', () => {
   const agencyService = {
