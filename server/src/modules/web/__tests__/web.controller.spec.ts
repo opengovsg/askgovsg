@@ -36,6 +36,9 @@ describe('WebController', () => {
   }
   const postService = {
     getExistingTagsFromRequestTags: jest.fn(),
+    getExistingTopicFromRequestTopic: jest.fn(),
+    getExistingTopicsFromRequestTopics: jest.fn(),
+    getChildTopicsFromRequestTopics: jest.fn(),
     listPosts: jest.fn(),
     listAnswerablePosts: jest.fn(),
     getSinglePost: jest.fn(),
@@ -369,7 +372,9 @@ describe('WebController', () => {
 
       expect(postService.listPosts).toBeCalledWith({
         sort: SortType.Top,
-        tags: '',
+        tags: [],
+        topics: [],
+        agencyId: 0,
       })
       expect(agencyService.listAgencyShortnames).toBeCalledWith()
       expect(webService.getSitemapUrls).toBeCalledWith(mockPosts, mockAgencies)
@@ -398,7 +403,9 @@ describe('WebController', () => {
 
       expect(postService.listPosts).toBeCalledWith({
         sort: SortType.Top,
-        tags: '',
+        tags: [],
+        topics: [],
+        agencyId: 0,
       })
       expect(agencyService.listAgencyShortnames).toBeCalledWith()
       expect(webService.getSitemapUrls).toBeCalledWith([], [])
@@ -430,7 +437,9 @@ describe('WebController', () => {
 
       expect(postService.listPosts).toBeCalledWith({
         sort: SortType.Top,
-        tags: '',
+        tags: [],
+        topics: [],
+        agencyId: 0,
       })
       expect(agencyService.listAgencyShortnames).toBeCalledWith()
       expect(webService.getSitemapUrls).toBeCalledWith([], [])
