@@ -143,7 +143,7 @@ export class WebController {
             answerBody,
           )
           return res.status(StatusCodes.OK).send(questionPage)
-        } else
+        } else {
           logger.error({
             message: 'Error while getting question page - no answers',
             meta: {
@@ -151,7 +151,8 @@ export class WebController {
               shortname: req.params.id,
             },
           })
-        return res.redirect(StatusCodes.MOVED_PERMANENTLY, '/not-found')
+          return res.redirect(StatusCodes.MOVED_PERMANENTLY, '/not-found')
+        }
       },
     )
   }
