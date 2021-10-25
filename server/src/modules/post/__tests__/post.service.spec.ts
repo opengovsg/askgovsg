@@ -238,7 +238,7 @@ describe('PostService', () => {
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
         tagname: ['badtag'],
-        topicname: 'badtopic',
+        topicName: 'badtopic',
       }
       await expect(postService.createPost(badPost)).rejects.toStrictEqual(
         new Error('At least one valid tag or topic is required'),
@@ -251,7 +251,7 @@ describe('PostService', () => {
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
         tagname: ['badtag'],
-        topicname: mockTopic.name,
+        topicName: mockTopic.name,
       }
       await expect(postService.createPost(badTagPost)).rejects.toStrictEqual(
         new Error('At least one tag does not exist'),
@@ -264,7 +264,7 @@ describe('PostService', () => {
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
         tagname: [mockTag.tagname],
-        topicname: 'badtopic',
+        topicName: 'badtopic',
       }
       await expect(postService.createPost(badTopicPost)).rejects.toStrictEqual(
         new Error('Topic does not exist'),
@@ -277,7 +277,7 @@ describe('PostService', () => {
         userId: mockUser.id,
         agencyId: mockUser.agencyId,
         tagname: [mockTag.tagname],
-        topicname: mockTopic.name,
+        topicName: mockTopic.name,
       }
 
       const postId = await postService.createPost(postParams)
@@ -295,7 +295,7 @@ describe('PostService', () => {
         id: mockPosts[0].id,
         userid: mockUser.id,
         tagname: ['badtag'],
-        topicname: 'badtopic',
+        topicName: 'badtopic',
         description: '',
         title: 'title',
       }
@@ -308,7 +308,7 @@ describe('PostService', () => {
         id: mockPosts[0].id,
         userid: mockUser.id,
         tagname: ['badtag'],
-        topicname: mockTopic.name,
+        topicName: mockTopic.name,
         description: '',
         title: 'title',
       }
@@ -321,7 +321,7 @@ describe('PostService', () => {
         id: mockPosts[0].id,
         userid: mockUser.id,
         tagname: [mockTag.tagname],
-        topicname: 'badtopic',
+        topicName: 'badtopic',
         description: '',
         title: 'title',
       }
@@ -336,7 +336,7 @@ describe('PostService', () => {
         id: mockPosts[0].id,
         userid: mockUser.id,
         tagname: [mockTag.tagname],
-        topicname: null,
+        topicName: null,
         description: 'new description',
         title: 'new title',
       }
@@ -350,7 +350,7 @@ describe('PostService', () => {
         id: mockPosts[0].id,
         userid: mockUser.id,
         tagname: [],
-        topicname: mockTopic.name,
+        topicName: mockTopic.name,
         description: 'new description',
         title: 'new title',
       }
@@ -364,7 +364,7 @@ describe('PostService', () => {
         id: mockPosts[0].id,
         userid: mockUser.id,
         tagname: [mockTag.tagname],
-        topicname: mockTopic.name,
+        topicName: mockTopic.name,
         description: 'new description',
         title: 'new title',
       }

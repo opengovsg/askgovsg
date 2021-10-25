@@ -615,11 +615,11 @@ export class PostService {
     userId: number
     agencyId: number
     tagname: string[]
-    topicname: string
+    topicName: string
   }): Promise<number> => {
     const tagList = await this.getExistingTagsFromRequestTags(newPost.tagname)
     const topicValid = await this.getExistingTopicFromRequestTopic(
-      newPost.topicname,
+      newPost.topicName,
       newPost.agencyId,
     )
 
@@ -630,7 +630,7 @@ export class PostService {
       if (newPost.tagname.length !== tagList.length) {
         throw new Error('At least one tag does not exist')
       }
-      if (!topicValid && newPost.topicname) {
+      if (!topicValid && newPost.topicName) {
         throw new Error('Topic does not exist')
       }
       const post = await this.Post.create({
@@ -678,7 +678,7 @@ export class PostService {
     id,
     userid,
     tagname,
-    topicname,
+    topicName,
     description,
     title,
   }: PostEditType): Promise<boolean> => {
@@ -687,8 +687,8 @@ export class PostService {
       ? await this.getExistingTagsFromRequestTags(tagname)
       : []
     const topicValid =
-      user?.agencyId && topicname
-        ? await this.getExistingTopicFromRequestTopic(topicname, user.agencyId)
+      user?.agencyId && topicName
+        ? await this.getExistingTopicFromRequestTopic(topicName, user.agencyId)
         : null
 
     // Only update post if tag or topic exists
@@ -698,7 +698,7 @@ export class PostService {
       if (tagname && tagname.length !== tagList.length) {
         throw new Error('At least one tag does not exist')
       }
-      if (!topicValid && topicname) {
+      if (!topicValid && topicName) {
         throw new Error('Topic does not exist')
       }
 

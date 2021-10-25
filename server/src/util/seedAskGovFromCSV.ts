@@ -102,14 +102,14 @@ const fileName = 'example_data.csv'
       question: string,
       answerInput: string,
       tagname: string,
-      topicname: string,
+      topicName: string,
     ) => {
       // console.log('Creating: ', tagname, question, answer)
 
       // find topic id
       const topic = await Topic.findOne({
         where: {
-          name: topicname,
+          name: topicName,
           agencyId: agencyId,
         },
       })
