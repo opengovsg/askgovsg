@@ -25,12 +25,19 @@ export const listPosts = async (
   sort?: string,
   agencyId?: number,
   joinedTags?: string,
-  topics?: string,
+  joinedTopics?: string,
   page?: number,
   size?: number,
 ): Promise<GetPostsDto> => {
   return ApiClient.get<GetPostsDto>(`${POST_API_BASE}`, {
-    params: { sort, agencyId, tags: joinedTags, topics, page, size },
+    params: {
+      sort,
+      agencyId,
+      tags: joinedTags,
+      topics: joinedTopics,
+      page,
+      size,
+    },
   }).then(({ data }) => data)
 }
 export const LIST_POSTS_QUERY_KEY = 'listPosts'
@@ -46,7 +53,7 @@ export const listAnswerablePosts = async ({
 }: {
   withAnswers: boolean
   sort: string
-  tags: string
+  tags?: string
   topics?: string
   page?: number
   size?: number

@@ -312,41 +312,30 @@ export class PostService {
   }: {
     sort: SortType
     agencyId: number
-    tags: string
-    topics: string
+    tags?: string[]
+    topics?: string[]
     page?: number
     size?: number
   }): Promise<{
     posts: Post[]
     totalItems: number
   }> => {
-    // split tags
-    let tagsUnchecked: string[] = []
-    if (tags) {
-      tagsUnchecked = tags.split(',')
-    }
-
     // returns length of tags that are valid in DB
-    const tagList = await this.getExistingTagsFromRequestTags(tagsUnchecked)
+    const tagList = tags ? await this.getExistingTagsFromRequestTags(tags) : []
     // prevent search if tags query is invalid
-    if (tagList.length != tagsUnchecked.length) {
+    if (tags && tagList.length !== tags.length) {
       throw new Error('Invalid tags used in request')
     }
     // convert back to raw tags in array form
     const rawTags = tagList.map((element) => element.tagname)
 
-    // topics
-    let topicsUnchecked: string[] = []
-    if (topics) {
-      topicsUnchecked = topics.split(',')
-    }
-
     // returns length of topics that are valid in DB
-    const topicList = agencyId
-      ? await this.getExistingTopicsFromRequestTopics(topicsUnchecked, agencyId)
-      : []
+    const topicList =
+      agencyId && topics
+        ? await this.getExistingTopicsFromRequestTopics(topics, agencyId)
+        : []
 
-    if (topicList.length != topicsUnchecked.length) {
+    if (topics && topicList.length !== topics.length) {
       throw new Error('Invalid topics used in request')
     }
 
@@ -433,8 +422,8 @@ export class PostService {
     userId: number
     sort: SortType
     withAnswers: boolean
-    tags?: string
-    topics?: string
+    tags?: string[]
+    topics?: string[]
     page?: number
     size?: number
   }): Promise<{
@@ -446,37 +435,22 @@ export class PostService {
       throw new Error('Unable to find user with given ID')
     }
 
-    // Same as in listPosts, except that agencyId is replaced by user's agencyId
-    // split tags
-    let tagsUnchecked: string[] = []
-    if (tags) {
-      tagsUnchecked = tags.split(',')
-    }
-
     // returns length of tags that are valid in DB
-    const tagList = await this.getExistingTagsFromRequestTags(tagsUnchecked)
+    const tagList = tags ? await this.getExistingTagsFromRequestTags(tags) : []
     // prevent search if tags query is invalid
-    if (tagList.length != tagsUnchecked.length) {
+    if (tags && tagList.length !== tags.length) {
       throw new Error('Invalid tags used in request')
     }
     // convert back to raw tags in array form
     const rawTags = tagList.map((element) => element.tagname)
 
-    // topics
-    let topicsUnchecked: string[] = []
-    if (topics) {
-      topicsUnchecked = topics.split(',')
-    }
-
     // returns length of topics that are valid in DB
-    const topicList = user.agencyId
-      ? await this.getExistingTopicsFromRequestTopics(
-          topicsUnchecked,
-          user.agencyId,
-        )
-      : []
+    const topicList =
+      user.agencyId && topics
+        ? await this.getExistingTopicsFromRequestTopics(topics, user.agencyId)
+        : []
 
-    if (topicList.length != topicsUnchecked.length) {
+    if (topics && topicList.length !== topics.length) {
       throw new Error('Invalid topics used in request')
     }
 

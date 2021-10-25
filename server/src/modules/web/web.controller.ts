@@ -145,8 +145,8 @@ export class WebController {
     try {
       const { posts: allPosts } = await this.postService.listPosts({
         sort: SortType.Top,
-        tags: '',
-        topics: '',
+        tags: [],
+        topics: [],
         agencyId: 0,
       })
       const allAgencyShortnames =

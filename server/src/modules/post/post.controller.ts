@@ -57,8 +57,8 @@ export class PostController {
       page?: number
       size?: number
       sort?: SortType
-      tags?: string
-      topics?: string
+      tags?: string[]
+      topics?: string[]
       agencyId?: number
     }
   > = async (req, res) => {
@@ -66,16 +66,16 @@ export class PostController {
       page,
       size,
       sort = SortType.Top,
-      tags = '',
-      topics = '',
+      tags,
+      topics,
       agencyId,
     } = req.query
     try {
       const data = await this.postService.listPosts({
         sort: sort as SortType,
         agencyId: agencyId as number,
-        tags: tags as string,
-        topics: topics as string,
+        tags: tags,
+        topics: topics,
         page: page,
         size: size,
       })
@@ -123,8 +123,8 @@ export class PostController {
     {
       withAnswers: boolean
       sort?: string
-      tags?: string
-      topics?: string
+      tags?: string[]
+      topics?: string[]
       page?: number
       size?: number
     }
