@@ -42,7 +42,7 @@ export class PostController {
    * @query tags Tags to filter by
    * @query topics Agency's topics to filter by
    * @query size Number of posts to return
-   * @query agency Agency id to filter by
+   * @query agencyId Agency id to filter by
    * @query page If size is given, specify which page to return
    * @return 200 with posts and totalItem for pagination
    * @return 422 if invalid tags are used in request
@@ -59,7 +59,7 @@ export class PostController {
       sort?: SortType
       tags?: string
       topics?: string
-      agency?: number
+      agencyId?: number
     }
   > = async (req, res) => {
     const {
@@ -68,12 +68,12 @@ export class PostController {
       sort = SortType.Top,
       tags = '',
       topics = '',
-      agency,
+      agencyId,
     } = req.query
     try {
       const data = await this.postService.listPosts({
         sort: sort as SortType,
-        agency: agency as number,
+        agencyId: agencyId as number,
         tags: tags as string,
         topics: topics as string,
         page: page,

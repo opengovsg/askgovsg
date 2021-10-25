@@ -13,7 +13,7 @@ import Spinner from '../Spinner/Spinner.component'
 
 interface QuestionsListProps {
   sort: string
-  agency: number
+  agencyId: number
   tags: string
   topics: string
   pageSize: number
@@ -23,7 +23,7 @@ interface QuestionsListProps {
 
 const QuestionsList = ({
   sort,
-  agency,
+  agencyId,
   tags,
   topics,
   pageSize,
@@ -52,9 +52,9 @@ const QuestionsList = ({
     : {
         queryKey: [
           LIST_POSTS_QUERY_KEY,
-          { sort, agency, tags, topics, page, pageSize },
+          { sort, agencyId, tags, topics, page, pageSize },
         ],
-        queryFn: () => listPosts(sort, agency, tags, topics, page, pageSize),
+        queryFn: () => listPosts(sort, agencyId, tags, topics, page, pageSize),
       }
 
   const { data, isLoading } = useQuery(queryKey, queryFn, {

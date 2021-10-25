@@ -296,7 +296,7 @@ export class PostService {
   /**
    * Lists all post
    * @param sort Sort by popularity or recent
-   * @param agency Agency id to filter by
+   * @param agencyId Agency id to filter by
    * @param tags Tags to filter by
    * @param topics Topics to filter by
    * @param size Number of posts to return
@@ -304,14 +304,14 @@ export class PostService {
    */
   listPosts = async ({
     sort,
-    agency,
+    agencyId,
     tags,
     topics,
     page,
     size,
   }: {
     sort: SortType
-    agency: number
+    agencyId: number
     tags: string
     topics: string
     page?: number
@@ -342,8 +342,8 @@ export class PostService {
     }
 
     // returns length of topics that are valid in DB
-    const topicList = agency
-      ? await this.getExistingTopicsFromRequestTopics(topicsUnchecked, agency)
+    const topicList = agencyId
+      ? await this.getExistingTopicsFromRequestTopics(topicsUnchecked, agencyId)
       : []
 
     if (topicList.length != topicsUnchecked.length) {
@@ -352,8 +352,8 @@ export class PostService {
 
     // returns length of topics and their child topics
     // since we also want to list posts belonging to subtopics of current topics
-    const topicAndChildTopics = agency
-      ? await this.getChildTopicsFromRequestTopics(topicList, agency)
+    const topicAndChildTopics = agencyId
+      ? await this.getChildTopicsFromRequestTopics(topicList, agencyId)
       : []
     // returns topic ids
     const rawTopicIds: number[] = topicAndChildTopics.map((topic) => topic.id)
@@ -361,7 +361,7 @@ export class PostService {
     const whereobj = {
       status: PostStatus.Public,
       ...(tagList.length ? { '$tags.tagname$': { [Op.in]: rawTags } } : {}),
-      ...(agency ? { agencyId: agency } : {}),
+      ...(agencyId ? { agencyId: agencyId } : {}),
       ...(topicList.length ? { topicId: rawTopicIds } : {}),
     }
 
@@ -415,7 +415,6 @@ export class PostService {
    * Lists all post answerable by the agency user
    * @param userId ID of user
    * @param sort Sort by popularity or recent
-   * @param Agency id to filter by
    * @param withAnswers If false, show only posts without answers
    * @param tags Tags to filter by
    * @param topics Topics to filter by
