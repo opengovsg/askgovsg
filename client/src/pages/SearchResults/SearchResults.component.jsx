@@ -24,14 +24,14 @@ const SearchResults = () => {
   const searchParams = new URLSearchParams(search)
   const searchQuery = searchParams.get('search') ?? ''
   const agencyShortName = searchParams.get('agency')
-  const { data, isLoading } = useQuery(
-    [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agencyShortName],
-    listPosts(undefined, agencyShortName),
-  )
   const { data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
     () => getAgencyByShortName({ shortname: agencyShortName }),
     { enabled: !!agencyShortName },
+  )
+  const { data, isLoading } = useQuery(
+    [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agency?.id],
+    listPosts(undefined, agency?.id),
   )
 
   const foundPosts = new Fuse(data?.posts ?? [], {
@@ -64,7 +64,7 @@ const SearchResults = () => {
         {searchQuery ? (
           <div className="search-questions">
             <SearchBox
-              agencyShortName={agencyShortName}
+              agencyId={agency?.id}
               value={searchQuery}
               name={'search'}
               pt={'mt8'}
