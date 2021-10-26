@@ -4,7 +4,11 @@ import Downshift from 'downshift'
 import Fuse from 'fuse.js'
 import { BiSearch } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { Link, useHistory, useParams } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
+import {
+  getAgencyById,
+  GET_AGENCY_BY_ID_QUERY_KEY,
+} from '../../services/AgencyService'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   listPosts,
@@ -33,6 +37,12 @@ const SearchBox = ({
     [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agencyId],
     // TODO: refactor to better split between when agencyShortName is present
     () => listPosts(undefined, agencyId),
+  )
+
+  const { data: agency } = useQuery(
+    [GET_AGENCY_BY_ID_QUERY_KEY, agencyId],
+    () => getAgencyById(agencyId),
+    { enabled: !!agencyId },
   )
 
   const history = useHistory()
@@ -78,7 +88,7 @@ const SearchBox = ({
     handleSubmit = (inputValue) =>
       history.push(
         `/questions?search=${inputValue}` +
-          (agencyId ? `&agency=${agencyId}` : ''),
+          (agency ? `&agency=${agency.shortname}` : ''),
       )
   }
 
