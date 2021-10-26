@@ -57,8 +57,8 @@ import {
   sequelize,
   Tag,
   Token,
-  User,
   Topic,
+  User,
 } from './sequelize'
 import sessionMiddleware from './session'
 
@@ -221,8 +221,32 @@ app.use('/api/v1', api(apiOptions))
 
 // connection with client setup
 if (baseConfig.nodeEnv === Environment.Prod) {
+  const setNoCache = (res: express.Response) => {
+    const date = new Date()
+    date.setFullYear(date.getFullYear() - 1)
+    res.setHeader('Expires', date.toUTCString())
+    res.setHeader('Pragma', 'no-cache')
+    res.setHeader('Cache-Control', 'public, no-cache')
+  }
+
+  const setLongTermCache = (res: express.Response) => {
+    const date = new Date()
+    date.setFullYear(date.getFullYear() + 1)
+    res.setHeader('Expires', date.toUTCString())
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+  }
+
   app.use(
-    express.static(path.resolve(__dirname, '../../..', 'client', 'build')),
+    express.static(path.resolve(__dirname, '../../..', 'client', 'build'), {
+      extensions: ['html'],
+      setHeaders(res, path) {
+        if (path.includes('static')) {
+          setLongTermCache(res)
+        } else {
+          setNoCache(res)
+        }
+      },
+    }),
   )
 
   app.use('/', routeWeb({ controller: webController }))
