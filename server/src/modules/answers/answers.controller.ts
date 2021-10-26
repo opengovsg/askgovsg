@@ -37,7 +37,6 @@ export class AnswersController {
         userId: number
         agencyLogo: string
       }[]
-    | undefined
     | Message
   > = async (req, res) => {
     try {

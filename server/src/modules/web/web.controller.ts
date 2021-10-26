@@ -1,11 +1,13 @@
 import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
+import { combine, ResultAsync } from 'neverthrow'
 import sanitizeHtml from 'sanitize-html'
 import { createLogger } from '../../bootstrap/logging'
 import { ControllerHandler } from '../../types/response-handler'
 import { SortType } from '../../types/sort-type'
 import { AgencyService } from '../agency/agency.service'
 import { AnswersService } from '../answers/answers.service'
+import { InvalidTagsError } from '../post/post.errors'
 import { PostService } from '../post/post.service'
 import { WebService } from './web.service'
 
@@ -51,44 +53,32 @@ export class WebController {
     undefined,
     undefined
   > = async (req, res) => {
-    try {
-      const agency = await this.agencyService.findOneByName({
+    return await this.agencyService
+      .findOneByName({
         shortname: req.params.shortname,
       })
-      if (agency.isOk()) {
-        const agencyPage = await this.webService.getAgencyPage(
+      .map((agency) => {
+        const agencyPage = this.webService.getAgencyPage(
           this.index,
           req.params.shortname,
-          agency.value.longname,
+          agency.longname,
         )
         return res.status(StatusCodes.OK).send(agencyPage)
-      } else {
+      })
+      .mapErr((err) => {
         logger.error({
-          message: `${
-            agency.error.name ?? 'Error'
-          } while getting agency page: ${agency.error.message}`,
+          message: `${err.name} while getting agency page: ${err.message}`,
           meta: {
             function: 'getAgencyPage',
             shortname: req.params.shortname,
           },
-          error: agency.error,
+          error: err,
         })
-        if (agency.error.statusCode === StatusCodes.NOT_FOUND)
-          return res.status(StatusCodes.NOT_FOUND).redirect('/not-found')
+        if (err.statusCode === StatusCodes.NOT_FOUND)
+          return res.redirect(StatusCodes.MOVED_PERMANENTLY, '/not-found')
         else
           return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
-      }
-    } catch (error) {
-      logger.error({
-        message: 'Error while getting agency page',
-        meta: {
-          function: 'getAgencyPage',
-          shortname: req.params.shortname,
-        },
-        error,
       })
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
-    }
   }
 
   /**
@@ -104,37 +94,67 @@ export class WebController {
     undefined,
     undefined
   > = async (req, res) => {
-    try {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        return res.status(StatusCodes.BAD_REQUEST).send(this.index)
-      }
-      const post = await this.postService.getSinglePost(req.params.id, 0, false)
-      const answers = await this.answersService.listAnswers(req.params.id)
-      if (answers && answers.length > 0) {
-        const answerBody = sanitizeHtml(answers[0].body, {
-          allowedTags: [],
-          allowedAttributes: {},
-        })
-        const questionPage = await this.webService.getQuestionPage(
-          this.index,
-          post.title,
-          answerBody,
-        )
-        return res.status(StatusCodes.OK).send(questionPage)
-      } else
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
-    } catch (error) {
-      logger.error({
-        message: 'Error while getting post page',
-        meta: {
-          function: 'getQuestionPage',
-          shortname: req.params.id,
-        },
-        error,
-      })
-      return res.status(StatusCodes.NOT_FOUND).redirect('/not-found')
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(StatusCodes.BAD_REQUEST).send(this.index)
     }
+    const postResultAsync = await ResultAsync.fromPromise(
+      this.postService.getSinglePost(req.params.id, 0, false),
+      (err) => {
+        logger.error({
+          message:
+            'Error while getting question page - postService.getSinglePost',
+          meta: {
+            function: 'getQuestionPage',
+            shortname: req.params.id,
+          },
+          error: err,
+        })
+        return res.redirect(StatusCodes.MOVED_PERMANENTLY, '/not-found')
+      },
+    )
+    const answersResultAsync = await ResultAsync.fromPromise(
+      this.answersService.listAnswers(req.params.id),
+      (err) => {
+        logger.error({
+          message:
+            'Error while getting question page - answersService.listAnswers',
+          meta: {
+            function: 'getQuestionPage',
+            shortname: req.params.id,
+          },
+          error: err,
+        })
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(this.index)
+      },
+    )
+
+    // TODO: add mapErr when post and answer service have been migrated to neverthrow
+    return combine([postResultAsync, answersResultAsync] as const).map(
+      ([post, answers]) => {
+        if (answers && answers.length > 0) {
+          const answerBody = sanitizeHtml(answers[0].body, {
+            allowedTags: [],
+            allowedAttributes: {},
+          })
+          const questionPage = this.webService.getQuestionPage(
+            this.index,
+            post.title,
+            answerBody,
+          )
+          return res.status(StatusCodes.OK).send(questionPage)
+        } else {
+          logger.error({
+            message: 'Error while getting question page - no answers',
+            meta: {
+              function: 'getQuestionPage',
+              shortname: req.params.id,
+            },
+          })
+          return res.redirect(StatusCodes.MOVED_PERMANENTLY, '/not-found')
+        }
+      },
+    )
   }
 
   /**
@@ -142,28 +162,51 @@ export class WebController {
    * @returns list of sitemap urls
    */
   getSitemapUrls = async () => {
-    try {
-      const { posts: allPosts } = await this.postService.listPosts({
+    const postListResultAsync = await ResultAsync.fromPromise(
+      this.postService.listPosts({
         sort: SortType.Top,
-        tags: '',
+        tags: [],
+        topics: [],
+        agencyId: 0,
+      }),
+      (err) => {
+        logger.error({
+          message: 'Error while getting sitemap urls',
+          meta: {
+            function: 'getSitemapUrls',
+          },
+          error: err,
+        })
+        return err as InvalidTagsError
+      },
+    )
+    const agenciesResultAsync = await this.agencyService
+      .listAgencyShortnames()
+      .mapErr((err) => {
+        logger.error({
+          message: `${err.name} while getting sitemap urls: ${err.message}`,
+          meta: {
+            function: 'getSitemapUrls',
+          },
+          error: err,
+        })
+        return err
       })
-      const allAgencyShortnames =
-        await this.agencyService.listAgencyShortnames()
-      if (allAgencyShortnames.isOk())
-        return await this.webService.getSitemapUrls(
-          allPosts,
-          allAgencyShortnames.value,
+    const combineResultAsyncs = combine([
+      postListResultAsync,
+      agenciesResultAsync,
+    ] as const)
+      .map(([allPosts, allAgencyShortnames]) => {
+        return this.webService.getSitemapUrls(
+          allPosts.posts,
+          allAgencyShortnames,
         )
-      else return []
-    } catch (error) {
-      logger.error({
-        message: 'Error while getting sitemap urls',
-        meta: {
-          function: 'getSitemapUrls',
-        },
-        error,
       })
-      return []
-    }
+      .mapErr((err) => {
+        return err
+      })
+    return combineResultAsyncs.isOk()
+      ? combineResultAsyncs.value
+      : this.webService.getSitemapUrls([], [])
   }
 }

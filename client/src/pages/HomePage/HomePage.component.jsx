@@ -192,7 +192,7 @@ const HomePage = ({ match }) => {
           {/* List of Posts depending on whether user is citizen or agency officer */}
           <QuestionsListComponent
             sort={sortState.value}
-            agency={match.params.agency}
+            agencyId={agency?.id}
             tags={queryState}
             pageSize={isAuthenticatedOfficer ? 50 : hasTagsKey ? 30 : 10}
             listAnswerable={isAuthenticatedOfficer}

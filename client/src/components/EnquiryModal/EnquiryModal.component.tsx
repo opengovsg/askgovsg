@@ -101,7 +101,7 @@ export const EnquiryModal = ({
                 searchOnEnter={false}
                 isInvalid={formErrors.questionTitle}
                 inputRef={ref}
-                agencyShortName={agency?.shortname}
+                agencyId={agency?.id}
                 {...questionTitleProps}
               />
               {formErrors.questionTitle && errorLabel('This field is required')}

@@ -1,6 +1,6 @@
 @import '../../styles/sizes';
 @import '../../styles/text';
-@import '../../styles/colours';
+
 
 .post-page {
 
@@ -12,7 +12,7 @@
 
   .subtitle-bar {
     @include body-2;
-    color: $sec-400;
+    color: var(--chakra-colors-secondary-400);
 
     .tags-name-time {
       display: flex;
@@ -21,7 +21,7 @@
 
     .private-subtitle {
       @include body-2;
-      color: $neutral-500;
+      color: var(--chakra-colors-neutral-500);
       font-style: italic;
       display: flex;
       margin-top: 8px;
@@ -37,7 +37,7 @@
 
     .post-time {
       @include caption-1;
-      color: $sec-400;
+      color: var(--chakra-colors-secondary-400);
       padding-right: 20px;
     }
   }

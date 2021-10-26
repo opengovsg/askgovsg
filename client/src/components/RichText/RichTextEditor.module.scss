@@ -1,4 +1,4 @@
-@import '../../styles/colours';
+
 @import '../../styles/text';
 
 .toolbar {
@@ -7,7 +7,7 @@
       position: absolute;
       top: 35px;
       left: -20px;
-      background: $white;
+      background: white;
       border-radius: 3px;
       box-shadow: 0px 0px 20px rgba(193, 199, 205, 0.7);
 
@@ -19,7 +19,7 @@
         border-top: none;
         border-right: 15px solid transparent;
         border-left: 15px solid transparent;
-        border-bottom: 15px solid $white;
+        border-bottom: 15px solid white;
       }
     }
 
@@ -29,8 +29,8 @@
   }
 
   .wrapper {
-    border: 1px solid $neutral-400;
-    background-color: $white;
+    border: 1px solid var(--chakra-colors-neutral-400);
+    background-color: white;
     border-radius: 3px;
   }
 

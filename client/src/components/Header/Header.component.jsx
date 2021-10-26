@@ -195,7 +195,7 @@ const Header = () => {
             maxW="680px"
             w="100%"
           >
-            <SearchBoxComponent agencyShortName={agency?.shortname} />
+            <SearchBoxComponent agencyId={agency?.id} />
           </Flex>
         </Flex>
         {Boolean(agency) ? (
@@ -293,7 +293,7 @@ const Header = () => {
           mt="-68px"
           d={{ base: 'none', xl: 'block' }}
         >
-          <SearchBoxComponent agencyShortName={agency?.shortname} />
+          <SearchBoxComponent agencyId={agency?.id} />
         </Flex>
       ) : null}
       {!matchQuestions && deviceType === device.desktop ? (

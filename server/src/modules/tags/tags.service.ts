@@ -8,7 +8,7 @@ import {
 import { PostStatus, TagType } from '~shared/types/base'
 import { countBy, uniqBy } from 'lodash'
 import { Tag } from '../../models'
-import { PostWithUserTagRelations } from '../post/post.service'
+import { PostWithUserTopicTagRelations } from '../post/post.service'
 
 export class TagsService {
   private postsCountLiteral: ProjectionAlias = [
@@ -84,7 +84,7 @@ export class TagsService {
     const posts = (await PostModel.findAll({
       where: { id: postIds },
       include: TagModel,
-    })) as PostWithUserTagRelations[]
+    })) as PostWithUserTopicTagRelations[]
 
     const existingTopicTags = posts.reduce<Tag[]>(
       (acc, post) => acc.concat(post.tags),
@@ -141,7 +141,7 @@ export class TagsService {
     const posts = (await PostModel.findAll({
       where: { id: postIds },
       include: TagModel,
-    })) as PostWithUserTagRelations[]
+    })) as PostWithUserTopicTagRelations[]
 
     const combinedTags = posts.reduce<Tag[]>(
       (acc, post) => acc.concat(post.tags),
