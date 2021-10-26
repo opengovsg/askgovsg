@@ -1,4 +1,4 @@
-@import '../../../../styles/colours';
+
 @import '../../../../styles/text';
 
 .post-cell {
@@ -13,7 +13,7 @@
   .post-text {
     @include body-1;
     width: 100%;
-    color: $sec-500;
+    color: var(--chakra-colors-secondary-500);
     margin-top: 16px;
     margin-bottom: 16px;
 

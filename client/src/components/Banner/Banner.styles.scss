@@ -1,12 +1,12 @@
-@import '../../styles/colours';
+
 @import '../../styles/text';
 
 .banner {
   height: 50px;
   min-height: 50px;
-  color: $neutral-100;
+  color: var(--chakra-colors-neutral-100);
   z-index: 2000;
-  background: $neutral-900;
+  background: var(--chakra-colors-neutral-900);
   display: flex;
   justify-content: center;
   align-items: center;

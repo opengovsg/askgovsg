@@ -1,5 +1,5 @@
 @import '../../styles/text';
-@import '../../styles/colours';
+
 
 .edit-form-container {
   box-sizing: border-box;
@@ -11,7 +11,7 @@
   justify-content: center;
   position: relative;
   flex: 1 0 auto;
-  color: #242729;
+  color: var(chakra-colors-neutral-900);
   padding: 0 48px;
 
   .edit-form-content {
@@ -30,7 +30,7 @@
 
       .edit-form-headline {
         @include h2;
-        color: $pri-500;
+        color: var(--chakra-colors-primary-500);
       }
     }
 
@@ -38,11 +38,11 @@
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      color: #242729;
+      color: var(chakra-colors-neutral-900);
 
       aside {
         flex-shrink: 0;
-        color: #242729;
+        color: var(chakra-colors-neutral-900);
 
         .right-panel {
           width: 300px;

@@ -1,4 +1,4 @@
-@import '../../styles/colours';
+
 @import '../../styles/text';
 @import '../../styles/sizes';
 @import '../../styles/misc';
@@ -12,7 +12,7 @@
 .post-with-stats{
   padding-top: 24px;
   padding-bottom: 24px;
-  border-bottom: 1px solid $neutral-300;
+  border-bottom: 1px solid var(--chakra-colors-neutral-300);
   
   .post-item {
     flex: 1;
@@ -29,7 +29,7 @@
     
         .post-date {
           @include body-2;
-          color: $sec-400;
+          color: var(--chakra-colors-secondary-400);
         }
       }
     }
@@ -40,13 +40,13 @@
       
       h2 {
         @include h4;
-        color: $pri-900;
+        color: var(--chakra-colors-primary-900);
         padding-bottom: 4px;
       }
   
       .post-description-container {
         @include body-2;
-        color: $sec-500;
+        color: var(--chakra-colors-secondary-500);
 
         .public-DraftStyleDefault-block {
           margin-top: 0px;
@@ -58,7 +58,7 @@
   
     .post-side-info {
       @include body-2;
-      color: $sec-400;
+      color: var(--chakra-colors-secondary-400);
       display: flex;
       align-items: flex-start;
   
@@ -66,15 +66,15 @@
         @include caption-2;
         padding: 4px 8px;
         border-radius: $btn-radius;
-        color: $white;
+        color: white;
         &.due-soon-tag {
-          background: $warning-600;
+          background: var(--chakra-colors-warning-600);
         }
         &.answered-tag {
-          background: $success-700;
+          background: var(--chakra-colors-success-700);
         }
         &.open-tag {
-          background: $pri-500;
+          background: var(--chakra-colors-primary-500);
         }
       }
     }
@@ -82,7 +82,7 @@
 
   .post-side-with-edit {
     @include body-2;
-    color: $sec-400;
+    color: var(--chakra-colors-secondary-400);
     display: flex;
     align-items: center;
     .view {

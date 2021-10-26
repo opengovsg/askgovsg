@@ -1,4 +1,4 @@
-@import '../../styles/colours';
+
 
 .rdw-editor-wrapper {
   .rdw-link-decorator-wrapper {
@@ -8,7 +8,7 @@
       }
     }
     &:not(:hover) {
-      color: $pri-500;
+      color: var(--chakra-colors-primary-500);
       > ::after {
         background: transparent url(../../assets/link-hint.svg) 0 0 no-repeat;
         text-decoration: none !important;
@@ -22,10 +22,10 @@
     }
     &:focus {
       border-width: 2px;
-      border-color: $pri-500;
+      border-color: var(--chakra-colors-primary-500);
     }
     &:hover {
-      color: $pri-600;
+      color: var(--chakra-colors-primary-600);
       > ::after {
         background: transparent url(../../assets/link-hint-hover.svg) 0 0 no-repeat;
         text-decoration: none !important;

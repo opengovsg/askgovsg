@@ -166,7 +166,7 @@
 @mixin shadow {
   /* Shadow/Small */
 
-  background: #c4c4c4;
+  background: var(--chakra-colors-neutral-400);
   box-shadow: 0px 0px 10px rgba(216, 222, 235, 0.5);
 }
 
@@ -183,7 +183,7 @@
 
   /* Standard/White */
 
-  color: #FFFFFF;
+  color: white;
 }
 
 @mixin searchfont {

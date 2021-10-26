@@ -1,4 +1,4 @@
-@import '../../../styles/colours';
+
 @import '../../../styles/text';
 
 .answer-section {
@@ -9,18 +9,18 @@
 
   .answer-header {
     width: 100%;
-    border-top: 1px solid $neutral-300;
+    border-top: 1px solid var(--chakra-colors-neutral-300);
     margin: 16px 0;
 
     h2 {
       @include h2;
-      color: $pri-800;
+      color: var(--chakra-colors-primary-800);
     }
   }
 
   .answers {
     width: 100%;
     margin-bottom: 16px;
-    color: #242729;
+    color: var(chakra-colors-neutral-900);
   }
 }
