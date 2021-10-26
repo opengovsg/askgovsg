@@ -369,6 +369,7 @@ export class PostService {
           'answerCount',
         ],
         'topicId',
+        'agencyId',
       ],
     })) as PostWithUserTopicTagRelations[]
 
