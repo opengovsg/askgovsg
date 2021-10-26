@@ -16,10 +16,13 @@ import { ModelDef } from '../../types/sequelize'
 import { SortType } from '../../types/sort-type'
 import {
   InvalidTagsError,
+  InvalidTopicsError,
   MissingPublicPostError,
   MissingUserIdError,
   PostUpdateError,
   TagDoesNotExistError,
+  TopicDoesNotExistError,
+  InvalidTagsAndTopicsError,
 } from './post.errors'
 
 export type UserWithTagRelations = {
@@ -315,7 +318,7 @@ export class PostService {
         : []
 
     if (topics && topicList.length !== topics.length) {
-      throw new Error('Invalid topics used in request')
+      throw new InvalidTopicsError()
     }
 
     // returns length of topics and their child topics
@@ -419,7 +422,7 @@ export class PostService {
     const tagList = tags ? await this.getExistingTagsFromRequestTags(tags) : []
     // prevent search if tags query is invalid
     if (tags && tagList.length !== tags.length) {
-      throw new Error('Invalid tags used in request')
+      throw new InvalidTagsError()
     }
     // convert back to raw tags in array form
     const rawTags = tagList.map((element) => element.tagname)
@@ -431,7 +434,7 @@ export class PostService {
         : []
 
     if (topics && topicList.length !== topics.length) {
-      throw new Error('Invalid topics used in request')
+      throw new InvalidTopicsError()
     }
 
     // returns length of topics and their child topics
@@ -581,14 +584,14 @@ export class PostService {
       : null
 
     // Only create post if tag or topic exists
-    if (!topicValid && newPost.tagname?.length !== tagList.length) {
-      throw new Error('At least one valid tag or topic is required')
+    if (!topicValid && tagList.length === 0) {
+      throw new InvalidTagsAndTopicsError()
     } else {
       if (newPost.tagname?.length !== tagList.length) {
         throw new TagDoesNotExistError()
       }
       if (!topicValid && newPost.topicId) {
-        throw new Error('Topic does not exist')
+        throw new TopicDoesNotExistError()
       }
       const post = await this.Post.create({
         title: newPost.title,
@@ -651,13 +654,13 @@ export class PostService {
 
     // Only update post if tag or topic exists
     if (!topicValid && tagList.length === 0) {
-      throw new Error('At least one valid tag or topic is required')
+      throw new InvalidTagsAndTopicsError()
     } else {
       if (tagname && tagname.length !== tagList.length) {
-        throw new Error('At least one tag does not exist')
+        throw new TagDoesNotExistError()
       }
       if (!topicValid && topicId) {
-        throw new Error('Topic does not exist')
+        throw new TopicDoesNotExistError()
       }
 
       let updated

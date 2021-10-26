@@ -24,6 +24,16 @@ import {
 import { PostService } from '../post.service'
 import { ModelDef } from '../../../types/sequelize'
 import { PostCreation } from '../../../models/posts.model'
+import {
+  InvalidTagsError,
+  InvalidTopicsError,
+  MissingPublicPostError,
+  MissingUserIdError,
+  PostUpdateError,
+  TagDoesNotExistError,
+  TopicDoesNotExistError,
+  InvalidTagsAndTopicsError,
+} from '../post.errors'
 
 describe('PostService', () => {
   let db: Sequelize
@@ -130,6 +140,32 @@ describe('PostService', () => {
       expect(result.totalItems).toStrictEqual(mockPosts.length)
     })
 
+    it('should return all data with no tags query', async () => {
+      // Act
+      const result = await postService.listPosts({
+        sort: SortType.Top,
+        agencyId: mockAgency.id,
+        topics: [mockTopic.name],
+      })
+
+      // Assert
+      expect(result.posts.length).toStrictEqual(mockPosts.length)
+      expect(result.totalItems).toStrictEqual(mockPosts.length)
+    })
+
+    it('should return all data with no topics query', async () => {
+      // Act
+      const result = await postService.listPosts({
+        sort: SortType.Top,
+        agencyId: mockAgency.id,
+        tags: [mockTag.tagname],
+      })
+
+      // Assert
+      expect(result.posts.length).toStrictEqual(mockPosts.length)
+      expect(result.totalItems).toStrictEqual(mockPosts.length)
+    })
+
     it('should return first 10 posts with query on page 1, size 10', async () => {
       // Act
       const result = await postService.listPosts({
@@ -146,6 +182,7 @@ describe('PostService', () => {
       expect(result.posts[0].title).toBe(mockPosts[0].title)
       expect(result.posts[9].title).toBe(mockPosts[9].title)
     })
+
     it('should return 11-15th posts with query on page 3, size 5', async () => {
       // Act
       const result = await postService.listPosts({
@@ -162,13 +199,37 @@ describe('PostService', () => {
       expect(result.posts[0].title).toStrictEqual(mockPosts[10].title)
       expect(result.posts[4].title).toStrictEqual(mockPosts[14].title)
     })
+
+    it('should return error when invalid tags exist in query', async () => {
+      const badTagRequest = {
+        sort: SortType.Top,
+        agencyId: mockAgency.id,
+        tags: [mockTag.tagname, 'badtag'],
+        topics: [mockTopic.name],
+      }
+      await expect(postService.listPosts(badTagRequest)).rejects.toStrictEqual(
+        new InvalidTagsError(),
+      )
+    })
+
+    it('should return error when invalid topics exist in query', async () => {
+      const badTagRequest = {
+        sort: SortType.Top,
+        agencyId: mockAgency.id,
+        tags: [mockTag.tagname],
+        topics: [mockTopic.name, 'badtopic'],
+      }
+      await expect(postService.listPosts(badTagRequest)).rejects.toStrictEqual(
+        new InvalidTopicsError(),
+      )
+    })
   })
 
   describe('listAnswerablePosts', () => {
     it('should return error when the user ID is invalid', async () => {
       try {
         await postService.listAnswerablePosts({
-          userId: 2,
+          userId: mockUser.id + 10,
           sort: SortType.Top,
           withAnswers: false,
         })
@@ -228,6 +289,43 @@ describe('PostService', () => {
       expect(result.posts[0].title).toStrictEqual(mockPosts[15].title)
       expect(result.posts[4].title).toStrictEqual(mockPosts[19].title)
     })
+
+    it('should return error when invalid tags exist in query', async () => {
+      const badTagRequest = {
+        sort: SortType.Top,
+        agencyId: mockAgency.id,
+        tags: [mockTag.tagname, 'badtag'],
+        topics: [mockTopic.name],
+      }
+      await expect(postService.listPosts(badTagRequest)).rejects.toStrictEqual(
+        new InvalidTagsError(),
+      )
+    })
+
+    it('should return error when invalid topics exist in query', async () => {
+      const badTagRequest = {
+        sort: SortType.Top,
+        agencyId: mockAgency.id,
+        tags: [mockTag.tagname],
+        topics: [mockTopic.name, 'badtopic'],
+      }
+      await expect(postService.listPosts(badTagRequest)).rejects.toStrictEqual(
+        new InvalidTopicsError(),
+      )
+    })
+  })
+
+  describe('getSinglePost', () => {
+    it('gets single post with associated tags, topics, user and related posts', async () => {
+      const post = await postService.getSinglePost(mockPosts[0].id)
+      expect(post.title).toBe(mockPosts[0].title)
+    })
+    it('throws if public post does not exist', async () => {
+      const badPostId = mockPosts[mockPosts.length - 1].id + 20
+      await expect(postService.getSinglePost(badPostId)).rejects.toStrictEqual(
+        new MissingPublicPostError(),
+      )
+    })
   })
 
   describe('createPost', () => {
@@ -241,7 +339,7 @@ describe('PostService', () => {
         topicId: mockTopic.id + 20,
       }
       await expect(postService.createPost(badPost)).rejects.toStrictEqual(
-        new Error('At least one valid tag or topic is required'),
+        new InvalidTagsAndTopicsError(),
       )
     })
     it('throws on bad tag', async () => {
@@ -254,7 +352,7 @@ describe('PostService', () => {
         topicId: mockTopic.id,
       }
       await expect(postService.createPost(badTagPost)).rejects.toStrictEqual(
-        new Error('At least one tag does not exist'),
+        new TagDoesNotExistError(),
       )
     })
     it('throws on bad topic', async () => {
@@ -267,7 +365,7 @@ describe('PostService', () => {
         topicId: mockTopic.id + 20,
       }
       await expect(postService.createPost(badTopicPost)).rejects.toStrictEqual(
-        new Error('Topic does not exist'),
+        new TopicDoesNotExistError(),
       )
     })
     it('creates post on good input', async () => {
@@ -289,6 +387,26 @@ describe('PostService', () => {
     })
   })
 
+  describe('deletePost', () => {
+    it('throws when post deletion fails', async () => {
+      const postId = mockPosts[mockPosts.length - 1].id + 20
+      try {
+        await postService.deletePost(postId)
+        throw new PostUpdateError()
+      } catch (error) {
+        expect(error).toBeInstanceOf(Error)
+        if (error instanceof Error) {
+          expect(error.message).toBe('Post update failed')
+        }
+      }
+    })
+    it('archives post successfully', async () => {
+      const postId = mockPosts[0].id
+      const postUpdateStatus = await postService.deletePost(postId)
+      expect(postUpdateStatus).toBeUndefined()
+    })
+  })
+
   describe('updatePost', () => {
     it('throws when at least one valid tag or topic does not exist', async () => {
       const badPost = {
@@ -300,7 +418,7 @@ describe('PostService', () => {
         title: 'title',
       }
       await expect(postService.updatePost(badPost)).rejects.toStrictEqual(
-        new Error('At least one valid tag or topic is required'),
+        new InvalidTagsAndTopicsError(),
       )
     })
     it('throws on bad tag', async () => {
@@ -313,7 +431,7 @@ describe('PostService', () => {
         title: 'title',
       }
       await expect(postService.updatePost(badTagPost)).rejects.toStrictEqual(
-        new Error('At least one tag does not exist'),
+        new TagDoesNotExistError(),
       )
     })
     it('throws on bad topic', async () => {
@@ -327,7 +445,7 @@ describe('PostService', () => {
       }
 
       await expect(postService.updatePost(badTopicPost)).rejects.toStrictEqual(
-        new Error('Topic does not exist'),
+        new TopicDoesNotExistError(),
       )
     })
 
