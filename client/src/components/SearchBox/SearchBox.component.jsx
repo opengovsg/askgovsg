@@ -20,7 +20,7 @@ const SearchBox = ({
   handleAbandon = (_inputValue) => {},
   searchOnEnter = true,
   showSearchIcon = true,
-  agencyShortName,
+  agencyId,
   ...inputProps
 }) => {
   /*
@@ -30,9 +30,9 @@ const SearchBox = ({
   client-side search 
   */
   const { data } = useQuery(
-    [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agencyShortName],
+    [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agencyId],
     // TODO: refactor to better split between when agencyShortName is present
-    () => listPosts(undefined, agencyShortName),
+    () => listPosts(undefined, agencyId),
   )
 
   const history = useHistory()
@@ -78,7 +78,7 @@ const SearchBox = ({
     handleSubmit = (inputValue) =>
       history.push(
         `/questions?search=${inputValue}` +
-          (agencyShortName ? `&agency=${agencyShortName}` : ''),
+          (agencyId ? `&agency=${agencyId}` : ''),
       )
   }
 
