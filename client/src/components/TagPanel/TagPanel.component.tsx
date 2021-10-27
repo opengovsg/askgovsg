@@ -90,16 +90,14 @@ const TagPanel = (): ReactElement => {
 
   const isShowMobileVariant = useBreakpointValue({
     base: true,
-    xs: true,
     sm: false,
-    md: false,
-    lg: false,
-    xl: false,
   })
 
-  const TagMenuMobile = tags && (
+  const tagsToShow = tags || []
+
+  const TagMenuMobile = (
     <VStack align="left" spacing={0}>
-      {tags
+      {tagsToShow
         .filter(({ tagType }) => tagType === TagType.Topic)
         .sort(bySpecifiedOrder)
         .map((tag) => {
@@ -131,7 +129,7 @@ const TagPanel = (): ReactElement => {
     </VStack>
   )
 
-  const TagMenuDesktop = tags && (
+  const TagMenuDesktop = (
     <SimpleGrid
       templateColumns="repeat(2, 1fr)"
       maxW="620px"
@@ -140,11 +138,10 @@ const TagPanel = (): ReactElement => {
       spacingY="16px"
       py="48px"
     >
-      {tags
+      {tagsToShow
         .filter(({ tagType }) => tagType === TagType.Topic)
         .sort(bySpecifiedOrder)
-        .map((tag) => {
-          const { tagType, tagname } = tag
+        .map(({ id, tagType, tagname }) => {
           return (
             <Box
               py="24px"
@@ -159,14 +156,12 @@ const TagPanel = (): ReactElement => {
                 color: 'primary.600',
               }}
               as={RouterLink}
-              key={tag.id}
+              key={id}
               to={getRedirectURL(tagType, tagname, agency)}
               onClick={() => sendClickTagEventToAnalytics(tagname)}
             >
               <Flex m="auto" w="100%" px={8}>
-                <Text _groupHover={{ color: 'primary.600' }}>
-                  {tag.tagname}
-                </Text>
+                <Text _groupHover={{ color: 'primary.600' }}>{tagname}</Text>
                 <Spacer />
                 <BiRightArrowAlt />
               </Flex>

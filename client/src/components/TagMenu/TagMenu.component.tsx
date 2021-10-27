@@ -20,7 +20,7 @@ import { BiRightArrowAlt } from 'react-icons/bi'
 import { useEffect, useState, ReactElement, createRef } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
-import { TagType } from '~shared/types/base'
+import { Tag, TagType } from '~shared/types/base'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   Agency,
@@ -80,25 +80,41 @@ const TagMenu = (): ReactElement => {
       )
     : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
 
+  const bySpecifiedOrder =
+    agency && Array.isArray(agency.displayOrder)
+      ? (a: Tag, b: Tag) => {
+          const aDisplayOrder = (agency.displayOrder || []).indexOf(a.id)
+          const bDisplayOrder = (agency.displayOrder || []).indexOf(b.id)
+          if (aDisplayOrder !== -1 && bDisplayOrder !== -1) {
+            return aDisplayOrder > bDisplayOrder ? 1 : -1
+          } else if (aDisplayOrder !== -1) {
+            // a has an enforced display order, so a should be further up
+            return -1
+          } else if (bDisplayOrder !== -1) {
+            // b has an enforced display order, so a should be further down
+            return 1
+          } else {
+            return a.tagname > b.tagname ? 1 : -1
+          }
+        }
+      : (a: Tag, b: Tag) => (a.tagname > b.tagname ? 1 : -1)
+
   const isShowMobileVariant = useBreakpointValue({
     base: true,
-    xs: true,
     sm: false,
-    md: false,
-    lg: false,
-    xl: false,
   })
 
-  const TagMenuMobile = tags && (
+  const tagsToShow = tags || []
+
+  const TagMenuMobile = (
     <VStack align="left" spacing={0}>
-      {tags
+      {tagsToShow
         .filter(
           ({ tagType, tagname }) =>
             tagType === TagType.Topic && tagname !== queryState,
         )
-        .sort((a, b) => (a.tagname > b.tagname ? 1 : -1))
-        .map((tag) => {
-          const { tagType, tagname } = tag
+        .sort(bySpecifiedOrder)
+        .map(({ id, tagType, tagname }) => {
           return (
             <Link
               py="24px"
@@ -111,7 +127,7 @@ const TagMenu = (): ReactElement => {
                 color: 'primary.600',
               }}
               as={RouterLink}
-              key={tag.id}
+              key={id}
               to={getRedirectURL(tagType, tagname, agency)}
               onClick={() => {
                 sendClickTagEventToAnalytics(tagname)
@@ -125,7 +141,7 @@ const TagMenu = (): ReactElement => {
                     color: 'primary.600',
                   }}
                 >
-                  {tag.tagname}
+                  {tagname}
                 </Text>
                 <Spacer />
                 <BiRightArrowAlt />
@@ -136,7 +152,7 @@ const TagMenu = (): ReactElement => {
     </VStack>
   )
 
-  const TagMenuDesktop = tags && (
+  const TagMenuDesktop = (
     <SimpleGrid
       templateColumns="repeat(2, 1fr)"
       maxW="620px"
@@ -145,7 +161,7 @@ const TagMenu = (): ReactElement => {
       spacingY="16px"
       py="48px"
     >
-      {tags
+      {tagsToShow
         .filter(
           ({ tagType, tagname }) =>
             tagType === TagType.Topic && tagname !== queryState,
