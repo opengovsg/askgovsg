@@ -13,6 +13,7 @@ import {
   Stack,
   SimpleGrid,
   Box,
+  useBreakpointValue,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
@@ -79,6 +80,114 @@ const TagMenu = (): ReactElement => {
       )
     : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
 
+  const isShowMobileVariant = useBreakpointValue({
+    base: true,
+    xs: true,
+    sm: false,
+    md: false,
+    lg: false,
+    xl: false,
+  })
+
+  const TagMenuMobile = tags && (
+    <VStack align="left" spacing={0}>
+      {tags
+        .filter(
+          ({ tagType, tagname }) =>
+            tagType === TagType.Topic && tagname !== queryState,
+        )
+        .sort((a, b) => (a.tagname > b.tagname ? 1 : -1))
+        .map((tag) => {
+          const { tagType, tagname } = tag
+          return (
+            <Link
+              py="24px"
+              w="100%"
+              textAlign="left"
+              textStyle="h4"
+              role="group"
+              _hover={{ bg: 'primary.100' }}
+              _focus={{
+                color: 'primary.600',
+              }}
+              as={RouterLink}
+              key={tag.id}
+              to={getRedirectURL(tagType, tagname, agency)}
+              onClick={() => {
+                sendClickTagEventToAnalytics(tagname)
+                setQueryState(tagname)
+                accordionRef.current?.click()
+              }}
+            >
+              <Flex maxW="680px" m="auto" w="100%" px={8}>
+                <Text
+                  _groupHover={{
+                    color: 'primary.600',
+                  }}
+                >
+                  {tag.tagname}
+                </Text>
+                <Spacer />
+                <BiRightArrowAlt />
+              </Flex>
+            </Link>
+          )
+        })}
+    </VStack>
+  )
+
+  const TagMenuDesktop = tags && (
+    <SimpleGrid
+      templateColumns="repeat(2, 1fr)"
+      maxW="620px"
+      m="auto"
+      spacingX="16px"
+      spacingY="16px"
+      py="48px"
+    >
+      {tags
+        .filter(
+          ({ tagType, tagname }) =>
+            tagType === TagType.Topic && tagname !== queryState,
+        )
+        .sort((a, b) => (a.tagname > b.tagname ? 1 : -1))
+        .map((tag) => {
+          const { tagType, tagname } = tag
+          return (
+            <Box
+              py="24px"
+              h="72px"
+              w="100%"
+              textAlign="left"
+              textStyle="h4"
+              boxShadow="base"
+              role="group"
+              _hover={{ bg: 'primary.100', boxShadow: 'lg' }}
+              _focus={{
+                color: 'primary.600',
+              }}
+              as={RouterLink}
+              key={tag.id}
+              to={getRedirectURL(tagType, tagname, agency)}
+              onClick={() => {
+                sendClickTagEventToAnalytics(tagname)
+                setQueryState(tagname)
+                accordionRef.current?.click()
+              }}
+            >
+              <Flex m="auto" w="100%" px={8}>
+                <Text _groupHover={{ color: 'primary.600' }}>
+                  {tag.tagname}
+                </Text>
+                <Spacer />
+                <BiRightArrowAlt />
+              </Flex>
+            </Box>
+          )
+        })}
+    </SimpleGrid>
+  )
+
   return (
     <Accordion allowMultiple allowToggle>
       <AccordionItem border="none">
@@ -126,118 +235,9 @@ const TagMenu = (): ReactElement => {
             </Flex>
           </AccordionButton>
         </h2>
-        {/* Accordion for mobile */}
-        <AccordionPanel
-          p={0}
-          shadow="md"
-          display={{ base: 'block', sm: 'none' }}
-        >
+        <AccordionPanel p={0} shadow="md">
           {isLoading && <Spinner />}
-          {tags && (
-            <VStack align="left" spacing={0}>
-              {tags
-                .filter(
-                  ({ tagType, tagname }) =>
-                    tagType === TagType.Topic && tagname !== queryState,
-                )
-                .sort((a, b) => (a.tagname > b.tagname ? 1 : -1))
-                .map((tag) => {
-                  const { tagType, tagname } = tag
-                  return (
-                    <Link
-                      py="24px"
-                      w="100%"
-                      textAlign="left"
-                      textStyle="h4"
-                      role="group"
-                      _hover={{ bg: 'primary.100' }}
-                      _focus={{
-                        color: 'primary.600',
-                      }}
-                      as={RouterLink}
-                      key={tag.id}
-                      to={getRedirectURL(tagType, tagname, agency)}
-                      onClick={() => {
-                        sendClickTagEventToAnalytics(tagname)
-                        setQueryState(tagname)
-                        accordionRef.current?.click()
-                      }}
-                    >
-                      <Flex maxW="680px" m="auto" w="100%" px={8}>
-                        <Text
-                          _groupHover={{
-                            color: 'primary.600',
-                          }}
-                        >
-                          {tag.tagname}
-                        </Text>
-                        <Spacer />
-                        <BiRightArrowAlt />
-                      </Flex>
-                    </Link>
-                  )
-                })}
-            </VStack>
-          )}
-        </AccordionPanel>
-        {/* Accordion cards view for tablet and desktop */}
-        <AccordionPanel
-          p={0}
-          shadow="md"
-          display={{ base: 'none', sm: 'block' }}
-        >
-          {isLoading && <Spinner />}
-          {tags && (
-            <SimpleGrid
-              templateColumns="repeat(2, 1fr)"
-              maxW="620px"
-              m="auto"
-              spacingX="16px"
-              spacingY="16px"
-              py="48px"
-            >
-              {tags
-                .filter(
-                  ({ tagType, tagname }) =>
-                    tagType === TagType.Topic && tagname !== queryState,
-                )
-                .sort((a, b) => (a.tagname > b.tagname ? 1 : -1))
-                .map((tag) => {
-                  const { tagType, tagname } = tag
-                  return (
-                    <Box
-                      py="24px"
-                      h="72px"
-                      w="100%"
-                      textAlign="left"
-                      textStyle="h4"
-                      boxShadow="base"
-                      role="group"
-                      _hover={{ bg: 'primary.100', boxShadow: 'lg' }}
-                      _focus={{
-                        color: 'primary.600',
-                      }}
-                      as={RouterLink}
-                      key={tag.id}
-                      to={getRedirectURL(tagType, tagname, agency)}
-                      onClick={() => {
-                        sendClickTagEventToAnalytics(tagname)
-                        setQueryState(tagname)
-                        accordionRef.current?.click()
-                      }}
-                    >
-                      <Flex m="auto" w="100%" px={8}>
-                        <Text _groupHover={{ color: 'primary.600' }}>
-                          {tag.tagname}
-                        </Text>
-                        <Spacer />
-                        <BiRightArrowAlt />
-                      </Flex>
-                    </Box>
-                  )
-                })}
-            </SimpleGrid>
-          )}
+          {isShowMobileVariant ? TagMenuMobile : TagMenuDesktop}
         </AccordionPanel>
       </AccordionItem>
     </Accordion>
