@@ -93,39 +93,35 @@ const TagPanel = (): ReactElement => {
     sm: false,
   })
 
-  const tagsToShow = tags || []
+  const tagsToShow = (tags || [])
+    .filter(({ tagType }) => tagType === TagType.Topic)
+    .sort(bySpecifiedOrder)
 
   const TagMenuMobile = (
     <VStack align="left" spacing={0}>
-      {tagsToShow
-        .filter(({ tagType }) => tagType === TagType.Topic)
-        .sort(bySpecifiedOrder)
-        .map((tag) => {
-          const { tagType, tagname } = tag
-          return (
-            <Link
-              py="24px"
-              w="100%"
-              textAlign="left"
-              textStyle="h4"
-              borderBottomWidth="1px"
-              role="group"
-              _hover={{ bg: 'primary.100' }}
-              as={RouterLink}
-              key={tag.id}
-              to={getRedirectURL(tagType, tagname, agency)}
-              onClick={() => sendClickTagEventToAnalytics(tagname)}
-            >
-              <Flex maxW="680px" m="auto" w="100%" px={8}>
-                <Text _groupHover={{ color: 'primary.600' }}>
-                  {tag.tagname}
-                </Text>
-                <Spacer />
-                <BiRightArrowAlt />
-              </Flex>
-            </Link>
-          )
-        })}
+      {tagsToShow.map(({ id, tagType, tagname }) => {
+        return (
+          <Link
+            py="24px"
+            w="100%"
+            textAlign="left"
+            textStyle="h4"
+            borderBottomWidth="1px"
+            role="group"
+            _hover={{ bg: 'primary.100' }}
+            as={RouterLink}
+            key={id}
+            to={getRedirectURL(tagType, tagname, agency)}
+            onClick={() => sendClickTagEventToAnalytics(tagname)}
+          >
+            <Flex maxW="680px" m="auto" w="100%" px={8}>
+              <Text _groupHover={{ color: 'primary.600' }}>{tagname}</Text>
+              <Spacer />
+              <BiRightArrowAlt />
+            </Flex>
+          </Link>
+        )
+      })}
     </VStack>
   )
 
@@ -138,36 +134,33 @@ const TagPanel = (): ReactElement => {
       spacingY="16px"
       py="48px"
     >
-      {tagsToShow
-        .filter(({ tagType }) => tagType === TagType.Topic)
-        .sort(bySpecifiedOrder)
-        .map(({ id, tagType, tagname }) => {
-          return (
-            <Box
-              py="24px"
-              h="72px"
-              w="100%"
-              textAlign="left"
-              textStyle="h4"
-              boxShadow="base"
-              role="group"
-              _hover={{ bg: 'primary.100', boxShadow: 'lg' }}
-              _focus={{
-                color: 'primary.600',
-              }}
-              as={RouterLink}
-              key={id}
-              to={getRedirectURL(tagType, tagname, agency)}
-              onClick={() => sendClickTagEventToAnalytics(tagname)}
-            >
-              <Flex m="auto" w="100%" px={8}>
-                <Text _groupHover={{ color: 'primary.600' }}>{tagname}</Text>
-                <Spacer />
-                <BiRightArrowAlt />
-              </Flex>
-            </Box>
-          )
-        })}
+      {tagsToShow.map(({ id, tagType, tagname }) => {
+        return (
+          <Box
+            py="24px"
+            h="72px"
+            w="100%"
+            textAlign="left"
+            textStyle="h4"
+            boxShadow="base"
+            role="group"
+            _hover={{ bg: 'primary.100', boxShadow: 'lg' }}
+            _focus={{
+              color: 'primary.600',
+            }}
+            as={RouterLink}
+            key={id}
+            to={getRedirectURL(tagType, tagname, agency)}
+            onClick={() => sendClickTagEventToAnalytics(tagname)}
+          >
+            <Flex m="auto" w="100%" px={8}>
+              <Text _groupHover={{ color: 'primary.600' }}>{tagname}</Text>
+              <Spacer />
+              <BiRightArrowAlt />
+            </Flex>
+          </Box>
+        )
+      })}
     </SimpleGrid>
   )
 

@@ -104,51 +104,50 @@ const TagMenu = (): ReactElement => {
     sm: false,
   })
 
-  const tagsToShow = tags || []
+  const tagsToShow = (tags || [])
+    .filter(
+      ({ tagType, tagname }) =>
+        tagType === TagType.Topic && tagname !== queryState,
+    )
+    .sort(bySpecifiedOrder)
 
   const TagMenuMobile = (
     <VStack align="left" spacing={0}>
-      {tagsToShow
-        .filter(
-          ({ tagType, tagname }) =>
-            tagType === TagType.Topic && tagname !== queryState,
+      {tagsToShow.map(({ id, tagType, tagname }) => {
+        return (
+          <Link
+            py="24px"
+            w="100%"
+            textAlign="left"
+            textStyle="h4"
+            role="group"
+            _hover={{ bg: 'primary.100' }}
+            _focus={{
+              color: 'primary.600',
+            }}
+            as={RouterLink}
+            key={id}
+            to={getRedirectURL(tagType, tagname, agency)}
+            onClick={() => {
+              sendClickTagEventToAnalytics(tagname)
+              setQueryState(tagname)
+              accordionRef.current?.click()
+            }}
+          >
+            <Flex maxW="680px" m="auto" w="100%" px={8}>
+              <Text
+                _groupHover={{
+                  color: 'primary.600',
+                }}
+              >
+                {tagname}
+              </Text>
+              <Spacer />
+              <BiRightArrowAlt />
+            </Flex>
+          </Link>
         )
-        .sort(bySpecifiedOrder)
-        .map(({ id, tagType, tagname }) => {
-          return (
-            <Link
-              py="24px"
-              w="100%"
-              textAlign="left"
-              textStyle="h4"
-              role="group"
-              _hover={{ bg: 'primary.100' }}
-              _focus={{
-                color: 'primary.600',
-              }}
-              as={RouterLink}
-              key={id}
-              to={getRedirectURL(tagType, tagname, agency)}
-              onClick={() => {
-                sendClickTagEventToAnalytics(tagname)
-                setQueryState(tagname)
-                accordionRef.current?.click()
-              }}
-            >
-              <Flex maxW="680px" m="auto" w="100%" px={8}>
-                <Text
-                  _groupHover={{
-                    color: 'primary.600',
-                  }}
-                >
-                  {tagname}
-                </Text>
-                <Spacer />
-                <BiRightArrowAlt />
-              </Flex>
-            </Link>
-          )
-        })}
+      })}
     </VStack>
   )
 
@@ -161,46 +160,37 @@ const TagMenu = (): ReactElement => {
       spacingY="16px"
       py="48px"
     >
-      {tagsToShow
-        .filter(
-          ({ tagType, tagname }) =>
-            tagType === TagType.Topic && tagname !== queryState,
+      {tagsToShow.map(({ id, tagType, tagname }) => {
+        return (
+          <Box
+            py="24px"
+            h="72px"
+            w="100%"
+            textAlign="left"
+            textStyle="h4"
+            boxShadow="base"
+            role="group"
+            _hover={{ bg: 'primary.100', boxShadow: 'lg' }}
+            _focus={{
+              color: 'primary.600',
+            }}
+            as={RouterLink}
+            key={id}
+            to={getRedirectURL(tagType, tagname, agency)}
+            onClick={() => {
+              sendClickTagEventToAnalytics(tagname)
+              setQueryState(tagname)
+              accordionRef.current?.click()
+            }}
+          >
+            <Flex m="auto" w="100%" px={8}>
+              <Text _groupHover={{ color: 'primary.600' }}>{tagname}</Text>
+              <Spacer />
+              <BiRightArrowAlt />
+            </Flex>
+          </Box>
         )
-        .sort((a, b) => (a.tagname > b.tagname ? 1 : -1))
-        .map((tag) => {
-          const { tagType, tagname } = tag
-          return (
-            <Box
-              py="24px"
-              h="72px"
-              w="100%"
-              textAlign="left"
-              textStyle="h4"
-              boxShadow="base"
-              role="group"
-              _hover={{ bg: 'primary.100', boxShadow: 'lg' }}
-              _focus={{
-                color: 'primary.600',
-              }}
-              as={RouterLink}
-              key={tag.id}
-              to={getRedirectURL(tagType, tagname, agency)}
-              onClick={() => {
-                sendClickTagEventToAnalytics(tagname)
-                setQueryState(tagname)
-                accordionRef.current?.click()
-              }}
-            >
-              <Flex m="auto" w="100%" px={8}>
-                <Text _groupHover={{ color: 'primary.600' }}>
-                  {tag.tagname}
-                </Text>
-                <Spacer />
-                <BiRightArrowAlt />
-              </Flex>
-            </Box>
-          )
-        })}
+      })}
     </SimpleGrid>
   )
 
