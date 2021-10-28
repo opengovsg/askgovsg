@@ -82,7 +82,7 @@ const SearchBox = ({
     googleAnalytics.hasSearched = true
   }
 
-  placeholder = placeholder ?? 'How can we help you?'
+  placeholder = placeholder ?? 'Search keywords or phrases'
   value = value ?? ''
   if (!handleSubmit) {
     handleSubmit = (inputValue) =>
@@ -145,6 +145,8 @@ const SearchBox = ({
                     mt="8px"
                     mr="8px"
                     borderRadius="4px"
+                    cursor="pointer"
+                    onClick={() => handleSubmit(inputValue)}
                   />
                 ) : null}
                 <Input
