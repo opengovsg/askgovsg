@@ -4,16 +4,13 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Link,
   Spinner,
   Text,
-  VStack,
   Flex,
   Spacer,
   Stack,
   SimpleGrid,
   Box,
-  useBreakpointValue,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
@@ -99,11 +96,6 @@ const TagMenu = (): ReactElement => {
         }
       : (a: Tag, b: Tag) => (a.tagname > b.tagname ? 1 : -1)
 
-  const isShowMobileVariant = useBreakpointValue({
-    base: true,
-    sm: false,
-  })
-
   const tagsToShow = (tags || [])
     .filter(
       ({ tagType, tagname }) =>
@@ -111,54 +103,14 @@ const TagMenu = (): ReactElement => {
     )
     .sort(bySpecifiedOrder)
 
-  const TagMenuMobile = (
-    <VStack align="left" spacing={0}>
-      {tagsToShow.map(({ id, tagType, tagname }) => {
-        return (
-          <Link
-            py="24px"
-            w="100%"
-            textAlign="left"
-            textStyle="h4"
-            role="group"
-            _hover={{ bg: 'primary.100' }}
-            _focus={{
-              color: 'primary.600',
-            }}
-            as={RouterLink}
-            key={id}
-            to={getRedirectURL(tagType, tagname, agency)}
-            onClick={() => {
-              sendClickTagEventToAnalytics(tagname)
-              setQueryState(tagname)
-              accordionRef.current?.click()
-            }}
-          >
-            <Flex maxW="680px" m="auto" w="100%" px={8}>
-              <Text
-                _groupHover={{
-                  color: 'primary.600',
-                }}
-              >
-                {tagname}
-              </Text>
-              <Spacer />
-              <BiRightArrowAlt />
-            </Flex>
-          </Link>
-        )
-      })}
-    </VStack>
-  )
-
-  const TagMenuDesktop = (
+  const tagMenu = (
     <SimpleGrid
-      templateColumns="repeat(2, 1fr)"
+      templateColumns={{ base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
       maxW="620px"
       m="auto"
-      spacingX="16px"
-      spacingY="16px"
-      py="48px"
+      spacingX={{ base: undefined, sm: '16px' }}
+      spacingY={{ base: undefined, sm: '16px' }}
+      py={{ base: undefined, sm: '48px' }}
     >
       {tagsToShow.map(({ id, tagType, tagname }) => {
         return (
@@ -170,10 +122,11 @@ const TagMenu = (): ReactElement => {
             textStyle="h4"
             boxShadow="base"
             role="group"
-            _hover={{ bg: 'primary.100', boxShadow: 'lg' }}
-            _focus={{
-              color: 'primary.600',
-            }}
+            borderTopWidth={{ base: '1px', sm: '0px' }}
+            borderTopColor="secondary.500"
+            bg="secondary.700"
+            color="white"
+            _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
             as={RouterLink}
             key={id}
             to={getRedirectURL(tagType, tagname, agency)}
@@ -184,7 +137,7 @@ const TagMenu = (): ReactElement => {
             }}
           >
             <Flex m="auto" w="100%" px={8}>
-              <Text _groupHover={{ color: 'primary.600' }}>{tagname}</Text>
+              <Text>{tagname}</Text>
               <Spacer />
               <BiRightArrowAlt />
             </Flex>
@@ -197,53 +150,44 @@ const TagMenu = (): ReactElement => {
   return (
     <Accordion allowMultiple allowToggle>
       <AccordionItem border="none">
-        <h2>
-          <AccordionButton
-            ref={accordionRef}
-            borderBottomWidth="1px"
-            px="0px"
-            pt="24px"
-            pb="16px"
-            bg="primary.100"
-            shadow="md"
-            _expanded={{ shadow: 'none' }}
-            _hover={{ bg: 'primary.200' }}
+        <AccordionButton
+          ref={accordionRef}
+          px="0px"
+          pt="24px"
+          pb="16px"
+          bg="secondary.700"
+          shadow="md"
+          _expanded={{ shadow: 'none' }}
+          _hover={{ bg: 'secondary.600' }}
+        >
+          <Flex
+            maxW="680px"
+            m="auto"
+            w="100%"
+            px={8}
+            textAlign="left"
+            role="group"
           >
-            <Flex
-              maxW="680px"
-              m="auto"
-              w="100%"
-              px={8}
-              textAlign="left"
-              role="group"
-            >
-              <Stack spacing={1}>
-                <Text
-                  textStyle="subhead-3"
-                  color="secondary.500"
-                  pt="8px"
-                  _groupHover={{ color: 'primary.600' }}
-                >
-                  TOPIC
-                </Text>
-                <Text
-                  _groupHover={{ color: 'primary.600' }}
-                  textStyle="h3"
-                  fontWeight={queryState ? '600' : '400'}
-                  color="secondary.500"
-                  pt="8px"
-                >
-                  {queryState ? queryState : 'Select a Topic'}
-                </Text>
-              </Stack>
-              <Spacer />
-              <AccordionIcon mt="48px" />
-            </Flex>
-          </AccordionButton>
-        </h2>
-        <AccordionPanel p={0} shadow="md">
+            <Stack spacing={1}>
+              <Text textStyle="subhead-3" color="primary.400" pt="8px">
+                TOPIC
+              </Text>
+              <Text
+                textStyle="h3"
+                fontWeight={queryState ? '600' : '400'}
+                color="white"
+                pt="8px"
+              >
+                {queryState ? queryState : 'Select a Topic'}
+              </Text>
+            </Stack>
+            <Spacer />
+            <AccordionIcon mt="48px" color="white" />
+          </Flex>
+        </AccordionButton>
+        <AccordionPanel p={0} shadow="md" bg="secondary.800">
           {isLoading && <Spinner />}
-          {isShowMobileVariant ? TagMenuMobile : TagMenuDesktop}
+          {tagMenu}
         </AccordionPanel>
       </AccordionItem>
     </Accordion>
