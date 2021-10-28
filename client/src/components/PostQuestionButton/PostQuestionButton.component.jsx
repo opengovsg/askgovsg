@@ -8,7 +8,11 @@ const PostQuestionButton = () => {
       link={'/add/question'}
       type={'s-btn__primary'}
       leftIcon={
-        <BiPlus size="24" color="white" style={{ marginRight: '10px' }} />
+        <BiPlus
+          size="24"
+          color="var(--chakra-colors-secondary-700)"
+          style={{ marginRight: '10px' }}
+        />
       }
     />
   )

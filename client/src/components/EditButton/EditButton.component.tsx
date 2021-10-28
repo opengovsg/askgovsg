@@ -70,6 +70,7 @@ const EditButton = ({ postId, onDeleteLink }: EditButtonProps): JSX.Element => {
           borderTopRightRadius="0"
           borderBottomRightRadius="0"
           borderColor="secondary.700"
+          color="secondary.700"
         >
           Edit
         </Button>

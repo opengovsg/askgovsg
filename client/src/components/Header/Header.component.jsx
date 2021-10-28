@@ -14,7 +14,7 @@ import { BiLinkExternal } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, matchPath, useLocation } from 'react-router-dom'
 import { TagType } from '~shared/types/base'
-import { ReactComponent as Logo } from '../../assets/logo-white-alpha.svg'
+import { ReactComponent as Logo } from '../../assets/logo-alpha.svg'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import Masthead from '../../components/Masthead/Masthead.component'
 import SearchBoxComponent from '../../components/SearchBox/SearchBox.component'
@@ -71,7 +71,7 @@ const Header = () => {
         <Spinner centerWidth="50px" centerHeight="50px" />
       ) : (
         <>
-          <Text textStyle="body-2" mr={2} color="white">
+          <Text textStyle="body-2" mr={2} color="secondary.700">
             {user.displayname}
           </Text>
           <Image
@@ -99,9 +99,9 @@ const Header = () => {
     return (
       <Link href={agency?.website} isExternal>
         <Button
-          rightIcon={<BiLinkExternal color="white" />}
+          rightIcon={<BiLinkExternal color="neutral.900" />}
           variant="link"
-          color="white"
+          color="neutral.900"
         >
           Go to {hostname}
         </Button>
@@ -175,7 +175,7 @@ const Header = () => {
   const expandedSearch = () => {
     return (
       <Box
-        bg="primary.500"
+        bg="white"
         h={{ base: '100px', md: '152px' }}
         className="top-background"
       >
@@ -210,7 +210,7 @@ const Header = () => {
   const askgovLogoBar = () => {
     return (
       <Flex
-        background="primary.500"
+        bg="white"
         justify="space-between"
         align="center"
         px={8}
@@ -232,7 +232,7 @@ const Header = () => {
                   px={{ base: 0, md: 2 }}
                   textStyle="h4"
                   fontWeight={300}
-                  color="white"
+                  color="neutral.400"
                 >
                   |
                 </Text>
@@ -241,7 +241,7 @@ const Header = () => {
                   top={{ base: '-6px', md: 0 }}
                   textStyle="h4"
                   fontWeight={400}
-                  color="white"
+                  color="neutral.900"
                 >
                   {agency.shortname.toUpperCase()}
                 </Text>

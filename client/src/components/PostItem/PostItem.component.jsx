@@ -22,16 +22,16 @@ const PostItem = ({
           {/* Title display area */}
           <Link as={RouterLink} to={`/questions/${id}`}>
             <Text
-              color="primary.900"
-              _hover={{ color: 'primary.600' }}
+              color="secondary.800"
+              _hover={{ color: 'secondary.600' }}
               textStyle="h4"
             >
               {title}
             </Text>
           </Link>
-          <div className="post-description-container">
+          {/* <div className="post-description-container">
             {description && <RichTextFrontPreview value={description} />}
-          </div>
+          </div> */}
         </div>
       </div>
       {isAgencyMember && (
