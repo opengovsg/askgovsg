@@ -11,13 +11,16 @@ import {
   Flex,
   Spacer,
   Stack,
+  SimpleGrid,
+  Box,
+  useBreakpointValue,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
 import { useEffect, useState, ReactElement, createRef } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
-import { TagType } from '~shared/types/base'
+import { Tag, TagType } from '~shared/types/base'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   Agency,
@@ -77,7 +80,120 @@ const TagMenu = (): ReactElement => {
       )
     : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
 
-  // TODO - create an AccordionItem for agency tags
+  const bySpecifiedOrder =
+    agency && Array.isArray(agency.displayOrder)
+      ? (a: Tag, b: Tag) => {
+          const aDisplayOrder = (agency.displayOrder || []).indexOf(a.id)
+          const bDisplayOrder = (agency.displayOrder || []).indexOf(b.id)
+          if (aDisplayOrder !== -1 && bDisplayOrder !== -1) {
+            return aDisplayOrder > bDisplayOrder ? 1 : -1
+          } else if (aDisplayOrder !== -1) {
+            // a has an enforced display order, so a should be further up
+            return -1
+          } else if (bDisplayOrder !== -1) {
+            // b has an enforced display order, so a should be further down
+            return 1
+          } else {
+            return a.tagname > b.tagname ? 1 : -1
+          }
+        }
+      : (a: Tag, b: Tag) => (a.tagname > b.tagname ? 1 : -1)
+
+  const isShowMobileVariant = useBreakpointValue({
+    base: true,
+    sm: false,
+  })
+
+  const tagsToShow = (tags || [])
+    .filter(
+      ({ tagType, tagname }) =>
+        tagType === TagType.Topic && tagname !== queryState,
+    )
+    .sort(bySpecifiedOrder)
+
+  const TagMenuMobile = (
+    <VStack align="left" spacing={0}>
+      {tagsToShow.map(({ id, tagType, tagname }) => {
+        return (
+          <Link
+            py="24px"
+            w="100%"
+            textAlign="left"
+            textStyle="h4"
+            role="group"
+            _hover={{ bg: 'primary.100' }}
+            _focus={{
+              color: 'primary.600',
+            }}
+            as={RouterLink}
+            key={id}
+            to={getRedirectURL(tagType, tagname, agency)}
+            onClick={() => {
+              sendClickTagEventToAnalytics(tagname)
+              setQueryState(tagname)
+              accordionRef.current?.click()
+            }}
+          >
+            <Flex maxW="680px" m="auto" w="100%" px={8}>
+              <Text
+                _groupHover={{
+                  color: 'primary.600',
+                }}
+              >
+                {tagname}
+              </Text>
+              <Spacer />
+              <BiRightArrowAlt />
+            </Flex>
+          </Link>
+        )
+      })}
+    </VStack>
+  )
+
+  const TagMenuDesktop = (
+    <SimpleGrid
+      templateColumns="repeat(2, 1fr)"
+      maxW="620px"
+      m="auto"
+      spacingX="16px"
+      spacingY="16px"
+      py="48px"
+    >
+      {tagsToShow.map(({ id, tagType, tagname }) => {
+        return (
+          <Box
+            py="24px"
+            h="72px"
+            w="100%"
+            textAlign="left"
+            textStyle="h4"
+            boxShadow="base"
+            role="group"
+            _hover={{ bg: 'primary.100', boxShadow: 'lg' }}
+            _focus={{
+              color: 'primary.600',
+            }}
+            as={RouterLink}
+            key={id}
+            to={getRedirectURL(tagType, tagname, agency)}
+            onClick={() => {
+              sendClickTagEventToAnalytics(tagname)
+              setQueryState(tagname)
+              accordionRef.current?.click()
+            }}
+          >
+            <Flex m="auto" w="100%" px={8}>
+              <Text _groupHover={{ color: 'primary.600' }}>{tagname}</Text>
+              <Spacer />
+              <BiRightArrowAlt />
+            </Flex>
+          </Box>
+        )
+      })}
+    </SimpleGrid>
+  )
+
   return (
     <Accordion allowMultiple allowToggle>
       <AccordionItem border="none">
@@ -127,49 +243,7 @@ const TagMenu = (): ReactElement => {
         </h2>
         <AccordionPanel p={0} shadow="md">
           {isLoading && <Spinner />}
-          {tags && (
-            <VStack align="left" spacing={0}>
-              {tags
-                .filter(
-                  ({ tagType, tagname }) =>
-                    tagType === TagType.Topic && tagname !== queryState,
-                )
-                .sort((a, b) => (a.tagname > b.tagname ? 1 : -1))
-                .map((tag) => {
-                  const { tagType, tagname } = tag
-                  return (
-                    <Link
-                      py="24px"
-                      w="100%"
-                      textAlign="left"
-                      textStyle="h4"
-                      borderBottomWidth="1px"
-                      role="group"
-                      _hover={{ bg: 'primary.100' }}
-                      _focus={{
-                        color: 'primary.600',
-                      }}
-                      as={RouterLink}
-                      key={tag.id}
-                      to={getRedirectURL(tagType, tagname, agency)}
-                      onClick={() => {
-                        sendClickTagEventToAnalytics(tagname)
-                        setQueryState(tagname)
-                        accordionRef.current?.click()
-                      }}
-                    >
-                      <Flex maxW="680px" m="auto" w="100%" px={8}>
-                        <Text _groupHover={{ color: 'primary.600' }}>
-                          {tag.tagname}
-                        </Text>
-                        <Spacer />
-                        <BiRightArrowAlt />
-                      </Flex>
-                    </Link>
-                  )
-                })}
-            </VStack>
-          )}
+          {isShowMobileVariant ? TagMenuMobile : TagMenuDesktop}
         </AccordionPanel>
       </AccordionItem>
     </Accordion>
