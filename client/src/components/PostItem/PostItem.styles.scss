@@ -29,7 +29,7 @@
     
         .post-date {
           @include body-2;
-          color: var(--chakra-colors-secondary-400);
+          color: var(--chakra-colors-secondary-800);
         }
       }
     }
@@ -46,7 +46,7 @@
   
       .post-description-container {
         @include body-2;
-        color: var(--chakra-colors-secondary-500);
+        color: var(--chakra-colors-secondary-800);
 
         .public-DraftStyleDefault-block {
           margin-top: 0px;

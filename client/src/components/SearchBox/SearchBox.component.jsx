@@ -1,4 +1,4 @@
-import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input'
+import { Input, InputGroup, InputRightElement } from '@chakra-ui/input'
 import * as FullStory from '@fullstory/browser'
 import Downshift from 'downshift'
 import Fuse from 'fuse.js'
@@ -136,18 +136,21 @@ const SearchBox = ({
             >
               <InputGroup className="search-box">
                 {showSearchIcon ? (
-                  <InputLeftElement
-                    children={<BiSearch size="24" color="secondary.500" />}
-                    h="100%"
-                    w="24px"
-                    ml="19px"
-                    mr="20px"
+                  <InputRightElement
+                    bg="primary.500"
+                    children={<BiSearch size="24" color="white" />}
+                    h="40px"
+                    w="40px"
+                    mb="8px"
+                    mt="8px"
+                    mr="8px"
+                    borderRadius="4px"
                   />
                 ) : null}
                 <Input
                   variant={showSearchIcon ? 'unstyled' : undefined}
                   className="search-input"
-                  sx={{ paddingInlineStart: showSearchIcon ? '63px' : '16px' }}
+                  sx={{ paddingInlineStart: '16px' }}
                   {...getInputProps({
                     name,
                     placeholder,

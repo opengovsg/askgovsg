@@ -10,14 +10,14 @@
 
         p {
           @include body-2;
-          color: var(--chakra-colors-secondary-400);
+          color: var(--chakra-colors-secondary-800);
           margin-bottom: 12px;
         }
       }
 
       .char-remain {
         @include body-2;
-        color: var(--chakra-colors-secondary-400);
+        color: var(--chakra-colors-neutral-500);
         margin: 8px 0px;
       }
 

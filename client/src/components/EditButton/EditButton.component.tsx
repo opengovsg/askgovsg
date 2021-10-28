@@ -69,7 +69,7 @@ const EditButton = ({ postId, onDeleteLink }: EditButtonProps): JSX.Element => {
           borderRadius="3px"
           borderTopRightRadius="0"
           borderBottomRightRadius="0"
-          borderColor="secondary.500"
+          borderColor="secondary.700"
         >
           Edit
         </Button>
@@ -78,13 +78,13 @@ const EditButton = ({ postId, onDeleteLink }: EditButtonProps): JSX.Element => {
         <MenuButton
           as={IconButton}
           aria-label="Options"
-          icon={<Icon as={BiChevronDown} color="secondary.500" />}
+          icon={<Icon as={BiChevronDown} color="secondary.700" />}
           variant="outline"
           borderRadius="3px"
           borderTopLeftRadius="0"
           borderBottomLeftRadius="0"
           borderLeft="none"
-          borderColor="secondary.500"
+          borderColor="secondary.700"
         />
         <MenuList minW={105} color="error.500">
           <MenuItem

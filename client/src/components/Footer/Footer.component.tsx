@@ -20,14 +20,19 @@ import { format } from 'date-fns-tz'
 const Footer = (): JSX.Element => {
   const { user } = useAuth()
   return (
-    <Container maxW="1504px" m="auto" w="100vw" px={{ base: 8, md: 12 }}>
+    <Container
+      maxW="1504px"
+      m="auto"
+      w="100vw"
+      px={{ base: 8, md: 12 }}
+      color="secondary.800"
+    >
       <Stack
         pt={{ base: '56px', md: '48px' }}
         pb="40px"
         direction={{ base: 'column', md: 'row' }}
         justifyContent={{ md: 'space-between' }}
         alignItems={{ md: 'flex-end' }}
-        color="secondary.500"
         spacing="24px"
         textStyle="body-2"
       >
@@ -36,9 +41,7 @@ const Footer = (): JSX.Element => {
           spacing={{ base: '4px', md: '16px' }}
         >
           <Text textStyle="h4">AskGov</Text>
-          <Text color="secondary.400">
-            Answers from the Singapore Government
-          </Text>
+          <Text>Answers from the Singapore Government</Text>
         </Stack>
         <Stack
           direction={{ base: 'column', md: 'row' }}
@@ -79,7 +82,6 @@ const Footer = (): JSX.Element => {
         direction={{ base: 'column', md: 'row' }}
         justifyContent={{ md: 'space-between' }}
         alignItems={{ md: 'flex-end' }}
-        color="secondary.400"
         spacing={{ base: '32px', md: '0px' }}
       >
         <VStack
