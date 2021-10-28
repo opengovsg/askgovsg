@@ -29,3 +29,13 @@ services:
     environment:
       - MYSQL_DATABASE=$DB_NAME
       - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
+
+  opensearch:
+    image: opensearchproject/opensearch:1.1.0
+    container_name: askgovsg_os_1
+    environment:
+      - "discovery.type=single-node"
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    ports:
+      - 9200:9200
+      - 9600:9600 # required for Performance Analyzer
