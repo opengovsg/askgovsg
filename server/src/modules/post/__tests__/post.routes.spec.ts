@@ -74,13 +74,6 @@ describe('/posts', () => {
     authenticate,
   }
 
-  // Set up supertest
-  const path = '/posts'
-  const app = express()
-  app.use(bodyParser.json())
-  app.use(authenticate)
-  const request = supertest(app)
-
   beforeAll(async () => {
     db = await createTestDatabase()
     Answer = getModel<AnswerModel>(db, ModelName.Answer)
@@ -146,7 +139,6 @@ describe('/posts', () => {
       role: PermissionType.Answerer,
     })
     controller = new PostController({ userService, authService, postService })
-    app.use(path, routePosts({ controller, authMiddleware }))
   })
 
   afterEach(() => {
@@ -159,6 +151,13 @@ describe('/posts', () => {
 
   describe('GET /posts', () => {
     it('returns 200 and data on posts on request', async () => {
+      const path = '/posts'
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, routePosts({ controller, authMiddleware }))
+      const request = supertest(app)
+
       // Act
       const response = await request.get(path)
 
@@ -171,6 +170,13 @@ describe('/posts', () => {
 
   describe('GET /posts/answerable', () => {
     it('returns 200 and data on posts on request', async () => {
+      const path = '/posts'
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, routePosts({ controller, authMiddleware }))
+      const request = supertest(app)
+
       // Act
       const response = await request.get(path + '/answerable').query({
         withAnswers: false,
@@ -186,6 +192,13 @@ describe('/posts', () => {
 
   describe('POST /posts', () => {
     it('returns 200 and creates a post on request', async () => {
+      const path = '/posts'
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, routePosts({ controller, authMiddleware }))
+      const request = supertest(app)
+
       const body = {
         title: 'A title of at least 15 characters',
         description: null,
@@ -205,6 +218,100 @@ describe('/posts', () => {
       expect(status).toEqual(StatusCodes.OK)
       expect(post).toBeDefined()
       expect(postTags.length).toBe(1)
+    })
+
+    it('returns 403 if the title and description do not fulfil the character requirements', async () => {
+      const path = '/posts'
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, routePosts({ controller, authMiddleware }))
+      const request = supertest(app)
+
+      const body = {
+        title: 'badTitle',
+        description: 'badDescription',
+        tagname: [mockTag.tagname],
+        topicId: mockTopic.id,
+      }
+
+      const response = await request.post(path).send(body)
+
+      // Assert
+      expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
+    })
+  })
+
+  describe('DELETE /posts/:id', () => {
+    it('returns 200 if post is deleted', async () => {
+      const { id } = mockPosts[0]
+      authService.hasPermissionToAnswer.mockResolvedValue(true)
+
+      const path = '/posts'
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, routePosts({ controller, authMiddleware }))
+      const request = supertest(app)
+
+      const response = await request.delete(path + `/${id}`)
+
+      expect(response.status).toEqual(StatusCodes.OK)
+    })
+  })
+
+  describe('PUT /posts/:id', () => {
+    it('returns 200 if post is updated successfully', async () => {
+      const { id } = mockPosts[0]
+      authService.hasPermissionToAnswer.mockResolvedValue(true)
+
+      const path = '/posts'
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, routePosts({ controller, authMiddleware }))
+      const request = supertest(app)
+
+      const body = {
+        title: 'An updated title of at least 15 characters',
+        description: null,
+        tagname: [mockTag.tagname],
+        topicId: mockTopic.id,
+      }
+
+      // Act
+      const response = await request.put(path + `/${id}`).send(body)
+      const post = await Post.findByPk(id)
+      const postTags = await PostTag.findAll({ where: { postId: id } })
+
+      // Assert
+      expect(response.status).toEqual(StatusCodes.OK)
+      expect(post?.title).toStrictEqual(body.title)
+      expect(postTags.length).toBe(1)
+    })
+
+    it('returns 403 if the title and description do not fulfil the character requirements', async () => {
+      const { id } = mockPosts[0]
+      authService.hasPermissionToAnswer.mockResolvedValue(true)
+
+      const path = '/posts'
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, routePosts({ controller, authMiddleware }))
+      const request = supertest(app)
+
+      const body = {
+        title: 'badTitle',
+        description: 'badDescription',
+        tagname: [mockTag.tagname],
+        topicId: mockTopic.id,
+      }
+
+      const response = await request.put(path + `/${id}`).send(body)
+
+      // Assert
+      expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
     })
   })
 })
