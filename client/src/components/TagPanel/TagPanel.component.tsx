@@ -8,7 +8,6 @@ import {
   Flex,
   Spacer,
   SimpleGrid,
-  Box,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
@@ -100,9 +99,9 @@ const TagPanel = (): ReactElement => {
     >
       {tagsToShow.map(({ id, tagType, tagname }) => {
         return (
-          <Box
-            py="24px"
+          <Flex
             h="72px"
+            alignItems="center"
             w={{ base: '87%', sm: '100%' }}
             mx={{ base: 'auto', md: undefined }}
             textAlign="left"
@@ -120,9 +119,11 @@ const TagPanel = (): ReactElement => {
             <Flex m="auto" w="100%" px={8}>
               <Text>{tagname}</Text>
               <Spacer />
-              <BiRightArrowAlt />
+              <Flex alignItems="center">
+                <BiRightArrowAlt />
+              </Flex>
             </Flex>
-          </Box>
+          </Flex>
         )
       })}
     </SimpleGrid>
