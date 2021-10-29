@@ -111,9 +111,10 @@ export class PostController {
    * @query size Number of posts to return
    * @query page If size is given, specify which page to return
    * @return 200 with posts and totalItem for pagination
-   * @return 400 if `withAnswers`, `sort` or `tags` query is not given
+   * @return 400 if `withAnswers`, `sort`, `tags` or `topics` query is not given
    * @return 401 if userID is invalid
-   * @return 500 if invalid tags are used in request
+   * @return 422 if invalid tags are used in request
+   * @return 422 if invalid topics are used in request
    * @return 500 when database error occurs
    */
   listAnswerablePosts: ControllerHandler<
@@ -142,12 +143,12 @@ export class PostController {
       logger.error({
         message: 'UserId is undefined after authenticated',
         meta: {
-          function: 'updatePost',
+          function: 'listAnswerablePosts',
         },
       })
       return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: 'Something went wrong, please try again.' })
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: 'User not signed in.' })
     }
     try {
       const {
@@ -169,16 +170,24 @@ export class PostController {
       })
       return res.status(StatusCodes.OK).json(data)
     } catch (error) {
-      logger.error({
-        message: 'Error while retrieving answerable posts',
-        meta: {
-          function: 'listAnswerablePosts',
-        },
-        error,
-      })
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: 'Sorry, something went wrong. Please try again.',
-      })
+      if (error instanceof Error) {
+        if (error.message === 'Invalid tags used in request') {
+          return res.status(422).json({ message: error.message })
+        } else if (error.message === 'Invalid topics used in request') {
+          return res.status(422).json({ message: error.message })
+        } else {
+          logger.error({
+            message: 'Error while retrieving answerable posts',
+            meta: {
+              function: 'listAnswerablePosts',
+            },
+            error,
+          })
+          return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ message: 'Sorry, something went wrong. Please try again.' })
+        }
+      }
     }
   }
 
@@ -352,7 +361,7 @@ export class PostController {
       })
       return res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: 'Server Error' })
+        .json({ message: 'Server error' })
     }
   }
 
@@ -383,8 +392,8 @@ export class PostController {
           },
         })
         return res
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ message: 'Something went wrong, please try again.' })
+          .status(StatusCodes.UNAUTHORIZED)
+          .json({ message: 'You must be logged in to update posts.' })
       }
       const hasPermission = await this.authService.hasPermissionToAnswer(
         userId,
