@@ -10,7 +10,6 @@ import {
   Spacer,
   Stack,
   SimpleGrid,
-  Box,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
@@ -114,10 +113,10 @@ const TagMenu = (): ReactElement => {
     >
       {tagsToShow.map(({ id, tagType, tagname }) => {
         return (
-          <Box
-            py="24px"
+          <Flex
             h="72px"
             w="100%"
+            alignItems="center"
             textAlign="left"
             textStyle="h4"
             boxShadow="base"
@@ -139,9 +138,11 @@ const TagMenu = (): ReactElement => {
             <Flex m="auto" w="100%" px={8}>
               <Text>{tagname}</Text>
               <Spacer />
-              <BiRightArrowAlt />
+              <Flex alignItems="center">
+                <BiRightArrowAlt />
+              </Flex>
             </Flex>
-          </Box>
+          </Flex>
         )
       })}
     </SimpleGrid>
