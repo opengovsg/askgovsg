@@ -137,7 +137,11 @@ export const routePosts = ({
    * @return 500 if database error
    * @access Private
    */
-  router.delete('/:id([0-9]+$)', controller.deletePost)
+  router.delete(
+    '/:id([0-9]+$)',
+    [authMiddleware.authenticate],
+    controller.deletePost,
+  )
 
   /**
    * Update a post
@@ -149,7 +153,25 @@ export const routePosts = ({
    * @return 500 if database error
    * @access Private
    */
-  router.put('/:id([0-9]+$)', controller.updatePost)
+  router.put(
+    '/:id([0-9]+$)',
+    [
+      authMiddleware.authenticate,
+      check(
+        'title',
+        'Enter a title with minimum 15 characters and maximum 150 characters',
+      ).isLength({
+        min: 15,
+        max: 150,
+      }),
+      check('description', 'Enter a description with minimum 30 characters')
+        .isLength({
+          min: 30,
+        })
+        .optional({ nullable: true, checkFalsy: true }),
+    ],
+    controller.updatePost,
+  )
 
   return router
 }
