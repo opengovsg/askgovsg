@@ -61,17 +61,13 @@ const SearchResults = () => {
             {searchQuery ? 'Search Results' : 'All Questions'}
           </h3>
         </div>
-        {searchQuery ? (
-          <div className="search-questions">
-            <SearchBox
-              agencyId={agency?.id}
-              value={searchQuery}
-              name={'search'}
-              pt={'mt8'}
-            />
-          </div>
-        ) : (
-          ''
+        {searchQuery && (
+          <SearchBox
+            agencyId={agency?.id}
+            value={searchQuery}
+            name={'search'}
+            pt={'mt8'}
+          />
         )}
         <div className="questions">
           {foundPosts.length > 0 ? (

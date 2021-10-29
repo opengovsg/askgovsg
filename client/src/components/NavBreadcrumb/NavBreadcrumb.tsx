@@ -20,8 +20,8 @@ export const NavBreadcrumb = ({
             <BreadcrumbLink as={Link} to={value.link} key={index}>
               <Text
                 as="u"
-                color="secondary.500"
-                _hover={{ color: 'primary.600' }}
+                color="secondary.800"
+                _hover={{ color: 'secondary.600' }}
               >
                 {value.text}
               </Text>

@@ -84,7 +84,7 @@ const PostList = ({ posts, defaultText, alertIfMoreThanDays }) => {
           ))}
         </div>
       ) : (
-        <Text color="secondary.500" textStyle="h4" py={4}>
+        <Text color="secondary.800" textStyle="h4" py={4}>
           {defaultText}
         </Text>
       )}

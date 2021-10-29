@@ -9,7 +9,7 @@ export const BackToHome = ({
 }): JSX.Element => {
   return (
     <Link as={RouterLink} to={mainPageName ? `/agency/${mainPageName}` : '/'}>
-      <Center color="secondary.600">
+      <Center color="secondary.800">
         <BiArrowBack style={{ marginRight: '14px' }} size="13.41px" />
         <Text textStyle="body-1">
           Back to {mainPageName?.toUpperCase() ?? ''} questions

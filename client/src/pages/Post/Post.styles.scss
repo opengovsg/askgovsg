@@ -12,7 +12,7 @@
 
   .subtitle-bar {
     @include body-2;
-    color: var(--chakra-colors-secondary-400);
+    color: var(--chakra-colors-secondary-800);
 
     .tags-name-time {
       display: flex;
@@ -37,7 +37,7 @@
 
     .post-time {
       @include caption-1;
-      color: var(--chakra-colors-secondary-400);
+      color: var(--chakra-colors-secondary-800);
       padding-right: 20px;
     }
   }

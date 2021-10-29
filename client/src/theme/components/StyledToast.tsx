@@ -31,7 +31,7 @@ export const StyledToast: ComponentMultiStyleConfig = {
       minW: '24px',
       fontSize: '24px',
       ml: 2,
-      color: 'secondary.700',
+      color: 'neutral.700',
     },
   }),
   defaultProps: {

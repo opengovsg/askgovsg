@@ -138,7 +138,7 @@ const Post = () => {
                 </div>
               )}
             </Flex>
-            <Text textStyle="h2" color="secondary.500">
+            <Text textStyle="h2" color="secondary.800">
               {post.title}
             </Text>
             {post.status === PostStatus.Private ? (
@@ -170,16 +170,19 @@ const Post = () => {
             minW={{ base: 'auto', lg: '240px' }}
             pt={{ base: '36px', sm: '60px', lg: '152px' }}
             align="left"
-            color="secondary.400"
+            color="secondary.800"
           >
-            <Text mb={{ base: '16px', sm: '0px' }} textStyle="subhead-3">
+            <Text
+              color="primary.500"
+              mb={{ base: '16px', sm: '0px' }}
+              textStyle="subhead-3"
+            >
               Related Questions
             </Text>
             {post.relatedPosts.map((relatedPost) => (
               <Link to={`/questions/${relatedPost.id}`}>
                 <Text
                   py={{ base: '24px', sm: '32px' }}
-                  color="primary.900"
                   textStyle="subhead-2"
                   fontWeight="normal"
                   borderBottomWidth="1px"

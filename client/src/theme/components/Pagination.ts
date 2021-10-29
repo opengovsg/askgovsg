@@ -10,7 +10,7 @@ const baseButtonStyling = (props: Record<string, unknown>) => {
     minW: '2rem',
     border: 'none',
     borderRadius: '0.25rem',
-    bg: isSelected ? 'secondary.500' : 'transparent',
+    bg: isSelected ? 'secondary.700' : 'transparent',
     _active: {
       bg: isSelected ? 'secondary.700' : 'secondary.200',
     },
@@ -29,7 +29,7 @@ const baseButtonStyling = (props: Record<string, unknown>) => {
         color: isSelected ? 'white' : 'secondary.300',
       },
     },
-    color: isSelected ? 'white' : 'secondary.500',
+    color: isSelected ? 'white' : 'secondary.800',
   }
 }
 

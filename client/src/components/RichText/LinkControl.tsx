@@ -59,7 +59,7 @@ export const LinkControl = ({
   const renderModal = () => (
     <div onClick={stopPropagation} className={styles.form}>
       <Box w="376px" h="128px" p="24px">
-        <Text textStyle="subhead1" color="secondary.700">
+        <Text textStyle="subhead1" color="secondary.800">
           Add Target Link
         </Text>
         <HStack spacing="16px" my="12px">

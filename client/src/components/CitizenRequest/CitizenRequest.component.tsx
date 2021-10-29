@@ -77,15 +77,15 @@ const CitizenRequest = ({ agency }: { agency?: Agency }): JSX.Element => {
       mt={{ base: '48px', sm: '80px', xl: '90px' }}
       align="center"
       justify="center"
-      backgroundColor="primary.100"
+      backgroundColor="secondary.100"
     >
       <Text textStyle="h2" align="center" mb="24px">
-        Can't find your answer?
+        Can't find what you're looking for?
       </Text>
       <Button
-        backgroundColor="primary.500"
+        backgroundColor="secondary.700"
         _hover={{
-          background: 'primary.600',
+          background: 'secondary.600',
         }}
         borderRadius="4px"
         color="white"

@@ -74,7 +74,7 @@ export const EnquiryModal = ({
         <ModalOverlay />
         <ModalContent w="660px">
           <ModalHeader>
-            <Text textStyle="h2" color="secondary.700">
+            <Text textStyle="h2" color="secondary.800">
               {`${(agency?.shortname ?? '').toUpperCase()} Enquiry Form`}
             </Text>
           </ModalHeader>
@@ -88,12 +88,12 @@ export const EnquiryModal = ({
                 3 - 14 working days to process your enquiry. Thank you.`}
               </Text>
               <Box h={4} />
-              <Text textStyle="subhead-1" color="secondary.700">
+              <Text textStyle="subhead-1" color="secondary.800">
                 Question Title
               </Text>
               <Box h={3} />
               <SearchBox
-                focusBorderColor="primary.500"
+                focusBorderColor="secondary.700"
                 errorBorderColor="error.500"
                 placeholder=""
                 value=""
@@ -106,12 +106,12 @@ export const EnquiryModal = ({
               />
               {formErrors.questionTitle && errorLabel('This field is required')}
               <Box h={4} />
-              <Text textStyle="subhead-1" color="secondary.700">
+              <Text textStyle="subhead-1" color="secondary.800">
                 Description
               </Text>
               <Box h={3} />
               <Textarea
-                focusBorderColor="primary.500"
+                focusBorderColor="secondary.700"
                 errorBorderColor="error.500"
                 isInvalid={formErrors.description}
                 h="144px"
@@ -121,15 +121,15 @@ export const EnquiryModal = ({
               />
               {formErrors.description && errorLabel('This field is required')}
               <Box h={4} />
-              <Text textStyle="subhead-1" color="secondary.700">
+              <Text textStyle="subhead-1" color="secondary.800">
                 Sender email
               </Text>
-              <Text textStyle="body-2" color="secondary.400">
+              <Text textStyle="body-2" color="secondary.800">
                 Please fill in a valid email so that we can get back to you
               </Text>
               <Box h={3} />
               <Input
-                focusBorderColor="primary.500"
+                focusBorderColor="secondary.700"
                 errorBorderColor="error.500"
                 isInvalid={formErrors.senderEmail}
                 placeholder="example@email.com"
@@ -160,9 +160,9 @@ export const EnquiryModal = ({
                 w={{ base: '100%', md: 'auto' }}
                 h={{ base: 14, md: 12 }}
                 disabled={!captchaResponse}
-                backgroundColor="primary.500"
+                backgroundColor="secondary.700"
                 _hover={{
-                  background: 'primary.600',
+                  background: 'secondary.600',
                 }}
                 isLoading={isLoading}
               >

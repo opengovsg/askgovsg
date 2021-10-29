@@ -8,7 +8,7 @@
       }
     }
     &:not(:hover) {
-      color: var(--chakra-colors-primary-500);
+      color: var(--chakra-colors-primary-800);
       > ::after {
         background: transparent url(../../assets/link-hint.svg) 0 0 no-repeat;
         text-decoration: none !important;
@@ -22,7 +22,7 @@
     }
     &:focus {
       border-width: 2px;
-      border-color: var(--chakra-colors-primary-500);
+      border-color: var(--chakra-colors-primary-600);
     }
     &:hover {
       color: var(--chakra-colors-primary-600);
