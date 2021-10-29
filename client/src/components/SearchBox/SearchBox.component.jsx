@@ -150,7 +150,7 @@ const SearchBox = ({
                   />
                 ) : null}
                 <Input
-                  variant={showSearchIcon ? 'unstyled' : undefined}
+                  variant="unstyled"
                   className="search-input"
                   sx={{ paddingInlineStart: '16px' }}
                   {...getInputProps({
