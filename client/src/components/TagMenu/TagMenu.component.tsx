@@ -29,10 +29,11 @@ import {
   getTagsUsedByAgency,
   GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/TagService'
-import { getTagsQuery } from '../../util/urlparser'
+import { getTagsQuery, isSpecified } from '../../util/urlparser'
 import { getRedirectURL } from '../../util/urlparser'
 
 const TagMenu = (): ReactElement => {
+  const [hasTagsKey, setHasTagsKey] = useState(false)
   const { agency: agencyShortName } = useParams<{ agency: string }>()
   const { data: agency } = useQuery<Agency>(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
@@ -43,9 +44,11 @@ const TagMenu = (): ReactElement => {
   )
 
   const [queryState, setQueryState] = useState('')
-  // TODO (#259): make into custom hook
+
   useEffect(() => {
     setQueryState(getTagsQuery(location.search))
+    const tagsSpecified = isSpecified(location.search, 'tags')
+    setHasTagsKey(tagsSpecified)
   })
 
   const accordionRef: React.LegacyRef<HTMLButtonElement> = createRef()
@@ -107,9 +110,9 @@ const TagMenu = (): ReactElement => {
       templateColumns={{ base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
       maxW="620px"
       m="auto"
-      spacingX={{ base: undefined, sm: '16px' }}
-      spacingY={{ base: undefined, sm: '16px' }}
-      py={{ base: undefined, sm: '48px' }}
+      spacingX={hasTagsKey ? { base: undefined, sm: '16px' } : { base: '16px' }}
+      spacingY={hasTagsKey ? { base: undefined, sm: '16px' } : { base: '16px' }}
+      py={hasTagsKey ? { base: undefined, sm: '48px' } : { base: '48px' }}
     >
       {tagsToShow.map(({ id, tagType, tagname }) => {
         return (
@@ -121,8 +124,8 @@ const TagMenu = (): ReactElement => {
             textStyle="h4"
             boxShadow="base"
             role="group"
-            borderTopWidth={{ base: '1px', sm: '0px' }}
-            borderTopColor="secondary.500"
+            borderTopWidth={hasTagsKey ? { base: '1px', sm: '0px' } : undefined}
+            borderTopColor={hasTagsKey ? 'secondary.500' : undefined}
             bg="secondary.700"
             color="white"
             _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
@@ -149,17 +152,24 @@ const TagMenu = (): ReactElement => {
   )
 
   return (
-    <Accordion allowMultiple allowToggle>
+    <Accordion allowMultiple allowToggle index={hasTagsKey ? undefined : [0]}>
       <AccordionItem border="none">
         <AccordionButton
           ref={accordionRef}
           px="0px"
-          pt="24px"
-          pb="16px"
-          bg="secondary.700"
+          py="0px"
+          pt={hasTagsKey ? '24px' : undefined}
+          pb={hasTagsKey ? '16px' : undefined}
           shadow="md"
-          _expanded={{ shadow: 'none' }}
-          _hover={{ bg: 'secondary.600' }}
+          _expanded={
+            hasTagsKey
+              ? { shadow: 'none' }
+              : !agency
+              ? { color: 'primary.500' }
+              : undefined
+          }
+          _hover={{ bg: hasTagsKey ? 'secondary.600' : undefined }}
+          bg={hasTagsKey ? 'secondary.700' : 'secondary.800'}
         >
           <Flex
             maxW="680px"
@@ -170,20 +180,32 @@ const TagMenu = (): ReactElement => {
             role="group"
           >
             <Stack spacing={1}>
-              <Text textStyle="subhead-3" color="primary.400" pt="8px">
-                TOPIC
-              </Text>
               <Text
-                textStyle="h3"
-                fontWeight={queryState ? '600' : '400'}
-                color="white"
-                pt="8px"
+                textStyle="subhead-3"
+                color="primary.400"
+                pt={hasTagsKey ? '8px' : undefined}
+                mt={hasTagsKey ? undefined : '36px'}
               >
-                {queryState ? queryState : 'Select a Topic'}
+                {hasTagsKey ? 'TOPIC' : 'EXPLORE A TOPIC'}
               </Text>
+              {hasTagsKey ? (
+                <Text
+                  textStyle="h3"
+                  fontWeight={queryState ? '600' : '400'}
+                  color="white"
+                  pt="8px"
+                >
+                  {queryState ? queryState : 'Select a Topic'}
+                </Text>
+              ) : (
+                <Text></Text>
+              )}
             </Stack>
             <Spacer />
-            <AccordionIcon mt="48px" color="white" />
+            <AccordionIcon
+              mt="48px"
+              color={hasTagsKey ? 'white' : 'secondary.800'}
+            />
           </Flex>
         </AccordionButton>
         <AccordionPanel p={0} shadow="md" bg="secondary.800">
