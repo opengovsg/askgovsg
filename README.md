@@ -77,7 +77,7 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 
 ## Running in Development
 
-* Start running frontend, backend, maildev, localstack and mysql simultaneously
+* Start running frontend, backend, maildev, localstack and mysql simultaneously (requires Docker)
 
   ```
   npm run dev
