@@ -11,14 +11,14 @@ const logger = createLogger(module)
 
 export class AnswersController {
   private answersService: Public<AnswersService>
-  private authService: Public<AuthService>
+  private authService: Pick<AuthService, 'hasPermissionToAnswer'>
 
   constructor({
     answersService,
     authService,
   }: {
     answersService: Public<AnswersService>
-    authService: Public<AuthService>
+    authService: Pick<AuthService, 'hasPermissionToAnswer'>
   }) {
     this.answersService = answersService
     this.authService = authService
