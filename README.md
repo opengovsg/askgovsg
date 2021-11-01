@@ -41,7 +41,7 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
   ```
   npm install
 
-  npm run auditDep
+  npm run audit-dep
   ```
 
 * Spin up docker containers (this will create the `askgov` database):
