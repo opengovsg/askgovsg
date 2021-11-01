@@ -13,6 +13,13 @@ export const routeTopics = ({
   const router = express.Router()
 
   /**
+   * List all topics
+   * @return 200 with topics
+   * @return 400 with database error
+   */
+  router.get('/', controller.listTopics)
+
+  /**
    * Create a new topic
    * @route  POST /api/topics
    * @return 200 if topic is created

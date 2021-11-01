@@ -24,6 +24,25 @@ export class TopicsController {
   }
 
   /**
+   * Lists all topics
+   * @returns 200 with topics
+   * @returns 404 if topics are not found
+   * @returns 500 if database error
+   */
+
+  listTopics: ControllerHandler<
+    undefined,
+    TopicWithChildRelations[] | Message
+  > = async (req, res) => {
+    return this.topicsService
+      .listTopics()
+      .map((data) => res.status(StatusCodes.OK).json(data))
+      .mapErr((error) => {
+        return res.status(error.statusCode).json({ message: error.message })
+      })
+  }
+
+  /**
    * Lists all topics in an agency
    * @param agencyId agencyId
    * @returns 200 with topics

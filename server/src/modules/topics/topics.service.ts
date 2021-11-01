@@ -56,6 +56,41 @@ export class TopicsService {
   }
 
   /**
+   * Lists all topics
+   * @returns nested list of topics
+   */
+  listTopics = (): ResultAsync<
+    TopicWithChildRelations[],
+    DatabaseError | MissingTopicError
+  > => {
+    return ResultAsync.fromPromise(this.Topic.findAll(), (error) => {
+      logger.error({
+        message: 'Database error while retrieving topics',
+        meta: {
+          function: 'listTopics',
+        },
+        error,
+      })
+      return new DatabaseError()
+    }).andThen((topics) => {
+      if (topics.length === 0) {
+        return errAsync(new MissingTopicError())
+      }
+      const hashTable = Object.create(null)
+      topics.forEach(
+        (topic) => (hashTable[topic.id] = { ...topic, children: [] }),
+      )
+      const topicTree: TopicWithChildRelations[] = []
+      topics.forEach((topic) => {
+        if (topic.parentId)
+          hashTable[topic.parentId].children.push(hashTable[topic.id])
+        else topicTree.push(hashTable[topic.id])
+      })
+      return okAsync(topicTree)
+    })
+  }
+
+  /**
    * Find an agency's topics by their agencyid
    * @param agencyId id of agency
    * @returns ok(nested list of topics) if successful
