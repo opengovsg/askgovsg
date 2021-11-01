@@ -99,7 +99,7 @@ const HomePage = ({ match }) => {
             .filter(({ tagname }) => tagname === queryState)
             .map((tag) => {
               return tag.description ? (
-                <Text textStyle="body-1" color="secondary.900" mb="50px">
+                <Text textStyle="body-1" color="neutral.900" mb="50px">
                   {tag.description}
                 </Text>
               ) : null
@@ -110,7 +110,7 @@ const HomePage = ({ match }) => {
             justifyContent="space-between"
           >
             <Text
-              color="secondary.500"
+              color="primary.500"
               textStyle="subhead-3"
               mt={{ base: '32px', sm: 0 }}
               mb={{ sm: '20px' }}
@@ -135,8 +135,8 @@ const HomePage = ({ match }) => {
                     <MenuButton
                       as={Button}
                       variant="outline"
-                      borderColor="secondary.500"
-                      color="secondary.500"
+                      borderColor="secondary.700"
+                      color="secondary.700"
                       borderRadius="4px"
                       borderWidth="1px"
                       w={{ base: '100%', sm: '171px' }}
@@ -201,8 +201,8 @@ const HomePage = ({ match }) => {
                 <Button
                   mt={{ base: '40px', sm: '48px', xl: '58px' }}
                   variant="outline"
-                  color="primary.500"
-                  borderColor="primary.500"
+                  color="secondary.700"
+                  borderColor="secondary.700"
                   onClick={() => {
                     window.scrollTo(0, 0)
                     history.push('?tags=')

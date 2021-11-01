@@ -24,14 +24,6 @@
     }
   }
 
-  .search-questions {
-    padding-bottom: 16px;
-
-    @media not all and (min-width: $tablet) {
-      width: 100%;
-    }
-  }
-
   .questions-tabs {
     margin-bottom: 12px;
     display: flex;

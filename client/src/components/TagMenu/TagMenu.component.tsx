@@ -4,20 +4,19 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Link,
   Spinner,
   Text,
-  VStack,
   Flex,
   Spacer,
   Stack,
+  SimpleGrid,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
 import { useEffect, useState, ReactElement, createRef } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
-import { TagType } from '~shared/types/base'
+import { Tag, TagType } from '~shared/types/base'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   Agency,
@@ -77,99 +76,119 @@ const TagMenu = (): ReactElement => {
       )
     : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
 
-  // TODO - create an AccordionItem for agency tags
+  const bySpecifiedOrder =
+    agency && Array.isArray(agency.displayOrder)
+      ? (a: Tag, b: Tag) => {
+          const aDisplayOrder = (agency.displayOrder || []).indexOf(a.id)
+          const bDisplayOrder = (agency.displayOrder || []).indexOf(b.id)
+          if (aDisplayOrder !== -1 && bDisplayOrder !== -1) {
+            return aDisplayOrder > bDisplayOrder ? 1 : -1
+          } else if (aDisplayOrder !== -1) {
+            // a has an enforced display order, so a should be further up
+            return -1
+          } else if (bDisplayOrder !== -1) {
+            // b has an enforced display order, so a should be further down
+            return 1
+          } else {
+            return a.tagname > b.tagname ? 1 : -1
+          }
+        }
+      : (a: Tag, b: Tag) => (a.tagname > b.tagname ? 1 : -1)
+
+  const tagsToShow = (tags || [])
+    .filter(
+      ({ tagType, tagname }) =>
+        tagType === TagType.Topic && tagname !== queryState,
+    )
+    .sort(bySpecifiedOrder)
+
+  const tagMenu = (
+    <SimpleGrid
+      templateColumns={{ base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
+      maxW="620px"
+      m="auto"
+      spacingX={{ base: undefined, sm: '16px' }}
+      spacingY={{ base: undefined, sm: '16px' }}
+      py={{ base: undefined, sm: '48px' }}
+    >
+      {tagsToShow.map(({ id, tagType, tagname }) => {
+        return (
+          <Flex
+            h="72px"
+            w="100%"
+            alignItems="center"
+            textAlign="left"
+            textStyle="h4"
+            boxShadow="base"
+            role="group"
+            borderTopWidth={{ base: '1px', sm: '0px' }}
+            borderTopColor="secondary.500"
+            bg="secondary.700"
+            color="white"
+            _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
+            as={RouterLink}
+            key={id}
+            to={getRedirectURL(tagType, tagname, agency)}
+            onClick={() => {
+              sendClickTagEventToAnalytics(tagname)
+              setQueryState(tagname)
+              accordionRef.current?.click()
+            }}
+          >
+            <Flex m="auto" w="100%" px={8}>
+              <Text>{tagname}</Text>
+              <Spacer />
+              <Flex alignItems="center">
+                <BiRightArrowAlt />
+              </Flex>
+            </Flex>
+          </Flex>
+        )
+      })}
+    </SimpleGrid>
+  )
+
   return (
     <Accordion allowMultiple allowToggle>
       <AccordionItem border="none">
-        <h2>
-          <AccordionButton
-            ref={accordionRef}
-            borderBottomWidth="1px"
-            px="0px"
-            pt="24px"
-            pb="16px"
-            bg="primary.100"
-            shadow="md"
-            _expanded={{ shadow: 'none' }}
-            _hover={{ bg: 'primary.200' }}
+        <AccordionButton
+          ref={accordionRef}
+          px="0px"
+          pt="24px"
+          pb="16px"
+          bg="secondary.700"
+          shadow="md"
+          _expanded={{ shadow: 'none' }}
+          _hover={{ bg: 'secondary.600' }}
+        >
+          <Flex
+            maxW="680px"
+            m="auto"
+            w="100%"
+            px={8}
+            textAlign="left"
+            role="group"
           >
-            <Flex
-              maxW="680px"
-              m="auto"
-              w="100%"
-              px={8}
-              textAlign="left"
-              role="group"
-            >
-              <Stack spacing={1}>
-                <Text
-                  textStyle="subhead-3"
-                  color="secondary.500"
-                  pt="8px"
-                  _groupHover={{ color: 'primary.600' }}
-                >
-                  TOPIC
-                </Text>
-                <Text
-                  _groupHover={{ color: 'primary.600' }}
-                  textStyle="h3"
-                  fontWeight={queryState ? '600' : '400'}
-                  color="secondary.500"
-                  pt="8px"
-                >
-                  {queryState ? queryState : 'Select a Topic'}
-                </Text>
-              </Stack>
-              <Spacer />
-              <AccordionIcon mt="48px" />
-            </Flex>
-          </AccordionButton>
-        </h2>
-        <AccordionPanel p={0} shadow="md">
+            <Stack spacing={1}>
+              <Text textStyle="subhead-3" color="primary.400" pt="8px">
+                TOPIC
+              </Text>
+              <Text
+                textStyle="h3"
+                fontWeight={queryState ? '600' : '400'}
+                color="white"
+                pt="8px"
+              >
+                {queryState ? queryState : 'Select a Topic'}
+              </Text>
+            </Stack>
+            <Spacer />
+            <AccordionIcon mt="48px" color="white" />
+          </Flex>
+        </AccordionButton>
+        <AccordionPanel p={0} shadow="md" bg="secondary.800">
           {isLoading && <Spinner />}
-          {tags && (
-            <VStack align="left" spacing={0}>
-              {tags
-                .filter(
-                  ({ tagType, tagname }) =>
-                    tagType === TagType.Topic && tagname !== queryState,
-                )
-                .sort((a, b) => (a.tagname > b.tagname ? 1 : -1))
-                .map((tag) => {
-                  const { tagType, tagname } = tag
-                  return (
-                    <Link
-                      py="24px"
-                      w="100%"
-                      textAlign="left"
-                      textStyle="h4"
-                      borderBottomWidth="1px"
-                      role="group"
-                      _hover={{ bg: 'primary.100' }}
-                      _focus={{
-                        color: 'primary.600',
-                      }}
-                      as={RouterLink}
-                      key={tag.id}
-                      to={getRedirectURL(tagType, tagname, agency)}
-                      onClick={() => {
-                        sendClickTagEventToAnalytics(tagname)
-                        setQueryState(tagname)
-                        accordionRef.current?.click()
-                      }}
-                    >
-                      <Flex maxW="680px" m="auto" w="100%" px={8}>
-                        <Text _groupHover={{ color: 'primary.600' }}>
-                          {tag.tagname}
-                        </Text>
-                        <Spacer />
-                        <BiRightArrowAlt />
-                      </Flex>
-                    </Link>
-                  )
-                })}
-            </VStack>
-          )}
+          {tagMenu}
         </AccordionPanel>
       </AccordionItem>
     </Accordion>

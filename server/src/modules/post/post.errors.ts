@@ -19,9 +19,36 @@ export class TagDoesNotExistError extends ApplicationError {
   }
 }
 
+export class TopicDoesNotExistError extends ApplicationError {
+  constructor(
+    message = 'Topic does not exist',
+    statusCode = StatusCodes.INTERNAL_SERVER_ERROR,
+  ) {
+    super(message, statusCode)
+  }
+}
+
+export class InvalidTagsAndTopicsError extends ApplicationError {
+  constructor(
+    message = 'At least one valid tag or topic is required',
+    statusCode = StatusCodes.INTERNAL_SERVER_ERROR,
+  ) {
+    super(message, statusCode)
+  }
+}
+
 export class InvalidTagsError extends ApplicationError {
   constructor(
     message = 'Invalid tags used in request',
+    statusCode = StatusCodes.INTERNAL_SERVER_ERROR,
+  ) {
+    super(message, statusCode)
+  }
+}
+
+export class InvalidTopicsError extends ApplicationError {
+  constructor(
+    message = 'Invalid topics used in request',
     statusCode = StatusCodes.INTERNAL_SERVER_ERROR,
   ) {
     super(message, statusCode)

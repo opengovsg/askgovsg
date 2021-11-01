@@ -202,7 +202,7 @@ const AgencyPrivacy = (): JSX.Element => (
       </ol>
       <br />
       <br />
-      <Center textColor="secondary.500">
+      <Center textColor="secondary.800">
         This Privacy Policy is dated 26 July 2021.
       </Center>
       <br />

@@ -41,7 +41,7 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
   ```
   npm install
 
-  npm run auditDep
+  npm run audit-dep
   ```
 
 * Spin up docker containers (this will create the `askgov` database):
@@ -77,7 +77,7 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 
 ## Running in Development
 
-* Start running frontend, backend, maildev, localstack and mysql simultaneously
+* Start running frontend, backend, maildev, localstack and mysql simultaneously (requires Docker)
 
   ```
   npm run dev
@@ -90,10 +90,10 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
   docker-compose up
 
   # for backend server only
-  npm run server 
+  npm run build-shared && npm run server
 
   # for frontend server only
-  npm run client 
+  npm run client
   ```
   
   Frontend server accessible on `localhost:3000`
@@ -137,6 +137,12 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
   Try connecting using node after you do so.
 
   If that doesn't work, try it without @'localhost' part.
+
+### Node.js Related
+
+- `Error: error:0308010C:digital envelope routines::unsupported`
+
+  Try using Node.js 16.
 
 ## API Endpoints
 

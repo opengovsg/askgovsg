@@ -9,8 +9,10 @@ const LinkButton = ({ text, link, handleClick, leftIcon }) => {
     <Link onClick={handleClick} to={link}>
       <Button
         w={{ base: '100%', sm: 'auto' }}
-        color="white"
-        bgColor="primary.500"
+        color="secondary.700"
+        border="1px"
+        borderColor="secondary.700"
+        bg="white"
         borderRadius="3px"
         textStyle="subhead-1"
         _hover={undefined}

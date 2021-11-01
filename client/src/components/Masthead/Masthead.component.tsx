@@ -40,7 +40,7 @@ const Masthead: FC = () => {
     sm: '0px',
   }
   return (
-    <Box bg="secondary.200" px={{ base: '24px', sm: '29px', xl: '33px' }}>
+    <Box bg="neutral.200" px={{ base: '24px', sm: '29px', xl: '33px' }}>
       <Flex direction="row">
         <Center my={mastheadTopMarginY}>
           <Image
