@@ -1,80 +1,32 @@
-import {
-  User as UserModel,
-  Post as PostModel,
-  Agency as AgencyModel,
-  Answer as AnswerModel,
-} from '../../bootstrap/sequelize'
-import { PostStatus, Post } from '~shared/types/base'
-import { Answer } from '../../models'
-import { FindOptions, Model } from 'sequelize'
+import { Answer, PostStatus, Post } from '~shared/types/base'
+import { ModelDef } from '../../types/sequelize'
+import { PostCreation } from '../../models/posts.model'
 
-type AnswerWithRelations = Answer & {
-  postId: number
-  userId: number
-}
-
-type PostWithRelations = Model &
-  Post & {
-    getAnswers: (options: FindOptions) => AnswerWithRelations[]
-  }
-
-type AnswerJSON = Pick<Answer, 'body'> & {
-  user: {
-    displayname: string
-    id: number
-    agency: {
-      logo: string
-    }
-  }
-}
 export class AnswersService {
+  private Post: ModelDef<Post, PostCreation>
+  private Answer: ModelDef<Answer>
+
+  constructor({
+    Post,
+    Answer,
+  }: {
+    Post: ModelDef<Post, PostCreation>
+    Answer: ModelDef<Answer>
+  }) {
+    this.Post = Post
+    this.Answer = Answer
+  }
+
   /**
    * Returns all answers to a post
    * @param postId id of the post
    * @returns an array of answers
    */
-  listAnswers = async (
-    postId: number,
-  ): Promise<
-    {
-      body: string
-      username: string
-      userId: number
-      agencyLogo: string
-    }[]
-  > => {
-    const post = (await PostModel.findOne({
-      where: { id: postId },
-    })) as PostWithRelations
-    if (post) {
-      const answers = await post.getAnswers({
-        include: [
-          {
-            model: UserModel,
-            include: [AgencyModel],
-          },
-        ],
-      })
-
-      // Redact user info except display name
-      return answers.map((instance) => {
-        const answer = instance.toJSON() as AnswerJSON
-        const {
-          user: {
-            id,
-            displayname,
-            agency: { logo },
-          },
-          ...answerWithoutUser
-        } = answer
-        return {
-          ...answerWithoutUser,
-          username: displayname,
-          userId: id,
-          agencyLogo: logo,
-        }
-      })
-    } else return []
+  listAnswers = async (postId: number): Promise<Answer[]> => {
+    const answers = await this.Answer.findAll({
+      where: { postId },
+    })
+    return answers
   }
 
   /**
@@ -88,23 +40,21 @@ export class AnswersService {
     postId,
     body,
     userId,
-  }: Pick<
-    AnswerWithRelations,
-    'body' | 'postId' | 'userId'
-  >): Promise<number> => {
-    const answer = await AnswerModel.create({
+  }: Pick<Answer, 'body' | 'postId' | 'userId'>): Promise<number> => {
+    const answer = await this.Answer.create({
       postId: postId,
       body: body,
       userId: userId,
     })
-    await PostModel.update(
+    await this.Post.update(
       { status: PostStatus.Public },
       { where: { id: postId } },
     )
     return answer.id
   }
 
-  /** Update a answer
+  /**
+   * Update an answer
    * @param id of answer to update
    * @param body answer text to change to
    * @returns number of rows changed in answer database
@@ -113,7 +63,7 @@ export class AnswersService {
     id: number
     body: string
   }): Promise<number> => {
-    const res = await AnswerModel.update(
+    const res = await this.Answer.update(
       { body: updatedAnswer.body },
       { where: { id: updatedAnswer.id } },
     )
@@ -127,6 +77,6 @@ export class AnswersService {
    * @param id of answer to delete
    */
   deleteAnswer = async (id: number): Promise<void> => {
-    await AnswerModel.destroy({ where: { id: id } })
+    await this.Answer.destroy({ where: { id } })
   }
 }

@@ -123,7 +123,7 @@ const postService = new PostService({
 })
 const enquiryService = new EnquiryService({ Agency, mailService })
 const recaptchaService = new RecaptchaService({ axios, ...recaptchaConfig })
-const answersService = new AnswersService()
+const answersService = new AnswersService({ Post, Answer })
 const topicsService = new TopicsService({ Topic })
 const userService = new UserService({ User, Tag, Agency })
 
