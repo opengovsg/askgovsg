@@ -16,7 +16,7 @@ import {
 } from '../../../util/jest-db'
 import { AnswersService } from '../answers.service'
 
-describe('AgencyService', () => {
+describe('AnswersService', () => {
   let agency: Agency
   let topic: Topic
   let user: User
