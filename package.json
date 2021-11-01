@@ -11,7 +11,7 @@
     "build": "npm run build-shared && npm run build-frontend && npm run build-backend",
     "server": "npm run dev --prefix server",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"./wait-for-it.sh localhost:3306 -t 0 -- npm run build-shared && sleep 5 && npm run server\" \"npm run client\" \"docker-compose up \"",
+    "dev": "concurrently \"./wait-for-it.sh localhost:3306 -t 0 -- npm run build-shared && npm run build-frontend && sleep 5 && npm run server\" \"npm run client\" \"docker-compose up \"",
     "postinstall": "npm --prefix server install && npm --prefix client install && npm --prefix shared install && npm run build-shared",
     "audit-dep": "npm audit fix && npm --prefix server audit fix && npm --prefix client audit fix && npm --prefix shared audit fix",
     "prepare": "husky install",
