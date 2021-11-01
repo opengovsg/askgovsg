@@ -90,10 +90,10 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
   docker-compose up
 
   # for backend server only
-  npm run server 
+  npm run build && npm run server
 
   # for frontend server only
-  npm run client 
+  npm run client
   ```
   
   Frontend server accessible on `localhost:3000`
