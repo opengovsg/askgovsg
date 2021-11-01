@@ -138,6 +138,12 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 
   If that doesn't work, try it without @'localhost' part.
 
+### Node.js Related
+
+- `Error: error:0308010C:digital envelope routines::unsupported`
+
+  Try using Node.js 16.
+
 ## API Endpoints
 
 #### Base Url - `http://localhost:5000/api/v1`
