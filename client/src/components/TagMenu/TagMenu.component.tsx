@@ -22,6 +22,8 @@ import {
   Agency,
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
+  listAgencyShortNames,
+  LIST_AGENCY_SHORTNAMES,
 } from '../../services/AgencyService'
 import {
   fetchTags,
@@ -30,7 +32,7 @@ import {
   GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/TagService'
 import { getTagsQuery, isSpecified } from '../../util/urlparser'
-import { getRedirectURL } from '../../util/urlparser'
+import { getRedirectURL, getRedirectURLAgency } from '../../util/urlparser'
 
 const TagMenu = (): ReactElement => {
   const [hasTagsKey, setHasTagsKey] = useState(false)
@@ -79,6 +81,10 @@ const TagMenu = (): ReactElement => {
       )
     : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
 
+  const { data: agencyShortNames } = useQuery(LIST_AGENCY_SHORTNAMES, () =>
+    listAgencyShortNames(),
+  )
+
   const bySpecifiedOrder =
     agency && Array.isArray(agency.displayOrder)
       ? (a: Tag, b: Tag) => {
@@ -105,6 +111,10 @@ const TagMenu = (): ReactElement => {
     )
     .sort(bySpecifiedOrder)
 
+  const agencyShortNamesToShow = (agencyShortNames || [])
+    .map((agency) => agency.shortname)
+    .filter((shortname) => shortname !== agencyShortName)
+
   const tagMenu = (
     <SimpleGrid
       templateColumns={{ base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
@@ -114,40 +124,74 @@ const TagMenu = (): ReactElement => {
       spacingY={hasTagsKey ? { base: undefined, sm: '16px' } : { base: '16px' }}
       py={hasTagsKey ? { base: undefined, sm: '48px' } : { base: '48px' }}
     >
-      {tagsToShow.map(({ id, tagType, tagname }) => {
-        return (
-          <Flex
-            h="72px"
-            w="100%"
-            alignItems="center"
-            textAlign="left"
-            textStyle="h4"
-            boxShadow="base"
-            role="group"
-            borderTopWidth={hasTagsKey ? { base: '1px', sm: '0px' } : undefined}
-            borderTopColor={hasTagsKey ? 'secondary.500' : undefined}
-            bg="secondary.700"
-            color="white"
-            _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
-            as={RouterLink}
-            key={id}
-            to={getRedirectURL(tagType, tagname, agency)}
-            onClick={() => {
-              sendClickTagEventToAnalytics(tagname)
-              setQueryState(tagname)
-              accordionRef.current?.click()
-            }}
-          >
-            <Flex m="auto" w="100%" px={8}>
-              <Text>{tagname}</Text>
-              <Spacer />
-              <Flex alignItems="center">
-                <BiRightArrowAlt />
+      {agency
+        ? tagsToShow.map(({ id, tagType, tagname }) => {
+            return (
+              <Flex
+                h="72px"
+                w="100%"
+                alignItems="center"
+                textAlign="left"
+                textStyle="h4"
+                boxShadow="base"
+                role="group"
+                borderTopWidth={
+                  hasTagsKey ? { base: '1px', sm: '0px' } : undefined
+                }
+                borderTopColor={hasTagsKey ? 'secondary.500' : undefined}
+                bg="secondary.700"
+                color="white"
+                _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
+                as={RouterLink}
+                key={id}
+                to={getRedirectURL(tagType, tagname, agency)}
+                onClick={() => {
+                  sendClickTagEventToAnalytics(tagname)
+                  setQueryState(tagname)
+                  accordionRef.current?.click()
+                }}
+              >
+                <Flex m="auto" w="100%" px={8}>
+                  <Text>{tagname}</Text>
+                  <Spacer />
+                  <Flex alignItems="center">
+                    <BiRightArrowAlt />
+                  </Flex>
+                </Flex>
               </Flex>
-            </Flex>
-          </Flex>
-        )
-      })}
+            )
+          })
+        : agencyShortNamesToShow.map((shortname) => {
+            return (
+              <Flex
+                h="72px"
+                w="100%"
+                alignItems="center"
+                textAlign="left"
+                textStyle="h4"
+                boxShadow="base"
+                role="group"
+                borderTopWidth={
+                  hasTagsKey ? { base: '1px', sm: '0px' } : undefined
+                }
+                borderTopColor={hasTagsKey ? 'secondary.500' : undefined}
+                bg="secondary.700"
+                color="white"
+                _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
+                as={RouterLink}
+                key={shortname}
+                to={getRedirectURLAgency(shortname)}
+              >
+                <Flex m="auto" w="100%" px={8}>
+                  <Text>{shortname}</Text>
+                  <Spacer />
+                  <Flex alignItems="center">
+                    <BiRightArrowAlt />
+                  </Flex>
+                </Flex>
+              </Flex>
+            )
+          })}
     </SimpleGrid>
   )
 
@@ -186,7 +230,11 @@ const TagMenu = (): ReactElement => {
                 pt={hasTagsKey ? '8px' : undefined}
                 mt={hasTagsKey ? undefined : '36px'}
               >
-                {hasTagsKey ? 'TOPIC' : 'EXPLORE A TOPIC'}
+                {agency
+                  ? hasTagsKey
+                    ? 'TOPIC'
+                    : 'EXPLORE A TOPIC'
+                  : 'AGENCIES'}
               </Text>
               {hasTagsKey ? (
                 <Text
@@ -195,7 +243,11 @@ const TagMenu = (): ReactElement => {
                   color="white"
                   pt="8px"
                 >
-                  {queryState ? queryState : 'Select a Topic'}
+                  {agency
+                    ? queryState
+                      ? queryState
+                      : 'Select a Topic'
+                    : 'Select an Agency'}
                 </Text>
               ) : (
                 <Text></Text>
