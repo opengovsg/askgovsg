@@ -44,7 +44,7 @@ describe('AnswersController', () => {
   const answerPath = `/${answer.id}`
 
   beforeEach(() => {
-    user = { id: 1 }
+    user = goodUser
     jest.resetAllMocks()
   })
 

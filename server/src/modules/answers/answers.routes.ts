@@ -1,5 +1,5 @@
 import { AuthMiddleware } from '../auth/auth.middleware'
-import checkOwnership from '../../middleware/checkOwnership'
+import { OwnershipCheck } from '../../middleware/checkOwnership'
 import express from 'express'
 import { check } from 'express-validator'
 import { AnswersController } from './answers.controller'
@@ -7,9 +7,11 @@ import { AnswersController } from './answers.controller'
 export const routeAnswers = ({
   controller,
   authMiddleware,
+  checkOwnership,
 }: {
   controller: AnswersController
   authMiddleware: AuthMiddleware
+  checkOwnership: OwnershipCheck
 }): express.Router => {
   const router = express.Router()
   const { authenticate } = authMiddleware

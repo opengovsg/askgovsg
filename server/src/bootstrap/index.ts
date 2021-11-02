@@ -9,6 +9,7 @@ import { StatsD } from 'hot-shots'
 import { StatusCodes } from 'http-status-codes'
 import { createTransport } from 'nodemailer'
 import path from 'path'
+import { checkOwnershipUsing } from '../middleware/checkOwnership'
 import { AgencyController } from '../modules/agency/agency.controller'
 import { AgencyService } from '../modules/agency/agency.service'
 import { AnswersController } from '../modules/answers/answers.controller'
@@ -138,6 +139,7 @@ const apiOptions = {
       answersService,
     }),
     authMiddleware,
+    checkOwnership: checkOwnershipUsing({ Post, Answer, User }),
   },
   auth: {
     controller: new AuthController({
