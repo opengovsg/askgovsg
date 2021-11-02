@@ -1,4 +1,3 @@
-import { TagType } from '~shared/types/base'
 import queryString from 'query-string'
 import { Agency } from '../services/AgencyService'
 
@@ -12,23 +11,25 @@ export const getTagsQuery = (search: string): string => {
   return ''
 }
 
+export const getTopicsQuery = (search: string): string => {
+  const query = queryString.parse(search)
+  if (query.topics) {
+    return Array.isArray(query.topics) ? query.topics.join(',') : query.topics
+  }
+
+  // if nothing is valid return empty str; no filter on front-end
+  return ''
+}
+
 export const isSpecified = (search: string, key: string): boolean =>
   key in queryString.parse(search)
 
-export const getRedirectURL = (
-  tagType: string,
-  tagName: string,
-  agency?: Agency,
-): string => {
-  if (tagType === TagType.Agency) {
-    return `/agency/${encodeURIComponent(tagName)}`
-  } else {
-    return agency
-      ? `/agency/${encodeURIComponent(
-          agency.shortname,
-        )}?tags=${encodeURIComponent(tagName)}`
-      : `/?tags=${encodeURIComponent(tagName)}`
-  }
+export const getRedirectURLTopics = (name: string, agency?: Agency): string => {
+  return agency
+    ? `/agency/${encodeURIComponent(
+        agency.shortname,
+      )}?topics=${encodeURIComponent(name)}`
+    : `/?topics=${encodeURIComponent(name)}`
 }
 
 export const getRedirectURLAgency = (agencyShortName: string): string => {

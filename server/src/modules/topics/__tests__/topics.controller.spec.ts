@@ -38,6 +38,7 @@ describe('TopicsController', () => {
     createTopic: jest.fn(),
     deleteTopicById: jest.fn(),
     updateTopicById: jest.fn(),
+    listTopics: jest.fn(),
   }
   const topicsController = new TopicsController({
     authService,
