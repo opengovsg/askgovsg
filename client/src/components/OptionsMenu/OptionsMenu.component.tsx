@@ -34,7 +34,7 @@ import {
 import { getTagsQuery, isSpecified } from '../../util/urlparser'
 import { getRedirectURL, getRedirectURLAgency } from '../../util/urlparser'
 
-const TagMenu = (): ReactElement => {
+const OptionsMenu = (): ReactElement => {
   const [hasTagsKey, setHasTagsKey] = useState(false)
   const { agency: agencyShortName } = useParams<{ agency: string }>()
   const { data: agency } = useQuery<Agency>(
@@ -115,7 +115,7 @@ const TagMenu = (): ReactElement => {
     .map((agency) => agency.shortname)
     .filter((shortname) => shortname !== agencyShortName)
 
-  const tagMenu = (
+  const optionsMenu = (
     <SimpleGrid
       templateColumns={{ base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
       maxW="620px"
@@ -262,11 +262,11 @@ const TagMenu = (): ReactElement => {
         </AccordionButton>
         <AccordionPanel p={0} shadow="md" bg="secondary.800">
           {isLoading && <Spinner />}
-          {tagMenu}
+          {optionsMenu}
         </AccordionPanel>
       </AccordionItem>
     </Accordion>
   )
 }
 
-export default TagMenu
+export default OptionsMenu
