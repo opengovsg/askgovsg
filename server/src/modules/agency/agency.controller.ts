@@ -51,4 +51,21 @@ export class AgencyController {
         return res.status(error.statusCode).json({ message: error.message })
       })
   }
+
+  /**
+   * List all agency shortnames
+   * @return 200 with agency
+   * @return 500 if database error
+   */
+  listAgencyShortNames: ControllerHandler<
+    undefined,
+    { shortname: string }[] | Message
+  > = async (req, res) => {
+    return this.agencyService
+      .listAgencyShortNames()
+      .map((data) => res.status(StatusCodes.OK).json(data))
+      .mapErr((error) => {
+        return res.status(error.statusCode).json({ message: error.message })
+      })
+  }
 }
