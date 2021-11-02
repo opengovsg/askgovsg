@@ -181,7 +181,7 @@ export class WebController {
       },
     )
     const agenciesResultAsync = await this.agencyService
-      .listAgencyShortnames()
+      .listAgencyShortNames()
       .mapErr((err) => {
         logger.error({
           message: `${err.name} while getting sitemap urls: ${err.message}`,

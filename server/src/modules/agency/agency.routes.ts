@@ -27,6 +27,15 @@ export const routeAgencies = ({
   )
 
   /**
+   * List all agencies' shortnames
+   * @route GET /api/agencies
+   * @return 200 with list of agencies' shortnames
+   * @return 500 if database error
+   * @access Public
+   */
+  router.get('/shortnames', controller.listAgencyShortNames)
+
+  /**
    * Find an agency by their id
    * @route  GET /api/agencies/:agencyId
    * @return 200 with agency

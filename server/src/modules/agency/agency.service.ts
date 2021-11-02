@@ -82,7 +82,12 @@ export class AgencyService {
     })
   }
 
-  listAgencyShortnames = (): ResultAsync<
+  /**
+   * Find all agency shortnames
+   * @returns ok(list of shortnames) if retrieval is successful
+   * @returns err(DatabaseError) if database errors occur while retrieving agency
+   */
+  listAgencyShortNames = (): ResultAsync<
     { shortname: string }[],
     DatabaseError
   > => {
@@ -92,17 +97,17 @@ export class AgencyService {
         logger.error({
           message: 'Database error while retrieving all agency shortnames',
           meta: {
-            function: 'listAgencyShortnames',
+            function: 'listAgencyShortNames',
           },
           error,
         })
         return new DatabaseError()
       },
-    ).andThen((agencyShortnames) => {
-      if (!agencyShortnames) {
+    ).andThen((agencyShortNames) => {
+      if (!agencyShortNames) {
         return errAsync(new MissingAgencyError())
       }
-      return okAsync(agencyShortnames)
+      return okAsync(agencyShortNames)
     })
   }
 }

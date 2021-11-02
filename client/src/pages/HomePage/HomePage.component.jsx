@@ -18,8 +18,7 @@ import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.compo
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import PostQuestionButton from '../../components/PostQuestionButton/PostQuestionButton.component'
 import QuestionsListComponent from '../../components/QuestionsList/QuestionsList.component'
-import TagMenu from '../../components/TagMenu/TagMenu.component'
-import TagPanel from '../../components/TagPanel/TagPanel.component'
+import OptionsMenu from '../../components/OptionsMenu/OptionsMenu.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
@@ -85,7 +84,9 @@ const HomePage = ({ match }) => {
             : undefined
         }
       />
-      <Box flex="1">{hasTagsKey ? <TagMenu /> : <TagPanel />}</Box>
+      <Box flex="1">
+        <OptionsMenu />
+      </Box>
       <Flex
         maxW="680px"
         m="auto"

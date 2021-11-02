@@ -26,7 +26,7 @@ describe('WebController', () => {
   const agencyService = {
     findOneByName: jest.fn(),
     findOneById: jest.fn(),
-    listAgencyShortnames: jest.fn(),
+    listAgencyShortNames: jest.fn(),
   }
   const answersService = {
     listAnswers: jest.fn(),
@@ -345,7 +345,7 @@ describe('WebController', () => {
 
     beforeEach(() => {
       postService.listPosts.mockReset()
-      agencyService.listAgencyShortnames.mockReset()
+      agencyService.listAgencyShortNames.mockReset()
       webService.getSitemapUrls.mockReset()
     })
 
@@ -354,7 +354,7 @@ describe('WebController', () => {
         posts: mockPosts,
         totalItems: mockPosts.length,
       })
-      agencyService.listAgencyShortnames.mockReturnValueOnce(
+      agencyService.listAgencyShortNames.mockReturnValueOnce(
         okAsync(mockAgencies),
       )
       webService.getSitemapUrls.mockImplementationOnce(
@@ -376,7 +376,7 @@ describe('WebController', () => {
         topics: [],
         agencyId: 0,
       })
-      expect(agencyService.listAgencyShortnames).toBeCalledWith()
+      expect(agencyService.listAgencyShortNames).toBeCalledWith()
       expect(webService.getSitemapUrls).toBeCalledWith(mockPosts, mockAgencies)
 
       expect(response.status).toEqual(StatusCodes.OK)
@@ -385,7 +385,7 @@ describe('WebController', () => {
 
     it('returns sitemap xml with static paths when postService.listPosts throws Error', async () => {
       postService.listPosts.mockRejectedValueOnce(new InvalidTagsError())
-      agencyService.listAgencyShortnames.mockReturnValueOnce(
+      agencyService.listAgencyShortNames.mockReturnValueOnce(
         okAsync(mockAgencies),
       )
       webService.getSitemapUrls.mockImplementationOnce(
@@ -407,7 +407,7 @@ describe('WebController', () => {
         topics: [],
         agencyId: 0,
       })
-      expect(agencyService.listAgencyShortnames).toBeCalledWith()
+      expect(agencyService.listAgencyShortNames).toBeCalledWith()
       expect(webService.getSitemapUrls).toBeCalledWith([], [])
 
       expect(response.status).toEqual(StatusCodes.OK)
@@ -419,7 +419,7 @@ describe('WebController', () => {
         posts: mockPosts,
         totalItems: mockPosts.length,
       })
-      agencyService.listAgencyShortnames.mockReturnValueOnce(
+      agencyService.listAgencyShortNames.mockReturnValueOnce(
         errAsync(new MissingAgencyError()),
       )
       webService.getSitemapUrls.mockImplementationOnce(
@@ -441,7 +441,7 @@ describe('WebController', () => {
         topics: [],
         agencyId: 0,
       })
-      expect(agencyService.listAgencyShortnames).toBeCalledWith()
+      expect(agencyService.listAgencyShortNames).toBeCalledWith()
       expect(webService.getSitemapUrls).toBeCalledWith([], [])
 
       // status should be OK because errors cannot be used for input to expressSitemapXml which serves the sitemap.xml file
