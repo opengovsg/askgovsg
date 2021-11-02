@@ -39,9 +39,9 @@ export const routeTopics = ({
         min: 1,
         max: 30,
       }),
-      check('description', 'Enter a description with minimum 30 characters')
+      check('description', 'Enter a description with minimum 10 characters')
         .isLength({
-          min: 30,
+          min: 10,
         })
         .optional({ nullable: true, checkFalsy: true }),
     ],

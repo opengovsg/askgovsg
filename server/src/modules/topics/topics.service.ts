@@ -7,10 +7,6 @@ import { DatabaseError } from '../core/core.errors'
 
 const logger = createLogger(module)
 
-// export type TopicWithChildRelations = Topic & {
-//   children: Topic[]
-// }
-
 export type TopicWithChildRelations = Topic & {
   children?: TopicWithChildRelations[]
 }
@@ -63,16 +59,19 @@ export class TopicsService {
     TopicWithChildRelations[],
     DatabaseError | MissingTopicError
   > => {
-    return ResultAsync.fromPromise(this.Topic.findAll(), (error) => {
-      logger.error({
-        message: 'Database error while retrieving topics',
-        meta: {
-          function: 'listTopics',
-        },
-        error,
-      })
-      return new DatabaseError()
-    }).andThen((topics) => {
+    return ResultAsync.fromPromise(
+      this.Topic.findAll({ raw: true }),
+      (error) => {
+        logger.error({
+          message: 'Database error while retrieving topics',
+          meta: {
+            function: 'listTopics',
+          },
+          error,
+        })
+        return new DatabaseError()
+      },
+    ).andThen((topics) => {
       if (topics.length === 0) {
         return errAsync(new MissingTopicError())
       }
@@ -109,6 +108,7 @@ export class TopicsService {
         where: {
           agencyId: agencyId,
         },
+        raw: true,
       }),
       (error) => {
         logger.error({
