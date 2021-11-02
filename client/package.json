@@ -32,7 +32,7 @@
     "react-scripts": "^4.0.3",
     "react-select": "^5.1.0",
     "react-tabs": "^3.2.3",
-    "sanitize-html": "^2.5.2",
+    "sanitize-html": "^2.5.3",
     "sass": "^1.43.4",
     "styled-components": "^5.3.3",
     "uuid": "^8.3.2"
