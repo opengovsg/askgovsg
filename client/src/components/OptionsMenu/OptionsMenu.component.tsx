@@ -129,7 +129,8 @@ const OptionsMenu = (): ReactElement => {
             return (
               <Flex
                 h="72px"
-                w="100%"
+                w={hasTagsKey ? '100%' : { base: '87%', sm: '100%' }}
+                mx={hasTagsKey ? undefined : { base: 'auto', md: undefined }}
                 alignItems="center"
                 textAlign="left"
                 textStyle="h4"
@@ -165,7 +166,8 @@ const OptionsMenu = (): ReactElement => {
             return (
               <Flex
                 h="72px"
-                w="100%"
+                w={hasTagsKey ? '100%' : { base: '87%', sm: '100%' }}
+                mx={hasTagsKey ? undefined : { base: 'auto', md: undefined }}
                 alignItems="center"
                 textAlign="left"
                 textStyle="h4"
