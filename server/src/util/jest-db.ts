@@ -27,7 +27,7 @@ export enum ModelName {
  * Connect to a in-memory database
  */
 export const createTestDatabase = async (): Promise<Sequelize> => {
-  const sequelize = new Sequelize('sqlite::memory:', { logging: true })
+  const sequelize = new Sequelize('sqlite::memory:', { logging: false })
   const emailValidator = new minimatch.Minimatch('*')
   const Token = defineToken(sequelize)
   const Tag = defineTag(sequelize)
