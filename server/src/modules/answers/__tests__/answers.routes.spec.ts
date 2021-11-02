@@ -1,6 +1,7 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { Model, Sequelize } from 'sequelize'
+import { checkOwnershipUsing } from '../../../middleware/checkOwnership'
 import supertest from 'supertest'
 import {
   Agency,
@@ -19,6 +20,7 @@ import {
   ModelName,
 } from '../../../util/jest-db'
 import { AnswersController } from '../answers.controller'
+import { routeAnswers } from '../answers.routes'
 import { AnswersService } from '../answers.service'
 
 describe('/answers', () => {
@@ -31,17 +33,14 @@ describe('/answers', () => {
   let db: Sequelize
   let Post: ModelDef<Post, PostCreation>
   let Answer: ModelDef<Answer>
-  let answersService: AnswersService
 
   const authService = {
     hasPermissionToAnswer: jest.fn(),
   }
 
-  let answersController: AnswersController
-
   // Set up auth middleware to inject user
   let authUser: Express.User | undefined = undefined
-  const middleware: ControllerHandler = (req, _res, next) => {
+  const authenticate: ControllerHandler = (req, _res, next) => {
     req.user = authUser
     next()
   }
@@ -53,20 +52,25 @@ describe('/answers', () => {
     db = await createTestDatabase()
     Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
     Answer = getModelDef<Answer>(db, ModelName.Answer)
-    answersService = new AnswersService({ Post, Answer })
-    answersController = new AnswersController({
+    const User = getModelDef<User>(db, ModelName.User)
+    const Agency = getModelDef<Agency>(db, ModelName.Agency)
+
+    const answersService = new AnswersService({ Post, Answer })
+    const controller = new AnswersController({
       answersService,
       authService,
     })
 
-    app.use(express.json())
-    app.use(middleware)
-    app.get('/:id', answersController.listAnswers)
-    app.post('/:id', answersController.createAnswer)
-    app.put('/:id', answersController.updateAnswer)
-    app.delete('/:id', answersController.deleteAnswer)
+    const checkOwnership = checkOwnershipUsing({ Post, User, Answer })
 
-    const Agency = getModelDef<Agency>(db, ModelName.Agency)
+    app.use(express.json())
+    app.use(
+      routeAnswers({
+        controller,
+        authMiddleware: { authenticate },
+        checkOwnership,
+      }),
+    )
     agency = await Agency.create({
       shortname: 'was',
       longname: 'Work Allocation Singapore',
@@ -77,13 +81,13 @@ describe('/answers', () => {
       displayOrder: null,
     })
 
-    const User = getModelDef<User>(db, ModelName.User)
     user = await User.create({
       username: 'enquiries@was.gov.sg',
       displayname: 'Enquiries @ WAS',
       views: 0,
       agencyId: agency.id,
     })
+    await User.update({ id: 1 }, { where: { id: null } })
 
     const Topic = getModelDef<Topic>(db, ModelName.Topic)
     topic = await Topic.create({
@@ -92,6 +96,7 @@ describe('/answers', () => {
       description: null,
       parentId: null,
     })
+    await Topic.update({ id: 1 }, { where: { id: null } })
   })
 
   beforeEach(async () => {
