@@ -185,7 +185,7 @@ const OptionsMenu = (): ReactElement => {
                 to={getRedirectURLAgency(shortname)}
               >
                 <Flex m="auto" w="100%" px={8}>
-                  <Text>{shortname}</Text>
+                  <Text>{shortname.toUpperCase()}</Text>
                   <Spacer />
                   <Flex alignItems="center">
                     <BiRightArrowAlt />
