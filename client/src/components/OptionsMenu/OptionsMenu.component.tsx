@@ -115,6 +115,7 @@ const OptionsMenu = (): ReactElement => {
     .map((agency) => agency.shortname)
     .filter((shortname) => shortname !== agencyShortName)
 
+  // TODO: <Flex> is repeated for tagsToShow and agencyShortNames, figure out a way to apply DRY
   const optionsMenu = (
     <SimpleGrid
       templateColumns={{ base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
