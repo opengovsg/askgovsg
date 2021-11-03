@@ -25,25 +25,20 @@ export class TopicsService {
    * @returns err(DatabaseError) if database errors occur while retrieving topic
    * @returns err(MissingTopicError) if topic does not exist in the database
    */
-  findOneById = (
+  getTopicById = (
     id: number,
   ): ResultAsync<Topic, DatabaseError | MissingTopicError> => {
-    return ResultAsync.fromPromise(
-      this.Topic.findOne({
-        where: { id: id },
-      }),
-      (error) => {
-        logger.error({
-          message: 'Database error while retrieving single topic by id',
-          meta: {
-            function: 'findOneById',
-            id,
-          },
-          error,
-        })
-        return new DatabaseError()
-      },
-    ).andThen((topic) => {
+    return ResultAsync.fromPromise(this.Topic.findByPk(id), (error) => {
+      logger.error({
+        message: 'Database error while retrieving single topic by id',
+        meta: {
+          function: 'getTopicById',
+          id,
+        },
+        error,
+      })
+      return new DatabaseError()
+    }).andThen((topic) => {
       if (!topic) {
         return errAsync(new MissingTopicError())
       }

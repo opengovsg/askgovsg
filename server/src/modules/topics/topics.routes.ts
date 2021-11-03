@@ -13,6 +13,19 @@ export const routeTopics = ({
   const router = express.Router()
 
   /**
+   * Find a topic by its id
+   * @route GET /api/topics/:topicId
+   * @return 200 with topic
+   * @return 404 if topic not found
+   * @return 500 if database error
+   */
+  router.get(
+    '/:topicId',
+    param('topicId').isInt().toInt(),
+    controller.getTopicById,
+  )
+
+  /**
    * List all topics
    * @return 200 with topics
    * @return 400 with database error
