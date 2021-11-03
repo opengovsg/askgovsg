@@ -162,7 +162,7 @@ const apiOptions = {
   tags: {
     controller: new TagsController({
       authService,
-      tagsService: new TagsService(),
+      tagsService: new TagsService({ Post, Tag, User, Agency }),
     }),
     authMiddleware,
   },
