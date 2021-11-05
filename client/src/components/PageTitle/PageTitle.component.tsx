@@ -4,8 +4,8 @@ const PageTitle = ({
   title,
   description,
 }: {
-  title: string | undefined
-  description: string | undefined
+  title?: string
+  description?: string
 }): JSX.Element => {
   const defaultTitle = 'AskGov'
   const defaultDescription = 'Answers from the Singapore Government'

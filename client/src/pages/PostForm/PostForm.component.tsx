@@ -1,7 +1,7 @@
 import { Spacer } from '@chakra-ui/react'
-import React, { Fragment } from 'react'
+import { Fragment } from 'react'
 import { useQuery } from 'react-query'
-import { Redirect, useHistory } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { getApiErrorMessage } from '../../api/ApiClient'
 import Spinner from '../../components/Spinner/Spinner.component'
 import { useStyledToast } from '../../components/StyledToast/StyledToast'
@@ -18,7 +18,7 @@ import './PostForm.styles.scss'
 const PostForm = (): JSX.Element => {
   const auth = useAuth()
   const toast = useStyledToast()
-  const history = useHistory()
+  const navigate = useNavigate()
   const { isLoading, data: tagData } = useQuery(
     GET_TAGS_BY_USER_QUERY_KEY,
     getTagsByUser,
@@ -27,7 +27,7 @@ const PostForm = (): JSX.Element => {
     },
   )
   if (!auth.user) {
-    return <Redirect to="/login" />
+    return <Navigate replace to="/login" />
   }
 
   const onSubmit = async (data: AskFormSubmission) => {
@@ -43,7 +43,7 @@ const PostForm = (): JSX.Element => {
         status: 'success',
         description: 'Your post has been created.',
       })
-      history.replace(`/questions/${postId}`)
+      navigate(`/questions/${postId}`, { replace: true })
     } catch (err) {
       toast({
         status: 'error',
