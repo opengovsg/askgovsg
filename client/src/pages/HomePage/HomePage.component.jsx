@@ -45,12 +45,7 @@ const HomePage = () => {
   const navigate = useNavigate()
   // check URL
   const location = useLocation()
-  // TODO (#259): make into custom hook
-  // useEffect(() => {
-  //   setQueryState(getTagsQuery(location.search))
-  //   const tagsSpecified = isSpecified(location.search, 'tags')
-  //   setHasTagsKey(tagsSpecified)
-  // }, [location, hasTagsKey])
+
   useEffect(() => {
     setQueryState(getTopicsQuery(location.search))
     const topicsSpecified = isSpecified(location.search, 'topics')
@@ -211,7 +206,6 @@ const HomePage = () => {
           <QuestionsListComponent
             sort={sortState.value}
             agencyId={agency?.id}
-            // tags={queryState}
             topics={queryState}
             pageSize={isAuthenticatedOfficer ? 50 : hasTopicsKey ? 30 : 10}
             listAnswerable={isAuthenticatedOfficer}
