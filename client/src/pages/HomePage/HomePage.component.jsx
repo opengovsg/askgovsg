@@ -13,7 +13,7 @@ import {
 import { useEffect, useState } from 'react'
 import { BiSortAlt2 } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import PostQuestionButton from '../../components/PostQuestionButton/PostQuestionButton.component'
@@ -35,7 +35,7 @@ import { getTagsQuery, isSpecified } from '../../util/urlparser'
 
 const HomePage = ({ match }) => {
   const [hasTagsKey, setHasTagsKey] = useState(false)
-  const history = useHistory()
+  const navigate = useNavigate()
   // check URL
   const location = useLocation()
   // TODO (#259): make into custom hook
@@ -206,7 +206,7 @@ const HomePage = ({ match }) => {
                   borderColor="secondary.700"
                   onClick={() => {
                     window.scrollTo(0, 0)
-                    history.push('?tags=')
+                    navigate('?tags=')
                   }}
                 >
                   <Text textStyle="subhead-1">View all questions</Text>

@@ -4,7 +4,7 @@ import Downshift from 'downshift'
 import Fuse from 'fuse.js'
 import { BiSearch } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   getAgencyById,
   GET_AGENCY_BY_ID_QUERY_KEY,
@@ -45,7 +45,7 @@ const SearchBox = ({
     { enabled: !!agencyId },
   )
 
-  const history = useHistory()
+  const navigate = useNavigate()
   const name = 'search'
 
   const googleAnalytics = useGoogleAnalytics()
@@ -86,7 +86,7 @@ const SearchBox = ({
   value = value ?? ''
   if (!handleSubmit) {
     handleSubmit = (inputValue) =>
-      history.push(
+      navigate(
         `/questions?search=${inputValue}` +
           (agency ? `&agency=${agency.shortname}` : ''),
       )
@@ -117,7 +117,7 @@ const SearchBox = ({
     <div className="search-container">
       <div className="search-form">
         <Downshift
-          onChange={(selection) => history.push(`/questions/${selection.id}`)}
+          onChange={(selection) => navigate(`/questions/${selection.id}`)}
           stateReducer={stateReducer}
           itemToString={itemToString}
           initialInputValue={value}
