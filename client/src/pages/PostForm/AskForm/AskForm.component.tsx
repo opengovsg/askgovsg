@@ -1,7 +1,7 @@
 import { Alert, AlertIcon, Switch } from '@chakra-ui/react'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import Select from 'react-select'
 import { Tag, TagType } from '~shared/types/base'
 import { RichTextEditor } from '../../../components/RichText/RichTextEditor.component'
@@ -60,7 +60,7 @@ const AskForm = ({
       })),
     [inputTags],
   )
-  const navigate = useNavigate()
+  const history = useHistory()
   const { register, control, handleSubmit, watch, formState } =
     useForm<AskFormInput>({
       defaultValues: {
@@ -238,7 +238,7 @@ const AskForm = ({
           value={submitButtonText}
           type="submit"
         />
-        <div className="cancel-text" onClick={() => navigate(-1)}>
+        <div className="cancel-text" onClick={() => history.goBack()}>
           Cancel
         </div>
       </div>
