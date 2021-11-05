@@ -36,10 +36,10 @@ import { getRedirectURL, getRedirectURLAgency } from '../../util/urlparser'
 
 const OptionsMenu = (): ReactElement => {
   const [hasTagsKey, setHasTagsKey] = useState(false)
-  const { agency: agencyShortName } = useParams()
+  const { agency: agencyShortName } = useParams<{ agency: string }>()
   const { data: agency } = useQuery<Agency>(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
-    () => getAgencyByShortName({ shortname: `${agencyShortName}` }),
+    () => getAgencyByShortName({ shortname: agencyShortName }),
     // Only getAgencyByShortName if agency param is present in URL
     // If agency URL param is not present, agencyShortName is undefined
     { enabled: agencyShortName !== undefined },
