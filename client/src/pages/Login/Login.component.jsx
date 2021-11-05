@@ -8,7 +8,7 @@ const Login = () => {
   const { user } = useAuth()
 
   if (user) {
-    return <Redirect to={`/agency/${user.agency.shortname}`} />
+    return <Navigate replace to={`/agency/${user.agency.shortname}`} />
   } else {
     return (
       <div className="login-page">

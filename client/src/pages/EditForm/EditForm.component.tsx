@@ -1,7 +1,7 @@
 import { Spacer } from '@chakra-ui/react'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { Redirect, RouteComponentProps, useHistory } from 'react-router-dom'
+import { Navigate, useParams, useNavigate } from 'react-router-dom'
 import { getApiErrorMessage } from '../../api'
 import Spinner from '../../components/Spinner/Spinner.component'
 import { useAuth } from '../../contexts/AuthContext'
@@ -26,13 +26,12 @@ import AskForm, {
 import { useStyledToast } from '../../components/StyledToast/StyledToast'
 import './EditForm.styles.scss'
 
-type EditFormProps = RouteComponentProps<{ id: string }>
-
-const EditForm = ({ match }: EditFormProps): JSX.Element => {
+const EditForm = (): JSX.Element => {
   const auth = useAuth()
   const queryclient = useQueryClient()
-  const history = useHistory()
-  const postId = Number(match.params.id)
+  const navigate = useNavigate()
+  const { id } = useParams()
+  const postId = Number(id)
   const getPostQueryKey = useMemo(
     () => [GET_POST_BY_ID_QUERY_KEY, postId],
     [postId],
@@ -91,7 +90,7 @@ const EditForm = ({ match }: EditFormProps): JSX.Element => {
         status: 'success',
         description: 'Your post has been updated.',
       })
-      history.replace(`/questions/${postId}`)
+      navigate(`/questions/${postId}`, { replace: true })
     } catch (err) {
       toast({
         status: 'error',
@@ -101,7 +100,7 @@ const EditForm = ({ match }: EditFormProps): JSX.Element => {
   }
 
   if (!auth.user) {
-    return <Redirect to="/login" />
+    return <Navigate replace to="/login" />
   }
 
   const isLoading = isPostLoading || isAnswerLoading || isTagLoading

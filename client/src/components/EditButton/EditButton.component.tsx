@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react'
 import { BiChevronDown, BiTrash } from 'react-icons/bi'
 import { useMutation, useQueryClient } from 'react-query'
-import { Link as RouterLink, useHistory } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { getApiErrorMessage } from '../../api'
 import {
   deletePost,
@@ -32,7 +32,7 @@ const EditButton = ({ postId, onDeleteLink }: EditButtonProps): JSX.Element => {
     isOpen: isDeleteDialogOpen,
   } = useDisclosure()
 
-  const history = useHistory()
+  const navigate = useNavigate()
   const toast = useStyledToast()
 
   const queryClient = useQueryClient()
@@ -47,7 +47,7 @@ const EditButton = ({ postId, onDeleteLink }: EditButtonProps): JSX.Element => {
         description: `Post has been deleted`,
       })
       if (onDeleteLink !== undefined) {
-        history.push(onDeleteLink)
+        navigate(onDeleteLink)
       }
     },
     onError: (err) => {

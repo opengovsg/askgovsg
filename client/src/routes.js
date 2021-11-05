@@ -1,4 +1,4 @@
-import { Route, Switch } from 'react-router-dom'
+import { Route, Routes as ReactRoutes } from 'react-router-dom'
 import {
   AgencyPrivacy,
   AgencyTerms,
@@ -69,7 +69,7 @@ const AgencyPrivacyComponent = withPageTitle({
 
 const Routes = () => {
   return (
-    <Switch>
+    <ReactRoutes>
       <Route exact path="/" component={HomePageComponent} />
       <Route exact path="/agency/:agency" component={HomePageComponent} />
       <Route exact path="/questions" component={SearchResultsComponent} />
@@ -82,7 +82,7 @@ const Routes = () => {
       <Route exact path="/privacy" component={CitizenPrivacyComponent} />
       <Route exact path="/agency-privacy" component={AgencyPrivacyComponent} />
       <Route path="*" component={NotFoundComponent} />
-    </Switch>
+    </ReactRoutes>
   )
 }
 
