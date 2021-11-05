@@ -4,7 +4,6 @@ module.exports = {
     'no-console': 'warn',
     'no-undef': 'error',
   },
-  parser: 'babel-eslint',
   overrides: [
     {
       files: ['src/**/*.jsx?'],
