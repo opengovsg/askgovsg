@@ -62,11 +62,7 @@ export class TagsService {
       ],
       order: [[Sequelize.literal('postsCount'), 'DESC']],
     })
-    if (!tags) {
-      return []
-    } else {
-      return tags
-    }
+    return tags
   }
 
   /**
