@@ -8,6 +8,10 @@ module.exports = {
     {
       files: ['src/**/*.jsx?'],
       extends: ['plugin:react/recommended', 'plugin:prettier/recommended'],
+      parser: '@babel/eslint-parser',
+      parserOptions: {
+        requireConfigFile: false,
+      },
     },
     {
       files: ['src/**/*.ts', 'src/**/*.tsx'],
