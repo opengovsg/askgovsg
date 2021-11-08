@@ -183,18 +183,6 @@ const apiOptions = {
   enquiries: new EnquiryController({ enquiryService, recaptchaService }),
 }
 
-const index = fs.readFileSync(
-  path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
-)
-
-const webController = new WebController({
-  agencyService,
-  answersService,
-  postService,
-  webService: new WebService(),
-  index,
-})
-
 const moduleLogger = createLogger(module)
 
 if (baseConfig.nodeEnv === Environment.Prod) {
@@ -250,6 +238,18 @@ if (baseConfig.nodeEnv === Environment.Prod) {
       },
     }),
   )
+
+  const index = fs.readFileSync(
+    path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
+  )
+
+  const webController = new WebController({
+    agencyService,
+    answersService,
+    postService,
+    webService: new WebService(),
+    index,
+  })
 
   app.use('/', routeWeb({ controller: webController }))
 
