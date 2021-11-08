@@ -9,6 +9,7 @@ import { StatsD } from 'hot-shots'
 import { StatusCodes } from 'http-status-codes'
 import { createTransport } from 'nodemailer'
 import path from 'path'
+import { checkOwnershipUsing } from '../middleware/checkOwnership'
 import { AgencyController } from '../modules/agency/agency.controller'
 import { AgencyService } from '../modules/agency/agency.service'
 import { AnswersController } from '../modules/answers/answers.controller'
@@ -123,7 +124,7 @@ const postService = new PostService({
 })
 const enquiryService = new EnquiryService({ Agency, mailService })
 const recaptchaService = new RecaptchaService({ axios, ...recaptchaConfig })
-const answersService = new AnswersService()
+const answersService = new AnswersService({ Post, Answer })
 const topicsService = new TopicsService({ Topic })
 const userService = new UserService({ User, Tag, Agency })
 
@@ -138,6 +139,7 @@ const apiOptions = {
       answersService,
     }),
     authMiddleware,
+    checkOwnership: checkOwnershipUsing({ Post, Answer, User }),
   },
   auth: {
     controller: new AuthController({
@@ -160,7 +162,7 @@ const apiOptions = {
   tags: {
     controller: new TagsController({
       authService,
-      tagsService: new TagsService(),
+      tagsService: new TagsService({ Post, Tag, User, Agency }),
     }),
     authMiddleware,
   },
@@ -180,18 +182,6 @@ const apiOptions = {
   },
   enquiries: new EnquiryController({ enquiryService, recaptchaService }),
 }
-
-const index = fs.readFileSync(
-  path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
-)
-
-const webController = new WebController({
-  agencyService,
-  answersService,
-  postService,
-  webService: new WebService(),
-  index,
-})
 
 const moduleLogger = createLogger(module)
 
@@ -248,6 +238,18 @@ if (baseConfig.nodeEnv === Environment.Prod) {
       },
     }),
   )
+
+  const index = fs.readFileSync(
+    path.resolve(__dirname, '../../..', 'client', 'build', 'index.html'),
+  )
+
+  const webController = new WebController({
+    agencyService,
+    answersService,
+    postService,
+    webService: new WebService(),
+    index,
+  })
 
   app.use('/', routeWeb({ controller: webController }))
 

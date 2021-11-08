@@ -5,19 +5,20 @@ import { createLogger } from '../../bootstrap/logging'
 import { StatusCodes } from 'http-status-codes'
 import { ControllerHandler } from '../../types/response-handler'
 import { Message } from '../../types/message-type'
+import { Answer } from '~shared/types/base'
 
 const logger = createLogger(module)
 
 export class AnswersController {
   private answersService: Public<AnswersService>
-  private authService: Public<AuthService>
+  private authService: Pick<AuthService, 'hasPermissionToAnswer'>
 
   constructor({
     answersService,
     authService,
   }: {
     answersService: Public<AnswersService>
-    authService: Public<AuthService>
+    authService: Pick<AuthService, 'hasPermissionToAnswer'>
   }) {
     this.answersService = answersService
     this.authService = authService
@@ -29,16 +30,10 @@ export class AnswersController {
    * @returns 200 with array of answers
    * @returns 500 if database error occurs
    */
-  listAnswers: ControllerHandler<
-    { id: string },
-    | {
-        body: string
-        username: string
-        userId: number
-        agencyLogo: string
-      }[]
-    | Message
-  > = async (req, res) => {
+  listAnswers: ControllerHandler<{ id: string }, Answer[] | Message> = async (
+    req,
+    res,
+  ) => {
     try {
       const answers = await this.answersService.listAnswers(
         Number(req.params.id),

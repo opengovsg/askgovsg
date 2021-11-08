@@ -30,3 +30,7 @@ export const getRedirectURL = (
       : `/?tags=${encodeURIComponent(tagName)}`
   }
 }
+
+export const getRedirectURLAgency = (agencyShortName: string): string => {
+  return `/agency/${encodeURIComponent(agencyShortName)}`
+}

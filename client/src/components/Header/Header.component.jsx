@@ -36,12 +36,8 @@ const Header = () => {
   const location = useLocation()
   const { search } = useLocation()
   const searchParams = new URLSearchParams(search)
-  const match = matchPath(location.pathname, {
-    path: '/agency/:agency',
-  })
-  const matchPost = matchPath(location.pathname, {
-    path: '/questions/:id',
-  })
+  const match = matchPath('/agency/:agency', location.pathname)
+  const matchPost = matchPath('/questions/:id', location.pathname)
   const postId = matchPost?.params?.id
   const { data: post } = useQuery(
     [GET_POST_BY_ID_QUERY_KEY, postId],
@@ -110,9 +106,7 @@ const Header = () => {
   }
 
   // Look for /questions to catch search result and post pages
-  const matchQuestions = matchPath(location.pathname, {
-    path: '/questions',
-  })
+  const matchQuestions = matchPath('/questions/*', location.pathname)
   const {
     isOpen: headerIsOpen,
     onOpen: openHeader,
@@ -170,7 +164,7 @@ const Header = () => {
     } else {
       closeHeader()
     }
-  }, [matchQuestions?.path, deviceType])
+  }, [matchQuestions?.pathname, deviceType])
 
   const expandedSearch = () => {
     return (

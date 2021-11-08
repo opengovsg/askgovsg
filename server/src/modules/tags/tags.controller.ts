@@ -1,7 +1,6 @@
-import { Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
+import { Tag } from '~shared/types/base'
 import { createLogger } from '../../bootstrap/logging'
-import { Tag } from '../../models'
 import { Message } from '../../types/message-type'
 import { ControllerHandler } from '../../types/response-handler'
 import { AuthService } from '../auth/auth.service'

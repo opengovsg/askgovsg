@@ -1,4 +1,5 @@
 import express from 'express'
+import { OwnershipCheck } from '../middleware/checkOwnership'
 import { AgencyController } from '../modules/agency/agency.controller'
 import { routeAgencies } from '../modules/agency/agency.routes'
 import { AnswersController } from '../modules/answers/answers.controller'
@@ -24,6 +25,7 @@ type ApiRouterOptions = {
   answers: {
     controller: AnswersController
     authMiddleware: AuthMiddleware
+    checkOwnership: OwnershipCheck
   }
   auth: {
     controller: AuthController
