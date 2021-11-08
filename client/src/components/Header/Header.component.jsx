@@ -106,7 +106,7 @@ const Header = () => {
   }
 
   // Look for /questions to catch search result and post pages
-  const matchQuestions = matchPath('/questions', location.pathname)
+  const matchQuestions = matchPath('/questions/*', location.pathname)
   const {
     isOpen: headerIsOpen,
     onOpen: openHeader,
@@ -164,7 +164,7 @@ const Header = () => {
     } else {
       closeHeader()
     }
-  }, [matchQuestions?.path, deviceType])
+  }, [matchQuestions?.pathname, deviceType])
 
   const expandedSearch = () => {
     return (
