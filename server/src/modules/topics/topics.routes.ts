@@ -13,6 +13,26 @@ export const routeTopics = ({
   const router = express.Router()
 
   /**
+   * Find a topic by its id
+   * @route GET /api/topics/:topicId
+   * @return 200 with topic
+   * @return 404 if topic not found
+   * @return 500 if database error
+   */
+  router.get(
+    '/:topicId',
+    param('topicId').isInt().toInt(),
+    controller.getTopicById,
+  )
+
+  /**
+   * List all topics
+   * @return 200 with topics
+   * @return 400 with database error
+   */
+  router.get('/', controller.listTopics)
+
+  /**
    * Create a new topic
    * @route  POST /api/topics
    * @return 200 if topic is created
@@ -32,9 +52,9 @@ export const routeTopics = ({
         min: 1,
         max: 30,
       }),
-      check('description', 'Enter a description with minimum 30 characters')
+      check('description', 'Enter a description with minimum 10 characters')
         .isLength({
-          min: 30,
+          min: 10,
         })
         .optional({ nullable: true, checkFalsy: true }),
     ],

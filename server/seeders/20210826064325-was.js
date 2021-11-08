@@ -90,6 +90,57 @@ module.exports = {
       {},
     )
     await queryInterface.bulkInsert(
+      'topics',
+      [
+        {
+          id: 1,
+          name: 'financial support',
+          description: 'Financial Support topic description',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          agencyId: 4,
+          parentId: null,
+        },
+        {
+          id: 2,
+          name: 'apprenticeships',
+          description: 'Apprenticeships topic description',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          agencyId: 4,
+          parentId: null,
+        },
+        {
+          id: 3,
+          name: 'employers',
+          description: 'Employers topic description',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          agencyId: 4,
+          parentId: null,
+        },
+        {
+          id: 4,
+          name: 'awards',
+          description: 'Awards topic description',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          agencyId: 4,
+          parentId: null,
+        },
+        {
+          id: 5,
+          name: 'application',
+          description: 'financial support - application topic description',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          agencyId: 4,
+          parentId: 1,
+        },
+      ],
+      {},
+    )
+    await queryInterface.bulkInsert(
       'posts',
       [
         {
@@ -101,6 +152,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 1,
         },
         {
           id: 15,
@@ -111,6 +163,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 1,
         },
         {
           id: 16,
@@ -122,6 +175,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 1,
         },
         {
           id: 17,
@@ -132,6 +186,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 1,
         },
         {
           id: 18,
@@ -143,6 +198,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 1,
         },
 
         {
@@ -154,6 +210,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 1,
         },
 
         {
@@ -167,6 +224,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 1,
         },
 
         {
@@ -179,6 +237,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 2,
         },
         {
           id: 22,
@@ -190,6 +249,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 2,
         },
         {
           id: 23,
@@ -200,6 +260,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 2,
         },
         {
           id: 24,
@@ -210,6 +271,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 2,
         },
         {
           id: 25,
@@ -222,6 +284,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 2,
         },
 
         {
@@ -235,6 +298,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 2,
         },
         {
           id: 27,
@@ -246,6 +310,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 2,
         },
         {
           id: 28,
@@ -257,6 +322,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 3,
         },
         {
           id: 29,
@@ -267,6 +333,7 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 3,
         },
         {
           id: 30,
@@ -278,6 +345,19 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
           agencyId: 4,
+          topicId: 4,
+        },
+        {
+          id: 31,
+          title:
+            'What is the status of my financial support scheme application?',
+          description: '',
+          status: 'PUBLIC',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          userId: 4,
+          agencyId: 4,
+          topicId: 5,
         },
       ],
       {},
@@ -408,6 +488,13 @@ module.exports = {
           updatedAt: new Date(),
           userId: 4,
         },
+        {
+          postId: 31,
+          body: 'To check for your application status, please visit the application portal',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          userId: 4,
+        },
       ],
       {},
     )
@@ -504,6 +591,7 @@ module.exports = {
     await queryInterface.bulkDelete('permissions', null, {})
     await queryInterface.bulkDelete('answers', null, {})
     await queryInterface.bulkDelete('posts', null, {})
+    await queryInterface.bulkDelete('topics', null, {})
     await queryInterface.bulkDelete('users', null, {})
     await queryInterface.bulkDelete('agencies', null, {})
     await queryInterface.bulkDelete('tags', null, {})

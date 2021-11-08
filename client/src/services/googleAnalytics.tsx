@@ -7,6 +7,7 @@ const GA_USER_EVENTS = {
   OPEN_ENQUIRY: 'Open Enquiry',
   CLICK_TAG: 'Click Tag',
   BROWSE: 'Browse',
+  CLICK_TOPIC: 'Click Topic',
 }
 
 const initializeGA = (trackingId: string): void => {

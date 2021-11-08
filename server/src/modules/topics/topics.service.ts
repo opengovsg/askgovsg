@@ -7,10 +7,6 @@ import { DatabaseError } from '../core/core.errors'
 
 const logger = createLogger(module)
 
-// export type TopicWithChildRelations = Topic & {
-//   children: Topic[]
-// }
-
 export type TopicWithChildRelations = Topic & {
   children?: TopicWithChildRelations[]
 }
@@ -29,29 +25,62 @@ export class TopicsService {
    * @returns err(DatabaseError) if database errors occur while retrieving topic
    * @returns err(MissingTopicError) if topic does not exist in the database
    */
-  findOneById = (
+  getTopicById = (
     id: number,
   ): ResultAsync<Topic, DatabaseError | MissingTopicError> => {
+    return ResultAsync.fromPromise(this.Topic.findByPk(id), (error) => {
+      logger.error({
+        message: 'Database error while retrieving single topic by id',
+        meta: {
+          function: 'getTopicById',
+          id,
+        },
+        error,
+      })
+      return new DatabaseError()
+    }).andThen((topic) => {
+      if (!topic) {
+        return errAsync(new MissingTopicError())
+      }
+      return okAsync(topic)
+    })
+  }
+
+  /**
+   * Lists all topics
+   * @returns nested list of topics
+   */
+  listTopics = (): ResultAsync<
+    TopicWithChildRelations[],
+    DatabaseError | MissingTopicError
+  > => {
     return ResultAsync.fromPromise(
-      this.Topic.findOne({
-        where: { id: id },
-      }),
+      this.Topic.findAll({ raw: true }),
       (error) => {
         logger.error({
-          message: 'Database error while retrieving single topic by id',
+          message: 'Database error while retrieving topics',
           meta: {
-            function: 'findOneById',
-            id,
+            function: 'listTopics',
           },
           error,
         })
         return new DatabaseError()
       },
-    ).andThen((topic) => {
-      if (!topic) {
+    ).andThen((topics) => {
+      if (topics.length === 0) {
         return errAsync(new MissingTopicError())
       }
-      return okAsync(topic)
+      const hashTable = Object.create(null)
+      topics.forEach(
+        (topic) => (hashTable[topic.id] = { ...topic, children: [] }),
+      )
+      const topicTree: TopicWithChildRelations[] = []
+      topics.forEach((topic) => {
+        if (topic.parentId)
+          hashTable[topic.parentId].children.push(hashTable[topic.id])
+        else topicTree.push(hashTable[topic.id])
+      })
+      return okAsync(topicTree)
     })
   }
 
@@ -74,6 +103,7 @@ export class TopicsService {
         where: {
           agencyId: agencyId,
         },
+        raw: true,
       }),
       (error) => {
         logger.error({

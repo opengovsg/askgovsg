@@ -77,13 +77,11 @@ describe('TopicsService', () => {
     mockTopics: TopicWithChildRelations[],
   ) => {
     expect(actualTopics.length).toStrictEqual(mockTopics.length)
-    expect(actualTopics[0].id).toStrictEqual(mockTopics[0].id)
-    expect(actualTopics[0].name).toStrictEqual(mockTopics[0].name)
-    expect(actualTopics[0].description).toStrictEqual(mockTopics[0].description)
-    expect(actualTopics[0].parentId).toStrictEqual(mockTopics[0].parentId)
-    expect(actualTopics[0].children?.[0].id).toStrictEqual(
-      mockTopics[0].children?.[0].id,
-    )
+    expect(actualTopics[0].id).toStrictEqual(mockTopic1.id)
+    expect(actualTopics[0].name).toStrictEqual(mockTopic1.name)
+    expect(actualTopics[0].description).toStrictEqual(mockTopic1.description)
+    expect(actualTopics[0].parentId).toStrictEqual(mockTopic1.parentId)
+    expect(actualTopics[0].children?.[0].id).toStrictEqual(mockTopic2.id)
   }
 
   describe('listTopicsUsedByAgency', () => {

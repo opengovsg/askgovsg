@@ -38,6 +38,8 @@ describe('TopicsController', () => {
     createTopic: jest.fn(),
     deleteTopicById: jest.fn(),
     updateTopicById: jest.fn(),
+    listTopics: jest.fn(),
+    getTopicById: jest.fn(),
   }
   const topicsController = new TopicsController({
     authService,
@@ -54,6 +56,8 @@ describe('TopicsController', () => {
     topicsService.createTopic.mockReset()
     topicsService.deleteTopicById.mockReset()
     topicsService.updateTopicById.mockReset()
+    topicsService.listTopics.mockReset()
+    topicsService.getTopicById.mockReset()
     topicsService.listTopicsUsedByAgency.mockReturnValue(okAsync(mockTopic))
   })
 
