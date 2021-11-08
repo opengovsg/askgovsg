@@ -25,22 +25,15 @@ import {
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
 } from '../../services/AgencyService'
 import {
-  fetchTags,
-  FETCH_TAGS_QUERY_KEY,
-  getTagsUsedByAgency,
-  GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
-} from '../../services/TagService'
-import {
   fetchTopics,
   FETCH_TOPICS_QUERY_KEY,
   getTopicsUsedByAgency,
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/TopicService'
 import { isUserPublicOfficer } from '../../services/user.service'
-import { getTagsQuery, getTopicsQuery, isSpecified } from '../../util/urlparser'
+import { getTopicsQuery, isSpecified } from '../../util/urlparser'
 
 const HomePage = () => {
-  const [hasTagsKey, setHasTagsKey] = useState(false)
   const [hasTopicsKey, setHasTopicsKey] = useState(false)
   const navigate = useNavigate()
   // check URL
@@ -60,11 +53,6 @@ const HomePage = () => {
     () => getAgencyByShortName({ shortname: agencyShortName }),
     { enabled: !!agencyShortName },
   )
-  const { data: tags } = agency
-    ? useQuery(GET_TAGS_USED_BY_AGENCY_QUERY_KEY, () =>
-        getTagsUsedByAgency(agency.id),
-      )
-    : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
 
   const { data: topics } = agency
     ? useQuery(GET_TOPICS_USED_BY_AGENCY_QUERY_KEY, () =>
