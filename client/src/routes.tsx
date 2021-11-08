@@ -1,10 +1,10 @@
-import { Route, Switch } from 'react-router-dom'
+import { Route, Routes as ReactRoutes } from 'react-router-dom'
 import {
   AgencyPrivacy,
   AgencyTerms,
   CitizenPrivacy,
   CitizenTerms,
-} from './components/PrivacyTerms/'
+} from './components/PrivacyTerms'
 import EditForm from './pages/EditForm/EditForm.component'
 import HomePage from './pages/HomePage/HomePage.component'
 import Login from './pages/Login/Login.component'
@@ -67,22 +67,22 @@ const AgencyPrivacyComponent = withPageTitle({
   title: 'Privacy (Agency)',
 })
 
-const Routes = () => {
+const Routes = (): JSX.Element => {
   return (
-    <Switch>
-      <Route exact path="/" component={HomePageComponent} />
-      <Route exact path="/agency/:agency" component={HomePageComponent} />
-      <Route exact path="/questions" component={SearchResultsComponent} />
-      <Route exact path="/login" component={LoginComponent} />
-      <Route exact path="/questions/:id" component={PostComponent} />
-      <Route exact path="/add/question" component={PostFormComponent} />
-      <Route exact path="/edit/question/:id" component={EditFormComponent} />
-      <Route exact path="/terms" component={CitizenTermsComponent} />
-      <Route exact path="/agency-terms" component={AgencyTermsComponent} />
-      <Route exact path="/privacy" component={CitizenPrivacyComponent} />
-      <Route exact path="/agency-privacy" component={AgencyPrivacyComponent} />
-      <Route path="*" component={NotFoundComponent} />
-    </Switch>
+    <ReactRoutes>
+      <Route path="/" element={<HomePageComponent />} />
+      <Route path="/agency/:agency" element={<HomePageComponent />} />
+      <Route path="/questions" element={<SearchResultsComponent />} />
+      <Route path="/login" element={<LoginComponent />} />
+      <Route path="/questions/:id" element={<PostComponent />} />
+      <Route path="/add/question" element={<PostFormComponent />} />
+      <Route path="/edit/question/:id" element={<EditFormComponent />} />
+      <Route path="/terms" element={<CitizenTermsComponent />} />
+      <Route path="/agency-terms" element={<AgencyTermsComponent />} />
+      <Route path="/privacy" element={<CitizenPrivacyComponent />} />
+      <Route path="/agency-privacy" element={<AgencyPrivacyComponent />} />
+      <Route path="*" element={<NotFoundComponent />} />
+    </ReactRoutes>
   )
 }
 

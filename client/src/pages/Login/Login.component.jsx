@@ -1,5 +1,5 @@
 import { Spacer } from '@chakra-ui/react'
-import { Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import AuthForm from '../../components/AuthForm/AuthForm.component'
 import { useAuth } from '../../contexts/AuthContext'
 import './Login.styles.scss'
@@ -8,7 +8,7 @@ const Login = () => {
   const { user } = useAuth()
 
   if (user) {
-    return <Redirect to={`/agency/${user.agency.shortname}`} />
+    return <Navigate replace to={`/agency/${user.agency.shortname}`} />
   } else {
     return (
       <div className="login-page">
