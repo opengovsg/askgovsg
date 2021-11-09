@@ -98,7 +98,7 @@ export class TopicsController {
       name: string
       description: string
       agencyId: number
-      parentId: number
+      parentId: number | null
     },
     undefined
   > = async (req, res) => {

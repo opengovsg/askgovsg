@@ -70,7 +70,11 @@ export const routeTopics = ({
    * @return 500 if database error
    * @access Private
    */
-  router.delete('/:id([0-9]+$)', controller.deleteTopic)
+  router.delete(
+    '/:id([0-9]+$)',
+    authMiddleware.authenticate,
+    controller.deleteTopic,
+  )
 
   /**
    * Update a post
@@ -82,7 +86,25 @@ export const routeTopics = ({
    * @return 500 if database error
    * @access Private
    */
-  router.put('/:id([0-9]+$)', controller.updateTopic)
+  router.put(
+    '/:id([0-9]+$)',
+    [
+      authMiddleware.authenticate,
+      check(
+        'name',
+        'Enter a topic name with minimum 1 character and maximum 30 characters',
+      ).isLength({
+        min: 1,
+        max: 30,
+      }),
+      check('description', 'Enter a description with minimum 10 characters')
+        .isLength({
+          min: 10,
+        })
+        .optional({ nullable: true, checkFalsy: true }),
+    ],
+    controller.updateTopic,
+  )
 
   return router
 }

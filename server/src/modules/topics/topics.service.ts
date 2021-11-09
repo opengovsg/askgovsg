@@ -143,7 +143,7 @@ export class TopicsService {
   createTopic = (newTopic: {
     name: string
     description: string
-    parentId: number
+    parentId: number | null
     agencyId: number
   }): ResultAsync<Topic, DatabaseError> => {
     return ResultAsync.fromPromise(

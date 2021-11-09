@@ -1,27 +1,31 @@
-import { Topic, Agency } from '~shared/types/base'
+import { Topic, Agency, User } from '~shared/types/base'
 import { routeTopics } from '../topics.routes'
-import { TopicsService, TopicWithChildRelations } from '../topics.service'
+import { TopicsService } from '../topics.service'
 import { TopicsController } from '../topics.controller'
 import { ControllerHandler } from '../../../types/response-handler'
-import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
+import {
+  createTestDatabase,
+  getModelDef,
+  ModelName,
+} from '../../../util/jest-db'
 import { Sequelize, Model } from 'sequelize'
-import { ModelDef } from '../../../types/sequelize'
+import { ModelDef, Creation } from '../../../types/sequelize'
 import express from 'express'
-import supertest, { SuperTest, Test } from 'supertest'
+import supertest from 'supertest'
 import { StatusCodes } from 'http-status-codes'
 
 describe('/topics', () => {
   const path = '/topics'
-  let mockAgency: Agency
-  let mockTopic1: Topic
-  let mockTopic2: Topic
-  let mockTopic3: Topic
-  let mockTopic4: Topic
-  let mockTopics: TopicWithChildRelations[]
+
   let db: Sequelize
-  let request: SuperTest<Test>
   let Agency: ModelDef<Agency>
   let Topic: ModelDef<Topic>
+  let mockUser: User
+  let mockAgency: Agency
+  let mockTopic: Model<Topic, Creation<Topic>> & Topic
+
+  let topicsService: TopicsService
+  let controller: TopicsController
 
   // Set up service, controller and route
   const authService = {
@@ -33,8 +37,10 @@ describe('/topics', () => {
     verifyUserInAgency: jest.fn(),
   }
 
-  const authenticate: ControllerHandler = (req, res, next) => {
-    req.user = { id: 1 }
+  // Set up auth middleware to inject user
+  let authUser: Express.User | undefined = undefined
+  const authenticate: ControllerHandler = (req, _res, next) => {
+    req.user = authUser
     next()
   }
 
@@ -44,8 +50,15 @@ describe('/topics', () => {
 
   beforeAll(async () => {
     db = await createTestDatabase()
-    Topic = getModel<Topic & Model>(db, ModelName.Topic)
-    Agency = getModel<Agency & Model>(db, ModelName.Agency)
+    Topic = getModelDef<Topic>(db, ModelName.Topic)
+    Agency = getModelDef<Agency>(db, ModelName.Agency)
+    const User = getModelDef<User>(db, ModelName.User)
+
+    topicsService = new TopicsService({ Topic })
+    controller = new TopicsController({
+      authService,
+      topicsService,
+    })
 
     mockAgency = await Agency.create({
       shortname: 'was',
@@ -57,60 +70,279 @@ describe('/topics', () => {
       displayOrder: null,
     })
 
-    mockTopic1 = await Topic.create({
-      name: '1',
-      description: '',
+    const mockTopicContent = {
+      name: 'topic 1',
+      description: 'topic 1 description',
       agencyId: mockAgency.id,
       parentId: null,
-    })
-    mockTopic2 = await Topic.create({
-      name: '2',
-      description: '',
-      agencyId: mockAgency.id,
-      parentId: mockTopic1.id,
-    })
-    mockTopic3 = await Topic.create({
-      name: '3',
-      description: '',
-      agencyId: mockAgency.id,
-      parentId: mockTopic2.id,
-    })
-    mockTopic4 = await Topic.create({
-      name: '4',
-      description: '',
-      agencyId: mockAgency.id,
-      parentId: null,
-    })
+    }
 
-    mockTopics = [
-      {
-        ...mockTopic1,
-        children: [{ ...mockTopic2, children: [mockTopic3] }],
-      },
-      mockTopic4,
-    ]
-
-    const topicsService = new TopicsService({ Topic })
-    const controller = new TopicsController({
-      authService,
-      topicsService,
+    mockTopic = await Topic.create(mockTopicContent)
+    mockUser = await User.create({
+      username: 'enquiries@was.gov.sg',
+      displayname: 'Enquiries @ WAS',
+      views: 0,
+      agencyId: mockAgency.id,
     })
+  })
 
-    const router = routeTopics({ controller, authMiddleware })
-    const app = express()
-    app.use(authenticate)
-    app.use(path, router)
-    request = supertest(app)
+  beforeEach(async () => {
+    authUser = { id: mockUser.id }
+    jest.resetAllMocks()
   })
 
   afterAll(async () => {
     await db.close()
   })
 
-  //TODO: Add unit tests for create/update/delete topic
-  describe(`/`, () => {
-    it('returns 200 if topic is successfully created', async () => {
-      return
+  describe(`GET /:topicId`, () => {
+    it('returns OK on valid query', async () => {
+      const mockTopicRes = {
+        ...mockTopic.toJSON(),
+        createdAt: (mockTopic.createdAt as Date).toISOString(),
+        updatedAt: (mockTopic.updatedAt as Date).toISOString(),
+      }
+
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+      const response = await request.get(path + `/${mockTopic.id}`)
+
+      expect(response.status).toEqual(StatusCodes.OK)
+      expect(response.body).toStrictEqual(mockTopicRes)
+    })
+
+    it('returns NOT FOUND if topic does not exist', async () => {
+      const badTopicId = mockTopic.id + 20
+
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+      const response = await request.get(path + `/${badTopicId}`)
+
+      expect(response.status).toEqual(StatusCodes.NOT_FOUND)
+    })
+  })
+
+  describe(`POST /`, () => {
+    const goodTopic = {
+      name: 'test',
+      description: 'test description',
+      agencyId: 1,
+      parentId: null,
+    }
+
+    beforeEach(() => {
+      authService.verifyUserInAgency.mockResolvedValue(true)
+    })
+
+    it('returns OK on valid creation', async () => {
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+
+      const response = await request.post(path).send(goodTopic)
+
+      expect(response.status).toEqual(StatusCodes.OK)
+      expect(response.body).toMatchObject(goodTopic)
+    })
+
+    it('returns BAD REQUEST if the name and/or description do not fulfil the character requirements', async () => {
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+
+      const body = {
+        name: '',
+        description: 'fail',
+        agencyId: mockAgency.id,
+        parentId: null,
+      }
+
+      const response = await request.post(path).send(body)
+
+      expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
+    })
+
+    it('returns UNAUTHORISED on no user', async () => {
+      authUser = undefined
+
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+
+      const response = await request.post(path).send(goodTopic)
+
+      expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
+      expect(response.body).toStrictEqual({ message: 'User not signed in' })
+    })
+
+    it('returns FORBIDDEN if user has no permission', async () => {
+      authService.verifyUserInAgency.mockResolvedValue(false)
+
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+
+      const response = await request.post(path).send(goodTopic)
+
+      expect(response.status).toEqual(StatusCodes.FORBIDDEN)
+      expect(response.body).toStrictEqual({
+        message: 'You do not have permission to create this topic',
+      })
+    })
+  })
+
+  describe(`PUT /:id`, () => {
+    const body = {
+      name: 'test update',
+      description: 'test description',
+      agencyId: 1,
+      parentId: null,
+    }
+
+    beforeEach(() => {
+      authService.verifyUserCanModifyTopic.mockResolvedValue(true)
+    })
+    it('returns 200 if topic is updated successfully', async () => {
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+
+      const response = await request.put(path + `/${mockTopic.id}`).send(body)
+      const topic = await Topic.findByPk(mockTopic.id)
+
+      expect(response.status).toEqual(StatusCodes.OK)
+      expect(topic?.name).toStrictEqual(body.name)
+    })
+
+    it('returns BAD REQUEST if the name and/or description do not fulfil the character requirements', async () => {
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+
+      const badTopic = {
+        name: '',
+        description: 'fail',
+        agencyId: mockAgency.id,
+        parentId: null,
+      }
+
+      const response = await request
+        .put(path + `/${mockTopic.id}`)
+        .send(badTopic)
+
+      expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
+    })
+
+    it('returns UNAUTHORISED on no user', async () => {
+      authUser = undefined
+
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+
+      const response = await request.put(path + `/${mockTopic.id}`).send(body)
+
+      expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
+      expect(response.body).toStrictEqual({ message: 'User not signed in' })
+    })
+
+    it('returns FORBIDDEN if user has no permission', async () => {
+      authService.verifyUserCanModifyTopic.mockResolvedValue(false)
+
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+
+      const response = await request.put(path + `/${mockTopic.id}`).send(body)
+
+      expect(response.status).toEqual(StatusCodes.FORBIDDEN)
+      expect(response.body).toStrictEqual({
+        message: 'You do not have permission to update this topic',
+      })
+    })
+  })
+
+  describe(`DELETE /:id`, () => {
+    beforeEach(() => {
+      authService.verifyUserCanModifyTopic.mockResolvedValue(true)
+    })
+    it('returns 200 if topic is deleted successfully', async () => {
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+
+      const response = await request.delete(path + `/${mockTopic.id}`)
+      const deletedTopic = await Topic.findByPk(mockTopic.id)
+
+      expect(response.status).toEqual(StatusCodes.OK)
+      expect(deletedTopic).toBeNull()
+    })
+
+    it('returns UNAUTHORISED on no user', async () => {
+      authUser = undefined
+
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+
+      const response = await request.delete(path + `/${mockTopic.id}`)
+
+      expect(response.status).toEqual(StatusCodes.UNAUTHORIZED)
+      expect(response.body).toStrictEqual({ message: 'User not signed in' })
+    })
+
+    it('returns FORBIDDEN if user has no permission', async () => {
+      authService.verifyUserCanModifyTopic.mockResolvedValue(false)
+
+      const router = routeTopics({ controller, authMiddleware })
+      const app = express()
+      app.use(express.json())
+      app.use(authenticate)
+      app.use(path, router)
+      const request = supertest(app)
+
+      const response = await request.delete(path + `/${mockTopic.id}`)
+
+      expect(response.status).toEqual(StatusCodes.FORBIDDEN)
+      expect(response.body).toStrictEqual({
+        message: 'You do not have permission to delete this topic',
+      })
     })
   })
 })
