@@ -1,4 +1,5 @@
 import { Client } from '@opensearch-project/opensearch'
+import { BulkResponseItemBase } from '@opensearch-project/opensearch/api/types'
 import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
 import { createLogger } from '../../bootstrap/logging'
@@ -41,6 +42,8 @@ export class SearchService {
         return err as ResponseError
       },
     ).andThen((_) => {
+      // If testing on live opensearch instance for 'should return error documents some
+      // operations for client.bulk fail', change _index value to a camel case string.
       const body = searchEntriesDataset.flatMap((doc) => [
         { index: { _index: indexName } },
         doc,
@@ -62,52 +65,18 @@ export class SearchService {
         },
       ).andThen(({ body: bulkResponse }) => {
         if (bulkResponse.errors) {
-          const erroredDocuments: {
-            // If the status is 429 it means that you can retry the document,
-            // otherwise it's very likely a mapping error, and you should
-            // fix the document before to try it again.
-            status: any
-            error: any
-            operation:
-              | {
-                  title: string
-                  description: string | null
-                  answer: string
-                  agencyId: number
-                  postId: number
-                  topicId: number | null
-                }
-              | { index: { _index: string } }
-            document:
-              | {
-                  title: string
-                  description: string | null
-                  answer: string
-                  agencyId: number
-                  postId: number
-                  topicId: number | null
-                }
-              | { index: { _index: string } }
-          }[] = []
+          const erroredDocuments: BulkResponseItemBase[] = []
           // The items array has the same order of the dataset we just indexed.
           // The presence of the `error` key indicates that the operation
           // that we did for the document has failed.
           bulkResponse.items.forEach(
-            (
-              action: { [x: string]: { status: any; error: any } },
-              i: number,
-            ) => {
+            (action: { [x: string]: BulkResponseItemBase }, i: number) => {
               const operation = Object.keys(action)[0]
               if (action[operation].error) {
-                erroredDocuments.push({
-                  // If the status is 429 it means that you can retry the document,
-                  // otherwise it's very likely a mapping error, and you should
-                  // fix the document before to try it again.
-                  status: action[operation].status,
-                  error: action[operation].error,
-                  operation: body[i * 2],
-                  document: body[i * 2 + 1],
-                })
+                // If the status is 429 it means that you can retry the document,
+                // otherwise it's very likely a mapping error, and you should
+                // fix the document before to try it again.
+                erroredDocuments.push(action[operation])
               }
             },
           )
