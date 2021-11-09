@@ -24,6 +24,42 @@ export class TopicsController {
   }
 
   /**
+   * Find a topic by their id
+   * @returns 200 with topic
+   * @returns 404 if topics are not found
+   * @returns 500 if database error
+   */
+
+  getTopicById: ControllerHandler<{ topicId: number }, Topic | Message> =
+    async (req, res) => {
+      const topicId = Number(req.params.topicId)
+      return this.topicsService
+        .getTopicById(topicId)
+        .map((data) => res.status(StatusCodes.OK).json(data))
+        .mapErr((error) => {
+          return res.status(error.statusCode).json({ message: error.message })
+        })
+    }
+  /**
+   * Lists all topics
+   * @returns 200 with topics
+   * @returns 404 if topics are not found
+   * @returns 500 if database error
+   */
+
+  listTopics: ControllerHandler<
+    undefined,
+    TopicWithChildRelations[] | Message
+  > = async (req, res) => {
+    return this.topicsService
+      .listTopics()
+      .map((data) => res.status(StatusCodes.OK).json(data))
+      .mapErr((error) => {
+        return res.status(error.statusCode).json({ message: error.message })
+      })
+  }
+
+  /**
    * Lists all topics in an agency
    * @param agencyId agencyId
    * @returns 200 with topics

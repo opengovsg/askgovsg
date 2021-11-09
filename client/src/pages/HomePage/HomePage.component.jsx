@@ -25,25 +25,25 @@ import {
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
 } from '../../services/AgencyService'
 import {
-  fetchTags,
-  FETCH_TAGS_QUERY_KEY,
-  getTagsUsedByAgency,
-  GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
-} from '../../services/TagService'
+  fetchTopics,
+  FETCH_TOPICS_QUERY_KEY,
+  getTopicsUsedByAgency,
+  GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+} from '../../services/TopicService'
 import { isUserPublicOfficer } from '../../services/user.service'
-import { getTagsQuery, isSpecified } from '../../util/urlparser'
+import { getTopicsQuery, isSpecified } from '../../util/urlparser'
 
 const HomePage = () => {
-  const [hasTagsKey, setHasTagsKey] = useState(false)
+  const [hasTopicsKey, setHasTopicsKey] = useState(false)
   const navigate = useNavigate()
   // check URL
   const location = useLocation()
-  // TODO (#259): make into custom hook
+
   useEffect(() => {
-    setQueryState(getTagsQuery(location.search))
-    const tagsSpecified = isSpecified(location.search, 'tags')
-    setHasTagsKey(tagsSpecified)
-  }, [location, hasTagsKey])
+    setQueryState(getTopicsQuery(location.search))
+    const topicsSpecified = isSpecified(location.search, 'topics')
+    setHasTopicsKey(topicsSpecified)
+  }, [location, hasTopicsKey])
 
   const { user } = useAuth()
 
@@ -53,12 +53,12 @@ const HomePage = () => {
     () => getAgencyByShortName({ shortname: agencyShortName }),
     { enabled: !!agencyShortName },
   )
-  const { data: tags } = agency
-    ? useQuery(GET_TAGS_USED_BY_AGENCY_QUERY_KEY, () =>
-        getTagsUsedByAgency(agency.id),
-      )
-    : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
 
+  const { data: topics } = agency
+    ? useQuery(GET_TOPICS_USED_BY_AGENCY_QUERY_KEY, () =>
+        getTopicsUsedByAgency(agency.id),
+      )
+    : useQuery(FETCH_TOPICS_QUERY_KEY, () => fetchTopics())
   // dropdown options
   const options = [
     { value: 'basic', label: 'Most recent' },
@@ -96,12 +96,12 @@ const HomePage = () => {
         direction={{ base: 'column', lg: 'row' }}
       >
         <Box flex="5">
-          {(tags ?? [])
-            .filter(({ tagname }) => tagname === queryState)
-            .map((tag) => {
-              return tag.description ? (
+          {(topics ?? [])
+            .filter(({ name }) => name === queryState)
+            .map((topic) => {
+              return topic.description ? (
                 <Text textStyle="body-1" color="neutral.900" mb="50px">
-                  {tag.description}
+                  {topic.description}
                 </Text>
               ) : null
             })}
@@ -117,7 +117,7 @@ const HomePage = () => {
               mb={{ sm: '20px' }}
               d="block"
             >
-              {hasTagsKey
+              {hasTopicsKey
                 ? queryState
                   ? 'QUESTIONS ON THIS TOPIC'
                   : 'ALL QUESTIONS'
@@ -143,7 +143,7 @@ const HomePage = () => {
                       w={{ base: '100%', sm: '171px' }}
                       textStyle="body-1"
                       textAlign="left"
-                      d={{ base: hasTagsKey ? 'block' : 'none' }}
+                      d={{ base: hasTopicsKey ? 'block' : 'none' }}
                     >
                       <Flex justifyContent="space-between" alignItems="center">
                         <Text textStyle="body-1">{sortState.label}</Text>
@@ -194,11 +194,11 @@ const HomePage = () => {
           <QuestionsListComponent
             sort={sortState.value}
             agencyId={agency?.id}
-            tags={queryState}
-            pageSize={isAuthenticatedOfficer ? 50 : hasTagsKey ? 30 : 10}
+            topics={queryState}
+            pageSize={isAuthenticatedOfficer ? 50 : hasTopicsKey ? 30 : 10}
             listAnswerable={isAuthenticatedOfficer}
             footerControl={
-              isAuthenticatedOfficer || hasTagsKey ? undefined : (
+              isAuthenticatedOfficer || hasTopicsKey ? undefined : (
                 <Button
                   mt={{ base: '40px', sm: '48px', xl: '58px' }}
                   variant="outline"
@@ -206,7 +206,7 @@ const HomePage = () => {
                   borderColor="secondary.700"
                   onClick={() => {
                     window.scrollTo(0, 0)
-                    navigate('?tags=')
+                    navigate('?topics=')
                   }}
                 >
                   <Text textStyle="subhead-1">View all questions</Text>

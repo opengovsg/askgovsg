@@ -1,17 +1,16 @@
-import { Alert, AlertIcon, Switch } from '@chakra-ui/react'
+import { Alert, AlertIcon } from '@chakra-ui/react'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import Select from 'react-select'
-import { Tag, TagType } from '~shared/types/base'
+import { Topic } from '~shared/types/base'
 import { RichTextEditor } from '../../../components/RichText/RichTextEditor.component'
 import './AskForm.styles.scss'
 
 export type AskFormSubmission = {
   postData: { title: string; description: string }
   answerData: { text: string }
-  tags: string[]
-  topic?: string
+  topic: number
 }
 
 interface AskFormProps {
@@ -22,19 +21,19 @@ interface AskFormProps {
   inputAnswerData?: {
     text: string
   }
-  inputTags?: string[]
-  tagOptions: Tag[]
+  inputTopic?: Topic
+  topicOptions: Topic[]
   onSubmit: (formData: AskFormSubmission) => Promise<void>
   submitButtonText: string
 }
 
-type TagOption = { value: string; label: string }
+type TopicOption = { value: number; label: string }
 
 interface AskFormInput {
   postTitle: string
   postDescription: string
   answerBody: string
-  tags: TagOption[]
+  topic: TopicOption
 }
 
 const TITLE_MAX_LEN = 150
@@ -47,18 +46,17 @@ const AskForm = ({
   inputAnswerData = {
     text: '',
   },
-  inputTags = [],
-  tagOptions,
+  inputTopic,
+  topicOptions,
   onSubmit,
   submitButtonText,
 }: AskFormProps): JSX.Element => {
-  const existingTagSelection: TagOption[] = useMemo(
-    () =>
-      inputTags.map((t) => ({
-        value: t,
-        label: t,
-      })),
-    [inputTags],
+  const existingTopicSelection = useMemo(
+    () => ({
+      value: inputTopic?.id,
+      label: inputTopic?.name,
+    }),
+    [inputTopic],
   )
   const navigate = useNavigate()
   const { register, control, handleSubmit, watch, formState } =
@@ -67,28 +65,22 @@ const AskForm = ({
         postTitle: inputPostData.title,
         postDescription: inputPostData.description,
         answerBody: inputAnswerData.text,
-        tags: existingTagSelection,
       },
     })
   const { errors: formErrors } = formState
 
-  const optionsForTagSelect: TagOption[] = useMemo(
+  const optionsForTopicSelect: TopicOption[] = useMemo(
     () =>
-      tagOptions.map((t) => ({
-        value: t.tagname,
-        label: t.tagname,
+      topicOptions.map((topic) => ({
+        value: topic.id,
+        label: topic.name,
       })),
-    [tagOptions],
+    [topicOptions],
   )
-  const areTagsValid = (selectedTags: TagOption[]) =>
-    // At least one selected tag must be an agency tag
-    selectedTags.some((selected) => {
-      const dataOfTag = tagOptions.find(
-        (option) => option.tagname === selected.value,
-      )
-      return dataOfTag?.tagType === TagType.Agency
-    })
 
+  const isTopicChosen = (selectedTopics: TopicOption) => {
+    return Boolean(selectedTopics?.value)
+  }
   const replaceEmptyRichTextInput = (value: string): string =>
     value === '<p></p>\n' ? '' : value
 
@@ -107,7 +99,7 @@ const AskForm = ({
       answerData: {
         text: replaceEmptyRichTextInput(formData.answerBody),
       },
-      tags: formData.tags.map((t) => t.value),
+      topic: formData.topic.value,
     }),
   )
 
@@ -168,32 +160,31 @@ const AskForm = ({
           </div>
           <div className="grid tag-grid">
             <label className="form-label">
-              Tag
-              <p>
-                Choose at least one keyword tag you want the question to be
-                associated with
-              </p>
+              Topic
+              <p>Choose a topic for the question</p>
             </label>
-            <div className="tag-dropdown">
+            <div className="topic-dropdown">
               <Controller
-                name="tags"
+                name="topic"
                 control={control}
-                rules={{ validate: areTagsValid }}
+                rules={{ validate: isTopicChosen }}
                 render={({ field }) => (
                   <Select
                     {...field}
-                    isMulti
-                    options={optionsForTagSelect}
-                    // Portal the select menu to document.body
+                    options={optionsForTopicSelect}
+                    key={existingTopicSelection.value}
+                    //supplied defaultValue here instead of in defaultValues
+                    //as the key prop is required to force rendering
+                    defaultValue={existingTopicSelection}
                     menuPortalTarget={document.body}
                   />
                 )}
               />
             </div>
-            {formState.errors.tags && (
+            {formState.errors.topic && (
               <Alert status="error" mt="4px">
                 <AlertIcon />
-                Please select at least one agency tag.
+                Please select a topic.
               </Alert>
             )}
           </div>
@@ -202,12 +193,6 @@ const AskForm = ({
           <div className="grid richtext-grid answer-section">
             <label className="form-label" id="answer-row">
               Answer your own question
-              <Switch
-                colorScheme="green"
-                size="md"
-                defaultChecked={true}
-                isDisabled={true}
-              />
             </label>
             <Controller
               name="answerBody"

@@ -13,8 +13,8 @@ import PageTitle from '../../components/PageTitle/PageTitle.component'
 import Spinner from '../../components/Spinner/Spinner.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
-  getAgencyByShortName,
-  GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
+  getAgencyById,
+  GET_AGENCY_BY_ID_QUERY_KEY,
 } from '../../services/AgencyService'
 import {
   getAnswersForPost,
@@ -24,6 +24,10 @@ import {
   getPostById,
   GET_POST_BY_ID_QUERY_KEY,
 } from '../../services/PostService'
+import {
+  getTopicById,
+  GET_TOPIC_BY_ID_QUERY_KEY,
+} from '../../services/TopicService'
 import AnswerSection from './AnswerSection/AnswerSection.component'
 import './Post.styles.scss'
 import QuestionSection from './QuestionSection/QuestionSection.component'
@@ -31,22 +35,23 @@ import QuestionSection from './QuestionSection/QuestionSection.component'
 const Post = () => {
   // Does not need to handle logic when public post with id postId is not found because this is handled by server
   const { id: postId } = useParams()
-  const { data: post, isLoading } = useQuery(
+  const { isLoading: isPostLoading, data: post } = useQuery(
     [GET_POST_BY_ID_QUERY_KEY, postId],
     () => getPostById(postId, 3),
   )
-  // Similar logic to find agency as login component
-  // if post is linked to multiple agencies via agencyTag
-  // take the first agencyTag found as agency for email component
-  const firstAgencyTagLinkedToPost = post?.tags?.find(
-    (tag) => tag.tagType === TagType.Agency,
+
+  const agencyId = post?.agencyId
+  const { isLoading: isAgencyLoading, data: agency } = useQuery(
+    [GET_AGENCY_BY_ID_QUERY_KEY, agencyId],
+    () => getAgencyById(agencyId),
+    { enabled: !!agencyId },
   )
-  //currently link agency tag to agency via tag.tagname to agency.shortname
-  const agencyShortName = firstAgencyTagLinkedToPost?.tagname
-  const { data: agency } = useQuery(
-    [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
-    () => getAgencyByShortName({ shortname: agencyShortName }),
-    { enabled: !!agencyShortName },
+
+  const topicId = post?.topicId
+  const { isLoading: isTopicLoading, data: topic } = useQuery(
+    [GET_TOPIC_BY_ID_QUERY_KEY, topicId],
+    () => getTopicById(topicId),
+    { enabled: !!topicId },
   )
 
   // User can edit if it is authenticated whose agency tags intersect with
@@ -72,33 +77,35 @@ const Post = () => {
     if (post) {
       let foundAgency = undefined
       let foundTopic = undefined
-      for (const postTag of post.tags) {
-        if (!foundAgency && postTag.tagType === TagType.Agency) {
-          foundAgency = {
-            text: postTag.tagname.toUpperCase(),
-            link: `/agency/${postTag.tagname}`,
-          }
+
+      if (agency) {
+        foundAgency = {
+          text: agency.shortname.toUpperCase(),
+          link: `/agency/${agency.shortname}`,
         }
-        if (!foundTopic && postTag.tagType === TagType.Topic) {
-          foundTopic = {
-            text: postTag.tagname,
-            link: `/agency/${agencyShortName}?tags=${postTag.tagname}`,
-          }
+      }
+      if (topic && agency) {
+        foundTopic = {
+          text: topic.name,
+          link: `/agency/${agency.shortname}?topics=${topic.name}`,
         }
-        if (foundTopic && foundAgency) break
       }
       breadcrumbContentRef.current = []
       if (foundAgency) breadcrumbContentRef.current.push(foundAgency)
       if (foundTopic) breadcrumbContentRef.current.push(foundTopic)
     }
-  }, [post?.tags])
+  })
+
+  const isLoading = isPostLoading || isAgencyLoading || isTopicLoading
 
   return isLoading ? (
     <Spinner centerHeight="200px" />
   ) : (
     <Flex direction="column" height="100%">
       <PageTitle
-        title={`${post.title} - ${agencyShortName?.toUpperCase()} FAQ - AskGov`}
+        title={`${post.title} - ${
+          agency && agency.shortname.toUpperCase()
+        } FAQ - AskGov`}
         description={
           answers && answers.length > 0
             ? sanitizeHtml(
@@ -120,20 +127,20 @@ const Post = () => {
         >
           <div className="post-page">
             <Flex align="center">
-              {breadcrumbContentRef.current.length > 0 ? (
-                <Flex
-                  mt={{ base: '32px', sm: '60px' }}
-                  mb={{ base: '32px', sm: '50px' }}
-                >
+              <Flex
+                mt={{ base: '32px', sm: '60px' }}
+                mb={{ base: '32px', sm: '50px' }}
+              >
+                {breadcrumbContentRef.current.length > 0 ? (
                   <NavBreadcrumb navOrder={breadcrumbContentRef.current} />
-                </Flex>
-              ) : null}
+                ) : null}
+              </Flex>
               <Spacer />
-              {isAgencyMember && (
+              {isAgencyMember && agency && (
                 <div className="post-side-with-edit">
                   <EditButton
                     postId={postId}
-                    onDeleteLink={`/agency/${agencyShortName}`}
+                    onDeleteLink={`/agency/${agency.shortname}`}
                   />
                 </div>
               )}

@@ -16,7 +16,7 @@ import { BiRightArrowAlt } from 'react-icons/bi'
 import { useEffect, useState, ReactElement, createRef } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
-import { Tag, TagType } from '~shared/types/base'
+import { Topic } from '~shared/types/base'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   Agency,
@@ -26,16 +26,20 @@ import {
   LIST_AGENCY_SHORTNAMES,
 } from '../../services/AgencyService'
 import {
-  fetchTags,
-  FETCH_TAGS_QUERY_KEY,
-  getTagsUsedByAgency,
-  GET_TAGS_USED_BY_AGENCY_QUERY_KEY,
-} from '../../services/TagService'
-import { getTagsQuery, isSpecified } from '../../util/urlparser'
-import { getRedirectURL, getRedirectURLAgency } from '../../util/urlparser'
+  fetchTopics,
+  FETCH_TOPICS_QUERY_KEY,
+  getTopicsUsedByAgency,
+  GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+} from '../../services/TopicService'
+import {
+  getRedirectURLTopics,
+  getRedirectURLAgency,
+  isSpecified,
+  getTopicsQuery,
+} from '../../util/urlparser'
 
 const OptionsMenu = (): ReactElement => {
-  const [hasTagsKey, setHasTagsKey] = useState(false)
+  const [hasTopicsKey, setHasTopicsKey] = useState(false)
   const { agency: agencyShortName } = useParams<'agency'>()
   const { data: agency } = useQuery<Agency>(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
@@ -48,38 +52,38 @@ const OptionsMenu = (): ReactElement => {
   const [queryState, setQueryState] = useState('')
 
   useEffect(() => {
-    setQueryState(getTagsQuery(location.search))
-    const tagsSpecified = isSpecified(location.search, 'tags')
-    setHasTagsKey(tagsSpecified)
+    setQueryState(getTopicsQuery(location.search))
+    const topicsSpecified = isSpecified(location.search, 'topics')
+    setHasTopicsKey(topicsSpecified)
   })
 
   const accordionRef: React.LegacyRef<HTMLButtonElement> = createRef()
 
   const googleAnalytics = useGoogleAnalytics()
 
-  const sendClickTagEventToAnalytics = (tagName: string) => {
-    const timeToTagClick = Date.now() - googleAnalytics.appLoadTime
+  const sendClickTopicEventToAnalytics = (topicName: string) => {
+    const timeToTopicClick = Date.now() - googleAnalytics.appLoadTime
     googleAnalytics.sendUserEvent(
       googleAnalytics.GA_USER_EVENTS.CLICK_TAG,
-      tagName,
-      timeToTagClick,
+      topicName,
+      timeToTopicClick,
     )
     googleAnalytics.sendTiming(
       'User',
-      'Time to first tag click',
-      timeToTagClick,
+      'Time to first topic click',
+      timeToTopicClick,
     )
     FullStory.event(googleAnalytics.GA_USER_EVENTS.CLICK_TAG, {
-      tag_str: tagName,
-      timeToTagClick_int: timeToTagClick,
+      topic_str: topicName,
+      timeToTopicClick_int: timeToTopicClick,
     })
   }
 
-  const { isLoading, data: tags } = agency
-    ? useQuery(GET_TAGS_USED_BY_AGENCY_QUERY_KEY, () =>
-        getTagsUsedByAgency(agency.id),
+  const { isLoading, data: topics } = agency
+    ? useQuery(GET_TOPICS_USED_BY_AGENCY_QUERY_KEY, () =>
+        getTopicsUsedByAgency(agency.id),
       )
-    : useQuery(FETCH_TAGS_QUERY_KEY, () => fetchTags())
+    : useQuery(FETCH_TOPICS_QUERY_KEY, () => fetchTopics())
 
   const { data: agencyShortNames } = useQuery(LIST_AGENCY_SHORTNAMES, () =>
     listAgencyShortNames(),
@@ -87,7 +91,7 @@ const OptionsMenu = (): ReactElement => {
 
   const bySpecifiedOrder =
     agency && Array.isArray(agency.displayOrder)
-      ? (a: Tag, b: Tag) => {
+      ? (a: Topic, b: Topic) => {
           const aDisplayOrder = (agency.displayOrder || []).indexOf(a.id)
           const bDisplayOrder = (agency.displayOrder || []).indexOf(b.id)
           if (aDisplayOrder !== -1 && bDisplayOrder !== -1) {
@@ -99,16 +103,13 @@ const OptionsMenu = (): ReactElement => {
             // b has an enforced display order, so a should be further down
             return 1
           } else {
-            return a.tagname > b.tagname ? 1 : -1
+            return a.name > b.name ? 1 : -1
           }
         }
-      : (a: Tag, b: Tag) => (a.tagname > b.tagname ? 1 : -1)
+      : (a: Topic, b: Topic) => (a.name > b.name ? 1 : -1)
 
-  const tagsToShow = (tags || [])
-    .filter(
-      ({ tagType, tagname }) =>
-        tagType === TagType.Topic && tagname !== queryState,
-    )
+  const topicsToShow = (topics || [])
+    .filter((topic) => topic.name !== queryState)
     .sort(bySpecifiedOrder)
 
   const agencyShortNamesToShow = (agencyShortNames || [])
@@ -121,40 +122,44 @@ const OptionsMenu = (): ReactElement => {
       templateColumns={{ base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
       maxW="620px"
       m="auto"
-      spacingX={hasTagsKey ? { base: undefined, sm: '16px' } : { base: '16px' }}
-      spacingY={hasTagsKey ? { base: undefined, sm: '16px' } : { base: '16px' }}
-      py={hasTagsKey ? { base: undefined, sm: '48px' } : { base: '48px' }}
+      spacingX={
+        hasTopicsKey ? { base: undefined, sm: '16px' } : { base: '16px' }
+      }
+      spacingY={
+        hasTopicsKey ? { base: undefined, sm: '16px' } : { base: '16px' }
+      }
+      py={hasTopicsKey ? { base: undefined, sm: '48px' } : { base: '48px' }}
     >
       {agency
-        ? tagsToShow.map(({ id, tagType, tagname }) => {
+        ? topicsToShow.map(({ id, name }) => {
             return (
               <Flex
                 h="72px"
-                w={hasTagsKey ? '100%' : { base: '87%', sm: '100%' }}
-                mx={hasTagsKey ? undefined : { base: 'auto', md: undefined }}
+                w={hasTopicsKey ? '100%' : { base: '87%', sm: '100%' }}
+                mx={hasTopicsKey ? undefined : { base: 'auto', md: undefined }}
                 alignItems="center"
                 textAlign="left"
                 textStyle="h4"
                 boxShadow="base"
                 role="group"
                 borderTopWidth={
-                  hasTagsKey ? { base: '1px', sm: '0px' } : undefined
+                  hasTopicsKey ? { base: '1px', sm: '0px' } : undefined
                 }
-                borderTopColor={hasTagsKey ? 'secondary.500' : undefined}
+                borderTopColor={hasTopicsKey ? 'secondary.500' : undefined}
                 bg="secondary.700"
                 color="white"
                 _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
                 as={RouterLink}
                 key={id}
-                to={getRedirectURL(tagType, tagname, agency)}
+                to={getRedirectURLTopics(name, agency)}
                 onClick={() => {
-                  sendClickTagEventToAnalytics(tagname)
-                  setQueryState(tagname)
+                  sendClickTopicEventToAnalytics(name)
+                  setQueryState(name)
                   accordionRef.current?.click()
                 }}
               >
                 <Flex m="auto" w="100%" px={8}>
-                  <Text>{tagname}</Text>
+                  <Text>{name}</Text>
                   <Spacer />
                   <Flex alignItems="center">
                     <BiRightArrowAlt />
@@ -167,17 +172,17 @@ const OptionsMenu = (): ReactElement => {
             return (
               <Flex
                 h="72px"
-                w={hasTagsKey ? '100%' : { base: '87%', sm: '100%' }}
-                mx={hasTagsKey ? undefined : { base: 'auto', md: undefined }}
+                w={hasTopicsKey ? '100%' : { base: '87%', sm: '100%' }}
+                mx={hasTopicsKey ? undefined : { base: 'auto', md: undefined }}
                 alignItems="center"
                 textAlign="left"
                 textStyle="h4"
                 boxShadow="base"
                 role="group"
                 borderTopWidth={
-                  hasTagsKey ? { base: '1px', sm: '0px' } : undefined
+                  hasTopicsKey ? { base: '1px', sm: '0px' } : undefined
                 }
-                borderTopColor={hasTagsKey ? 'secondary.500' : undefined}
+                borderTopColor={hasTopicsKey ? 'secondary.500' : undefined}
                 bg="secondary.700"
                 color="white"
                 _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
@@ -199,24 +204,24 @@ const OptionsMenu = (): ReactElement => {
   )
 
   return (
-    <Accordion allowMultiple allowToggle index={hasTagsKey ? undefined : [0]}>
+    <Accordion allowMultiple allowToggle index={hasTopicsKey ? undefined : [0]}>
       <AccordionItem border="none">
         <AccordionButton
           ref={accordionRef}
           px="0px"
           py="0px"
-          pt={hasTagsKey ? '24px' : undefined}
-          pb={hasTagsKey ? '16px' : undefined}
+          pt={hasTopicsKey ? '24px' : undefined}
+          pb={hasTopicsKey ? '16px' : undefined}
           shadow="md"
           _expanded={
-            hasTagsKey
+            hasTopicsKey
               ? { shadow: 'none' }
               : !agency
               ? { color: 'primary.500' }
               : undefined
           }
-          _hover={{ bg: hasTagsKey ? 'secondary.600' : undefined }}
-          bg={hasTagsKey ? 'secondary.700' : 'secondary.800'}
+          _hover={{ bg: hasTopicsKey ? 'secondary.600' : undefined }}
+          bg={hasTopicsKey ? 'secondary.700' : 'secondary.800'}
         >
           <Flex
             maxW="680px"
@@ -230,16 +235,16 @@ const OptionsMenu = (): ReactElement => {
               <Text
                 textStyle="subhead-3"
                 color="primary.400"
-                pt={hasTagsKey ? '8px' : undefined}
-                mt={hasTagsKey ? undefined : '36px'}
+                pt={hasTopicsKey ? '8px' : undefined}
+                mt={hasTopicsKey ? undefined : '36px'}
               >
                 {agency
-                  ? hasTagsKey
+                  ? hasTopicsKey
                     ? 'TOPIC'
                     : 'EXPLORE A TOPIC'
                   : 'AGENCIES'}
               </Text>
-              {hasTagsKey ? (
+              {hasTopicsKey ? (
                 <Text
                   textStyle="h3"
                   fontWeight={queryState ? '600' : '400'}
@@ -259,7 +264,7 @@ const OptionsMenu = (): ReactElement => {
             <Spacer />
             <AccordionIcon
               mt="48px"
-              color={hasTagsKey ? 'white' : 'secondary.800'}
+              color={hasTopicsKey ? 'white' : 'secondary.800'}
             />
           </Flex>
         </AccordionButton>

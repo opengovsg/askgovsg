@@ -345,7 +345,7 @@ export class PostService {
       include: [
         {
           model: this.Tag,
-          required: true,
+          required: false,
           attributes: ['tagname', 'description', 'tagType'],
         },
         { model: this.User, required: true, attributes: ['username'] },
@@ -458,7 +458,7 @@ export class PostService {
       include: [
         {
           model: this.Tag,
-          required: true,
+          required: false,
           attributes: ['tagname', 'description', 'tagType'],
         },
         { model: this.User, required: true, attributes: ['username'] },
@@ -587,7 +587,7 @@ export class PostService {
     if (!topicValid && tagList.length === 0) {
       throw new InvalidTagsAndTopicsError()
     } else {
-      if (newPost.tagname?.length !== tagList.length) {
+      if (newPost.tagname && newPost.tagname.length !== tagList.length) {
         throw new TagDoesNotExistError()
       }
       if (!topicValid && newPost.topicId) {
