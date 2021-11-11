@@ -22,10 +22,13 @@ export class SearchService {
     this.client = client
   }
 
-  indexAllData = async (
+  indexAllData = (
     indexName: string,
     searchEntriesDataset: SearchEntry[],
-  ) => {
+  ): ResultAsync<
+    Record<string, any>,
+    ResponseError<Record<string, any>, unknown> | BulkResponseItemBase[]
+  > => {
     return ResultAsync.fromPromise(
       this.client.indices.create({
         index: indexName,
