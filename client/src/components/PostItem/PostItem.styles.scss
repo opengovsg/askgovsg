@@ -1,7 +1,7 @@
 
 @import '../../styles/text';
 @import '../../styles/sizes';
-@import '../../styles/misc';
+
 
 
 .flex {
@@ -65,7 +65,7 @@
       .question-tag {
         @include caption-2;
         padding: 4px 8px;
-        border-radius: $btn-radius;
+        border-radius: var(--chakra-radii-button);
         color: white;
         &.due-soon-tag {
           background: var(--chakra-colors-warning-600);
