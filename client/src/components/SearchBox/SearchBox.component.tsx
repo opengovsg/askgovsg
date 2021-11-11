@@ -5,6 +5,7 @@ import {
   InputRightElement,
 } from '@chakra-ui/input'
 import { Box, Flex, UnorderedList } from '@chakra-ui/layout'
+import { useMultiStyleConfig } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import Downshift, {
   DownshiftState,
@@ -26,7 +27,6 @@ import {
   listPosts,
   LIST_POSTS_FOR_SEARCH_QUERY_KEY,
 } from '../../services/PostService'
-import './SearchBox.styles.scss'
 
 export const SearchBox = ({
   placeholder,
@@ -49,6 +49,7 @@ export const SearchBox = ({
   showSearchIcon?: boolean
   agencyId?: number
 } & InputProps): JSX.Element => {
+  const styles = useMultiStyleConfig('SearchBox', {})
   /*
   Use LIST_POSTS_FOR_SEARCH_QUERY_KEY instead of LIST_POSTS_QUERY_KEY
   Because the queries using LIST_POST_QUERY_KEY may be filtered by tags.
@@ -137,8 +138,46 @@ export const SearchBox = ({
       : changes
   }
 
+  const SearchItem = ({
+    item,
+    index,
+    getItemProps,
+    highlightedIndex,
+    itemToString,
+    onClick,
+  }: {
+    item: BasePostDto
+    index: number
+    getItemProps: (
+      options: GetItemPropsOptions<BasePostDto>,
+    ) => Omit<BasePostDto, 'id'>
+    highlightedIndex: number | null
+    itemToString: (item: BasePostDto | null) => string
+    onClick: () => void
+  }) => (
+    <Link
+      to={`/questions/${item.id}`}
+      {...getItemProps({
+        index,
+        item,
+        style: {
+          backgroundColor:
+            highlightedIndex === index
+              ? // TODO use classes instead of inlining styles
+                'primary.200'
+              : 'white',
+        },
+        onClick,
+      })}
+    >
+      <Box as="span" sx={styles.item}>
+        {itemToString(item)}
+      </Box>
+    </Link>
+  )
+
   return (
-    <Flex className="search-form">
+    <Flex sx={styles.form}>
       <Downshift
         onChange={(selection) => navigate(`/questions/${selection?.id}`)}
         stateReducer={stateReducer}
@@ -154,11 +193,8 @@ export const SearchBox = ({
           inputValue,
           highlightedIndex,
         }) => (
-          <Box {...getRootProps()} className="search-autocomplete">
-            <InputGroup
-              onBlur={() => onAbandon(inputValue)}
-              className="search-box"
-            >
+          <Box {...getRootProps()} sx={styles.autocomplete}>
+            <InputGroup onBlur={() => onAbandon(inputValue)} sx={styles.box}>
               {showSearchIcon ? (
                 <InputRightElement
                   bg="primary.500"
@@ -175,8 +211,8 @@ export const SearchBox = ({
               ) : null}
               <Input
                 variant="unstyled"
-                className="search-input"
-                sx={{ paddingInlineStart: '16px' }}
+                textStyle="h3"
+                sx={styles.input}
                 {...getInputProps({
                   name,
                   placeholder,
@@ -206,11 +242,7 @@ export const SearchBox = ({
                 })}
               />
             </InputGroup>
-            <UnorderedList
-              {...getMenuProps({
-                className: 'search-results',
-              })}
-            >
+            <UnorderedList sx={styles.results} {...getMenuProps()}>
               {isOpen && inputValue
                 ? fuse.search(inputValue).map(({ item }, index) => {
                     return (
@@ -235,42 +267,3 @@ export const SearchBox = ({
     </Flex>
   )
 }
-
-const SearchItem = ({
-  item,
-  index,
-  getItemProps,
-  highlightedIndex,
-  itemToString,
-  onClick,
-}: {
-  item: BasePostDto
-  index: number
-  getItemProps: (
-    options: GetItemPropsOptions<BasePostDto>,
-  ) => Omit<BasePostDto, 'id'>
-  highlightedIndex: number | null
-  itemToString: (item: BasePostDto | null) => string
-  onClick: () => void
-}) => (
-  <Link
-    to={`/questions/${item.id}`}
-    {...getItemProps({
-      index,
-      item,
-      style: {
-        backgroundColor:
-          highlightedIndex === index
-            ? // TODO use classes instead of inlining styles
-              'primary.200'
-            : 'white',
-      },
-      className: 'search-item',
-      onClick,
-    })}
-  >
-    <Box as="span" className="search-item-text">
-      {itemToString(item)}
-    </Box>
-  </Link>
-)
