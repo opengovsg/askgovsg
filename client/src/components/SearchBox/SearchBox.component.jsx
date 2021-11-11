@@ -1,15 +1,16 @@
 import { Input, InputGroup, InputRightElement } from '@chakra-ui/input'
+import { UnorderedList } from '@chakra-ui/layout'
 import * as FullStory from '@fullstory/browser'
 import Downshift from 'downshift'
 import Fuse from 'fuse.js'
 import { BiSearch } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link, useNavigate } from 'react-router-dom'
+import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   getAgencyById,
   GET_AGENCY_BY_ID_QUERY_KEY,
 } from '../../services/AgencyService'
-import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   listPosts,
   LIST_POSTS_FOR_SEARCH_QUERY_KEY,
@@ -182,7 +183,7 @@ const SearchBox = ({
                   })}
                 />
               </InputGroup>
-              <ul
+              <UnorderedList
                 {...getMenuProps({
                   className: 'search-results',
                 })}
@@ -204,7 +205,7 @@ const SearchBox = ({
                       )
                     })
                   : null}
-              </ul>
+              </UnorderedList>
             </div>
           )}
         </Downshift>

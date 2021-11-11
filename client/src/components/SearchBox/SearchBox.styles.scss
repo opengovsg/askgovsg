@@ -44,8 +44,10 @@
         width: 100%;
   
         z-index: 50;
-        // copied box-shadow from chakra UI shadow 2xl
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        margin-inline-start: 0;
+        // copied box-shadow from chakra UI shadow 2xl,
+        // with a much darker shade
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
         border-radius: $btn-radius; 
       }
       
