@@ -1,12 +1,22 @@
-import { Input, InputGroup, InputRightElement } from '@chakra-ui/input'
+import {
+  Input,
+  InputGroup,
+  InputProps,
+  InputRightElement,
+} from '@chakra-ui/input'
 import { Box, Flex, UnorderedList } from '@chakra-ui/layout'
-
 import * as FullStory from '@fullstory/browser'
-import Downshift from 'downshift'
+import Downshift, {
+  DownshiftState,
+  GetItemPropsOptions,
+  StateChangeOptions,
+} from 'downshift'
 import Fuse from 'fuse.js'
+import { RefCallBack } from 'react-hook-form'
 import { BiSearch } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link, useNavigate } from 'react-router-dom'
+import { BasePostDto } from 'src/api'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   getAgencyById,
@@ -18,17 +28,27 @@ import {
 } from '../../services/PostService'
 import './SearchBox.styles.scss'
 
-const SearchBox = ({
+export const SearchBox = ({
   placeholder,
   value,
   inputRef,
   handleSubmit = undefined,
+  // eslint-disable-next-line
   handleAbandon = (_inputValue) => {},
   searchOnEnter = true,
   showSearchIcon = true,
   agencyId,
   ...inputProps
-}) => {
+}: {
+  placeholder?: string
+  value?: string
+  inputRef?: RefCallBack
+  handleSubmit?: (inputValue: string | null) => void
+  handleAbandon?: (inputValue: string | null) => void
+  searchOnEnter?: boolean
+  showSearchIcon?: boolean
+  agencyId?: number
+} & InputProps): JSX.Element => {
   /*
   Use LIST_POSTS_FOR_SEARCH_QUERY_KEY instead of LIST_POSTS_QUERY_KEY
   Because the queries using LIST_POST_QUERY_KEY may be filtered by tags.
@@ -43,7 +63,7 @@ const SearchBox = ({
 
   const { data: agency } = useQuery(
     [GET_AGENCY_BY_ID_QUERY_KEY, agencyId],
-    () => getAgencyById(agencyId),
+    () => getAgencyById(Number(agencyId)),
     { enabled: !!agencyId },
   )
 
@@ -51,20 +71,20 @@ const SearchBox = ({
   const name = 'search'
 
   const googleAnalytics = useGoogleAnalytics()
-  const sendSearchEventToAnalytics = (searchString) => {
+  const sendSearchEventToAnalytics = (searchString: string | null) => {
     googleAnalytics.sendUserEvent(
       googleAnalytics.GA_USER_EVENTS.SEARCH,
-      searchString,
+      `${searchString}`,
     )
     FullStory.event(googleAnalytics.GA_USER_EVENTS.SEARCH, {
       // property name uses `ident_type` pattern
       searchString_str: searchString,
     })
   }
-  const sendAbandonedSearchEventToAnalytics = (searchString) => {
+  const sendAbandonedSearchEventToAnalytics = (searchString: string | null) => {
     googleAnalytics.sendUserEvent(
       googleAnalytics.GA_USER_EVENTS.ABANDONED,
-      searchString,
+      `${searchString}`,
     )
     FullStory.event(googleAnalytics.GA_USER_EVENTS.ABANDONED, {
       // property name uses `ident_type` pattern
@@ -86,31 +106,33 @@ const SearchBox = ({
 
   placeholder = placeholder ?? 'Search keywords or phrases'
   value = value ?? ''
-  if (!handleSubmit) {
-    handleSubmit = (inputValue) =>
+
+  const onSubmit =
+    handleSubmit ||
+    ((inputValue: string | null) =>
       navigate(
         `/questions?search=${inputValue}` +
           (agency ? `&agency=${agency.shortname}` : ''),
-      )
-  }
+      ))
 
-  const onAbandon = (inputValue) => {
+  const onAbandon = (inputValue: string | null) => {
     sendAbandonedSearchEventToAnalytics(inputValue)
     handleAbandon(inputValue)
   }
 
-  const itemToString = (item) => (item ? item.title : '')
+  const itemToString = (item: BasePostDto | null) => (item ? item.title : '')
 
-  const fuse = new Fuse(data?.posts, {
+  const fuse = new Fuse(data?.posts || [], {
     keys: ['title', 'description'],
   })
 
-  const stateReducer = (_state, changes) => {
-    return [
-      Downshift.stateChangeTypes.blurInput,
-      Downshift.stateChangeTypes.mouseUp,
-      Downshift.stateChangeTypes.touchEnd,
-    ].includes(changes.type)
+  const stateReducer = (
+    _state: DownshiftState<BasePostDto>,
+    changes: StateChangeOptions<BasePostDto>,
+  ) => {
+    return changes.type === Downshift.stateChangeTypes.blurInput ||
+      changes.type === Downshift.stateChangeTypes.mouseUp ||
+      changes.type === Downshift.stateChangeTypes.touchEnd
       ? { isOpen: false } // no-changes
       : changes
   }
@@ -118,7 +140,7 @@ const SearchBox = ({
   return (
     <Flex className="search-form">
       <Downshift
-        onChange={(selection) => navigate(`/questions/${selection.id}`)}
+        onChange={(selection) => navigate(`/questions/${selection?.id}`)}
         stateReducer={stateReducer}
         itemToString={itemToString}
         initialInputValue={value}
@@ -148,7 +170,7 @@ const SearchBox = ({
                   mr="8px"
                   borderRadius="4px"
                   cursor="pointer"
-                  onClick={() => handleSubmit(inputValue)}
+                  onClick={() => onSubmit(inputValue)}
                 />
               ) : null}
               <Input
@@ -160,7 +182,7 @@ const SearchBox = ({
                   placeholder,
                   ref: inputRef,
                   ...inputProps,
-                  onKeyDown: (event) => {
+                  onKeyDown: (event: KeyboardEvent) => {
                     // when selecting option using keyboard
                     if (event.key === 'Enter') {
                       if (
@@ -172,7 +194,7 @@ const SearchBox = ({
                       if (highlightedIndex === null && searchOnEnter) {
                         // downshift prevents form submission which is used to submit analytics event
                         // detect such event and explicitly invoke handler
-                        handleSubmit(inputValue)
+                        onSubmit(inputValue)
                       }
                     }
 
@@ -221,8 +243,18 @@ const SearchItem = ({
   highlightedIndex,
   itemToString,
   onClick,
+}: {
+  item: BasePostDto
+  index: number
+  getItemProps: (
+    options: GetItemPropsOptions<BasePostDto>,
+  ) => Omit<BasePostDto, 'id'>
+  highlightedIndex: number | null
+  itemToString: (item: BasePostDto | null) => string
+  onClick: () => void
 }) => (
   <Link
+    to={`/questions/${item.id}`}
     {...getItemProps({
       index,
       item,
@@ -234,7 +266,6 @@ const SearchItem = ({
             : 'white',
       },
       className: 'search-item',
-      to: `/questions/${item.id}`,
       onClick,
     })}
   >
@@ -243,5 +274,3 @@ const SearchItem = ({
     </Box>
   </Link>
 )
-
-export default SearchBox

@@ -17,7 +17,7 @@ import { TagType } from '~shared/types/base'
 import { ReactComponent as Logo } from '../../assets/logo-alpha.svg'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import Masthead from '../../components/Masthead/Masthead.component'
-import SearchBoxComponent from '../../components/SearchBox/SearchBox.component'
+import { SearchBox } from '../../components/SearchBox/SearchBox.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
@@ -189,7 +189,7 @@ const Header = () => {
             maxW="680px"
             w="100%"
           >
-            <SearchBoxComponent agencyId={agency?.id} />
+            <SearchBox agencyId={agency?.id} />
           </Flex>
         </Flex>
         {Boolean(agency) ? (
@@ -287,7 +287,7 @@ const Header = () => {
           mt="-68px"
           d={{ base: 'none', xl: 'block' }}
         >
-          <SearchBoxComponent agencyId={agency?.id} />
+          <SearchBox agencyId={agency?.id} />
         </Flex>
       ) : null}
       {!matchQuestions && deviceType === device.desktop ? (

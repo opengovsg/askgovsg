@@ -7,7 +7,7 @@ import { BackToHome } from '../../components/BackToHome/BackToHome'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import PostItem from '../../components/PostItem/PostItem.component'
-import SearchBox from '../../components/SearchBox/SearchBox.component'
+import { SearchBox } from '../../components/SearchBox/SearchBox.component'
 import Spinner from '../../components/Spinner/Spinner.component'
 import {
   getAgencyByShortName,

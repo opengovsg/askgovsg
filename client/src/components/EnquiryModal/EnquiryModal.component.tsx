@@ -23,7 +23,7 @@ import { Agency } from '../../services/AgencyService'
 import { BiErrorCircle } from 'react-icons/bi'
 import { Enquiry } from '~shared/types/api'
 import ReCAPTCHA from 'react-google-recaptcha'
-import SearchBox from '../SearchBox/SearchBox.component'
+import { SearchBox } from '../SearchBox/SearchBox.component'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import * as FullStory from '@fullstory/browser'
 interface EnquiryModalProps extends Pick<ModalProps, 'isOpen' | 'onClose'> {
