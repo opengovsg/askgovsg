@@ -1,6 +1,6 @@
 @import '../../styles/text';
 
-@import '../../styles/misc';
+
 @import '../../styles/sizes';
 
 .form-container {
@@ -40,7 +40,7 @@
       @include body-1;
       background-color: var(--chakra-colors-secondary-700);
       border: 0;
-      border-radius: $btn-radius;
+      border-radius: var(--chakra-radii-button);
       color: white;
       padding: 8px 8px;
       cursor: pointer;
