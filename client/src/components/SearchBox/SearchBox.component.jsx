@@ -1,5 +1,6 @@
 import { Input, InputGroup, InputRightElement } from '@chakra-ui/input'
-import { UnorderedList } from '@chakra-ui/layout'
+import { Box, Flex, UnorderedList } from '@chakra-ui/layout'
+
 import * as FullStory from '@fullstory/browser'
 import Downshift from 'downshift'
 import Fuse from 'fuse.js'
@@ -115,102 +116,101 @@ const SearchBox = ({
   }
 
   return (
-    <div className="search-container">
-      <div className="search-form">
-        <Downshift
-          onChange={(selection) => navigate(`/questions/${selection.id}`)}
-          stateReducer={stateReducer}
-          itemToString={itemToString}
-          initialInputValue={value}
-        >
-          {({
-            getInputProps,
-            getItemProps,
-            getMenuProps,
-            isOpen,
-            inputValue,
-            highlightedIndex,
-          }) => (
-            <div
-              className="search-autocomplete"
+    <Flex className="search-form">
+      <Downshift
+        onChange={(selection) => navigate(`/questions/${selection.id}`)}
+        stateReducer={stateReducer}
+        itemToString={itemToString}
+        initialInputValue={value}
+      >
+        {({
+          getInputProps,
+          getItemProps,
+          getMenuProps,
+          getRootProps,
+          isOpen,
+          inputValue,
+          highlightedIndex,
+        }) => (
+          <Box {...getRootProps()} className="search-autocomplete">
+            <InputGroup
               onBlur={() => onAbandon(inputValue)}
+              className="search-box"
             >
-              <InputGroup className="search-box">
-                {showSearchIcon ? (
-                  <InputRightElement
-                    bg="primary.500"
-                    children={<BiSearch size="24" color="white" />}
-                    h="40px"
-                    w="40px"
-                    mb="8px"
-                    mt="8px"
-                    mr="8px"
-                    borderRadius="4px"
-                    cursor="pointer"
-                    onClick={() => handleSubmit(inputValue)}
-                  />
-                ) : null}
-                <Input
-                  variant="unstyled"
-                  className="search-input"
-                  sx={{ paddingInlineStart: '16px' }}
-                  {...getInputProps({
-                    name,
-                    placeholder,
-                    ref: inputRef,
-                    ...inputProps,
-                    onKeyDown: (event) => {
-                      // when selecting option using keyboard
-                      if (event.key === 'Enter') {
-                        if (
-                          highlightedIndex !== null ||
-                          (highlightedIndex === null && searchOnEnter)
-                        ) {
-                          sendSearchEventToAnalytics(inputValue)
-                        }
-                        if (highlightedIndex === null && searchOnEnter) {
-                          // downshift prevents form submission which is used to submit analytics event
-                          // detect such event and explicitly invoke handler
-                          handleSubmit(inputValue)
-                        }
-                      }
-
-                      const isCharacterKey = event.key.length === 1
-                      if (isCharacterKey && !googleAnalytics.hasSearched) {
-                        sendSearchTimingToAnalytics()
-                      }
-                    },
-                  })}
+              {showSearchIcon ? (
+                <InputRightElement
+                  bg="primary.500"
+                  children={<BiSearch size="24" color="white" />}
+                  h="40px"
+                  w="40px"
+                  mb="8px"
+                  mt="8px"
+                  mr="8px"
+                  borderRadius="4px"
+                  cursor="pointer"
+                  onClick={() => handleSubmit(inputValue)}
                 />
-              </InputGroup>
-              <UnorderedList
-                {...getMenuProps({
-                  className: 'search-results',
+              ) : null}
+              <Input
+                variant="unstyled"
+                className="search-input"
+                sx={{ paddingInlineStart: '16px' }}
+                {...getInputProps({
+                  name,
+                  placeholder,
+                  ref: inputRef,
+                  ...inputProps,
+                  onKeyDown: (event) => {
+                    // when selecting option using keyboard
+                    if (event.key === 'Enter') {
+                      if (
+                        highlightedIndex !== null ||
+                        (highlightedIndex === null && searchOnEnter)
+                      ) {
+                        sendSearchEventToAnalytics(inputValue)
+                      }
+                      if (highlightedIndex === null && searchOnEnter) {
+                        // downshift prevents form submission which is used to submit analytics event
+                        // detect such event and explicitly invoke handler
+                        handleSubmit(inputValue)
+                      }
+                    }
+
+                    const isCharacterKey = event.key.length === 1
+                    if (isCharacterKey && !googleAnalytics.hasSearched) {
+                      sendSearchTimingToAnalytics()
+                    }
+                  },
                 })}
-              >
-                {isOpen && inputValue
-                  ? fuse.search(inputValue).map(({ item }, index) => {
-                      return (
-                        <SearchItem
-                          key={item.id}
-                          onClick={() => sendSearchEventToAnalytics(inputValue)}
-                          {...{
-                            item,
-                            index,
-                            highlightedIndex,
-                            getItemProps,
-                            itemToString,
-                          }}
-                        />
-                      )
-                    })
-                  : null}
-              </UnorderedList>
-            </div>
-          )}
-        </Downshift>
-      </div>
-    </div>
+              />
+            </InputGroup>
+            <UnorderedList
+              {...getMenuProps({
+                className: 'search-results',
+              })}
+            >
+              {isOpen && inputValue
+                ? fuse.search(inputValue).map(({ item }, index) => {
+                    return (
+                      <SearchItem
+                        key={item.id}
+                        onClick={() => sendSearchEventToAnalytics(inputValue)}
+                        {...{
+                          item,
+                          index,
+                          highlightedIndex,
+                          getItemProps,
+                          itemToString,
+                        }}
+                      />
+                    )
+                  })
+                : null}
+            </UnorderedList>
+          </Box>
+        )}
+      </Downshift>
+    </Flex>
   )
 }
 
@@ -238,7 +238,9 @@ const SearchItem = ({
       onClick,
     })}
   >
-    <span className="search-item-text">{itemToString(item)}</span>
+    <Box as="span" className="search-item-text">
+      {itemToString(item)}
+    </Box>
   </Link>
 )
 
