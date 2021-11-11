@@ -22,10 +22,19 @@ export class SearchService {
     this.client = client
   }
 
-  indexAllData = async (
+  /**
+   * Indexes relevant information from database on opensearch
+   * @param indexName index name
+   * @param searchEntriesDataset search entries to be indexed
+   * @returns response opensearch indexing request
+   */
+  indexAllData = (
     indexName: string,
     searchEntriesDataset: SearchEntry[],
-  ) => {
+  ): ResultAsync<
+    Record<string, any>,
+    ResponseError<Record<string, any>, unknown> | BulkResponseItemBase[]
+  > => {
     return ResultAsync.fromPromise(
       this.client.indices.create({
         index: indexName,
