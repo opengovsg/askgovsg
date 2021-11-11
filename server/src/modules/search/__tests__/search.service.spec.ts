@@ -1,11 +1,14 @@
 import { StatusCodes } from 'http-status-codes'
 import { SearchEntry, SearchService } from '../search.service'
 import { Mocker } from './opensearch-mock'
+
+// // Uncomment to test with live opensearch service
 // import { baseConfig, Environment } from '../../../bootstrap/config/base'
 // import { searchConfig } from '../../../bootstrap/config/search'
 // import { Client, errors, Connection } from '@opensearch-project/opensearch'
 // import fs from 'fs'
 
+// Comment when testing with live opensearch service
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { Client, errors } = require('@opensearch-project/opensearch')
 

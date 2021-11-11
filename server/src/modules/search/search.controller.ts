@@ -10,6 +10,11 @@ import { SearchEntry, SearchService } from './search.service'
 
 const logger = createLogger(module)
 
+/**
+ * Handles logic requiring other services, errors and returns responses accordingly.
+ * Note: Some methods will not return HTTP responses and instead return ResultAsync
+ * for internal server use e.g. indexAllData
+ */
 export class SearchController {
   private answersService: Pick<AnswersService, 'listAnswers'>
   private postService: Pick<PostService, 'listPosts'>
@@ -29,6 +34,12 @@ export class SearchController {
     this.searchService = searchService
   }
 
+  /**
+   * Pulls relevant data from database and indexes it in opensearch
+   * Note: Will not be hooked up to an endpoint
+   * @param indexName
+   * @returns result async with error or response
+   */
   indexAllData = async (indexName: string) => {
     return await ResultAsync.fromPromise(
       this.postService.listPosts({
@@ -77,7 +88,7 @@ export class SearchController {
             })
           })
           if (listAnswersResult.isErr()) {
-            return listAnswersResult //.error
+            return listAnswersResult
           }
         }
         return await this.searchService.indexAllData(

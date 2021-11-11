@@ -22,6 +22,12 @@ export class SearchService {
     this.client = client
   }
 
+  /**
+   * Indexes relevant information from database on opensearch
+   * @param indexName index name
+   * @param searchEntriesDataset search entries to be indexed
+   * @returns response opensearch indexing request
+   */
   indexAllData = (
     indexName: string,
     searchEntriesDataset: SearchEntry[],
