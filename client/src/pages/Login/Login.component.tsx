@@ -18,9 +18,9 @@ const Login = (): JSX.Element => {
         className="login-page"
       >
         <Spacer h={['64px', '64px', '84px']} />
-        <Box as="h2" textStyle="display-2" mb="8px">
+        <Text textStyle="display-2" mb="8px">
           AskGov
-        </Box>
+        </Text>
         <Text textStyle="body-1">Answers from the Singapore Government</Text>
         <AuthForm />
         <Spacer minH={20} />
