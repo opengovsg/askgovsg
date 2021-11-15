@@ -1,8 +1,5 @@
 @import '../../styles/text';
 
-
-@import '../../styles/sizes';
-
 .form-container {
   display: flex;
   justify-content: center;
@@ -13,9 +10,6 @@
     display: flex;
     flex-direction: column;
     width: 320px;
-
-    @media (max-width: $mobile-m) {
-    }
 
     .form-label {
       @include subhead-1;

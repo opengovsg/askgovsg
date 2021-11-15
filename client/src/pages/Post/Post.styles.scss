@@ -1,14 +1,6 @@
-@import '../../styles/sizes';
 @import '../../styles/text';
 
-
 .post-page {
-
-  .btn-bar {
-    @media (min-width: $tablet) {
-      float: right;
-    }
-  }
 
   .subtitle-bar {
     @include body-2;
