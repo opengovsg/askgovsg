@@ -17,7 +17,7 @@ import { TagType } from '~shared/types/base'
 import { ReactComponent as Logo } from '../../assets/logo-alpha.svg'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import Masthead from '../../components/Masthead/Masthead.component'
-import SearchBoxComponent from '../../components/SearchBox/SearchBox.component'
+import { SearchBox } from '../../components/SearchBox/SearchBox.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
@@ -155,7 +155,7 @@ const Header = () => {
   // attach to matchQuestions?.path instead of matchQuestions because matchQuestions is
   // an object and will trigger the callback without values within the object changing
   useEffect(() => {
-    if (deviceType !== device.tablet && !matchQuestions) {
+    if (!matchQuestions) {
       openHeader()
       window.addEventListener('scroll', checkHeaderState)
       return () => {
@@ -164,13 +164,13 @@ const Header = () => {
     } else {
       closeHeader()
     }
-  }, [matchQuestions?.pathname, deviceType])
+  }, [matchQuestions?.pathname])
 
   const expandedSearch = () => {
     return (
       <Box
         bg="white"
-        h={{ base: '100px', md: '152px' }}
+        h={{ base: '100px', xl: '152px' }}
         className="top-background"
       >
         <Flex
@@ -184,16 +184,16 @@ const Header = () => {
           <Flex
             h="56px"
             m="auto"
-            mt={{ base: '20px', md: '64px' }}
+            mt={{ base: '20px', xl: '64px' }}
             px={{ base: '24px', md: 'auto' }}
             maxW="680px"
             w="100%"
           >
-            <SearchBoxComponent agencyId={agency?.id} />
+            <SearchBox agencyId={agency?.id} />
           </Flex>
         </Flex>
         {Boolean(agency) ? (
-          <Box px="36px" mt="-55px" display={{ base: 'none', lg: 'flex' }}>
+          <Box px="36px" mt="-55px" display={{ base: 'none', xl: 'flex' }}>
             <AgencyLogo agency={agency} />
           </Box>
         ) : null}
@@ -255,22 +255,14 @@ const Header = () => {
     <Flex
       direction="column"
       sx={{
-        position: {
-          base: '-webkit-sticky',
-          sm: 'static',
-          xl: '-webkit-sticky',
-        } /* Safari */,
-        position: {
-          base: 'sticky',
-          sm: 'static',
-          xl: 'sticky',
-        },
+        position: '-webkit-sticky' /* Safari */,
+        position: 'sticky',
         top: '0',
         'z-index': '999',
       }}
     >
       <Masthead />
-      {deviceType !== device.mobile ? (
+      {deviceType === device.desktop ? (
         askgovLogoBar()
       ) : matchQuestions ? null : (
         <Collapse in={headerIsOpen} animateOpacity={false}>
@@ -287,14 +279,14 @@ const Header = () => {
           mt="-68px"
           d={{ base: 'none', xl: 'block' }}
         >
-          <SearchBoxComponent agencyId={agency?.id} />
+          <SearchBox agencyId={agency?.id} />
         </Flex>
       ) : null}
       {!matchQuestions && deviceType === device.desktop ? (
         <Collapse in={headerIsOpen} animateOpacity={false}>
           {expandedSearch()}
         </Collapse>
-      ) : matchQuestions && deviceType !== device.mobile ? null : (
+      ) : matchQuestions && deviceType === device.desktop ? null : (
         expandedSearch()
       )}
     </Flex>

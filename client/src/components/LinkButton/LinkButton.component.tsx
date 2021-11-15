@@ -1,10 +1,17 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
 import { Button } from '@chakra-ui/react'
+import { Link } from 'react-router-dom'
 
-import './LinkButton.styles.scss'
-
-const LinkButton = ({ text, link, handleClick, leftIcon }) => {
+const LinkButton = ({
+  text,
+  link,
+  handleClick,
+  leftIcon,
+}: {
+  text: string
+  link: string
+  handleClick?: () => void
+  leftIcon?: JSX.Element
+}): JSX.Element => {
   return (
     <Link onClick={handleClick} to={link}>
       <Button
@@ -15,9 +22,6 @@ const LinkButton = ({ text, link, handleClick, leftIcon }) => {
         bg="white"
         borderRadius="3px"
         textStyle="subhead-1"
-        _hover={undefined}
-        _active={undefined}
-        _focus={undefined}
         leftIcon={leftIcon}
       >
         {text}

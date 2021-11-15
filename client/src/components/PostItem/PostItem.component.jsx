@@ -7,10 +7,7 @@ import { RichTextFrontPreview } from '../RichText/RichTextEditor.component'
 import './PostItem.styles.scss'
 
 // Note: PostItem is the component for the homepage
-const PostItem = ({
-  post: { id, title, description, tags, agencyId },
-  agency,
-}) => {
+const PostItem = ({ post: { id, title, tags, agencyId } }) => {
   const { user } = useAuth()
 
   const isAgencyMember = user && tags && user.agencyId === agencyId

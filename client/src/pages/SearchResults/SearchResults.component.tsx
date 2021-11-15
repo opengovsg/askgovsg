@@ -1,13 +1,11 @@
-import { Flex, Spacer } from '@chakra-ui/react'
+import { Box, Flex, Spacer } from '@chakra-ui/react'
 import Fuse from 'fuse.js'
-import { Fragment } from 'react'
 import { useQuery } from 'react-query'
 import { useLocation } from 'react-router-dom'
 import { BackToHome } from '../../components/BackToHome/BackToHome'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import PostItem from '../../components/PostItem/PostItem.component'
-import SearchBox from '../../components/SearchBox/SearchBox.component'
 import Spinner from '../../components/Spinner/Spinner.component'
 import {
   getAgencyByShortName,
@@ -17,21 +15,20 @@ import {
   listPosts,
   LIST_POSTS_FOR_SEARCH_QUERY_KEY,
 } from '../../services/PostService'
-import './SearchResults.styles.scss'
 
-const SearchResults = () => {
+const SearchResults = (): JSX.Element => {
   const { search } = useLocation()
   const searchParams = new URLSearchParams(search)
   const searchQuery = searchParams.get('search') ?? ''
   const agencyShortName = searchParams.get('agency')
   const { data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
-    () => getAgencyByShortName({ shortname: agencyShortName }),
+    () => getAgencyByShortName({ shortname: `${agencyShortName}` }),
     { enabled: !!agencyShortName },
   )
   const { data, isLoading } = useQuery(
     [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agency?.id],
-    listPosts(undefined, agency?.id),
+    () => listPosts(undefined, agency?.id),
   )
 
   const foundPosts = new Fuse(data?.posts ?? [], {
@@ -43,62 +40,61 @@ const SearchResults = () => {
   return isLoading ? (
     <Spinner centerHeight="200px" />
   ) : (
-    <Fragment>
+    <>
       {searchQuery ? (
         <PageTitle title={`Search Results for ${searchQuery} - AskGov`} />
       ) : (
         ''
       )}
-      <div id="mainbar" className="questions-page fc-black-800">
+      <Box
+        px={{ base: '32px', md: '48px' }}
+        mx="auto"
+        maxW="calc(793px + 48px * 2)"
+        className="questions-page"
+      >
         <Flex
           mt={{ base: '32px', sm: '60px' }}
           mb={{ base: '32px', sm: '50px' }}
         >
           <BackToHome mainPageName={agencyShortName} />
         </Flex>
-        <div className="questions-grid">
-          <h3 className="questions-headline">
+        <Flex className="questions-grid">
+          <Box
+            as="h3"
+            textStyle="display-2"
+            mb="24px"
+            flex="1 auto"
+            className="questions-headline"
+          >
             {searchQuery ? 'Search Results' : 'All Questions'}
-          </h3>
-        </div>
-        {searchQuery && (
-          <SearchBox
-            agencyId={agency?.id}
-            value={searchQuery}
-            name={'search'}
-            pt={'mt8'}
-          />
-        )}
-        <div className="questions">
+          </Box>
+        </Flex>
+        <Box
+          padding="0"
+          w={{ base: '100%', md: undefined }}
+          className="questions"
+        >
           {foundPosts.length > 0 ? (
             foundPosts.map((post) => <PostItem key={post.id} post={post} />)
           ) : (
             <>
-              <div className="no-results">
+              <Box
+                textStyle="subhead-1"
+                color="gray.800"
+                className="no-results"
+              >
                 {`No results found for "${searchQuery}".`}
-              </div>
-              <div>
+              </Box>
+              <Box>
                 {`Try rephrasing your question, or check your spelling.`}
-              </div>
+              </Box>
             </>
           )}
-        </div>
-      </div>
+        </Box>
+      </Box>
       <Spacer minH={20} />
-      <CitizenRequest
-        agency={
-          agency
-            ? agency
-            : {
-                id: '',
-                email: 'enquiries@ask.gov.sg',
-                shortname: 'AskGov',
-                longname: 'AskGov',
-                logo: '',
-              }
-        }
-      />
-    </Fragment>
+      <CitizenRequest agency={agency} />
+    </>
   )
 }
 

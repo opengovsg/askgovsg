@@ -1,5 +1,5 @@
 @import '../../../styles/text';
-@import '../../../styles/misc';
+
 
 .question-form {
   .question-layout {
@@ -88,7 +88,7 @@
   padding: 8px 16px;
   color: white;
   border: 0;
-  border-radius: $btn-radius;
+  border-radius: var(--chakra-radii-button);
   cursor: pointer;
 }
 

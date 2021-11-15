@@ -23,7 +23,7 @@ describe('WebService', () => {
   const index = Buffer.from(indexStr)
 
   describe('getAgencyPage', () => {
-    it('should return correctly modified agency index', async () => {
+    it('should return correctly modified agency index', () => {
       const agencyShortname = 'agency_shortname'
       const agencyLongname = 'agency_longname'
 
@@ -75,7 +75,7 @@ describe('WebService', () => {
   })
 
   describe('getQuestionPage', () => {
-    it('should return correctly modified post index', async () => {
+    it('should return correctly modified post index', () => {
       const postTitle = 'post_title'
       const postDescription = 'post_description'
 

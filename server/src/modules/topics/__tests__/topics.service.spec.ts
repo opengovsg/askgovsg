@@ -1,5 +1,9 @@
 import { TopicsService, TopicWithChildRelations } from '../topics.service'
-import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
+import {
+  createTestDatabase,
+  getModelDef,
+  ModelName,
+} from '../../../util/jest-db'
 import { Sequelize, Model } from 'sequelize'
 import { Topic, Agency } from '~shared/types/base'
 import { ModelDef } from '../../../types/sequelize'
@@ -19,8 +23,9 @@ describe('TopicsService', () => {
 
   beforeAll(async () => {
     db = await createTestDatabase()
-    Topic = getModel<Topic & Model>(db, ModelName.Topic)
-    Agency = getModel<Agency & Model>(db, ModelName.Agency)
+    Topic = getModelDef<Topic>(db, ModelName.Topic)
+    Agency = getModelDef<Agency>(db, ModelName.Agency)
+    topicService = new TopicsService({ Topic })
 
     mockAgency = await Agency.create({
       shortname: 'was',
@@ -31,6 +36,10 @@ describe('TopicsService', () => {
       website: null,
       displayOrder: null,
     })
+  })
+
+  beforeEach(async () => {
+    await Topic.destroy({ truncate: true })
 
     mockTopic1 = await Topic.create({
       name: '1',
@@ -64,15 +73,13 @@ describe('TopicsService', () => {
       },
       mockTopic4,
     ]
-
-    topicService = new TopicsService({ Topic })
   })
 
   afterAll(async () => {
     await db.close()
   })
 
-  const expectTopicMatch = (
+  const expectTopicsMatch = (
     actualTopics: TopicWithChildRelations[],
     mockTopics: TopicWithChildRelations[],
   ) => {
@@ -84,11 +91,31 @@ describe('TopicsService', () => {
     expect(actualTopics[0].children?.[0].id).toStrictEqual(mockTopic2.id)
   }
 
+  const expectTopicMatch = (actualTopic: Topic, mockTopic: Topic) => {
+    expect(actualTopic.id).toStrictEqual(mockTopic.id)
+    expect(actualTopic.name).toStrictEqual(mockTopic.name)
+    expect(actualTopic.description).toStrictEqual(mockTopic.description)
+    expect(actualTopic.parentId).toStrictEqual(mockTopic.parentId)
+  }
+
+  describe('getTopicById', () => {
+    it('finds a topic given a topic id', async () => {
+      const { id } = mockTopic1
+      const actualTopic = await topicService.getTopicById(id)
+      expectTopicMatch(actualTopic._unsafeUnwrap(), mockTopic1)
+    })
+    it('returns MissingTopicError on non-existing id', async () => {
+      const id = mockTopic1.id + 20
+      const actualTopic = await topicService.getTopicById(id)
+      expect(actualTopic._unsafeUnwrapErr()).toEqual(new MissingTopicError())
+    })
+  })
+
   describe('listTopicsUsedByAgency', () => {
     it('lists topics given an agency id', async () => {
       const { id } = mockAgency
       const actualTopics = await topicService.listTopicsUsedByAgency(id)
-      expectTopicMatch(actualTopics._unsafeUnwrap(), mockTopics)
+      expectTopicsMatch(actualTopics._unsafeUnwrap(), mockTopics)
     })
 
     it('returns MissingTopicError on non-existing agency', async () => {
@@ -98,5 +125,40 @@ describe('TopicsService', () => {
     })
   })
 
-  //TODO: add remaining unit tests for createTopic, deleteTopicById, updateTopicById
+  describe('createTopic', () => {
+    it('creates a topic', async () => {
+      const attributes = {
+        name: 'test topic',
+        description: 'test description',
+        parentId: null,
+        agencyId: mockAgency.id,
+      }
+      const newTopic = await topicService.createTopic(attributes)
+      expect(newTopic._unsafeUnwrap()).toMatchObject(attributes)
+    })
+  })
+
+  describe('updateTopicById', () => {
+    it('updates a topic', async () => {
+      const attributes = {
+        id: mockTopic1.id,
+        name: 'test topic',
+        description: 'test description',
+        parentId: null,
+      }
+      const updateCount = await topicService.updateTopicById(attributes)
+      const updatedTopic = await Topic.findByPk(mockTopic1.id)
+      expect(updateCount._unsafeUnwrap()).toBe(1)
+      expect(updatedTopic).toMatchObject(attributes)
+    })
+  })
+
+  describe('deleteTopicById', () => {
+    it('deletes a topic', async () => {
+      const deleteCount = await topicService.deleteTopicById(mockTopic1.id)
+      const deletedTopic = await Topic.findByPk(mockTopic1.id)
+      expect(deleteCount._unsafeUnwrap()).toBe(1)
+      expect(deletedTopic).toBeNull()
+    })
+  })
 })
