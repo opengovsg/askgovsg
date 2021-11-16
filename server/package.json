@@ -67,7 +67,7 @@
     "@types/express-session": "^1.17.4",
     "@types/express-sitemap-xml": "^3.0.1",
     "@types/jest": "^27.0.2",
-    "@types/jsonwebtoken": "^8.5.5",
+    "@types/jsonwebtoken": "^8.5.6",
     "@types/lodash": "^4.14.177",
     "@types/minimatch": "^3.0.4",
     "@types/morgan": "^1.9.2",
