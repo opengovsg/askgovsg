@@ -107,6 +107,13 @@ export class SearchService {
     })
   }
 
+  /**
+   * Searches posts in opensearch index
+   * @param index index name
+   * @param searchQuery search query entered by user
+   * @param agencyId agency id
+   * @returns results async with relevant search entries ranked by relevance
+   */
   searchPosts = async (
     index: string,
     searchQuery: string,
