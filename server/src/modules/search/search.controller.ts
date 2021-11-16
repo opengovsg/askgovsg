@@ -102,6 +102,13 @@ export class SearchController {
       .andThen((result) => result)
   }
 
+  /**
+   * Handle responses related to post searches
+   * @query agencyId
+   * @query search
+   * @returns 200 relevant search entries sorted by relevance
+   * @returns 500 search request fails
+   */
   searchPosts: ControllerHandler<
     undefined,
     Buffer | Message,
