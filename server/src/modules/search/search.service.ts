@@ -1,5 +1,8 @@
 import { Client } from '@opensearch-project/opensearch'
-import { BulkResponseItemBase } from '@opensearch-project/opensearch/api/types'
+import {
+  BulkResponseItemBase,
+  QueryDslMultiMatchQuery,
+} from '@opensearch-project/opensearch/api/types'
 import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
 import { createLogger } from '../../bootstrap/logging'
@@ -102,5 +105,38 @@ export class SearchService {
         return okAsync(bulkResponse)
       })
     })
+  }
+
+  searchPosts = async (
+    index: string,
+    searchQuery: string,
+    agencyId?: number,
+  ) => {
+    const multiMatchQuery: QueryDslMultiMatchQuery = {
+      query: searchQuery,
+      fields: ['title', 'description', 'answer'],
+      type: 'most_fields',
+      fuzziness: 'AUTO',
+    }
+    return ResultAsync.fromPromise(
+      this.client.search({
+        index,
+        body: {
+          query: { multi_match: multiMatchQuery },
+          ...(agencyId && { post_filter: { term: { agencyId: agencyId } } }),
+        },
+      }),
+      (err) => {
+        logger.error({
+          message:
+            'Error while searching data for OpenSearch - client.indices.search',
+          meta: {
+            function: 'searchPosts',
+          },
+          error: err,
+        })
+        return err as ResponseError
+      },
+    )
   }
 }
