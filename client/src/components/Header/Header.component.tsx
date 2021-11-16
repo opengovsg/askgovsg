@@ -15,9 +15,9 @@ import { useQuery } from 'react-query'
 import { Link as RouterLink, matchPath, useLocation } from 'react-router-dom'
 import { TagType } from '~shared/types/base'
 import { ReactComponent as Logo } from '../../assets/logo-alpha.svg'
-import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
-import Masthead from '../../components/Masthead/Masthead.component'
-import { SearchBox } from '../../components/SearchBox/SearchBox.component'
+import AgencyLogo from '../AgencyLogo/AgencyLogo.component'
+import Masthead from '../Masthead/Masthead.component'
+import { SearchBox } from '../SearchBox/SearchBox.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
@@ -30,7 +30,7 @@ import {
 import LinkButton from '../LinkButton/LinkButton.component'
 import Spinner from '../Spinner/Spinner.component'
 
-const Header = () => {
+const Header = (): JSX.Element => {
   const { user, logout } = useAuth()
 
   const location = useLocation()
@@ -41,7 +41,7 @@ const Header = () => {
   const postId = matchPost?.params?.id
   const { data: post } = useQuery(
     [GET_POST_BY_ID_QUERY_KEY, postId],
-    () => getPostById(postId, 3),
+    () => getPostById(Number(postId), 3),
     { enabled: Boolean(postId) },
   )
 
@@ -57,11 +57,11 @@ const Header = () => {
     firstAgencyTagLinkedToPost?.tagname
   const { isLoading, data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
-    () => getAgencyByShortName({ shortname: agencyShortName }),
+    () => getAgencyByShortName({ shortname: `${agencyShortName}` }),
     { enabled: Boolean(agencyShortName) },
   )
 
-  const authLinks = (
+  const AuthLinks = () => (
     <Flex align="center" mx={6}>
       {isLoading || user === null ? (
         <Spinner centerWidth="50px" centerHeight="50px" />
@@ -80,20 +80,16 @@ const Header = () => {
           />
         </>
       )}
-      <LinkButton
-        text={'Log out'}
-        link={'/login'}
-        type={'s-btn__filled'}
-        handleClick={logout}
-      />
+      <LinkButton text={'Log out'} link={'/login'} handleClick={logout} />
     </Flex>
   )
 
-  const websiteLinks = () => {
+  const WebsiteLinks = () => {
     // Extract hostname from URL
-    const hostname = new URL(agency?.website).hostname
+    const website = `${agency?.website}`
+    const hostname = new URL(website).hostname
     return (
-      <Link href={agency?.website} isExternal>
+      <Link href={website} isExternal>
         <Button
           rightIcon={<BiLinkExternal color="neutral.900" />}
           variant="link"
@@ -166,7 +162,7 @@ const Header = () => {
     }
   }, [matchQuestions?.pathname])
 
-  const expandedSearch = () => {
+  const ExpandedSearch = () => {
     return (
       <Box
         bg="white"
@@ -201,7 +197,7 @@ const Header = () => {
     )
   }
 
-  const askgovLogoBar = () => {
+  const LogoBar = () => {
     return (
       <Flex
         bg="white"
@@ -244,9 +240,9 @@ const Header = () => {
           </Stack>
         </Link>
         <Flex d={{ base: 'none', sm: 'block' }}>
-          {agency?.website && websiteLinks()}
+          {agency?.website && <WebsiteLinks />}
         </Flex>
-        {user && authLinks}
+        {user && <AuthLinks />}
       </Flex>
     )
   }
@@ -255,7 +251,6 @@ const Header = () => {
     <Flex
       direction="column"
       sx={{
-        position: '-webkit-sticky' /* Safari */,
         position: 'sticky',
         top: '0',
         'z-index': '999',
@@ -263,10 +258,10 @@ const Header = () => {
     >
       <Masthead />
       {deviceType === device.desktop ? (
-        askgovLogoBar()
+        <LogoBar />
       ) : matchQuestions ? null : (
         <Collapse in={headerIsOpen} animateOpacity={false}>
-          {askgovLogoBar()}
+          <LogoBar />
         </Collapse>
       )}
       {deviceType === device.desktop && !headerIsOpen ? (
@@ -284,10 +279,10 @@ const Header = () => {
       ) : null}
       {!matchQuestions && deviceType === device.desktop ? (
         <Collapse in={headerIsOpen} animateOpacity={false}>
-          {expandedSearch()}
+          <ExpandedSearch />
         </Collapse>
       ) : matchQuestions && deviceType === device.desktop ? null : (
-        expandedSearch()
+        <ExpandedSearch />
       )}
     </Flex>
   )
