@@ -30,6 +30,7 @@ export const SearchBox: ComponentMultiStyleConfig = {
       boxShadow: '0px 0px 10px var(--chakra-colors-secondary-100)',
       w: '100%',
       h: '100%',
+      maxH: '56px',
     },
     input: {
       fontSize: '16px',
