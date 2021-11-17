@@ -16,6 +16,7 @@ export const ImageBlock = ({
 }: {
   block: ContentBlock
   contentState: ContentState
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   blockProps: any
 }): JSX.Element => {
   const editorState = useContext(EditorContext)

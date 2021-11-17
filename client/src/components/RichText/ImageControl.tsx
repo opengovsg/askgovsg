@@ -1,4 +1,15 @@
-import { Button, VStack, Input, Text, Flex, Box, Image } from '@chakra-ui/react'
+import {
+  Button,
+  VStack,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Text,
+  Flex,
+  Box,
+  Image,
+  Spinner,
+} from '@chakra-ui/react'
 import { MouseEventHandler, useState } from 'react'
 import { BiImage } from 'react-icons/bi'
 import styles from './RichTextEditor.module.scss'
@@ -37,6 +48,7 @@ export const ImageControl = ({
   const [alt, setAlt] = useState('')
   const [dragEnter, setDragEnter] = useState(false)
   const [fileUpload, setFileUpload] = useState(false)
+  const [imageLoading, setImageLoading] = useState(false)
 
   const stopPropagation = (e: React.MouseEvent<HTMLElement>) => {
     if (!fileUpload) {
@@ -61,7 +73,17 @@ export const ImageControl = ({
     setDragEnter(true)
   }
 
+  const toggleShowImageLoading = () => {
+    setImageLoading(!imageLoading)
+  }
+
+  const isInputPopulated = () => {
+    if (imgSrc) setImageLoading(false)
+    else setImageLoading(true)
+  }
+
   const uploadImage = (file: File) => {
+    toggleShowImageLoading()
     const { uploadCallback } = config
     uploadCallback(file)
       .then((res) => {
@@ -69,10 +91,12 @@ export const ImageControl = ({
           setDragEnter(false)
           setImgSrc(res.data.link)
           setFileUpload(false)
+          setImageLoading(false)
         }
       })
       .catch(() => {
         setDragEnter(false)
+        setImageLoading(false)
       })
   }
 
@@ -119,48 +143,63 @@ export const ImageControl = ({
           <Text textAlign="left" textStyle="subhead-1">
             Upload an image
           </Text>
-          <Box w="100px" h="100px" bg="secondary.100" onClick={fileUploadClick}>
+          {imageLoading ? (
+            <Spinner />
+          ) : (
             <Box
-              onDragEnter={onDragEnter}
-              onDragOver={stopPropagation}
-              onDrop={onImageDrop}
+              w="100px"
+              h="100px"
+              bg="secondary.100"
+              onClick={fileUploadClick}
             >
-              <label
-                htmlFor="file"
-                className="rdw-image-modal-upload-option-label"
+              <Box
+                onDragEnter={onDragEnter}
+                onDragOver={stopPropagation}
+                onDrop={onImageDrop}
               >
-                {imgSrc ? (
-                  <Image
-                    src={imgSrc}
-                    alt={alt}
-                    className="rdw-image-modal-upload-option-image-preview"
-                  />
-                ) : (
-                  <Text> Drop image here</Text>
-                )}
-              </label>
+                <label
+                  htmlFor="file"
+                  className="rdw-image-modal-upload-option-label"
+                >
+                  {imgSrc ? (
+                    <Image
+                      src={imgSrc}
+                      alt={alt}
+                      className="rdw-image-modal-upload-option-image-preview"
+                    />
+                  ) : (
+                    <Text> Drop image here</Text>
+                  )}
+                </label>
+              </Box>
+              {/* Chakra UI does not have a file uploader component */}
+              <input
+                type="file"
+                id="file"
+                accept={config.inputAccept}
+                onChange={selectImage}
+                className="rdw-image-modal-upload-option-input"
+              />
             </Box>
-            {/* Chakra UI does not have a file uploader component */}
-            <input
-              type="file"
-              id="file"
-              accept={config.inputAccept}
-              onChange={selectImage}
-              className="rdw-image-modal-upload-option-input"
-            />
-          </Box>
+          )}
 
           <Text textAlign="left" textStyle="subhead-1">
             Paste image URL
           </Text>
-          <Input
-            value={imgSrc}
-            type="text"
-            placeholder="http://"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setImgSrc(e.target.value)
-            }
-          />
+          <InputGroup>
+            <Input
+              value={imgSrc}
+              type="text"
+              placeholder="http://"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setImgSrc(e.target.value)
+                isInputPopulated()
+              }}
+            />
+            <InputRightElement>
+              {imageLoading ? <Spinner /> : null}
+            </InputRightElement>
+          </InputGroup>
           {imgSrc ? (
             <VStack>
               <Text textAlign="left" textStyle="subhead-1">
@@ -170,6 +209,7 @@ export const ImageControl = ({
                 src={imgSrc}
                 alt={alt}
                 className="rdw-image-modal-upload-option-image-preview"
+                onLoad={() => setImageLoading(false)}
               />
             </VStack>
           ) : (
