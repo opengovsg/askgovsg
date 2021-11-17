@@ -224,7 +224,8 @@ const Header = (): JSX.Element => {
                 // Force margins here to override stubborn and temperatmental
                 // Chakra defaults for content within HStack
                 marginInlineStart="0 !important"
-                marginTop="13px !important"
+                marginTop="auto !important"
+                marginBottom="1px !important"
                 position="relative"
                 textStyle="logo"
                 color="black"
