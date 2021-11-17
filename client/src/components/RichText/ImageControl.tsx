@@ -25,8 +25,6 @@ import {
 import { MouseEventHandler, useState } from 'react'
 import { BiImage, BiTrash, BiCloudUpload } from 'react-icons/bi'
 import { UploadCallback } from './RichTextEditor.component'
-import styles from './RichTextEditor.module.scss'
-import './ImageControl.styles.scss'
 
 // ImageControl replaces the pre-built image popup
 // https://jpuri.github.io/react-draft-wysiwyg/#/docs
@@ -71,6 +69,7 @@ export const ImageControl = ({
   const handleCancel: MouseEventHandler<HTMLButtonElement> = () => {
     onImageModalClose()
     setImgSrc('')
+    setAlt('')
   }
 
   const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
@@ -78,6 +77,7 @@ export const ImageControl = ({
     onChange(imgSrc, 'auto', '100%', alt)
     onImageModalClose()
     setImgSrc('')
+    setAlt('')
   }
   const fileUploadClick = (e: React.MouseEvent<HTMLElement>) => {
     setFileUpload(true)
@@ -156,7 +156,7 @@ export const ImageControl = ({
       <ModalOverlay />
       <ModalContent maxW="680px">
         <ModalBody>
-          <div onClick={stopPropagation} className={styles.form}>
+          <div onClick={stopPropagation}>
             <VStack align="stretch">
               <Text
                 textAlign="left"
@@ -397,11 +397,14 @@ export const ImageControl = ({
   )
 
   return (
-    <div className={styles.imageControl}>
-      <div onClick={onImageModalOpen} className="rdw-option-wrapper">
+    <Box
+      display={{ base: 'none', xl: 'block' }}
+      className="rdw-option-wrapper-top"
+    >
+      <Box onClick={onImageModalOpen} className="rdw-option-wrapper">
         <BiImage size="18px" />
-      </div>
+      </Box>
       {renderModal()}
-    </div>
+    </Box>
   )
 }
