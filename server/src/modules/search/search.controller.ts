@@ -1,3 +1,4 @@
+import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
 import { ResultAsync } from 'neverthrow'
 import sanitizeHtml from 'sanitize-html'
@@ -115,6 +116,21 @@ export class SearchController {
     undefined,
     { agencyId: number | undefined; search: string }
   > = async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      logger.error({
+        message: 'Error while searching posts - request validation',
+        meta: {
+          function: 'searchPosts',
+          agencyId: req.query.agencyId,
+          query: req.query.search,
+        },
+        error: errors,
+      })
+      return res.status(StatusCodes.BAD_REQUEST).send({
+        message: 'Bad Request Error - query does not pass validation checks',
+      })
+    }
     const index = 'search_entries'
     return (
       await this.searchService.searchPosts(
@@ -138,7 +154,7 @@ export class SearchController {
         })
         return res
           .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ message: 'Server Error' })
+          .json({ message: 'Internal Server Error' })
       })
   }
 }

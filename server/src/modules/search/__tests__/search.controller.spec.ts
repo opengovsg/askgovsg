@@ -253,7 +253,7 @@ describe('SearchController', () => {
       expect(response.body).toStrictEqual(sampleHits)
     })
 
-    it('returns Internal Server Error when searchService throws Response Error', async () => {
+    it('returns Internal Server Error when searchService throws Error', async () => {
       searchService.searchPosts.mockReturnValue(
         errAsync(
           new errors.ResponseError({
@@ -275,7 +275,7 @@ describe('SearchController', () => {
       )
 
       expect(response.status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
-      expect(response.body).toStrictEqual({ message: 'Server Error' })
+      expect(response.body).toStrictEqual({ message: 'Internal Server Error' })
     })
 
     afterEach(() => {
