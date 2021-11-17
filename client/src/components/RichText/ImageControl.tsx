@@ -68,7 +68,7 @@ export const ImageControl = ({
     }
   }
 
-  const handleCancel: MouseEventHandler<HTMLButtonElement> = (e) => {
+  const handleCancel: MouseEventHandler<HTMLButtonElement> = () => {
     onImageModalClose()
     setImgSrc('')
   }

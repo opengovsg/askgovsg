@@ -1,4 +1,4 @@
-import { EditorState, convertToRaw, ContentState, ContentBlock } from 'draft-js'
+import { EditorState, convertToRaw, ContentState } from 'draft-js'
 import { FC, useEffect, useState, createContext } from 'react'
 
 import './RichTextEditor.styles.scss'
@@ -18,7 +18,6 @@ import { PreviewLinkDecorator } from './LinkDecorator'
 import { FileUploadDto } from '~shared/types/api'
 
 import { ImageControl } from './ImageControl'
-import { ImageBlock } from './ImageBlock'
 
 export type UploadCallback = (
   file: File,
@@ -99,23 +98,6 @@ export const RichTextEditor: FC<{
     onChange(html)
   }, [editorState, onChange, value])
 
-  function renderBlock(block: ContentBlock): unknown | void {
-    if (block.getType() === 'atomic') {
-      const contentState = editorState.getCurrentContent()
-      const entityKey = block.getEntityAt(0)
-
-      if (entityKey) {
-        const entity = contentState.getEntity(entityKey)
-        if (entity?.getType() === 'IMAGE') {
-          return {
-            component: ImageBlock,
-            editable: false,
-          }
-        }
-      }
-    }
-  }
-
   const uploadCallback = async (file: File) => {
     const formData = new FormData()
     formData.append('file', file, file.name)
@@ -142,7 +124,6 @@ export const RichTextEditor: FC<{
         wrapperClassName={styles.wrapper}
         editorClassName={styles.editor}
         toolbarClassName={styles.toolbar}
-        customBlockRenderFunc={renderBlock}
         // Prop styles override CSS styles
         wrapperStyle={wrapperStyle}
         editorStyle={editorStyle}
@@ -170,26 +151,6 @@ export const RichTextPreview: FC<{
     setEditorState(state)
   }, [value])
 
-  function renderBlock(block: ContentBlock): unknown | void {
-    if (block.getType() === 'atomic') {
-      const contentState = editorState.getCurrentContent()
-      const entityKey = block.getEntityAt(0)
-
-      if (entityKey) {
-        const entity = contentState.getEntity(entityKey)
-        if (entity?.getType() === 'IMAGE') {
-          return {
-            component: ImageBlock,
-            editable: false,
-            props: {
-              readOnly: true,
-            },
-          }
-        }
-      }
-    }
-  }
-
   return (
     <EditorContext.Provider value={editorState}>
       <ExtendedEditor
@@ -198,7 +159,6 @@ export const RichTextPreview: FC<{
         placeholder={placeholder}
         editorClassName={editorClassName}
         customDecorators={[PreviewLinkDecorator]}
-        customBlockRenderFunc={renderBlock}
         toolbar={{ link: { showOpenOptionOnHover: false } }}
         readOnly
         toolbarHidden
