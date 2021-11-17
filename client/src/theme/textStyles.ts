@@ -130,4 +130,12 @@ export const textStyles = {
     lineHeight: '12px',
     fontFeatureSettings: "'tnum' on, 'cv05' on",
   },
+  logo: {
+    fontFamily: 'Poppins',
+    fontStyle: 'normal',
+    fontWeight: 600,
+    fontSize: '24px',
+    lineHeight: '32px',
+    letterSpacing: '-0.014em',
+  },
 }
