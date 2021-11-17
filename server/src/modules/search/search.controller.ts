@@ -1,6 +1,9 @@
+import { StatusCodes } from 'http-status-codes'
 import { ResultAsync } from 'neverthrow'
 import sanitizeHtml from 'sanitize-html'
 import { createLogger } from '../../bootstrap/logging'
+import { Message } from '../../types/message-type'
+import { ControllerHandler } from '../../types/response-handler'
 import { SortType } from '../../types/sort-type'
 import { AnswersService } from '../answers/answers.service'
 import { DatabaseError } from '../core/core.errors'
@@ -18,7 +21,7 @@ const logger = createLogger(module)
 export class SearchController {
   private answersService: Pick<AnswersService, 'listAnswers'>
   private postService: Pick<PostService, 'listPosts'>
-  private searchService: Pick<SearchService, 'indexAllData'>
+  private searchService: Pick<SearchService, 'indexAllData' | 'searchPosts'>
 
   constructor({
     answersService,
@@ -27,7 +30,7 @@ export class SearchController {
   }: {
     answersService: Pick<AnswersService, 'listAnswers'>
     postService: Pick<PostService, 'listPosts'>
-    searchService: Pick<SearchService, 'indexAllData'>
+    searchService: Pick<SearchService, 'indexAllData' | 'searchPosts'>
   }) {
     this.answersService = answersService
     this.postService = postService
@@ -97,5 +100,45 @@ export class SearchController {
         )
       })
       .andThen((result) => result)
+  }
+
+  /**
+   * Handle responses related to post searches
+   * @query agencyId
+   * @query search
+   * @returns 200 relevant search entries sorted by relevance
+   * @returns 500 search request fails
+   */
+  searchPosts: ControllerHandler<
+    undefined,
+    Buffer | Message,
+    undefined,
+    { agencyId: number | undefined; search: string }
+  > = async (req, res) => {
+    const index = 'search_entries'
+    return (
+      await this.searchService.searchPosts(
+        index,
+        req.query.search,
+        req.query.agencyId,
+      )
+    )
+      .map((response) => {
+        return res.status(StatusCodes.OK).json(response.body.hits.hits)
+      })
+      .mapErr((error) => {
+        logger.error({
+          message: 'Error while searching posts',
+          meta: {
+            function: 'searchPosts',
+            agencyId: req.query.agencyId,
+            query: req.query.search,
+          },
+          error,
+        })
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Server Error' })
+      })
   }
 }
