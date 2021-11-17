@@ -5,7 +5,6 @@ import {
   Flex,
   Image,
   Link,
-  Stack,
   Text,
   useDisclosure,
 } from '@chakra-ui/react'
@@ -14,10 +13,8 @@ import { BiLinkExternal } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, matchPath, useLocation } from 'react-router-dom'
 import { TagType } from '~shared/types/base'
+import { ReactComponent as Ask } from '../../assets/ask.svg'
 import { ReactComponent as Logo } from '../../assets/logo-alpha.svg'
-import AgencyLogo from '../AgencyLogo/AgencyLogo.component'
-import Masthead from '../Masthead/Masthead.component'
-import { SearchBox } from '../SearchBox/SearchBox.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
@@ -27,7 +24,10 @@ import {
   getPostById,
   GET_POST_BY_ID_QUERY_KEY,
 } from '../../services/PostService'
+import AgencyLogo from '../AgencyLogo/AgencyLogo.component'
 import LinkButton from '../LinkButton/LinkButton.component'
+import Masthead from '../Masthead/Masthead.component'
+import { SearchBox } from '../SearchBox/SearchBox.component'
 import Spinner from '../Spinner/Spinner.component'
 
 const Header = (): JSX.Element => {
@@ -207,38 +207,37 @@ const Header = (): JSX.Element => {
         py={4}
         shrink={0}
       >
-        <Link as={RouterLink} to={agency ? `/agency/${agency.shortname}` : '/'}>
-          <Stack
-            direction={{ base: 'column', md: 'row' }}
-            textDecor="none"
-            align={{ base: 'flex-start', md: 'center' }}
-            position="relative"
-          >
+        <Link
+          _hover={{
+            textDecoration: 'none',
+          }}
+          as={RouterLink}
+          to={agency ? `/agency/${agency.shortname}` : '/'}
+          display="grid"
+          gridTemplateColumns="repeat(2, 1fr)"
+        >
+          {agency ? (
+            // Force margins here to override stubborn and temperatmental
+            // Chakra defaults for content within HStack
+            <>
+              <Ask />
+              <Text
+                // Force margins here to override stubborn and temperatmental
+                // Chakra defaults for content within HStack
+                marginInlineStart="0 !important"
+                marginTop="15px"
+                position="relative"
+                textStyle="logo"
+                color="black"
+              >
+                {agency.shortname.toUpperCase()}
+              </Text>
+            </>
+          ) : (
             <Logo />
-            {agency ? (
-              <>
-                <Text
-                  d={{ base: 'none', md: 'block' }}
-                  px={{ base: 0, md: 2 }}
-                  textStyle="h4"
-                  fontWeight={300}
-                  color="neutral.400"
-                >
-                  |
-                </Text>
-                <Text
-                  position={{ base: 'relative', md: 'static' }}
-                  top={{ base: '-6px', md: 0 }}
-                  textStyle="h4"
-                  fontWeight={400}
-                  color="neutral.900"
-                >
-                  {agency.shortname.toUpperCase()}
-                </Text>
-              </>
-            ) : null}
-          </Stack>
+          )}
         </Link>
+
         <Flex d={{ base: 'none', sm: 'block' }}>
           {agency?.website && <WebsiteLinks />}
         </Flex>
