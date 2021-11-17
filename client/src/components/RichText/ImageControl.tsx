@@ -9,23 +9,26 @@ import {
   Box,
   Image,
   Spinner,
+  Tabs,
+  Tab,
+  TabList,
+  TabPanels,
+  TabPanel,
+  Icon,
 } from '@chakra-ui/react'
 import { MouseEventHandler, useState } from 'react'
-import { BiImage } from 'react-icons/bi'
-import styles from './RichTextEditor.module.scss'
+import { BiImage, BiTrash } from 'react-icons/bi'
 import { UploadCallback } from './RichTextEditor.component'
+import classNames from 'classnames'
+import styles from './RichTextEditor.module.scss'
+import './ImageControl.styles.scss'
 
 // ImageControl replaces the pre-built image popup
 // https://jpuri.github.io/react-draft-wysiwyg/#/docs
 // Under Using custom react component for pre-built toolbar options
 interface ImageControlProps {
-  // currentState: {
-  //   imgSrc: string
-  //   alt: string
-  // }
   expanded: boolean
   onChange: (key: string, ...vals: string[]) => void
-  // doExpand: () => void
   doCollapse: () => void
   onExpandEvent: () => void
   config: {
@@ -35,15 +38,12 @@ interface ImageControlProps {
 }
 
 export const ImageControl = ({
-  // currentState,
   expanded,
   onChange,
-  // doExpand,
   doCollapse,
   onExpandEvent,
   config,
 }: ImageControlProps): JSX.Element => {
-  // const editorState = useContext(EditorContext)
   const [imgSrc, setImgSrc] = useState('')
   const [alt, setAlt] = useState('')
   const [dragEnter, setDragEnter] = useState(false)
@@ -138,124 +138,230 @@ export const ImageControl = ({
 
   const renderModal = () => (
     <div onClick={stopPropagation} className={styles.form}>
-      <Flex w="680px" px="32px">
-        <VStack my="12px" align="stretch">
-          <Text textAlign="left" textStyle="subhead-1">
-            Upload an image
+      <Flex w="680px" px="32px" py="32px">
+        <VStack align="stretch">
+          <Text
+            textAlign="left"
+            textStyle="h2"
+            borderBottom="1px"
+            borderBottomColor="neutral.300"
+            pb="32px"
+          >
+            Insert Image
           </Text>
-          {imageLoading ? (
-            <Spinner />
-          ) : (
-            <Box
-              w="100px"
-              h="100px"
-              bg="secondary.100"
-              onClick={fileUploadClick}
-            >
-              <Box
-                onDragEnter={onDragEnter}
-                onDragOver={stopPropagation}
-                onDrop={onImageDrop}
+          <Tabs variant="line">
+            <TabList>
+              <Tab
+                _selected={{
+                  borderBottom: '2px',
+                  borderBottomColor: 'secondary.800',
+                }}
               >
-                <label
-                  htmlFor="file"
-                  className="rdw-image-modal-upload-option-label"
-                >
-                  {imgSrc ? (
+                <Text textStyle="subhead-1">File Upload</Text>
+              </Tab>
+              <Tab
+                _selected={{
+                  borderBottom: '2px',
+                  borderBottomColor: 'secondary.800',
+                }}
+              >
+                <Text textStyle="subhead-1">Website Address URL</Text>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                <Text textAlign="left" textStyle="subhead-1" pb="12px">
+                  Upload a jpg, png, or gif
+                </Text>
+                {imageLoading ? (
+                  <Spinner />
+                ) : imgSrc ? (
+                  <Box
+                    w="584px"
+                    h="216px"
+                    bg="secondary.100"
+                    border="1px"
+                    borderColor="Secondary.100"
+                    borderStyle="dashed"
+                    onClick={fileUploadClick}
+                  >
+                    <Box
+                      w="160px"
+                      h="160px"
+                      border="1px"
+                      borderColor="neutral.400"
+                      borderRadius="4px"
+                      justifyContent="center"
+                      px="2px"
+                    >
+                      <Image
+                        src={imgSrc}
+                        alt={alt}
+                        className="rdw-image-modal-upload-option-image-preview"
+                        onLoad={() => setImageLoading(false)}
+                      />
+                    </Box>
+
+                    <Icon
+                      as={BiTrash}
+                      color="#C05050"
+                      cursor="pointer"
+                      onClick={() => setImgSrc('')}
+                    />
+                  </Box>
+                ) : (
+                  <Box
+                    w="584px"
+                    h="216px"
+                    bg="secondary.100"
+                    border="1px"
+                    borderColor="Secondary.100"
+                    borderStyle="dashed"
+                    onClick={fileUploadClick}
+                  >
+                    <label
+                      htmlFor="file"
+                      className="rdw-image-modal-upload-option-label"
+                    >
+                      <Box
+                        onDragEnter={onDragEnter}
+                        onDragOver={stopPropagation}
+                        onDrop={onImageDrop}
+                        cursor="pointer"
+                        // w="100%"
+                        // outline="2px dashed gray"
+                        // className={classNames('rdw-image-modal-upload-option', {
+                        //   'rdw-image-modal-upload-option-highlighted':
+                        //     dragEnter,
+                        // })}
+                      >
+                        <Flex w="100%" h="100%" alignSelf="auto">
+                          <Text
+                            fontFamily="Inter"
+                            fontSize="16px"
+                            color="Secondary.800"
+                            as="u"
+                          >
+                            Choose file
+                          </Text>
+                          <Text
+                            fontFamily="Inter"
+                            fontSize="16px"
+                            color="Secondary.800"
+                          >
+                            &nbsp;or drag and drop here
+                          </Text>
+                        </Flex>
+                      </Box>
+                    </label>
+                    <input
+                      type="file"
+                      id="file"
+                      accept={config.inputAccept}
+                      onChange={selectImage}
+                      className="rdw-image-modal-upload-option-input"
+                    />
+                  </Box>
+                )}
+              </TabPanel>
+              <TabPanel>
+                {imgSrc ? (
+                  <Box
+                    w="160px"
+                    h="160px"
+                    border="1px"
+                    borderColor="neutral.400"
+                    borderRadius="4px"
+                    justifyContent="center"
+                    px="2px"
+                  >
                     <Image
                       src={imgSrc}
                       alt={alt}
                       className="rdw-image-modal-upload-option-image-preview"
+                      onLoad={() => setImageLoading(false)}
                     />
-                  ) : (
-                    <Text> Drop image here</Text>
-                  )}
-                </label>
+                  </Box>
+                ) : null}
+                <Text
+                  textAlign="left"
+                  textStyle="subhead-1"
+                  pt="16px"
+                  pb="12px"
+                >
+                  Paste image URL
+                </Text>
+                <InputGroup>
+                  <Input
+                    value={imgSrc}
+                    type="text"
+                    placeholder="http://"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setImgSrc(e.target.value)
+                      isInputPopulated()
+                    }}
+                  />
+                  <InputRightElement>
+                    {imageLoading ? <Spinner /> : null}
+                  </InputRightElement>
+                </InputGroup>
+              </TabPanel>
+            </TabPanels>
+            {imgSrc ? (
+              <Box>
+                <Box px="16px" py="16px">
+                  <Text textStyle="subhead-1">Alt text</Text>
+                  <Text textStyle="body-2">
+                    Alt text (text that describes this media) improves
+                    accessibility for people who can’t see images on web pages,
+                    including users who use screen readers. This text will not
+                    appear on your page.
+                  </Text>
+                </Box>
+                <Box
+                  px="16px"
+                  pb="32px"
+                  borderBottom="1px"
+                  borderBottomColor="neutral.300"
+                >
+                  <Input
+                    value={alt}
+                    isRequired
+                    placeholder="e.g. Table of the different quarantine types"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setAlt(e.target.value)
+                    }
+                  />
+                </Box>
               </Box>
-              {/* Chakra UI does not have a file uploader component */}
-              <input
-                type="file"
-                id="file"
-                accept={config.inputAccept}
-                onChange={selectImage}
-                className="rdw-image-modal-upload-option-input"
-              />
-            </Box>
-          )}
-
-          <Text textAlign="left" textStyle="subhead-1">
-            Paste image URL
-          </Text>
-          <InputGroup>
-            <Input
-              value={imgSrc}
-              type="text"
-              placeholder="http://"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setImgSrc(e.target.value)
-                isInputPopulated()
-              }}
-            />
-            <InputRightElement>
-              {imageLoading ? <Spinner /> : null}
-            </InputRightElement>
-          </InputGroup>
-          {imgSrc ? (
-            <VStack>
-              <Text textAlign="left" textStyle="subhead-1">
-                Image preview
-              </Text>
-              <Image
-                src={imgSrc}
-                alt={alt}
-                className="rdw-image-modal-upload-option-image-preview"
-                onLoad={() => setImageLoading(false)}
-              />
-            </VStack>
-          ) : (
-            <Text>Image not loaded</Text>
-          )}
-
-          <Text textStyle="subhead-1">Alt text</Text>
-          <Text textStyle="body-2">
-            Alt text (text that describes this media) improves accessibility for
-            people who can’t see images on web pages, including users who use
-            screen readers. This text will not appear on your page.
-          </Text>
-          <Input
-            value={alt}
-            isRequired
-            placeholder="e.g. Table of the different quarantine types"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setAlt(e.target.value)
-            }
-          />
-          <Flex alignContent="right">
-            <Button
-              textStyle="subhead-1"
-              backgroundColor="white"
-              onClick={doCollapse}
-              name="img_url_button"
-              _hover={undefined}
-              _active={undefined}
-              _focus={undefined}
-            >
-              Cancel
-            </Button>
-            <Button
-              textStyle="subhead-1"
-              backgroundColor="secondary.700"
-              color="white"
-              onClick={handleSubmit}
-              name="img_url_button"
-              isDisabled={!imgSrc || !alt}
-              _hover={undefined}
-              _active={undefined}
-              _focus={undefined}
-            >
-              Insert Image
-            </Button>
-          </Flex>
+            ) : null}
+            <Flex justifyContent="flex-end" pt="16px" px="16px">
+              <Button
+                textStyle="subhead-1"
+                backgroundColor="white"
+                onClick={doCollapse}
+                name="img_url_button"
+                _hover={undefined}
+                _active={undefined}
+                _focus={undefined}
+              >
+                Cancel
+              </Button>
+              <Button
+                textStyle="subhead-1"
+                backgroundColor="secondary.700"
+                color="white"
+                onClick={handleSubmit}
+                name="img_url_button"
+                isDisabled={!imgSrc || !alt}
+                _hover={undefined}
+                _active={undefined}
+                _focus={undefined}
+              >
+                Insert Image
+              </Button>
+            </Flex>
+          </Tabs>
         </VStack>
       </Flex>
     </div>
