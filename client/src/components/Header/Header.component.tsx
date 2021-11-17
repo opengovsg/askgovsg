@@ -3,6 +3,7 @@ import {
   Button,
   Collapse,
   Flex,
+  HStack,
   Image,
   Link,
   Text,
@@ -213,26 +214,24 @@ const Header = (): JSX.Element => {
           }}
           as={RouterLink}
           to={agency ? `/agency/${agency.shortname}` : '/'}
-          display="grid"
-          gridTemplateColumns="repeat(2, 1fr)"
         >
           {agency ? (
-            // Force margins here to override stubborn and temperatmental
-            // Chakra defaults for content within HStack
-            <>
-              <Ask />
+            <HStack>
+              <Box marginRight="-1px">
+                <Ask />
+              </Box>
               <Text
                 // Force margins here to override stubborn and temperatmental
                 // Chakra defaults for content within HStack
                 marginInlineStart="0 !important"
-                marginTop="15px"
+                marginTop="13px !important"
                 position="relative"
                 textStyle="logo"
                 color="black"
               >
                 {agency.shortname.toUpperCase()}
               </Text>
-            </>
+            </HStack>
           ) : (
             <Logo />
           )}
