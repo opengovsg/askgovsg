@@ -240,13 +240,13 @@ describe('SearchController', () => {
 
       const app = express()
       app.get(
-        '/questions',
-        [query('agencyId').isInt().toInt(), query('search').isString().trim()],
+        '/search',
+        [query('agencyId').isInt().toInt(), query('query').isString().trim()],
         searchController.searchPosts,
       )
       const request = supertest(app)
       const response = await request.get(
-        `/questions?agencyId=${agencyId}&search=${searchQuery}`,
+        `/search?agencyId=${agencyId}&query=${searchQuery}`,
       )
 
       expect(response.status).toEqual(StatusCodes.OK)
@@ -265,14 +265,12 @@ describe('SearchController', () => {
 
       const app = express()
       app.get(
-        '/questions',
-        [query('agencyId').isInt().toInt(), query('search').isString().trim()],
+        '/search',
+        [query('agencyId').isInt().toInt(), query('query').isString().trim()],
         searchController.searchPosts,
       )
       const request = supertest(app)
-      const response = await request.get(
-        `/questions?agencyId=1&search=searchQuery`,
-      )
+      const response = await request.get(`/search?agencyId=1&query=searchQuery`)
 
       expect(response.status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
       expect(response.body).toStrictEqual({ message: 'Internal Server Error' })

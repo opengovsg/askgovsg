@@ -114,7 +114,7 @@ export class SearchController {
     undefined,
     Buffer | Message,
     undefined,
-    { agencyId: number | undefined; search: string }
+    { agencyId: number | undefined; query: string }
   > = async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -123,7 +123,7 @@ export class SearchController {
         meta: {
           function: 'searchPosts',
           agencyId: req.query.agencyId,
-          query: req.query.search,
+          query: req.query.query,
         },
         error: errors,
       })
@@ -135,7 +135,7 @@ export class SearchController {
     return (
       await this.searchService.searchPosts(
         index,
-        req.query.search,
+        req.query.query,
         req.query.agencyId,
       )
     )
@@ -148,7 +148,7 @@ export class SearchController {
           meta: {
             function: 'searchPosts',
             agencyId: req.query.agencyId,
-            query: req.query.search,
+            query: req.query.query,
           },
           error,
         })

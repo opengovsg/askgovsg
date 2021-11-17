@@ -5,8 +5,10 @@ import supertest from 'supertest'
 import { SearchController } from '../search.controller'
 import { routeSearch } from '../search.routes'
 
-describe('/questions', () => {
-  describe('GET /questions', () => {
+describe('/search', () => {
+  describe('GET /search', () => {
+    const path = '/search'
+
     const answersService = {
       listAnswers: jest.fn(),
     }
@@ -69,7 +71,6 @@ describe('/questions', () => {
       statusCode: 200,
     }
     it('returns OK on valid query', async () => {
-      const path = '/questions'
       const app = express()
       app.use(router)
       const request = supertest(app)
@@ -78,14 +79,13 @@ describe('/questions', () => {
         okAsync(sampleSearchPostsResponse),
       )
 
-      const response = await request.get(path).query({ search: 'test' })
+      const response = await request.get(path).query({ query: 'test' })
 
       expect(response.status).toEqual(StatusCodes.OK)
       expect(response.body).toStrictEqual(sampleHits)
     })
 
     it('returns BAD REQUEST on invalid agencyId format', async () => {
-      const path = '/questions'
       const app = express()
       app.use(router)
       const request = supertest(app)
@@ -96,7 +96,7 @@ describe('/questions', () => {
 
       const response = await request
         .get(path)
-        .query({ agencyId: 'test', search: 'test search' })
+        .query({ agencyId: 'test', query: 'test search' })
 
       expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
       expect(response.body).toStrictEqual({
@@ -105,7 +105,7 @@ describe('/questions', () => {
     })
 
     it('uses trimmed search query to search posts', async () => {
-      const path = '/questions'
+      const path = '/search'
       const app = express()
       app.use(router)
       const request = supertest(app)
@@ -117,7 +117,7 @@ describe('/questions', () => {
       const trimmedSearch = 'test search'
       const response = await request
         .get(path)
-        .query({ search: ` ${trimmedSearch}      ` })
+        .query({ query: ` ${trimmedSearch}      ` })
 
       expect(response.status).toEqual(StatusCodes.OK)
       expect(searchService.searchPosts).toHaveBeenCalledWith(

@@ -17,10 +17,10 @@ export const routeSearch = ({
    * @access  Public
    */
   router.get(
-    '/questions',
+    '/search',
     [
       query('agencyId').isInt().toInt().optional({ nullable: true }),
-      query('search').isString().trim(),
+      query('query').isString().trim(),
     ],
     controller.searchPosts,
   )
