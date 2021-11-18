@@ -3,8 +3,6 @@ import {
   HStack,
   VStack,
   Input,
-  InputGroup,
-  InputRightElement,
   Text,
   Flex,
   Box,
@@ -21,6 +19,8 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  Divider,
+  useMultiStyleConfig,
 } from '@chakra-ui/react'
 import { MouseEventHandler, useState } from 'react'
 import { BiImage, BiTrash, BiCloudUpload } from 'react-icons/bi'
@@ -44,6 +44,8 @@ export const ImageControl = ({
   onChange,
   config,
 }: ImageControlProps): JSX.Element => {
+  const styles = useMultiStyleConfig('ImageUpload', {})
+
   const [imgSrc, setImgSrc] = useState('')
   const [alt, setAlt] = useState('')
   const [fileUpload, setFileUpload] = useState(false)
@@ -90,11 +92,6 @@ export const ImageControl = ({
 
   const toggleShowImageLoading = () => {
     setImageLoading(!imageLoading)
-  }
-
-  const isInputPopulated = () => {
-    if (imgSrc) setImageLoading(false)
-    else setImageLoading(true)
   }
 
   const uploadImage = (file: File) => {
@@ -158,62 +155,23 @@ export const ImageControl = ({
         <ModalBody>
           <div onClick={stopPropagation}>
             <VStack align="stretch">
-              <Text
-                textAlign="left"
-                textStyle="h2"
-                borderBottom="1px"
-                borderBottomColor="neutral.300"
-                py="16px"
-              >
-                Insert Image
-              </Text>
-              <Tabs variant="line">
-                <TabList>
-                  <Tab
-                    _selected={{
-                      borderBottom: '2px',
-                      borderBottomColor: 'secondary.800',
-                    }}
-                  >
+              <Text sx={styles.titleText}>Insert Image</Text>
+              <Tabs variant="unstyled">
+                <TabList h="56px">
+                  <Tab sx={styles.tabText}>
                     <Text textStyle="subhead-1">File Upload</Text>
-                  </Tab>
-                  <Tab
-                    _selected={{
-                      borderBottom: '2px',
-                      borderBottomColor: 'secondary.800',
-                    }}
-                  >
-                    <Text textStyle="subhead-1">Website Address URL</Text>
                   </Tab>
                 </TabList>
                 <TabPanels>
                   <TabPanel>
-                    <Text textAlign="left" textStyle="subhead-1" pb="12px">
+                    <Text sx={styles.fileUploadFormatText}>
                       Upload a jpg, png, or gif
                     </Text>
                     {imageLoading ? (
                       <Spinner />
                     ) : imgSrc ? (
-                      <Box
-                        w="584px"
-                        h="248px"
-                        bg="secondary.100"
-                        py="16px"
-                        px="14px"
-                      >
-                        <Flex
-                          w="160px"
-                          h="160px"
-                          px="8px"
-                          py="8px"
-                          mb="16px"
-                          bg="white"
-                          border="1px"
-                          borderColor="neutral.400"
-                          borderRadius="4px"
-                          alignItems="center"
-                          position="relative"
-                        >
+                      <Box sx={styles.uploadedLargeBox}>
+                        <Flex sx={styles.uploadedImageFlexBox}>
                           <Image
                             src={imgSrc}
                             alt={alt}
@@ -228,9 +186,9 @@ export const ImageControl = ({
                             </Text>
                             <Text textStyle="caption-1">{fileSize} KB</Text>
                           </Box>
-                          <Box justifyContent="flex-end">
+                          <Box justifyContent="flex-end" pr="12px">
                             <BiTrash
-                              size="15px"
+                              size="17px"
                               color="#C05050"
                               cursor="pointer"
                               onClick={() => setImgSrc('')}
@@ -239,15 +197,7 @@ export const ImageControl = ({
                         </HStack>
                       </Box>
                     ) : (
-                      <Box
-                        w="600px"
-                        h="216px"
-                        bg="secondary.100"
-                        border="1px"
-                        borderColor="Secondary.100"
-                        borderStyle="dashed"
-                        onClick={fileUploadClick}
-                      >
+                      <Box sx={styles.fileUploadBox} onClick={fileUploadClick}>
                         <label
                           htmlFor="file"
                           className="rdw-image-modal-upload-option-label"
@@ -258,23 +208,14 @@ export const ImageControl = ({
                             onDrop={onImageDrop}
                             cursor="pointer"
                           >
-                            <Flex w="100%" h="100%" alignSelf="auto">
+                            <Flex>
                               <VStack>
                                 <BiCloudUpload size="50px" />
                                 <Flex>
-                                  <Text
-                                    fontFamily="Inter"
-                                    fontSize="16px"
-                                    color="Secondary.800"
-                                    as="u"
-                                  >
+                                  <Text sx={styles.fileUploadText} as="u">
                                     Choose file
                                   </Text>
-                                  <Text
-                                    fontFamily="Inter"
-                                    fontSize="16px"
-                                    color="Secondary.800"
-                                  >
+                                  <Text sx={styles.fileUploadText}>
                                     &nbsp;or drag and drop here
                                   </Text>
                                 </Flex>
@@ -289,62 +230,17 @@ export const ImageControl = ({
                           onChange={selectImage}
                           className="rdw-image-modal-upload-option-input"
                         />
+                        <Text textStyle="body-2" pt="8px">
+                          Maximum file size: 10MB
+                        </Text>
                       </Box>
                     )}
-                  </TabPanel>
-                  <TabPanel>
-                    {imgSrc ? (
-                      <Flex
-                        w="160px"
-                        h="160px"
-                        px="8px"
-                        py="8px"
-                        mb="16px"
-                        mt="16px"
-                        bg="white"
-                        border="1px"
-                        borderColor="neutral.400"
-                        borderRadius="4px"
-                        alignItems="center"
-                        position="relative"
-                      >
-                        <Image
-                          src={imgSrc}
-                          alt={alt}
-                          className="rdw-image-modal-upload-option-image-preview"
-                          onLoad={() => setImageLoading(false)}
-                        />
-                      </Flex>
-                    ) : null}
-                    <Text
-                      textAlign="left"
-                      textStyle="subhead-1"
-                      pt="16px"
-                      pb="12px"
-                    >
-                      Paste image URL
-                    </Text>
-                    <InputGroup>
-                      <Input
-                        value={imgSrc}
-                        borderColor={imgSrc ? 'success.900' : undefined}
-                        type="text"
-                        placeholder="http://"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          setImgSrc(e.target.value)
-                          isInputPopulated()
-                        }}
-                      />
-                      <InputRightElement>
-                        {imageLoading ? <Spinner /> : null}
-                      </InputRightElement>
-                    </InputGroup>
                   </TabPanel>
                 </TabPanels>
               </Tabs>
               {imgSrc ? (
                 <Box>
-                  <Box px="16px" pb="16px" pt="8px">
+                  <Box sx={styles.altTextBox}>
                     <Text textStyle="subhead-1">Alt text</Text>
                     <Text textStyle="body-2">
                       Alt text (text that describes this media) improves
@@ -353,7 +249,7 @@ export const ImageControl = ({
                       will not appear on your page.
                     </Text>
                   </Box>
-                  <Box px="16px" pb="32px">
+                  <Box px="16px">
                     <Input
                       value={alt}
                       isRequired
@@ -365,27 +261,19 @@ export const ImageControl = ({
                   </Box>
                 </Box>
               ) : null}
-              {/* </Tabs> */}
             </VStack>
           </div>
+          <Divider sx={styles.divider} />
         </ModalBody>
-        <ModalFooter border="1px" borderColor="neutral.300">
-          <Flex justifyContent="flex-end" px="16px" pb="16px">
-            <Button
-              textStyle="subhead-1"
-              backgroundColor="white"
-              onClick={handleCancel}
-              name="img_url_button"
-            >
+        <ModalFooter>
+          <Flex sx={styles.buttonsFlexBox}>
+            <Button sx={styles.cancelButton} onClick={handleCancel}>
               Cancel
             </Button>
             <Box w="8px"></Box>
             <Button
-              textStyle="subhead-1"
-              backgroundColor="secondary.700"
-              color="white"
+              sx={styles.submitButton}
               onClick={handleSubmit}
-              name="img_url_button"
               isDisabled={!imgSrc || !alt}
             >
               Insert Image
@@ -397,10 +285,7 @@ export const ImageControl = ({
   )
 
   return (
-    <Box
-      display={{ base: 'none', xl: 'block' }}
-      className="rdw-option-wrapper-top"
-    >
+    <Box display={{ base: 'none', xl: 'block' }}>
       <Box onClick={onImageModalOpen} className="rdw-option-wrapper">
         <BiImage size="18px" />
       </Box>
