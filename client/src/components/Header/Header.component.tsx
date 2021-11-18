@@ -189,11 +189,14 @@ const Header = (): JSX.Element => {
             <SearchBox agencyId={agency?.id} />
           </Flex>
         </Flex>
-        {Boolean(agency) ? (
-          <Box px="36px" mt="-55px" display={{ base: 'none', xl: 'flex' }}>
-            <AgencyLogo agency={agency} />
-          </Box>
-        ) : null}
+        {agencyShortName && (
+          <AgencyLogo
+            ml="36px"
+            mt="-55px"
+            display={{ base: 'none', xl: 'flex' }}
+            agency={agency}
+          />
+        )}
       </Box>
     )
   }
