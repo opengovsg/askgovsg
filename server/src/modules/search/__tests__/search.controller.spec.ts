@@ -254,14 +254,11 @@ describe('SearchController', () => {
     })
 
     it('returns Internal Server Error when searchService throws Error', async () => {
-      searchService.searchPosts.mockReturnValue(
-        errAsync(
-          new errors.ResponseError({
-            body: { errors: {}, status: StatusCodes.BAD_REQUEST },
-            statusCode: StatusCodes.BAD_REQUEST,
-          }),
-        ),
-      )
+      const mockedResponseError = new errors.ResponseError({
+        body: { errors: {}, status: StatusCodes.BAD_REQUEST },
+        statusCode: StatusCodes.BAD_REQUEST,
+      })
+      searchService.searchPosts.mockReturnValue(errAsync(mockedResponseError))
 
       const app = express()
       app.get(
@@ -273,7 +270,9 @@ describe('SearchController', () => {
       const response = await request.get(`/search?agencyId=1&query=searchQuery`)
 
       expect(response.status).toEqual(StatusCodes.INTERNAL_SERVER_ERROR)
-      expect(response.body).toStrictEqual({ message: 'Internal Server Error' })
+      expect(response.body).toEqual(
+        JSON.parse(JSON.stringify(mockedResponseError)),
+      )
     })
 
     afterEach(() => {

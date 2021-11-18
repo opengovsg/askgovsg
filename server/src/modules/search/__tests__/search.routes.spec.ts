@@ -72,7 +72,7 @@ describe('/', () => {
     }
     it('returns OK on valid query', async () => {
       const app = express()
-      app.use(router)
+      app.use(path, router)
       const request = supertest(app)
 
       searchService.searchPosts.mockReturnValue(
@@ -87,7 +87,7 @@ describe('/', () => {
 
     it('returns BAD REQUEST on invalid agencyId format', async () => {
       const app = express()
-      app.use(router)
+      app.use(path, router)
       const request = supertest(app)
 
       searchService.searchPosts.mockReturnValue(
@@ -106,7 +106,7 @@ describe('/', () => {
 
     it('uses trimmed search query to search posts', async () => {
       const app = express()
-      app.use(router)
+      app.use(path, router)
       const request = supertest(app)
 
       searchService.searchPosts.mockReturnValue(
