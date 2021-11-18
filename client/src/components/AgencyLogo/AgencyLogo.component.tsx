@@ -1,19 +1,31 @@
-import { Box, Image, Link, Spinner } from '@chakra-ui/react'
+import {
+  Box,
+  Image,
+  LayoutProps,
+  Link,
+  SpaceProps,
+  Spinner,
+} from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
+import { Agency } from '~shared/types/base'
 
-const AgencyLogo = ({ agency }) => {
+const AgencyLogo = ({
+  agency,
+  ...props
+}: Pick<LayoutProps, 'display'> &
+  SpaceProps & { agency: Agency }): JSX.Element => {
   return (
     <Box
+      {...props}
       width="120px"
       height="120px"
       p="5px"
       position="relative"
-      display="flex"
-      justify-content="center"
+      justifyContent="center"
       alignItems="center"
       overflow="hidden"
       borderRadius="10px"
-      bg="#fff"
+      bg="white"
     >
       {agency ? (
         <Link
@@ -28,7 +40,8 @@ const AgencyLogo = ({ agency }) => {
             display="flex"
             alignItems="center"
             overflow="hidden"
-            border="1px solid #DADCE3"
+            border="1px solid"
+            borderColor="secondary.200"
             borderRadius="10px"
           >
             {agency && (
