@@ -13,7 +13,7 @@ const AgencyLogo = ({
   agency,
   ...props
 }: Pick<LayoutProps, 'display'> &
-  SpaceProps & { agency: Agency }): JSX.Element => {
+  SpaceProps & { agency?: Agency }): JSX.Element => {
   return (
     <Box
       {...props}
@@ -32,7 +32,7 @@ const AgencyLogo = ({
           width="100%"
           height="100%"
           as={RouterLink}
-          to={agency ? `/agency/${agency.shortname}` : '/'}
+          to={`/agency/${agency.shortname}`}
         >
           <Box
             width="100%"
@@ -44,20 +44,18 @@ const AgencyLogo = ({
             borderColor="secondary.200"
             borderRadius="10px"
           >
-            {agency && (
-              <Image
-                src={agency.logo}
-                alt="Agency Logo"
-                loading="lazy"
-                display="inline"
-                htmlWidth="120px"
-                htmlHeight="120px"
-                maxW="100%"
-                maxH="100%"
-                width="auto"
-                height="auto"
-              />
-            )}
+            <Image
+              src={agency.logo}
+              alt="Agency Logo"
+              loading="lazy"
+              display="inline"
+              htmlWidth="120px"
+              htmlHeight="120px"
+              maxW="100%"
+              maxH="100%"
+              width="auto"
+              height="auto"
+            />
           </Box>
         </Link>
       ) : (

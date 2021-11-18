@@ -189,7 +189,7 @@ const Header = (): JSX.Element => {
             <SearchBox agencyId={agency?.id} />
           </Flex>
         </Flex>
-        {agency && (
+        {agencyShortName && (
           <AgencyLogo
             ml="36px"
             mt="-55px"
