@@ -4,6 +4,7 @@ import { SearchBox } from './SearchBox'
 import { Pagination } from './Pagination'
 import { ImageUpload } from './ImageUpload'
 import { Header } from './Header'
+import { ImageEdit } from './ImageEdit'
 
 export const components = {
   Button,
@@ -12,4 +13,5 @@ export const components = {
   SearchBox,
   Pagination,
   ImageUpload,
+  ImageEdit,
 }

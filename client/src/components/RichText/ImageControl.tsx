@@ -58,6 +58,7 @@ export const ImageControl = ({
   const [imageLoading, setImageLoading] = useState(false)
   const [fileName, setFileName] = useState('')
   const [fileSize, setFileSize] = useState(0)
+  const WIDTH = '100%'
 
   const {
     onOpen: onImageModalOpen,
@@ -82,7 +83,7 @@ export const ImageControl = ({
 
   const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
-    onChange(imgSrc, 'auto', '100%', alt)
+    onChange(imgSrc, 'auto', WIDTH, alt)
     onImageModalClose()
     setImgSrc('')
     setAlt('')
@@ -182,6 +183,7 @@ export const ImageControl = ({
                           <Image
                             src={imgSrc}
                             alt={alt}
+                            width={WIDTH}
                             className="rdw-image-modal-upload-option-image-preview"
                             onLoad={() => setImageLoading(false)}
                           />
