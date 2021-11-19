@@ -15,7 +15,6 @@ import { useQuery } from 'react-query'
 import { Link as RouterLink, matchPath, useLocation } from 'react-router-dom'
 import { TagType } from '~shared/types/base'
 import { ReactComponent as Ask } from '../../assets/ask.svg'
-import { ReactComponent as Logo } from '../../assets/logo-alpha.svg'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
@@ -218,27 +217,23 @@ const Header = (): JSX.Element => {
           as={RouterLink}
           to={agency ? `/agency/${agency.shortname}` : '/'}
         >
-          {agency ? (
-            <HStack>
-              <Box marginRight="-1px">
-                <Ask />
-              </Box>
-              <Text
-                // Force margins here to override stubborn and temperatmental
-                // Chakra defaults for content within HStack
-                marginInlineStart="0 !important"
-                marginTop="auto !important"
-                marginBottom="1px !important"
-                position="relative"
-                textStyle="logo"
-                color="black"
-              >
-                {agency.shortname.toUpperCase()}
-              </Text>
-            </HStack>
-          ) : (
-            <Logo />
-          )}
+          <HStack>
+            <Box marginRight="-2px">
+              <Ask />
+            </Box>
+            <Text
+              // Force margins here to override stubborn and temperatmental
+              // Chakra defaults for content within HStack
+              marginInlineStart="0 !important"
+              marginTop="auto !important"
+              marginBottom="1px !important"
+              position="relative"
+              textStyle="logo"
+              color="black"
+            >
+              {agency?.shortname.toUpperCase() || 'gov'}
+            </Text>
+          </HStack>
         </Link>
 
         <Flex d={{ base: 'none', sm: 'block' }}>
@@ -260,31 +255,35 @@ const Header = (): JSX.Element => {
     >
       <Masthead />
       {deviceType === device.desktop ? (
-        <LogoBar />
-      ) : matchQuestions ? null : (
-        <Collapse in={headerIsOpen} animateOpacity={false}>
+        <>
           <LogoBar />
-        </Collapse>
-      )}
-      {deviceType === device.desktop && !headerIsOpen ? (
-        <Flex
-          h="56px"
-          m="auto"
-          px={{ base: '24px', md: 'auto' }}
-          maxW="680px"
-          w="100%"
-          mt="-68px"
-          d={{ base: 'none', xl: 'block' }}
-        >
-          <SearchBox agencyId={agency?.id} />
-        </Flex>
-      ) : null}
-      {!matchQuestions && deviceType === device.desktop ? (
-        <Collapse in={headerIsOpen} animateOpacity={false}>
+          {!headerIsOpen ? (
+            <Flex
+              h="56px"
+              m="auto"
+              px={{ base: '24px', md: 'auto' }}
+              maxW="680px"
+              w="100%"
+              mt="-68px"
+            >
+              <SearchBox agencyId={agency?.id} />
+            </Flex>
+          ) : null}
+          {!matchQuestions ? (
+            <Collapse in={headerIsOpen} animateOpacity={false}>
+              <ExpandedSearch />
+            </Collapse>
+          ) : null}
+        </>
+      ) : (
+        <>
+          {!matchQuestions ? (
+            <Collapse in={headerIsOpen} animateOpacity={false}>
+              <LogoBar />
+            </Collapse>
+          ) : null}
           <ExpandedSearch />
-        </Collapse>
-      ) : matchQuestions && deviceType === device.desktop ? null : (
-        <ExpandedSearch />
+        </>
       )}
     </Flex>
   )
