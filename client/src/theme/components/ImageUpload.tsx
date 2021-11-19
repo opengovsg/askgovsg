@@ -85,9 +85,14 @@ export const ImageUpload: ComponentMultiStyleConfig = {
       pt: '8px',
     },
     divider: {
-      border: '1px',
-      borderColor: 'neutral.300',
+      size: '1px',
+      color: 'neutral.300',
       mt: '48px',
+    },
+    tabDivider: {
+      size: '1px',
+      color: 'neutral.300',
+      mt: '-1px',
     },
     buttonsFlexBox: {
       justifyContent: 'flex-end',

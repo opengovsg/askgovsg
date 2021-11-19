@@ -168,6 +168,7 @@ export const ImageControl = ({
                     <Text textStyle="subhead-1">File Upload</Text>
                   </Tab>
                 </TabList>
+                <Divider sx={styles.tabDivider} />
                 <TabPanels>
                   <TabPanel>
                     <Text sx={styles.fileUploadFormatText}>
@@ -203,31 +204,31 @@ export const ImageControl = ({
                         </HStack>
                       </Box>
                     ) : (
-                      <Box sx={styles.fileUploadBox} onClick={fileUploadClick}>
+                      <Box
+                        sx={styles.fileUploadBox}
+                        onClick={fileUploadClick}
+                        onDragEnter={onDragEnter}
+                        onDragOver={stopPropagation}
+                        onDrop={onImageDrop}
+                        cursor="pointer"
+                      >
                         <label
                           htmlFor="file"
                           className="rdw-image-modal-upload-option-label"
                         >
-                          <Box
-                            onDragEnter={onDragEnter}
-                            onDragOver={stopPropagation}
-                            onDrop={onImageDrop}
-                            cursor="pointer"
-                          >
-                            <Flex>
-                              <VStack>
-                                <BiCloudUpload size="50px" />
-                                <Flex>
-                                  <Text sx={styles.fileUploadText} as="u">
-                                    Choose file
-                                  </Text>
-                                  <Text sx={styles.fileUploadText}>
-                                    &nbsp;or drag and drop here
-                                  </Text>
-                                </Flex>
-                              </VStack>
-                            </Flex>
-                          </Box>
+                          <Flex>
+                            <VStack>
+                              <BiCloudUpload size="50px" />
+                              <Flex>
+                                <Text sx={styles.fileUploadText} as="u">
+                                  Choose file
+                                </Text>
+                                <Text sx={styles.fileUploadText}>
+                                  &nbsp;or drag and drop here
+                                </Text>
+                              </Flex>
+                            </VStack>
+                          </Flex>
                         </label>
                         <input
                           type="file"
