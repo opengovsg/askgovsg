@@ -14,9 +14,10 @@ export type BasePostDto = BaseModelParams & {
 }
 
 // Backend does not select updatedAt
-export type GetSinglePostDto = Omit<BasePostDto, 'updatedAt'> & {
+export type GetSinglePostDto = BasePostDto & {
   tags: BaseTagDto[]
   user: Pick<User, 'displayname'>
+  relatedPosts: BasePostDto[]
 }
 
 export type GetPostsDto = {

@@ -22,7 +22,13 @@ import {
   Divider,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
-import { MouseEventHandler, useState } from 'react'
+import {
+  ChangeEvent,
+  DragEvent,
+  MouseEvent,
+  MouseEventHandler,
+  useState,
+} from 'react'
 import { BiImage, BiTrash, BiCloudUpload } from 'react-icons/bi'
 import { UploadCallback } from './RichTextEditor.component'
 
@@ -59,7 +65,7 @@ export const ImageControl = ({
     isOpen: isImageModalOpen,
   } = useDisclosure()
 
-  const stopPropagation = (e: React.MouseEvent<HTMLElement>) => {
+  const stopPropagation = (e: MouseEvent<HTMLElement>) => {
     if (!fileUpload) {
       e.preventDefault()
       e.stopPropagation()
@@ -81,12 +87,12 @@ export const ImageControl = ({
     setImgSrc('')
     setAlt('')
   }
-  const fileUploadClick = (e: React.MouseEvent<HTMLElement>) => {
+  const fileUploadClick = (e: MouseEvent<HTMLElement>) => {
     setFileUpload(true)
     e.stopPropagation()
   }
 
-  const onDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+  const onDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.stopPropagation()
   }
 
@@ -113,7 +119,7 @@ export const ImageControl = ({
       })
   }
 
-  const onImageDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const onImageDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     e.stopPropagation()
 
@@ -142,7 +148,7 @@ export const ImageControl = ({
     }
   }
 
-  const selectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const selectImage = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       uploadImage(e.target.files[0])
     }
@@ -254,7 +260,7 @@ export const ImageControl = ({
                       value={alt}
                       isRequired
                       placeholder="e.g. Table of the different quarantine types"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setAlt(e.target.value)
                       }
                     />

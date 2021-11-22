@@ -5,7 +5,7 @@ import { BiXCircle } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link, useParams } from 'react-router-dom'
 import sanitizeHtml from 'sanitize-html'
-import { PostStatus, TagType } from '~shared/types/base'
+import { PostStatus } from '~shared/types/base'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import EditButton from '../../components/EditButton/EditButton.component'
 import { NavBreadcrumb } from '../../components/NavBreadcrumb/NavBreadcrumb'
@@ -32,25 +32,26 @@ import AnswerSection from './AnswerSection/AnswerSection.component'
 import './Post.styles.scss'
 import QuestionSection from './QuestionSection/QuestionSection.component'
 
-const Post = () => {
+const Post = (): JSX.Element => {
   // Does not need to handle logic when public post with id postId is not found because this is handled by server
   const { id: postId } = useParams()
   const { isLoading: isPostLoading, data: post } = useQuery(
     [GET_POST_BY_ID_QUERY_KEY, postId],
-    () => getPostById(postId, 3),
+    () => getPostById(Number(postId), 3),
+    { enabled: !!postId },
   )
 
   const agencyId = post?.agencyId
   const { isLoading: isAgencyLoading, data: agency } = useQuery(
     [GET_AGENCY_BY_ID_QUERY_KEY, agencyId],
-    () => getAgencyById(agencyId),
+    () => getAgencyById(Number(agencyId)),
     { enabled: !!agencyId },
   )
 
   const topicId = post?.topicId
   const { isLoading: isTopicLoading, data: topic } = useQuery(
     [GET_TOPIC_BY_ID_QUERY_KEY, topicId],
-    () => getTopicById(topicId),
+    () => getTopicById(Number(topicId)),
     { enabled: !!topicId },
   )
 
@@ -61,17 +62,17 @@ const Post = () => {
   const isAgencyMember = user && post && user.agencyId === post.agencyId
 
   const formattedTimeString = format(
-    utcToZonedTime(post?.updatedAt ?? Date.now()),
+    utcToZonedTime(post?.updatedAt ?? Date.now(), 'Asia/Singapore'),
     'dd MMM yyyy HH:mm, zzzz',
   )
 
-  const { _, data: answers } = useQuery(
+  const { data: answers } = useQuery(
     [GET_ANSWERS_FOR_POST_QUERY_KEY, post?.id],
-    () => getAnswersForPost(post?.id),
+    () => getAnswersForPost(Number(post?.id)),
     { enabled: Boolean(post?.id) },
   )
 
-  const breadcrumbContentRef = useRef([])
+  const breadcrumbContentRef = useRef<{ text: string; link: string }[]>([])
 
   useEffect(() => {
     if (post) {
@@ -103,7 +104,7 @@ const Post = () => {
   ) : (
     <Flex direction="column" height="100%">
       <PageTitle
-        title={`${post.title} - ${
+        title={`${post?.title} - ${
           agency && agency.shortname.toUpperCase()
         } FAQ - AskGov`}
         description={
@@ -139,16 +140,16 @@ const Post = () => {
               {isAgencyMember && agency && (
                 <div className="post-side-with-edit">
                   <EditButton
-                    postId={postId}
+                    postId={Number(postId)}
                     onDeleteLink={`/agency/${agency.shortname}`}
                   />
                 </div>
               )}
             </Flex>
             <Text textStyle="h2" color="secondary.800">
-              {post.title}
+              {post?.title}
             </Text>
-            {post.status === PostStatus.Private ? (
+            {post?.status === PostStatus.Private ? (
               <div className="subtitle-bar">
                 <div className="private-subtitle">
                   <BiXCircle
@@ -186,7 +187,7 @@ const Post = () => {
             >
               Related Questions
             </Text>
-            {post.relatedPosts.map((relatedPost) => (
+            {post?.relatedPosts.map((relatedPost) => (
               <Link to={`/questions/${relatedPost.id}`}>
                 <Text
                   py={{ base: '24px', sm: '32px' }}
@@ -202,19 +203,7 @@ const Post = () => {
         </Stack>
       </Center>
       <Spacer />
-      <CitizenRequest
-        agency={
-          agency
-            ? agency
-            : {
-                id: '',
-                email: 'enquiries@ask.gov.sg',
-                shortname: 'AskGov',
-                longname: 'AskGov',
-                logo: '',
-              }
-        }
-      />
+      <CitizenRequest agency={agency} />
     </Flex>
   )
 }
