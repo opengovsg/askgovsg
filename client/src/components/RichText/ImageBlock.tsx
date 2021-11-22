@@ -5,7 +5,7 @@ import {
   SelectionState,
   Modifier,
 } from 'draft-js'
-import { useRef, useState, useContext } from 'react'
+import { useRef, useState, useContext, ChangeEvent, MouseEvent } from 'react'
 import {
   useMultiStyleConfig,
   Button,
@@ -13,7 +13,17 @@ import {
   Divider,
   HStack,
   Box,
+  Flex,
   Image,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  VStack,
+  Text,
+  Input,
 } from '@chakra-ui/react'
 
 import { EditorContext } from './RichTextEditor.component'
@@ -38,8 +48,16 @@ export const ImageBlock = ({
   const [currentImageSize, setCurrentImageSize] = useState(
     width ? convertWidthToInt(width) : 100,
   )
+  const [altText, setAltText] = useState(alt)
 
-  const styles = useMultiStyleConfig('ImageEdit', {})
+  const styles = useMultiStyleConfig('ImageBlock', {})
+  const editImageStyles = useMultiStyleConfig('ImageControl', {})
+
+  const {
+    onOpen: onEditModalOpen,
+    onClose: onEditModalClose,
+    isOpen: isEditModalOpen,
+  } = useDisclosure()
 
   function convertWidthToInt(widthString: string) {
     const width = parseInt(widthString.substring(0, widthString.length - 1))
@@ -124,11 +142,96 @@ export const ImageBlock = ({
     }
   }
 
+  function getUpdateAlt(altText: string) {
+    return () => {
+      // Preserve selection to prevent jumping to start of editor after setting width
+      const currentSelection = editorState.getSelection()
+      const entityKey = block.getEntityAt(0)
+      contentState.mergeEntityData(entityKey, {
+        alt: altText,
+      })
+      const updated = EditorState.push(
+        EditorState.forceSelection(editorState, currentSelection),
+        contentState,
+        'change-block-data',
+      )
+
+      setEditorState(updated)
+      onEditModalClose()
+    }
+  }
+
+  function handleCancelAlt() {
+    onEditModalClose()
+    setAltText(alt)
+  }
+
   function renderPreviewImage() {
     return (
       <img ref={imageRef} src={src} width={width} height={height} alt={alt} />
     )
   }
+
+  const stopPropagation = (e: MouseEvent<HTMLElement>) => {
+    e.stopPropagation()
+  }
+
+  const renderModal = () => (
+    <div onClick={stopPropagation}>
+      <Modal isOpen={isEditModalOpen} onClose={onEditModalClose} isCentered>
+        <ModalOverlay />
+        <ModalContent maxW="680px">
+          <ModalBody>
+            <VStack align="stretch">
+              <Text sx={editImageStyles.titleText}>Edit Alt Text</Text>
+              <Flex sx={editImageStyles.uploadedImageFlexBox}>
+                <Image src={src} alt={alt} />
+              </Flex>
+              <Box>
+                <Box sx={editImageStyles.altTextBox}>
+                  <Text textStyle="subhead-1">Alt text</Text>
+                  <Text textStyle="body-2">
+                    Alt text (text that describes this media) improves
+                    accessibility for people who can’t see images on web pages,
+                    including users who use screen readers. This text will not
+                    appear on your page.
+                  </Text>
+                </Box>
+                <Box px="16px">
+                  <Input
+                    value={altText}
+                    isRequired
+                    placeholder="e.g. Table of the different quarantine types"
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setAltText(e.target.value)
+                    }
+                  />
+                </Box>
+              </Box>
+            </VStack>
+            <Divider sx={editImageStyles.divider} />
+          </ModalBody>
+          <ModalFooter>
+            <Flex sx={editImageStyles.buttonsFlexBox}>
+              <Button
+                sx={editImageStyles.cancelButton}
+                onClick={handleCancelAlt}
+              >
+                Cancel
+              </Button>
+              <Box w="8px"></Box>
+              <Button
+                sx={editImageStyles.submitButton}
+                onClick={getUpdateAlt(altText)}
+              >
+                Save
+              </Button>
+            </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </div>
+  )
 
   return readOnly ? (
     renderPreviewImage()
@@ -140,7 +243,7 @@ export const ImageBlock = ({
         src={src}
         width={width}
         height={height}
-        alt={alt}
+        alt={altText}
       />
       {showPopover && (
         <HStack sx={styles.popover}>
@@ -158,11 +261,17 @@ export const ImageBlock = ({
             })}
           </ButtonGroup>
           <Divider orientation="vertical" h="28px" />
-          <Button sx={styles.removeButton} onClick={handleRemove}>
-            Remove
-          </Button>
+          <ButtonGroup sx={styles.buttonGroup}>
+            <Button sx={styles.editButton} onClick={onEditModalOpen}>
+              Edit Alt Text
+            </Button>
+            <Button sx={styles.removeButton} onClick={handleRemove}>
+              Remove
+            </Button>
+          </ButtonGroup>
         </HStack>
       )}
+      {renderModal()}
     </Box>
   )
 }
