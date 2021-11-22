@@ -20,6 +20,7 @@ export const SearchBox: ComponentMultiStyleConfig = {
     },
     autocomplete: {
       w: '100%',
+      position: 'relative',
     },
     box: {
       color: 'neutral.900',
@@ -42,6 +43,7 @@ export const SearchBox: ComponentMultiStyleConfig = {
     results: {
       overflowX: 'hidden',
       overflowY: 'auto',
+      position: 'absolute',
       maxH: '20rem',
       w: '100%',
 

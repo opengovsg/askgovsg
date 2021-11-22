@@ -1,5 +1,5 @@
 import { EditorState, convertToRaw, ContentState } from 'draft-js'
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useState, createContext } from 'react'
 
 import './RichTextEditor.styles.scss'
 
@@ -17,7 +17,9 @@ import { useStyledToast } from '../StyledToast/StyledToast'
 import { PreviewLinkDecorator } from './LinkDecorator'
 import { FileUploadDto } from '~shared/types/api'
 
-type UploadCallback = (
+import { ImageControl } from './ImageControl'
+
+export type UploadCallback = (
   file: File,
 ) => Promise<{ data: { link: string } } | undefined>
 
@@ -44,6 +46,7 @@ const toolbarWithImageUpload = (uploadCallback: UploadCallback) => {
       uploadCallback,
       previewImage: true,
       alt: { present: true, mandatory: true },
+      component: ImageControl,
     },
   }
 }
@@ -58,6 +61,8 @@ const createEditorStateFromHTML = (value: string) => {
   }
   return EditorState.createEmpty()
 }
+
+export const EditorContext = createContext(EditorState.createEmpty())
 
 export const RichTextEditor: FC<{
   onChange: (outputHTML: string) => void
@@ -111,21 +116,23 @@ export const RichTextEditor: FC<{
   }
 
   return (
-    <ExtendedEditor
-      placeholder={placeholder}
-      editorState={editorState}
-      onEditorStateChange={setEditorState}
-      wrapperClassName={styles.wrapper}
-      editorClassName={styles.editor}
-      toolbarClassName={styles.toolbar}
-      // Prop styles override CSS styles
-      wrapperStyle={wrapperStyle}
-      editorStyle={editorStyle}
-      toolbar={toolbarWithImageUpload(uploadCallback)}
-      readOnly={readOnly ? readOnly : false}
-      stripPastedStyles
-      editorRef={editorRef}
-    />
+    <EditorContext.Provider value={editorState}>
+      <ExtendedEditor
+        placeholder={placeholder}
+        editorState={editorState}
+        onEditorStateChange={setEditorState}
+        wrapperClassName={styles.wrapper}
+        editorClassName={styles.editor}
+        toolbarClassName={styles.toolbar}
+        // Prop styles override CSS styles
+        wrapperStyle={wrapperStyle}
+        editorStyle={editorStyle}
+        toolbar={toolbarWithImageUpload(uploadCallback)}
+        readOnly={readOnly ? readOnly : false}
+        stripPastedStyles
+        editorRef={editorRef}
+      />
+    </EditorContext.Provider>
   )
 }
 
@@ -145,16 +152,18 @@ export const RichTextPreview: FC<{
   }, [value])
 
   return (
-    <ExtendedEditor
-      editorState={editorState}
-      onEditorStateChange={setEditorState}
-      placeholder={placeholder}
-      editorClassName={editorClassName}
-      customDecorators={[PreviewLinkDecorator]}
-      toolbar={{ link: { showOpenOptionOnHover: false } }}
-      readOnly
-      toolbarHidden
-    />
+    <EditorContext.Provider value={editorState}>
+      <ExtendedEditor
+        editorState={editorState}
+        onEditorStateChange={setEditorState}
+        placeholder={placeholder}
+        editorClassName={editorClassName}
+        customDecorators={[PreviewLinkDecorator]}
+        toolbar={{ link: { showOpenOptionOnHover: false } }}
+        readOnly
+        toolbarHidden
+      />
+    </EditorContext.Provider>
   )
 }
 
