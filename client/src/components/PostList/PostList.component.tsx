@@ -1,23 +1,19 @@
-import PostItem from '../../components/PostItem/PostItem.component'
-
 import { Text } from '@chakra-ui/react'
-import { useQuery } from 'react-query'
-import { useParams } from 'react-router-dom'
-import {
-  getAgencyByShortName,
-  GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
-} from '../../services/AgencyService'
-import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import * as FullStory from '@fullstory/browser'
 import { useEffect, useRef } from 'react'
+import { useParams } from 'react-router-dom'
+import { BasePostDto } from '../../api'
+import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
+import PostItem from '../PostItem/PostItem.component'
 
-const PostList = ({ posts, defaultText, alertIfMoreThanDays }) => {
+const PostList = ({
+  posts,
+  defaultText,
+}: {
+  posts?: BasePostDto[]
+  defaultText?: string
+}): JSX.Element => {
   const { agency: agencyShortName } = useParams()
-  const { data: agency } = useQuery(
-    [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
-    () => getAgencyByShortName({ shortname: agencyShortName }),
-    { enabled: !!agencyShortName },
-  )
   defaultText = defaultText ?? 'There are no posts to display.'
 
   // Creates reference for maxScroll variable with initial value of 0
@@ -28,7 +24,7 @@ const PostList = ({ posts, defaultText, alertIfMoreThanDays }) => {
     maxScroll.current = Math.max(maxScroll.current, window.pageYOffset)
   }
 
-  const sendMaxScrollToAnalytics = (maxScrollPossible) => {
+  const sendMaxScrollToAnalytics = (maxScrollPossible: number) => {
     // The following is required to restrict the percentage to 100 due to browser compatibility issues:
     // https://stackoverflow.com/questions/17688595/finding-the-maximum-scroll-position-of-a-page
     maxScrollPossible = Math.max(maxScrollPossible, maxScroll.current)
@@ -46,7 +42,7 @@ const PostList = ({ posts, defaultText, alertIfMoreThanDays }) => {
     })
   }
 
-  const removeListenerAndSendEvent = (maxScrollPossible) => {
+  const removeListenerAndSendEvent = (maxScrollPossible: number) => {
     window.removeEventListener('scroll', updateMaxScroll)
     if (maxScroll.current !== 0) sendMaxScrollToAnalytics(maxScrollPossible)
   }
@@ -75,12 +71,7 @@ const PostList = ({ posts, defaultText, alertIfMoreThanDays }) => {
       {posts && posts.length > 0 ? (
         <div className="questions">
           {posts.map((post) => (
-            <PostItem
-              key={post.id}
-              post={post}
-              alertIfMoreThanDays={alertIfMoreThanDays}
-              agency={agency}
-            />
+            <PostItem key={post.id} post={post} />
           ))}
         </div>
       ) : (

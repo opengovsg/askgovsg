@@ -1,5 +1,5 @@
 import { Box, Button, HStack, Input, Text } from '@chakra-ui/react'
-import { MouseEventHandler, useState } from 'react'
+import { ChangeEvent, MouseEvent, MouseEventHandler, useState } from 'react'
 import { BiLink } from 'react-icons/bi'
 import { useStyledToast } from '../StyledToast/StyledToast'
 import styles from './RichTextEditor.module.scss'
@@ -46,7 +46,7 @@ export const LinkControl = ({
     }
   }
 
-  const stopPropagation = (e: React.MouseEvent<HTMLElement>) => {
+  const stopPropagation = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation()
   }
 
@@ -66,7 +66,7 @@ export const LinkControl = ({
           <Input
             value={url}
             type="text"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
               setURL(e.target.value)
             }
           />

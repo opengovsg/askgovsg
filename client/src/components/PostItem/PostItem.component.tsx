@@ -1,13 +1,16 @@
 import { Link, Text } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
-import { TagType } from '~shared/types/base'
+import { BasePostDto } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
 import EditButton from '../EditButton/EditButton.component'
-import { RichTextFrontPreview } from '../RichText/RichTextEditor.component'
 import './PostItem.styles.scss'
 
 // Note: PostItem is the component for the homepage
-const PostItem = ({ post: { id, title, tags, agencyId } }) => {
+const PostItem = ({
+  post: { id, title, tags, agencyId },
+}: {
+  post: BasePostDto
+}): JSX.Element => {
   const { user } = useAuth()
 
   const isAgencyMember = user && tags && user.agencyId === agencyId

@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
-import { useEffect, useState, ReactElement, createRef } from 'react'
+import { LegacyRef, useEffect, useState, ReactElement, createRef } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
 import { Topic } from '~shared/types/base'
@@ -57,7 +57,7 @@ const OptionsMenu = (): ReactElement => {
     setHasTopicsKey(topicsSpecified)
   })
 
-  const accordionRef: React.LegacyRef<HTMLButtonElement> = createRef()
+  const accordionRef: LegacyRef<HTMLButtonElement> = createRef()
 
   const googleAnalytics = useGoogleAnalytics()
 

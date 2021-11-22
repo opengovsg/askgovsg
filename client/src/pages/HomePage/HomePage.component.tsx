@@ -33,7 +33,7 @@ import {
 import { isUserPublicOfficer } from '../../services/user.service'
 import { getTopicsQuery, isSpecified } from '../../util/urlparser'
 
-const HomePage = () => {
+const HomePage = (): JSX.Element => {
   const [hasTopicsKey, setHasTopicsKey] = useState(false)
   const navigate = useNavigate()
   // check URL
@@ -50,7 +50,7 @@ const HomePage = () => {
   const { agency: agencyShortName } = useParams()
   const { data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
-    () => getAgencyByShortName({ shortname: agencyShortName }),
+    () => getAgencyByShortName({ shortname: `${agencyShortName}` }),
     { enabled: !!agencyShortName },
   )
 
@@ -68,7 +68,7 @@ const HomePage = () => {
   const [sortState, setSortState] = useState(options[1])
   const [queryState, setQueryState] = useState('')
 
-  const isAuthenticatedOfficer = isUserPublicOfficer(user)
+  const isAuthenticatedOfficer = user !== null && isUserPublicOfficer(user)
 
   return (
     <Flex direction="column" height="100%" className="home-page">
@@ -130,8 +130,8 @@ const HomePage = () => {
               spacing={{ base: 2, sm: 4 }}
               direction={{ base: 'column', md: 'row' }}
             >
-              <Menu matchWidth autoSelect={false} offset={0}>
-                {({ isOpen }) => (
+              <Menu matchWidth autoSelect={false} offset={[0, 0]}>
+                {() => (
                   <>
                     <MenuButton
                       as={Button}
