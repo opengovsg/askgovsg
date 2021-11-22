@@ -46,7 +46,7 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "nanoid": "^3.1.30",
-    "neverthrow": "^4.3.0",
+    "neverthrow": "^4.3.1",
     "nodemailer": "^6.7.1",
     "passport": "^0.5.0",
     "passport-local": "^1.0.0",
