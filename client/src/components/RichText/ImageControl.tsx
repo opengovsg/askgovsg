@@ -50,7 +50,7 @@ export const ImageControl = ({
   onChange,
   config,
 }: ImageControlProps): JSX.Element => {
-  const styles = useMultiStyleConfig('ImageUpload', {})
+  const styles = useMultiStyleConfig('ImageControl', {})
 
   const [imgSrc, setImgSrc] = useState('')
   const [alt, setAlt] = useState('')

@@ -1,6 +1,6 @@
 import { ComponentMultiStyleConfig } from '@chakra-ui/theme'
 
-export const ImageUpload: ComponentMultiStyleConfig = {
+export const ImageControl: ComponentMultiStyleConfig = {
   parts: [
     'box',
     'titleText',

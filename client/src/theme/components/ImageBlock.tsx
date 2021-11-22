@@ -1,7 +1,14 @@
 import { ComponentMultiStyleConfig } from '@chakra-ui/theme'
 
-export const ImageEdit: ComponentMultiStyleConfig = {
-  parts: ['popover', 'buttonGroup', 'button', 'removeButton'],
+export const ImageBlock: ComponentMultiStyleConfig = {
+  parts: [
+    'popover',
+    'buttonGroup',
+    'button',
+    'removeButton',
+    'editButton',
+    'titleText',
+  ],
   baseStyle: () => ({
     popover: {
       h: '44px',
@@ -10,7 +17,6 @@ export const ImageEdit: ComponentMultiStyleConfig = {
       boxShadow: 'md',
       borderRadius: '4px',
       position: 'absolute',
-      // display: 'inline-block',
       zIndex: '999',
       font: 'inter',
       fontSize: '8px',
@@ -19,7 +25,6 @@ export const ImageEdit: ComponentMultiStyleConfig = {
     },
     buttonGroup: {
       spacing: '2',
-      // overflow: 'hidden',
     },
     button: {
       //textStyle is not used due to a bug in Chakra UI (Issue #3884)
@@ -27,7 +32,7 @@ export const ImageEdit: ComponentMultiStyleConfig = {
       fontSize: '12px',
       fontWeight: '500',
       bgColor: 'white',
-      w: '42px',
+      px: '8px',
       h: '28px',
       border: '1px',
       _disabled: {
@@ -41,13 +46,31 @@ export const ImageEdit: ComponentMultiStyleConfig = {
       font: 'inter',
       fontSize: '12px',
       fontWeight: '500',
-      w: '42px',
+      px: '8px',
       h: '28px',
-      px: '24px',
       bgColor: 'white',
       _hover: {
         bgColor: 'white',
       },
+    },
+    editButton: {
+      //textStyle is not used due to a bug in Chakra UI (Issue #3884)
+      font: 'inter',
+      fontSize: '12px',
+      fontWeight: '500',
+      h: '28px',
+      px: '8px',
+      bgColor: 'white',
+      _hover: {
+        bgColor: 'white',
+      },
+    },
+    titleText: {
+      textAlign: 'left',
+      textStyle: 'h2',
+      borderBottom: '1px',
+      borderBottomColor: 'neutral.300',
+      py: '32px',
     },
   }),
 }

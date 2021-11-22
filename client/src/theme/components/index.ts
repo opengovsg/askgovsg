@@ -2,9 +2,9 @@ import { Button } from './Button'
 import { StyledToast } from './StyledToast'
 import { SearchBox } from './SearchBox'
 import { Pagination } from './Pagination'
-import { ImageUpload } from './ImageUpload'
 import { Header } from './Header'
-import { ImageEdit } from './ImageEdit'
+import { ImageControl } from './ImageControl'
+import { ImageBlock } from './ImageBlock'
 
 export const components = {
   Button,
@@ -12,6 +12,6 @@ export const components = {
   StyledToast,
   SearchBox,
   Pagination,
-  ImageUpload,
-  ImageEdit,
+  ImageControl,
+  ImageBlock,
 }
