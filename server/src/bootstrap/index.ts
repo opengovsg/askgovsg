@@ -25,6 +25,8 @@ import { FileService } from '../modules/file/file.service'
 import { MailService } from '../modules/mail/mail.service'
 import { PostController } from '../modules/post/post.controller'
 import { PostService } from '../modules/post/post.service'
+import { SearchController } from '../modules/search/search.controller'
+import { SearchService } from '../modules/search/search.service'
 import { TagsController } from '../modules/tags/tags.controller'
 import { TagsService } from '../modules/tags/tags.service'
 import { TopicsController } from '../modules/topics/topics.controller'
@@ -49,6 +51,7 @@ import { createLogger } from './logging'
 import { requestLoggingMiddleware } from './logging/request-logging'
 import { passportConfig } from './passport'
 import { bucket, host, s3 } from './s3'
+import { searchClient } from './search'
 import {
   Agency,
   Answer,
@@ -62,10 +65,6 @@ import {
   User,
 } from './sequelize'
 import sessionMiddleware from './session'
-import { SearchController } from '../modules/search/search.controller'
-import { SearchService } from '../modules/search/search.service'
-import { searchConfig } from './config/search'
-import { Client } from '@opensearch-project/opensearch'
 
 export { sequelize } from './sequelize'
 export const app = express()
@@ -132,25 +131,7 @@ const answersService = new AnswersService({ Post, Answer })
 const topicsService = new TopicsService({ Topic })
 const userService = new UserService({ User, Tag, Agency })
 
-const searchHost = searchConfig.host
-const protocol = 'https'
-const port = searchConfig.port
-const auth = `${searchConfig.username}:${encodeURIComponent(
-  searchConfig.password,
-)}`
-let connectionOptions
-if (baseConfig.nodeEnv === Environment.Dev) {
-  connectionOptions = { rejectUnauthorized: false } // Turn off certificate verification (rejectUnauthorized: false)
-} else {
-  connectionOptions = {
-    ca: fs.readFileSync('/etc/ssl/cert.pem'), // Path to CA certificate for Alpine Linux, which is the OS AskGov runs on
-  }
-}
-const client = new Client({
-  node: protocol + '://' + auth + '@' + searchHost + ':' + port,
-  ssl: connectionOptions,
-})
-const searchService = new SearchService({ client })
+const searchService = new SearchService({ client: searchClient })
 const searchController = new SearchController({
   answersService,
   postService,
