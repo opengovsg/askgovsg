@@ -173,7 +173,7 @@ export const ImageControl = ({
                 <TabPanels>
                   <TabPanel>
                     <Text sx={styles.fileUploadFormatText}>
-                      Upload a jpg, png, or gif
+                      Upload a jpg, jpeg, png, or gif
                     </Text>
                     {imageLoading ? (
                       <Spinner />
