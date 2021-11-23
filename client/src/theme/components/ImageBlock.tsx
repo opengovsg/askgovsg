@@ -65,12 +65,5 @@ export const ImageBlock: ComponentMultiStyleConfig = {
         bgColor: 'white',
       },
     },
-    titleText: {
-      textAlign: 'left',
-      textStyle: 'h2',
-      borderBottom: '1px',
-      borderBottomColor: 'neutral.300',
-      py: '32px',
-    },
   }),
 }
