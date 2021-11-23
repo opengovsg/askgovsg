@@ -62,6 +62,10 @@ import {
   User,
 } from './sequelize'
 import sessionMiddleware from './session'
+import { SearchController } from '../modules/search/search.controller'
+import { SearchService } from '../modules/search/search.service'
+import { searchConfig } from './config/search'
+import { Client } from '@opensearch-project/opensearch'
 
 export { sequelize } from './sequelize'
 export const app = express()
@@ -128,6 +132,31 @@ const answersService = new AnswersService({ Post, Answer })
 const topicsService = new TopicsService({ Topic })
 const userService = new UserService({ User, Tag, Agency })
 
+const searchHost = searchConfig.host
+const protocol = 'https'
+const port = searchConfig.port
+const auth = `${searchConfig.username}:${encodeURIComponent(
+  searchConfig.password,
+)}`
+let connectionOptions
+if (baseConfig.nodeEnv === Environment.Dev) {
+  connectionOptions = { rejectUnauthorized: false } // Turn off certificate verification (rejectUnauthorized: false)
+} else {
+  connectionOptions = {
+    ca: fs.readFileSync('/etc/ssl/cert.pem'), // Path to CA certificate for Alpine Linux, which is the OS AskGov runs on
+  }
+}
+const client = new Client({
+  node: protocol + '://' + auth + '@' + searchHost + ':' + port,
+  ssl: connectionOptions,
+})
+const searchService = new SearchService({ client })
+const searchController = new SearchController({
+  answersService,
+  postService,
+  searchService,
+})
+
 const apiOptions = {
   agency: {
     controller: new AgencyController({ agencyService }),
@@ -181,6 +210,7 @@ const apiOptions = {
     maxFileSize: fileConfig.maxFileSize,
   },
   enquiries: new EnquiryController({ enquiryService, recaptchaService }),
+  search: searchController,
 }
 
 const moduleLogger = createLogger(module)

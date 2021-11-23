@@ -15,6 +15,8 @@ import { FileController } from '../modules/file/file.controller'
 import { routeFiles } from '../modules/file/file.routes'
 import { PostController } from '../modules/post/post.controller'
 import { routePosts } from '../modules/post/post.routes'
+import { SearchController } from '../modules/search/search.controller'
+import { routeSearch } from '../modules/search/search.routes'
 import { TagsController } from '../modules/tags/tags.controller'
 import { routeTags } from '../modules/tags/tags.routes'
 import { TopicsController } from '../modules/topics/topics.controller'
@@ -50,6 +52,7 @@ type ApiRouterOptions = {
     controller: TopicsController
     authMiddleware: AuthMiddleware
   }
+  search: SearchController
 }
 
 export const api = (options: ApiRouterOptions): express.Router => {
@@ -64,6 +67,7 @@ export const api = (options: ApiRouterOptions): express.Router => {
   router.use('/agencies', routeAgencies(options.agency))
   router.use('/enquiries', routeEnquiries({ controller: options.enquiries }))
   router.use('/topics', routeTopics(options.topics))
+  router.use('/search', routeSearch({ controller: options.search }))
 
   return router
 }
