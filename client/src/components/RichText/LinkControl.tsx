@@ -72,7 +72,7 @@ export const LinkControl = ({
           />
           <Button
             textStyle="body1"
-            backgroundColor="primary.500"
+            backgroundColor="secondary.700"
             color="white"
             onClick={handleSubmit}
             name="link_button"
