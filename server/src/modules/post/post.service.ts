@@ -161,6 +161,7 @@ export class PostService {
         id: {
           [Op.ne]: post.id,
         },
+        agencyId: post.agencyId,
       },
       include: [
         {
