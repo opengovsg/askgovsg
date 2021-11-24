@@ -51,7 +51,7 @@ const Masthead: FC = () => {
             loading="lazy"
           />
           <Text textStyle={mastheadTopTextStyle} color="neutral.900" mx={1}>
-            A Singapore Government Agency Website.
+            A Singapore Government Agency Website
           </Text>
           <Button
             rightIcon={mastheadExpanded ? <BiChevronUp /> : <BiChevronDown />}
