@@ -128,14 +128,16 @@ export class PostService {
           attributes: {
             include: [
               [
-                Sequelize.fn('COUNT', Sequelize.col('topicId')),
-                'relatedTopics',
+                Sequelize.literal(
+                  `CASE WHEN TopicId = ${post.topicId} THEN 1 ELSE 0 END`,
+                ),
+                'relatedTopic',
               ],
               [Sequelize.fn('COUNT', Sequelize.col('tags.id')), 'relatedTags'],
             ] as ProjectionAlias[],
           },
           order: [
-            [Sequelize.col('relatedTopics'), 'DESC'],
+            [Sequelize.col('relatedTopic'), 'DESC'],
             [Sequelize.col('relatedTags'), 'DESC'],
             ['views', 'DESC'],
           ] as OrderItem[],
@@ -173,7 +175,7 @@ export class PostService {
           },
         },
       ],
-      group: 'id',
+      group: ['id'],
       subQuery: false,
       limit: numberOfRelatedPosts,
     })
