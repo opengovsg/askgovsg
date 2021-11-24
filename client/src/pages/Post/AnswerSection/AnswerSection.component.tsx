@@ -1,9 +1,14 @@
 import { SkeletonText } from '@chakra-ui/react'
+import { GetAnswersForPostDto } from '../../../api'
+import { sortByCreatedAt } from '../../../util/date'
 import AnswerItem from './AnswerItem/AnswerItem.component'
 import './AnswerSection.styles.scss'
-import { sortByCreatedAt } from '../../../util/date'
 
-const AnswerSection = ({ answers }) => {
+const AnswerSection = ({
+  answers,
+}: {
+  answers?: GetAnswersForPostDto
+}): JSX.Element => {
   return !answers ? (
     <SkeletonText />
   ) : (

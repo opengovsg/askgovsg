@@ -25,6 +25,8 @@ import { FileService } from '../modules/file/file.service'
 import { MailService } from '../modules/mail/mail.service'
 import { PostController } from '../modules/post/post.controller'
 import { PostService } from '../modules/post/post.service'
+import { SearchController } from '../modules/search/search.controller'
+import { SearchService } from '../modules/search/search.service'
 import { TagsController } from '../modules/tags/tags.controller'
 import { TagsService } from '../modules/tags/tags.service'
 import { TopicsController } from '../modules/topics/topics.controller'
@@ -49,6 +51,7 @@ import { createLogger } from './logging'
 import { requestLoggingMiddleware } from './logging/request-logging'
 import { passportConfig } from './passport'
 import { bucket, host, s3 } from './s3'
+import { searchClient } from './search'
 import {
   Agency,
   Answer,
@@ -128,6 +131,13 @@ const answersService = new AnswersService({ Post, Answer })
 const topicsService = new TopicsService({ Topic })
 const userService = new UserService({ User, Tag, Agency })
 
+const searchService = new SearchService({ client: searchClient })
+const searchController = new SearchController({
+  answersService,
+  postService,
+  searchService,
+})
+
 const apiOptions = {
   agency: {
     controller: new AgencyController({ agencyService }),
@@ -181,6 +191,7 @@ const apiOptions = {
     maxFileSize: fileConfig.maxFileSize,
   },
   enquiries: new EnquiryController({ enquiryService, recaptchaService }),
+  search: searchController,
 }
 
 const moduleLogger = createLogger(module)

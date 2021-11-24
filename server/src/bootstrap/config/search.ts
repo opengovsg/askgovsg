@@ -33,7 +33,7 @@ const searchSchema: Schema<SearchConfig> = {
     doc: 'Port for opensearch service',
     format: 'port',
     default: 9200,
-    env: 'SEARCH_POST',
+    env: 'SEARCH_PORT',
   },
 }
 

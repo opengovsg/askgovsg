@@ -8,6 +8,7 @@ import {
   Link,
   Text,
   useDisclosure,
+  useMultiStyleConfig,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { BiLinkExternal } from 'react-icons/bi'
@@ -15,7 +16,6 @@ import { useQuery } from 'react-query'
 import { Link as RouterLink, matchPath, useLocation } from 'react-router-dom'
 import { TagType } from '~shared/types/base'
 import { ReactComponent as Ask } from '../../assets/ask.svg'
-import { ReactComponent as Logo } from '../../assets/logo-alpha.svg'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   getAgencyByShortName,
@@ -32,6 +32,7 @@ import { SearchBox } from '../SearchBox/SearchBox.component'
 import Spinner from '../Spinner/Spinner.component'
 
 const Header = (): JSX.Element => {
+  const styles = useMultiStyleConfig('Header', {})
   const { user, logout } = useAuth()
 
   const location = useLocation()
@@ -165,37 +166,16 @@ const Header = (): JSX.Element => {
 
   const ExpandedSearch = () => {
     return (
-      <Box
-        bg="white"
-        h={{ base: '100px', xl: '152px' }}
-        className="top-background"
-      >
-        <Flex
-          direction="row"
-          justifyContent="flex-start"
-          className="home-search"
-        >
-          {/* TODO: might need to do some enforcing to ensure you can only */}
-          {/* enter a single agency in the URL */}
-
-          <Flex
-            h="56px"
-            m="auto"
-            mt={{ base: '20px', xl: '64px' }}
-            px={{ base: '24px', md: 'auto' }}
-            maxW="680px"
-            w="100%"
-          >
+      <Box sx={styles.expandedSearchContainer}>
+        <Flex direction="row">
+          <Flex sx={styles.expandedSearch}>
             <SearchBox agencyId={agency?.id} />
           </Flex>
         </Flex>
         {agencyShortName && (
-          <AgencyLogo
-            ml="36px"
-            mt="-55px"
-            display={{ base: 'none', xl: 'flex' }}
-            agency={agency}
-          />
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          <AgencyLogo {...styles.expandedSearchAgencyLogo} agency={agency} />
         )}
       </Box>
     )
@@ -203,45 +183,23 @@ const Header = (): JSX.Element => {
 
   const LogoBar = () => {
     return (
-      <Flex
-        bg="white"
-        justify="space-between"
-        align="center"
-        px={8}
-        py={4}
-        shrink={0}
-      >
+      <Flex justify="space-between" sx={styles.logoBarContainer}>
         <Link
-          _hover={{
-            textDecoration: 'none',
-          }}
+          sx={styles.logoBarRouterLink}
           as={RouterLink}
           to={agency ? `/agency/${agency.shortname}` : '/'}
         >
-          {agency ? (
-            <HStack>
-              <Box marginRight="-1px">
-                <Ask />
-              </Box>
-              <Text
-                // Force margins here to override stubborn and temperatmental
-                // Chakra defaults for content within HStack
-                marginInlineStart="0 !important"
-                marginTop="auto !important"
-                marginBottom="1px !important"
-                position="relative"
-                textStyle="logo"
-                color="black"
-              >
-                {agency.shortname.toUpperCase()}
-              </Text>
-            </HStack>
-          ) : (
-            <Logo />
-          )}
+          <HStack>
+            <Box sx={styles.logoBarAsk}>
+              <Ask />
+            </Box>
+            <Text sx={styles.logoBarText}>
+              {agency?.shortname.toUpperCase() || 'gov'}
+            </Text>
+          </HStack>
         </Link>
 
-        <Flex d={{ base: 'none', sm: 'block' }}>
+        <Flex sx={styles.logoBarWebsiteLink}>
           {agency?.website && <WebsiteLinks />}
         </Flex>
         {user && <AuthLinks />}
@@ -250,41 +208,31 @@ const Header = (): JSX.Element => {
   }
 
   return (
-    <Flex
-      direction="column"
-      sx={{
-        position: 'sticky',
-        top: '0',
-        'z-index': '999',
-      }}
-    >
+    <Flex direction="column" sx={styles.root}>
       <Masthead />
       {deviceType === device.desktop ? (
-        <LogoBar />
-      ) : matchQuestions ? null : (
-        <Collapse in={headerIsOpen} animateOpacity={false}>
+        <>
           <LogoBar />
-        </Collapse>
-      )}
-      {deviceType === device.desktop && !headerIsOpen ? (
-        <Flex
-          h="56px"
-          m="auto"
-          px={{ base: '24px', md: 'auto' }}
-          maxW="680px"
-          w="100%"
-          mt="-68px"
-          d={{ base: 'none', xl: 'block' }}
-        >
-          <SearchBox agencyId={agency?.id} />
-        </Flex>
-      ) : null}
-      {!matchQuestions && deviceType === device.desktop ? (
-        <Collapse in={headerIsOpen} animateOpacity={false}>
+          {!headerIsOpen ? (
+            <Flex sx={styles.collapsedSearch}>
+              <SearchBox agencyId={agency?.id} />
+            </Flex>
+          ) : null}
+          {!matchQuestions ? (
+            <Collapse in={headerIsOpen} animateOpacity={false}>
+              <ExpandedSearch />
+            </Collapse>
+          ) : null}
+        </>
+      ) : (
+        <>
+          {!matchQuestions ? (
+            <Collapse in={headerIsOpen} animateOpacity={false}>
+              <LogoBar />
+            </Collapse>
+          ) : null}
           <ExpandedSearch />
-        </Collapse>
-      ) : matchQuestions && deviceType === device.desktop ? null : (
-        <ExpandedSearch />
+        </>
       )}
     </Flex>
   )

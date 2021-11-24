@@ -1,5 +1,12 @@
-import { EditorState, convertToRaw, ContentState } from 'draft-js'
-import { FC, useEffect, useState, createContext } from 'react'
+import { EditorState, convertToRaw, ContentState, ContentBlock } from 'draft-js'
+import {
+  FC,
+  useEffect,
+  useState,
+  createContext,
+  Dispatch,
+  SetStateAction,
+} from 'react'
 
 import './RichTextEditor.styles.scss'
 
@@ -18,6 +25,7 @@ import { PreviewLinkDecorator } from './LinkDecorator'
 import { FileUploadDto } from '~shared/types/api'
 
 import { ImageControl } from './ImageControl'
+import { ImageBlock } from './ImageBlock'
 
 export type UploadCallback = (
   file: File,
@@ -62,7 +70,11 @@ const createEditorStateFromHTML = (value: string) => {
   return EditorState.createEmpty()
 }
 
-export const EditorContext = createContext(EditorState.createEmpty())
+const defaultValue = {
+  editorState: EditorState.createEmpty(),
+  setEditorState: {} as Dispatch<SetStateAction<EditorState>>,
+}
+export const EditorContext = createContext(defaultValue)
 
 export const RichTextEditor: FC<{
   onChange: (outputHTML: string) => void
@@ -98,6 +110,23 @@ export const RichTextEditor: FC<{
     onChange(html)
   }, [editorState, onChange, value])
 
+  function renderBlock(block: ContentBlock): unknown | void {
+    if (block.getType() === 'atomic') {
+      const contentState = editorState.getCurrentContent()
+      const entityKey = block.getEntityAt(0)
+
+      if (entityKey) {
+        const entity = contentState.getEntity(entityKey)
+        if (entity?.getType() === 'IMAGE') {
+          return {
+            component: ImageBlock,
+            editable: false,
+          }
+        }
+      }
+    }
+  }
+
   const uploadCallback = async (file: File) => {
     const formData = new FormData()
     formData.append('file', file, file.name)
@@ -116,7 +145,7 @@ export const RichTextEditor: FC<{
   }
 
   return (
-    <EditorContext.Provider value={editorState}>
+    <EditorContext.Provider value={{ editorState, setEditorState }}>
       <ExtendedEditor
         placeholder={placeholder}
         editorState={editorState}
@@ -124,6 +153,7 @@ export const RichTextEditor: FC<{
         wrapperClassName={styles.wrapper}
         editorClassName={styles.editor}
         toolbarClassName={styles.toolbar}
+        customBlockRenderFunc={renderBlock}
         // Prop styles override CSS styles
         wrapperStyle={wrapperStyle}
         editorStyle={editorStyle}
@@ -151,14 +181,35 @@ export const RichTextPreview: FC<{
     setEditorState(state)
   }, [value])
 
+  function renderBlock(block: ContentBlock): unknown | void {
+    if (block.getType() === 'atomic') {
+      const contentState = editorState.getCurrentContent()
+      const entityKey = block.getEntityAt(0)
+
+      if (entityKey) {
+        const entity = contentState.getEntity(entityKey)
+        if (entity?.getType() === 'IMAGE') {
+          return {
+            component: ImageBlock,
+            editable: false,
+            props: {
+              readOnly: true,
+            },
+          }
+        }
+      }
+    }
+  }
+
   return (
-    <EditorContext.Provider value={editorState}>
+    <EditorContext.Provider value={{ editorState, setEditorState }}>
       <ExtendedEditor
         editorState={editorState}
         onEditorStateChange={setEditorState}
         placeholder={placeholder}
         editorClassName={editorClassName}
         customDecorators={[PreviewLinkDecorator]}
+        customBlockRenderFunc={renderBlock}
         toolbar={{ link: { showOpenOptionOnHover: false } }}
         readOnly
         toolbarHidden

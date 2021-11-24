@@ -1,11 +1,15 @@
 import { RichTextPreview } from '../../../../components/RichText/RichTextEditor.component'
 import './PostCell.styles.scss'
 
-const PostCell = ({ post }) => {
+const PostCell = ({
+  post,
+}: {
+  post?: { description: string }
+}): JSX.Element => {
   return (
     <>
       <div className="post-cell">
-        {post.description && (
+        {post?.description && (
           <div className="post-text">
             <RichTextPreview value={post.description} />
           </div>

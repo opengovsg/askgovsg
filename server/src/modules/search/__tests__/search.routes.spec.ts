@@ -5,9 +5,9 @@ import supertest from 'supertest'
 import { SearchController } from '../search.controller'
 import { routeSearch } from '../search.routes'
 
-describe('/search', () => {
-  describe('GET /search', () => {
-    const path = '/search'
+describe('/', () => {
+  describe('GET /', () => {
+    const path = '/'
 
     const answersService = {
       listAnswers: jest.fn(),
@@ -105,7 +105,6 @@ describe('/search', () => {
     })
 
     it('uses trimmed search query to search posts', async () => {
-      const path = '/search'
       const app = express()
       app.use(router)
       const request = supertest(app)

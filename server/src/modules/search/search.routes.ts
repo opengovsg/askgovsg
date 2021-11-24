@@ -17,7 +17,7 @@ export const routeSearch = ({
    * @access  Public
    */
   router.get(
-    '/search',
+    '/',
     [
       query('agencyId').isInt().toInt().optional({ nullable: true }),
       query('query').isString().trim(),

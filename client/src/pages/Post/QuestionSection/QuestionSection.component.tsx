@@ -2,7 +2,11 @@ import PostCell from './PostCell/PostCell.component'
 
 import './QuestionSection.styles.scss'
 
-const QuestionSection = ({ post }) => {
+const QuestionSection = ({
+  post,
+}: {
+  post?: { description: string }
+}): JSX.Element => {
   return (
     <>
       <div className="question">

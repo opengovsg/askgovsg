@@ -22,7 +22,13 @@ import {
   Divider,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
-import { MouseEventHandler, useState } from 'react'
+import {
+  ChangeEvent,
+  DragEvent,
+  MouseEvent,
+  MouseEventHandler,
+  useState,
+} from 'react'
 import { BiImage, BiTrash, BiCloudUpload } from 'react-icons/bi'
 import { UploadCallback } from './RichTextEditor.component'
 
@@ -44,7 +50,7 @@ export const ImageControl = ({
   onChange,
   config,
 }: ImageControlProps): JSX.Element => {
-  const styles = useMultiStyleConfig('ImageUpload', {})
+  const styles = useMultiStyleConfig('ImageControl', {})
 
   const [imgSrc, setImgSrc] = useState('')
   const [alt, setAlt] = useState('')
@@ -52,6 +58,7 @@ export const ImageControl = ({
   const [imageLoading, setImageLoading] = useState(false)
   const [fileName, setFileName] = useState('')
   const [fileSize, setFileSize] = useState(0)
+  const WIDTH = '100%'
 
   const {
     onOpen: onImageModalOpen,
@@ -59,7 +66,7 @@ export const ImageControl = ({
     isOpen: isImageModalOpen,
   } = useDisclosure()
 
-  const stopPropagation = (e: React.MouseEvent<HTMLElement>) => {
+  const stopPropagation = (e: MouseEvent<HTMLElement>) => {
     if (!fileUpload) {
       e.preventDefault()
       e.stopPropagation()
@@ -76,17 +83,17 @@ export const ImageControl = ({
 
   const handleSubmit: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
-    onChange(imgSrc, 'auto', '100%', alt)
+    onChange(imgSrc, 'auto', WIDTH, alt)
     onImageModalClose()
     setImgSrc('')
     setAlt('')
   }
-  const fileUploadClick = (e: React.MouseEvent<HTMLElement>) => {
+  const fileUploadClick = (e: MouseEvent<HTMLElement>) => {
     setFileUpload(true)
     e.stopPropagation()
   }
 
-  const onDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+  const onDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.stopPropagation()
   }
 
@@ -113,7 +120,7 @@ export const ImageControl = ({
       })
   }
 
-  const onImageDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const onImageDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     e.stopPropagation()
 
@@ -142,7 +149,7 @@ export const ImageControl = ({
     }
   }
 
-  const selectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const selectImage = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       uploadImage(e.target.files[0])
     }
@@ -162,10 +169,11 @@ export const ImageControl = ({
                     <Text textStyle="subhead-1">File Upload</Text>
                   </Tab>
                 </TabList>
+                <Divider sx={styles.tabDivider} />
                 <TabPanels>
                   <TabPanel>
                     <Text sx={styles.fileUploadFormatText}>
-                      Upload a jpg, png, or gif
+                      Upload a jpg, jpeg, png, or gif
                     </Text>
                     {imageLoading ? (
                       <Spinner />
@@ -175,6 +183,7 @@ export const ImageControl = ({
                           <Image
                             src={imgSrc}
                             alt={alt}
+                            width={WIDTH}
                             className="rdw-image-modal-upload-option-image-preview"
                             onLoad={() => setImageLoading(false)}
                           />
@@ -197,31 +206,31 @@ export const ImageControl = ({
                         </HStack>
                       </Box>
                     ) : (
-                      <Box sx={styles.fileUploadBox} onClick={fileUploadClick}>
+                      <Box
+                        sx={styles.fileUploadBox}
+                        onClick={fileUploadClick}
+                        onDragEnter={onDragEnter}
+                        onDragOver={stopPropagation}
+                        onDrop={onImageDrop}
+                        cursor="pointer"
+                      >
                         <label
                           htmlFor="file"
                           className="rdw-image-modal-upload-option-label"
                         >
-                          <Box
-                            onDragEnter={onDragEnter}
-                            onDragOver={stopPropagation}
-                            onDrop={onImageDrop}
-                            cursor="pointer"
-                          >
-                            <Flex>
-                              <VStack>
-                                <BiCloudUpload size="50px" />
-                                <Flex>
-                                  <Text sx={styles.fileUploadText} as="u">
-                                    Choose file
-                                  </Text>
-                                  <Text sx={styles.fileUploadText}>
-                                    &nbsp;or drag and drop here
-                                  </Text>
-                                </Flex>
-                              </VStack>
-                            </Flex>
-                          </Box>
+                          <Flex>
+                            <VStack>
+                              <BiCloudUpload size="50px" />
+                              <Flex>
+                                <Text sx={styles.fileUploadText} as="u">
+                                  Choose file
+                                </Text>
+                                <Text sx={styles.fileUploadText}>
+                                  &nbsp;or drag and drop here
+                                </Text>
+                              </Flex>
+                            </VStack>
+                          </Flex>
                         </label>
                         <input
                           type="file"
@@ -254,7 +263,7 @@ export const ImageControl = ({
                       value={alt}
                       isRequired
                       placeholder="e.g. Table of the different quarantine types"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setAlt(e.target.value)
                       }
                     />

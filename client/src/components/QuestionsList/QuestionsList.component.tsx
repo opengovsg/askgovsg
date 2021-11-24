@@ -13,8 +13,8 @@ import Spinner from '../Spinner/Spinner.component'
 
 interface QuestionsListProps {
   sort: string
-  agencyId: number
-  tags: string
+  agencyId?: number
+  tags?: string
   topics: string
   pageSize: number
   footerControl?: JSX.Element
@@ -74,7 +74,6 @@ const QuestionsList = ({
       <PostListComponent
         posts={data?.posts.slice(0, pageSize)}
         defaultText={undefined}
-        alertIfMoreThanDays={undefined}
       />
       <Center my={5}>
         {footerControl ?? (
