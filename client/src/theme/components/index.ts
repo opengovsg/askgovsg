@@ -1,13 +1,15 @@
-import { Button } from './Button'
-import { StyledToast } from './StyledToast'
-import { SearchBox } from './SearchBox'
-import { Pagination } from './Pagination'
-import { Header } from './Header'
-import { ImageControl } from './ImageControl'
-import { ImageBlock } from './ImageBlock'
 import { AskForm } from './AskForm'
+import { AuthForm } from './AuthForm'
+import { Button } from './Button'
+import { Header } from './Header'
+import { ImageBlock } from './ImageBlock'
+import { ImageControl } from './ImageControl'
+import { Pagination } from './Pagination'
+import { SearchBox } from './SearchBox'
+import { StyledToast } from './StyledToast'
 
 export const components = {
+  AuthForm,
   Button,
   Header,
   StyledToast,
