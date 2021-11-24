@@ -24,6 +24,8 @@ export type AskFormSubmission = {
   topic: number
 }
 
+type TopicOption = { value: number; label: string }
+
 interface AskFormProps {
   inputPostData?: {
     title: string
@@ -32,13 +34,11 @@ interface AskFormProps {
   inputAnswerData?: {
     text: string
   }
-  inputTopic?: Topic
+  inputTopic?: TopicOption
   topicOptions: Topic[]
   onSubmit: (formData: AskFormSubmission) => Promise<void>
   submitButtonText: string
 }
-
-type TopicOption = { value: number; label: string }
 
 interface AskFormInput {
   postTitle: string
@@ -57,20 +57,15 @@ const AskForm = ({
   inputAnswerData = {
     text: '',
   },
-  inputTopic,
+  inputTopic = {
+    value: 0,
+    label: '',
+  },
   topicOptions,
   onSubmit,
   submitButtonText,
 }: AskFormProps): JSX.Element => {
   const styles = useMultiStyleConfig('AskForm', {})
-
-  const existingTopicSelection = useMemo(
-    () => ({
-      value: inputTopic?.id,
-      label: inputTopic?.name,
-    }),
-    [inputTopic],
-  )
 
   const navigate = useNavigate()
   const { register, control, handleSubmit, watch, formState } =
@@ -79,6 +74,7 @@ const AskForm = ({
         postTitle: inputPostData.title,
         postDescription: inputPostData.description,
         answerBody: inputAnswerData.text,
+        topic: inputTopic,
       },
     })
   const { errors: formErrors } = formState
@@ -177,7 +173,7 @@ const AskForm = ({
           </Alert>
         )}
       </FormControl>
-      <FormControl sx={styles.formControl} key={existingTopicSelection.value}>
+      <FormControl sx={styles.formControl}>
         <FormLabel sx={styles.formLabel}>Topic</FormLabel>
         <FormHelperText sx={styles.formHelperText}>
           Choose a topic for the question
@@ -186,14 +182,13 @@ const AskForm = ({
           name="topic"
           control={control}
           rules={{ validate: isTopicChosen }}
-          render={({ field }) => (
+          render={({ field: { onChange, value } }) => (
             <Select
-              {...field}
               options={optionsForTopicSelect}
-              key={existingTopicSelection.value}
-              //supplied defaultValue here instead of in defaultValues
-              //as the key prop is required to force rendering
-              defaultValue={existingTopicSelection}
+              value={optionsForTopicSelect.find(
+                (topic) => topic.value === value.value,
+              )}
+              onChange={(topic) => onChange(topic)}
               menuPortalTarget={document.body}
             />
           )}
