@@ -5,6 +5,7 @@ import { Pagination } from './Pagination'
 import { Header } from './Header'
 import { ImageControl } from './ImageControl'
 import { ImageBlock } from './ImageBlock'
+import { AskForm } from './AskForm'
 
 export const components = {
   Button,
@@ -14,4 +15,5 @@ export const components = {
   Pagination,
   ImageControl,
   ImageBlock,
+  AskForm,
 }

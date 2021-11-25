@@ -17,8 +17,6 @@ import {
   LIST_POSTS_QUERY_KEY,
 } from '../../services/PostService'
 import {
-  getTopicById,
-  GET_TOPIC_BY_ID_QUERY_KEY,
   getTopicsUsedByAgency,
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/TopicService'
@@ -63,11 +61,8 @@ const EditForm = (): JSX.Element => {
       },
     )
     const topicId = Number(postData?.topicId)
-    const { isLoading: isPostTopicLoading, data: postTopic } = useQuery(
-      GET_TOPIC_BY_ID_QUERY_KEY,
-      () => getTopicById(topicId),
-      { enabled: !!topicId },
-    )
+    const postTopic = topicData?.filter((topic) => topic.id === topicId)
+
     const updatePostAndAnswer = async (data: AskFormSubmission) => {
       if (!answerData) {
         toast({
@@ -114,8 +109,7 @@ const EditForm = (): JSX.Element => {
       }
     }
 
-    const isLoading =
-      isPostLoading || isAnswerLoading || isTopicLoading || isPostTopicLoading
+    const isLoading = isPostLoading || isAnswerLoading || isTopicLoading
 
     return isLoading ? (
       <Spinner centerHeight="200px" />
@@ -141,7 +135,11 @@ const EditForm = (): JSX.Element => {
                     text: answerData ? answerData[0].body : '',
                   }}
                   topicOptions={topicData ?? []}
-                  inputTopic={postTopic}
+                  inputTopic={
+                    postTopic
+                      ? { value: postTopic[0].id, label: postTopic[0].name }
+                      : { value: 0, label: '' }
+                  }
                   submitButtonText="Confirm changes"
                   onSubmit={onSubmit}
                 />
