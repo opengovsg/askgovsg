@@ -138,7 +138,7 @@ const EditForm = (): JSX.Element => {
                   inputTopic={
                     postTopic
                       ? { value: postTopic[0].id, label: postTopic[0].name }
-                      : { value: -1, label: '' }
+                      : { value: 0, label: '' }
                   }
                   submitButtonText="Confirm changes"
                   onSubmit={onSubmit}

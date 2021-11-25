@@ -9,6 +9,8 @@ export const AskForm: ComponentMultiStyleConfig = {
     'submitButton',
     'cancelButton',
     'formControl',
+    'alert',
+    'richTextEditor',
   ],
   baseStyle: () => ({
     formLabel: {
@@ -45,6 +47,17 @@ export const AskForm: ComponentMultiStyleConfig = {
     },
     formControl: {
       pt: '40px',
+    },
+    alert: {
+      mt: '4px',
+    },
+    richTextEditor: {
+      wrapperStyle: {
+        height: '148px',
+      },
+      editorStyle: {
+        height: `${148 - (26 + 6 * 2)}px`,
+      },
     },
   }),
 }

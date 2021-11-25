@@ -131,7 +131,7 @@ const AskForm = ({
           })}
         />
         {formErrors.postTitle ? (
-          <Alert status="error" mt="4px">
+          <Alert status="error" sx={styles.alert}>
             <AlertIcon />
             Please enter a title with 15-150 characters.
           </Alert>
@@ -161,13 +161,14 @@ const AskForm = ({
               onChange={onChange}
               value={value}
               editorRef={ref}
-              wrapperStyle={{ height: '148px' }}
-              editorStyle={{ height: `${148 - (26 + 6 * 2)}px` }}
+              // Move rich text editor styles to Chakra theming for consistency
+              // Note: rich text editor does not make use of Chakra components
+              {...styles.richTextEditor}
             />
           )}
         />
         {formState.errors.postDescription && (
-          <Alert status="error" mt="4px">
+          <Alert status="error" sx={styles.alert}>
             <AlertIcon />
             Please enter at least 30 characters.
           </Alert>
@@ -194,7 +195,7 @@ const AskForm = ({
           )}
         />
         {formState.errors.topic && (
-          <Alert status="error" mt="4px">
+          <Alert status="error" sx={styles.alert}>
             <AlertIcon />
             Please select a topic.
           </Alert>
@@ -219,7 +220,7 @@ const AskForm = ({
           )}
         />
         {formErrors.answerBody && (
-          <Alert status="error" mt="4px">
+          <Alert status="error" sx={styles.alert}>
             <AlertIcon />
             Please enter at least 30 characters.
           </Alert>
