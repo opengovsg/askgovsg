@@ -1,3 +1,4 @@
+import { Flex, FormLabel, Input, useMultiStyleConfig } from '@chakra-ui/react'
 import axios, { AxiosError } from 'axios'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -7,7 +8,6 @@ import { useAuth } from '../../contexts/AuthContext'
 import * as AuthService from '../../services/AuthService'
 import Spinner from '../Spinner/Spinner.component'
 import { useStyledToast } from '../StyledToast/StyledToast'
-import './AuthForm.styles.scss'
 
 const OtpState = {
   Initial: 0,
@@ -21,6 +21,7 @@ type FormValues = {
 }
 
 const AuthForm = (): JSX.Element => {
+  const styles = useMultiStyleConfig('AuthForm', {})
   const toast = useStyledToast()
   const { register, handleSubmit, getValues, reset } = useForm<FormValues>()
   const [otpState, setOtpState] = useState(OtpState.Initial)
@@ -73,8 +74,11 @@ const AuthForm = (): JSX.Element => {
   if (otpState === OtpState.Sent) {
     OtpComponent = (
       <>
-        <label className="form-label">One-Time Password</label>
-        <input
+        <FormLabel sx={styles.label} className="form-label">
+          One-Time Password
+        </FormLabel>
+        <Input
+          sx={styles.input}
           className="form-input"
           placeholder="Enter OTP sent to your email"
           {...register('otp', { required: true, minLength: 6, maxLength: 6 })}
@@ -87,8 +91,11 @@ const AuthForm = (): JSX.Element => {
 
   const contactComponent = (
     <>
-      <label className="form-label">Email</label>
-      <input
+      <FormLabel sx={styles.label} className="form-label">
+        Email
+      </FormLabel>
+      <Input
+        sx={styles.input}
         className="form-input"
         placeholder="e.g. jane@mail.com"
         {...register('email', { required: true })}
@@ -97,18 +104,19 @@ const AuthForm = (): JSX.Element => {
   )
 
   return (
-    <div className="form-container">
+    <Flex sx={styles.container} className="form-container">
       <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
         {contactComponent}
         {OtpComponent}
-        <input
+        <Input
+          sx={styles.submitButton}
           id="submit-button"
           name="submit-button"
           type="submit"
           value={otpState === OtpState.Sent ? 'Log In' : 'Send OTP'}
         />
       </form>
-    </div>
+    </Flex>
   )
 }
 
