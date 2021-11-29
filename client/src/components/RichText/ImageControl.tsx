@@ -58,6 +58,7 @@ export const ImageControl = ({
   const [imageLoading, setImageLoading] = useState(false)
   const [fileName, setFileName] = useState('')
   const [fileSize, setFileSize] = useState(0)
+  const [isDragOver, setIsDragOver] = useState(false)
   const WIDTH = '100%'
 
   const {
@@ -95,6 +96,12 @@ export const ImageControl = ({
 
   const onDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.stopPropagation()
+    setIsDragOver(true)
+  }
+
+  const onDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    setIsDragOver(false)
   }
 
   const toggleShowImageLoading = () => {
@@ -123,7 +130,7 @@ export const ImageControl = ({
   const onImageDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     e.stopPropagation()
-
+    setIsDragOver(false)
     // Check if property name is files or items
     // IE uses 'files' instead of 'items'
     let data
@@ -206,43 +213,59 @@ export const ImageControl = ({
                         </HStack>
                       </Box>
                     ) : (
-                      <Box
-                        sx={styles.fileUploadBox}
-                        onClick={fileUploadClick}
-                        onDragEnter={onDragEnter}
-                        onDragOver={stopPropagation}
-                        onDrop={onImageDrop}
-                        cursor="pointer"
-                      >
-                        <label
-                          htmlFor="file"
-                          className="rdw-image-modal-upload-option-label"
+                      <VStack alignContent="left" alignItems="left">
+                        <Box
+                          bg={isDragOver ? 'secondary.200' : 'secondary.100'}
+                          border={isDragOver ? '1px' : '2px'}
+                          borderColor={
+                            isDragOver ? 'Secondary.800' : 'neutral.700'
+                          }
+                          borderStyle={isDragOver ? 'solid' : 'dashed'}
+                          sx={styles.fileUploadBox}
+                          onClick={fileUploadClick}
+                          onDragEnter={onDragEnter}
+                          onDragOver={stopPropagation}
+                          onDragLeave={onDragLeave}
+                          onDrop={onImageDrop}
+                          cursor="pointer"
+                          className="image-modal-upload-box"
                         >
-                          <Flex>
-                            <VStack>
-                              <BiCloudUpload size="50px" />
+                          <label
+                            htmlFor="file"
+                            className="rdw-image-modal-upload-option-label"
+                          >
+                            {isDragOver ? (
+                              <Text sx={styles.dragOverText}>
+                                Drop media to upload
+                              </Text>
+                            ) : (
                               <Flex>
-                                <Text sx={styles.fileUploadText} as="u">
-                                  Choose file
-                                </Text>
-                                <Text sx={styles.fileUploadText}>
-                                  &nbsp;or drag and drop here
-                                </Text>
+                                <VStack>
+                                  <BiCloudUpload size="50px" />
+                                  <Flex>
+                                    <Text sx={styles.fileUploadText} as="u">
+                                      Choose file
+                                    </Text>
+                                    <Text sx={styles.fileUploadText}>
+                                      &nbsp;or drag and drop here
+                                    </Text>
+                                  </Flex>
+                                </VStack>
                               </Flex>
-                            </VStack>
-                          </Flex>
-                        </label>
-                        <input
-                          type="file"
-                          id="file"
-                          accept={config.inputAccept}
-                          onChange={selectImage}
-                          className="rdw-image-modal-upload-option-input"
-                        />
-                        <Text textStyle="body-2" pt="8px">
+                            )}
+                          </label>
+                          <Input
+                            type="file"
+                            id="file"
+                            accept={config.inputAccept}
+                            onChange={selectImage}
+                            className="rdw-image-modal-upload-option-input"
+                          />
+                        </Box>
+                        <Text sx={styles.maxFileSizeText}>
                           Maximum file size: 10MB
                         </Text>
-                      </Box>
+                      </VStack>
                     )}
                   </TabPanel>
                 </TabPanels>

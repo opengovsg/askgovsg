@@ -8,6 +8,7 @@ export const ImageControl: ComponentMultiStyleConfig = {
     'uploadedLargeBox',
     'uploadedImageFlexBox',
     'fileUploadBox',
+    'dragOverText',
     'fileUploadText',
     'fileUploadFormatText',
     'altTextBox',
@@ -15,6 +16,7 @@ export const ImageControl: ComponentMultiStyleConfig = {
     'buttonsFlexBox',
     'cancelButton',
     'submitButton',
+    'maxFileSizeText',
   ],
   baseStyle: () => ({
     box: {
@@ -63,10 +65,10 @@ export const ImageControl: ComponentMultiStyleConfig = {
     fileUploadBox: {
       w: '600px',
       h: '216px',
-      bg: 'secondary.100',
-      border: '1px',
-      borderColor: 'Secondary.100',
-      borderStyle: 'dashed',
+    },
+    dragOverText: {
+      textStyle: 'subhead-1',
+      color: 'secondary.800',
     },
     fileUploadText: {
       fontFamily: 'Inter',
@@ -107,6 +109,9 @@ export const ImageControl: ComponentMultiStyleConfig = {
       textStyle: 'subhead-1',
       backgroundColor: 'secondary.700',
       color: 'white',
+    },
+    maxFileSizeText: {
+      textStyle: 'body-2',
     },
   }),
 }
