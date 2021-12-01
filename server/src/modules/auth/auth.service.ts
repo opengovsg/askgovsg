@@ -1,41 +1,33 @@
 import minimatch from 'minimatch'
 import { ModelCtor } from 'sequelize/types'
-import { PermissionType, Post, PostStatus, Topic } from '~shared/types/base'
+import { Post, PostStatus, Topic } from '~shared/types/base'
 import { createLogger } from '../../bootstrap/logging'
-import { Permission, Tag, User } from '../../models'
+import { User } from '../../models'
 import { PostCreation } from '../../models/posts.model'
 import { ModelDef } from '../../types/sequelize'
 
 const logger = createLogger(module)
 
-export type PermissionWithRelations = Permission & {
-  tagId: number
-}
-
 export class AuthService {
   private emailValidator
   private User: ModelCtor<User>
   private Post: ModelDef<Post, PostCreation>
-  private Permission: ModelCtor<Permission>
   private Topic: ModelDef<Topic>
 
   constructor({
     emailValidator,
     User,
     Post,
-    Permission,
     Topic,
   }: {
     emailValidator: minimatch.IMinimatch
     User: ModelCtor<User>
     Post: ModelDef<Post, PostCreation>
-    Permission: ModelCtor<Permission>
     Topic: ModelDef<Topic>
   }) {
     this.emailValidator = emailValidator
     this.User = User
     this.Post = Post
-    this.Permission = Permission
     this.Topic = Topic
   }
 

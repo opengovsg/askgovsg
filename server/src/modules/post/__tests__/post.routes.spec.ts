@@ -5,17 +5,9 @@ import { Sequelize } from 'sequelize'
 import { ModelCtor } from 'sequelize/types'
 import { ModelDef } from '../../../types/sequelize'
 import supertest from 'supertest'
-import {
-  Agency,
-  PermissionType,
-  Post,
-  PostStatus,
-  TagType,
-  Topic,
-} from '~shared/types/base'
+import { Agency, Post, PostStatus, TagType, Topic } from '~shared/types/base'
 import {
   Answer as AnswerModel,
-  Permission as PermissionModel,
   PostTag,
   Tag as TagModel,
   User as UserModel,
@@ -41,7 +33,6 @@ describe('/posts', () => {
   let PostTag: ModelDef<PostTag>
   let Tag: ModelCtor<TagModel>
   let User: ModelCtor<UserModel>
-  let Permission: ModelCtor<PermissionModel>
   let Agency: ModelDef<Agency>
   let Topic: ModelDef<Topic>
 
@@ -82,7 +73,6 @@ describe('/posts', () => {
     PostTag = getModelDef<PostTag>(db, ModelName.PostTag)
     Tag = getModel<TagModel>(db, ModelName.Tag)
     User = getModel<UserModel>(db, ModelName.User)
-    Permission = getModel<PermissionModel>(db, ModelName.Permission)
     userService = new UserService({ User, Tag, Agency })
     Topic = getModelDef<Topic>(db, ModelName.Topic)
     postService = new PostService({
@@ -133,11 +123,6 @@ describe('/posts', () => {
       mockPosts.push(mockPost)
       await PostTag.create({ postId: mockPost.id, tagId: mockTag.id })
     }
-    await Permission.create({
-      userId: mockUser.id,
-      tagId: mockTag.id,
-      role: PermissionType.Answerer,
-    })
     controller = new PostController({ userService, authService, postService })
   })
 

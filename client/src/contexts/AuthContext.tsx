@@ -7,7 +7,7 @@ import { LoadUserDto } from '~shared/types/api'
 import { useStyledToast } from '../components/StyledToast/StyledToast'
 
 interface AuthContextProps {
-  user: LoadUserDto | null
+  user: LoadUserDto
   verifyOtp: UseMutationResult<void, unknown, { email: string; otp: string }>
   logout: () => void
 }

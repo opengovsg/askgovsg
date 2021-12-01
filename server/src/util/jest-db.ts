@@ -7,7 +7,7 @@ import {
   definePostAndPostTag,
   defineTag,
   defineToken,
-  defineUserAndPermission,
+  defineUser,
   defineTopic,
 } from '../models'
 
@@ -18,7 +18,6 @@ export enum ModelName {
   PostTag = 'posttag',
   Tag = 'tag',
   User = 'user',
-  Permission = 'permission',
   Token = 'token',
   Topic = 'topic',
 }
@@ -31,8 +30,7 @@ export const createTestDatabase = async (): Promise<Sequelize> => {
   const emailValidator = new minimatch.Minimatch('*')
   const Token = defineToken(sequelize)
   const Tag = defineTag(sequelize)
-  const { User, Permission } = defineUserAndPermission(sequelize, {
-    Tag,
+  const { User } = defineUser(sequelize, {
     emailValidator,
   })
   const Agency = defineAgency(sequelize, { User })
