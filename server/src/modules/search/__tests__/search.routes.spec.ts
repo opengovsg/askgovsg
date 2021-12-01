@@ -21,8 +21,6 @@ describe('/', () => {
     }
 
     const controller = new SearchController({
-      answersService,
-      postService,
       searchService,
     })
     const router = routeSearch({ controller })

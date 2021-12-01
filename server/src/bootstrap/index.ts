@@ -133,8 +133,6 @@ const userService = new UserService({ User, Tag, Agency })
 
 const searchService = new SearchService({ client: searchClient })
 const searchController = new SearchController({
-  answersService,
-  postService,
   searchService,
 })
 

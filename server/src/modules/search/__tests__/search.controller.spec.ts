@@ -1,12 +1,9 @@
-import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import express from 'express'
 import { query } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
 import { errAsync, okAsync } from 'neverthrow'
 import supertest from 'supertest'
 import { PostStatus } from '../../../../../shared/src/types/base'
-import { DatabaseError } from '../../core/core.errors'
-import { InvalidTopicsError } from '../../post/post.errors'
 import { SearchController } from '../search.controller'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -27,8 +24,6 @@ describe('SearchController', () => {
   }
 
   const searchController = new SearchController({
-    answersService,
-    postService,
     searchService,
   })
 
@@ -62,91 +57,6 @@ describe('SearchController', () => {
       },
     })
   }
-
-  describe('indexAllData', () => {
-    it('returns OK on a valid query', async () => {
-      postService.listPosts.mockResolvedValue(mockListPostsValue)
-      answersService.listAnswers.mockImplementation((postId) =>
-        Promise.resolve([
-          { body: `<p>answer ${postId}</p>` },
-          { body: `<p>another answer ${postId}</p>` },
-        ]),
-      )
-      searchService.indexAllData.mockReturnValue(
-        okAsync({
-          errors: false,
-          items: mockReturnItems,
-        }),
-      )
-
-      const response = await searchController.indexAllData(indexName)
-
-      expect(response.isOk()).toBeTruthy()
-      if (response.isOk()) {
-        // TODO: Proper typing to remove JSON parse and stringify
-        const responseValue = JSON.parse(JSON.stringify(response.value))
-        expect(responseValue.errors).toBeFalsy()
-        for (const item of responseValue.items) {
-          for (const key in item) {
-            expect(item[key].status).toBe(StatusCodes.CREATED)
-            expect(item[key]._index).toBe(indexName)
-          }
-        }
-      }
-    })
-
-    it('returns InvalidTopicsError when postService.listPosts throws InvalidTopicsError', async () => {
-      postService.listPosts.mockRejectedValue(new InvalidTopicsError())
-
-      const response = await searchController.indexAllData(indexName)
-
-      expect(response.isErr()).toBeTruthy()
-      if (response.isErr()) {
-        expect(response.error).toStrictEqual(new InvalidTopicsError())
-      }
-    })
-
-    it('returns Database Error when listAnswers throws Database Error', async () => {
-      postService.listPosts.mockResolvedValue(mockListPostsValue)
-      answersService.listAnswers.mockRejectedValue(new DatabaseError())
-
-      const response = await searchController.indexAllData(indexName)
-
-      // expect(response).toBe('')
-      expect(response.isErr()).toBeTruthy()
-      if (response.isErr()) {
-        expect(response.error).toStrictEqual(new DatabaseError())
-      }
-    })
-
-    it('returns Response Error when searchService.indexAllData throws Response Error', async () => {
-      postService.listPosts.mockResolvedValue(mockListPostsValue)
-      answersService.listAnswers.mockImplementation((postId) =>
-        Promise.resolve([
-          { body: `<p>answer ${postId}</p>` },
-          { body: `<p>another answer ${postId}</p>` },
-        ]),
-      )
-      searchService.indexAllData.mockReturnValue(
-        errAsync(
-          new errors.ResponseError({
-            body: { errors: {}, status: StatusCodes.BAD_REQUEST },
-            statusCode: StatusCodes.BAD_REQUEST,
-          }),
-        ),
-      )
-
-      const response = await searchController.indexAllData(indexName)
-      expect(response.isErr()).toBeTruthy()
-      if (response.isErr()) {
-        expect(response.error).toBeInstanceOf(ResponseError)
-      }
-    })
-
-    afterEach(() => {
-      jest.resetAllMocks()
-    })
-  })
 
   describe('searchPosts', () => {
     const sampleHits = [
