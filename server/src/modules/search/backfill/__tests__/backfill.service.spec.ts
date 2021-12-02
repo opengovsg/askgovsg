@@ -78,7 +78,7 @@ describe('BackfillSearchService', () => {
         },
       )
       const body = searchEntriesDataset.flatMap((doc) => [
-        { index: { _index: indexName } },
+        { index: { _index: indexName, _id: doc.postId } },
         doc,
       ])
       mock.add(
@@ -139,7 +139,7 @@ describe('BackfillSearchService', () => {
         },
       )
       const body = searchEntriesDataset.flatMap((doc) => [
-        { index: { _index: indexName } },
+        { index: { _index: indexName, _id: doc.postId } },
         doc,
       ])
       mock.add(

@@ -74,7 +74,7 @@ export class BackfillService {
     // If testing on live opensearch instance for 'should return error documents some
     // operations for client.bulk fail', change _index value to a camel case string.
     const body = searchEntriesDataset.flatMap((doc) => [
-      { index: { _index: indexName } },
+      { index: { _index: indexName, _id: doc.postId } },
       doc,
     ])
     return await ResultAsync.fromPromise(
