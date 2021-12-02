@@ -4,16 +4,8 @@ import {
   Tag as TagModel,
   PostTag,
   User as UserModel,
-  Permission as PermissionModel,
 } from '../../../models'
-import {
-  Agency,
-  PermissionType,
-  Post,
-  PostStatus,
-  TagType,
-  Topic,
-} from '~shared/types/base'
+import { Agency, Post, PostStatus, TagType, Topic } from '~shared/types/base'
 import { SortType } from '../../../types/sort-type'
 import {
   createTestDatabase,
@@ -43,7 +35,6 @@ describe('PostService', () => {
   let PostTag: ModelDef<PostTag>
   let Tag: ModelCtor<TagModel>
   let User: ModelCtor<UserModel>
-  let Permission: ModelCtor<PermissionModel>
   let Topic: ModelDef<Topic>
   let postService: PostService
   const mockPosts: Post[] = []
@@ -60,7 +51,6 @@ describe('PostService', () => {
     PostTag = getModelDef<PostTag>(db, ModelName.PostTag)
     Tag = getModel<TagModel>(db, ModelName.Tag)
     User = getModel<UserModel>(db, ModelName.User)
-    Permission = getModel<PermissionModel>(db, ModelName.Permission)
     Topic = getModelDef<Topic>(db, ModelName.Topic)
     postService = new PostService({
       Answer,
@@ -110,11 +100,6 @@ describe('PostService', () => {
       mockPosts.push(mockPost)
       await PostTag.create({ postId: mockPost.id, tagId: mockTag.id })
     }
-    await Permission.create({
-      userId: mockUser.id,
-      tagId: mockTag.id,
-      role: PermissionType.Answerer,
-    })
   })
 
   afterEach(async () => {

@@ -8,11 +8,7 @@ import supertest, { Session } from 'supertest-session'
 import { Agency, Post, Topic } from '~shared/types/base'
 import { createAuthedSession, logoutSession } from '../../../../tests/mock-auth'
 import { passportConfig } from '../../../bootstrap/passport'
-import {
-  Permission as PermissionModel,
-  Token as TokenModel,
-  User as UserModel,
-} from '../../../models'
+import { Token as TokenModel, User as UserModel } from '../../../models'
 import { ModelDef, ModelInstance } from '../../../types/sequelize'
 import {
   createTestDatabase,
@@ -51,7 +47,6 @@ describe('/auth', () => {
   let Token: ModelCtor<TokenModel>
   let Agency: ModelDef<Agency>
   let User: ModelCtor<UserModel>
-  let Permission: ModelCtor<PermissionModel>
   let Topic: ModelDef<Topic>
   let Post: ModelDef<Post, PostCreation>
   let mockUser: UserModel
@@ -62,7 +57,6 @@ describe('/auth', () => {
     Token = getModel<TokenModel>(db, ModelName.Token)
     Agency = getModelDef<Agency>(db, ModelName.Agency)
     User = getModel<UserModel>(db, ModelName.User)
-    Permission = getModel<PermissionModel>(db, ModelName.Permission)
     Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
     mockAgency = await Agency.create({
       shortname: 'was',
@@ -81,7 +75,6 @@ describe('/auth', () => {
     authService = new AuthService({
       emailValidator,
       User,
-      Permission,
       Post,
       Topic,
     })
