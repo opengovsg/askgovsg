@@ -1,7 +1,8 @@
 import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { StatusCodes } from 'http-status-codes'
 import { Mocker } from '../../opensearch-mock'
-import { BackfillService, SearchEntry } from '../backfill.service'
+import { BackfillService } from '../backfill.service'
+import { SearchEntry } from '../../search.service'
 
 // // Uncomment to test with live opensearch service
 // import { baseConfig, Environment } from '../../../bootstrap/config/base'
@@ -57,7 +58,7 @@ describe('BackfillSearchService', () => {
     searchEntriesDataset.push({
       title: `title ${i * 10}`,
       description: `description ${i * 100}`,
-      answer: `answer ${i * 1000}`,
+      answers: [`answer ${i * 1000}`],
       agencyId: i,
       postId: i,
       topicId: null,

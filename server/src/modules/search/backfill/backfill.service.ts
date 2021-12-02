@@ -4,20 +4,12 @@ import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { StatusCodes } from 'http-status-codes'
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
 import { createLogger } from '../../../bootstrap/logging'
+import { SearchEntry } from '../search.service'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { errors } = require('@opensearch-project/opensearch')
 
 const logger = createLogger(module)
-
-export type SearchEntry = {
-  title: string
-  description: string | null
-  answer: string
-  agencyId: number
-  postId: number
-  topicId: number | null
-}
 
 export class BackfillService {
   private client: Client

@@ -123,7 +123,7 @@ describe('SearchController', () => {
           id: 3,
           options: {},
           params: {
-            body: '{"query":{"multi_match":{"query":"title 20","fields":["title","description","answer"],"type":"most_fields","zero_terms_query":"all","fuzziness":"AUTO"}}}',
+            body: '{"query":{"multi_match":{"query":"title 20","fields":["title","description","answers"],"type":"most_fields","zero_terms_query":"all","fuzziness":"AUTO"}}}',
             headers: {
               'content-length': '153',
               'content-type': 'application/json',

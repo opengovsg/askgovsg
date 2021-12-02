@@ -57,7 +57,7 @@ describe('Search Service', () => {
     searchEntriesDataset.push({
       title: `title ${i * 10}`,
       description: `description ${i * 100}`,
-      answer: `answer ${i * 1000}`,
+      answers: [`answer ${i * 1000}`],
       agencyId: i,
       postId: i,
       topicId: null,
