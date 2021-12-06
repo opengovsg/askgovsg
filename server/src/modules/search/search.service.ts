@@ -1,22 +1,15 @@
 import { Client } from '@opensearch-project/opensearch'
-import {
-  BulkResponseItemBase,
-  QueryDslMultiMatchQuery,
-} from '@opensearch-project/opensearch/api/types'
+import { QueryDslMultiMatchQuery } from '@opensearch-project/opensearch/api/types'
 import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
-import { StatusCodes } from 'http-status-codes'
-import { errAsync, okAsync, ResultAsync } from 'neverthrow'
+import { ResultAsync } from 'neverthrow'
 import { createLogger } from '../../bootstrap/logging'
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { errors } = require('@opensearch-project/opensearch')
 
 const logger = createLogger(module)
 
 export type SearchEntry = {
   title: string
   description: string | null
-  answer: string
+  answers: string[]
   agencyId: number
   postId: number
   topicId: number | null
@@ -39,7 +32,7 @@ export class SearchService {
   searchPosts = async (index: string, query: string, agencyId?: number) => {
     const multiMatchQuery: QueryDslMultiMatchQuery = {
       query: query,
-      fields: ['title', 'description', 'answer'],
+      fields: ['title', 'description', 'answers'],
       type: 'most_fields',
       fuzziness: 'AUTO',
     }

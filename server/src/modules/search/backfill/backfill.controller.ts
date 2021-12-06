@@ -6,7 +6,8 @@ import { AnswersService } from '../../answers/answers.service'
 import { DatabaseError } from '../../core/core.errors'
 import { InvalidTagsError, InvalidTopicsError } from '../../post/post.errors'
 import { PostService } from '../../post/post.service'
-import { BackfillService, SearchEntry } from './backfill.service'
+import { SearchEntry } from '../search.service'
+import { BackfillService } from './backfill.service'
 
 const logger = createLogger(module)
 
@@ -75,13 +76,19 @@ export class BackfillController {
               return err as DatabaseError
             },
           ).map((answers) => {
+            const answerBodyList = []
+            for (const answer of answers) {
+              answerBodyList.push(
+                sanitizeHtml(answer.body, {
+                  allowedTags: [],
+                  allowedAttributes: {},
+                }),
+              )
+            }
             searchEntriesDataset.push({
               title: post.title,
               description: post.description,
-              answer: sanitizeHtml(answers[0].body, {
-                allowedTags: [],
-                allowedAttributes: {},
-              }),
+              answers: answerBodyList,
               agencyId: post.agencyId,
               postId: post.id,
               topicId: post.topicId,

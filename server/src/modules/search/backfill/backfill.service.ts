@@ -4,20 +4,12 @@ import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { StatusCodes } from 'http-status-codes'
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
 import { createLogger } from '../../../bootstrap/logging'
+import { SearchEntry } from '../search.service'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { errors } = require('@opensearch-project/opensearch')
 
 const logger = createLogger(module)
-
-export type SearchEntry = {
-  title: string
-  description: string | null
-  answer: string
-  agencyId: number
-  postId: number
-  topicId: number | null
-}
 
 export class BackfillService {
   private client: Client
@@ -74,7 +66,7 @@ export class BackfillService {
     // If testing on live opensearch instance for 'should return error documents some
     // operations for client.bulk fail', change _index value to a camel case string.
     const body = searchEntriesDataset.flatMap((doc) => [
-      { index: { _index: indexName } },
+      { index: { _index: indexName, _id: doc.postId } },
       doc,
     ])
     return await ResultAsync.fromPromise(
