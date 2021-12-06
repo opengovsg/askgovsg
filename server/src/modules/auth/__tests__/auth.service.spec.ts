@@ -1,10 +1,7 @@
 import minimatch from 'minimatch'
 import { Model, ModelCtor, Sequelize } from 'sequelize'
 import { Agency, Post, PostStatus, Topic } from '~shared/types/base'
-import {
-  Permission as PermissionModel,
-  User as UserModel,
-} from '../../../models'
+import { User as UserModel } from '../../../models'
 import { PostCreation } from '../../../models/posts.model'
 import { ModelDef, ModelInstance } from '../../../types/sequelize'
 import {
@@ -20,7 +17,6 @@ describe('AuthService', () => {
   let db: Sequelize
   let Agency: ModelDef<Agency>
   let User: ModelCtor<UserModel>
-  let Permission: ModelCtor<PermissionModel>
   let Topic: ModelDef<Topic>
   let Post: ModelDef<Post, PostCreation>
 
@@ -33,7 +29,6 @@ describe('AuthService', () => {
     db = await createTestDatabase()
     Agency = getModelDef<Agency>(db, ModelName.Agency)
     User = getModel<UserModel>(db, ModelName.User)
-    Permission = getModel<PermissionModel>(db, ModelName.Permission)
     Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
     Topic = getModelDef<Topic>(db, ModelName.Topic)
     mockAgency = await Agency.create({
@@ -59,7 +54,6 @@ describe('AuthService', () => {
     authService = new AuthService({
       emailValidator,
       User,
-      Permission,
       Post,
       Topic,
     })

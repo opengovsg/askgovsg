@@ -11,7 +11,7 @@ export const routeSearch = ({
 
   /**
    * Lists all answers to a post
-   * @route   GET /questions
+   * @route   GET /search
    * @returns 200 relevant search entries sorted by relevance
    * @returns 500 search request fails
    * @access  Public

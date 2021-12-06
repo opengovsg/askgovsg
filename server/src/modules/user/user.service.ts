@@ -29,7 +29,7 @@ export class UserService {
 
   loadUser = async (userId: number): Promise<LoadUserDto> => {
     return this.User.findByPk(userId, {
-      include: [this.Agency, this.Tag],
+      include: [this.Agency],
     }) as Promise<LoadUserDto>
   }
 }

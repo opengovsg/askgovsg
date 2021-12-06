@@ -500,40 +500,6 @@ module.exports = {
     )
 
     await queryInterface.bulkInsert(
-      'permissions',
-      [
-        {
-          role: 'answerer',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          tagId: 5,
-          userId: 4,
-        },
-        {
-          role: 'answerer',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          tagId: 6,
-          userId: 4,
-        },
-        {
-          role: 'answerer',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          tagId: 7,
-          userId: 4,
-        },
-        {
-          role: 'answerer',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          tagId: 8,
-          userId: 4,
-        },
-      ],
-      {},
-    )
-    await queryInterface.bulkInsert(
       'posttags',
       [
         { createdAt: new Date(), updatedAt: new Date(), postId: 14, tagId: 5 },
@@ -588,7 +554,6 @@ module.exports = {
 
   down: async (queryInterface) => {
     await queryInterface.bulkDelete('posttags', null, {})
-    await queryInterface.bulkDelete('permissions', null, {})
     await queryInterface.bulkDelete('answers', null, {})
     await queryInterface.bulkDelete('posts', null, {})
     await queryInterface.bulkDelete('topics', null, {})

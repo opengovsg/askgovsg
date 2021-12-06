@@ -55,7 +55,6 @@ import { searchClient } from './search'
 import {
   Agency,
   Answer,
-  Permission,
   Post,
   PostTag,
   sequelize,
@@ -107,7 +106,6 @@ const agencyService = new AgencyService({ Agency })
 const authService = new AuthService({
   emailValidator,
   User,
-  Permission,
   Post,
   Topic,
 })
@@ -133,8 +131,6 @@ const userService = new UserService({ User, Tag, Agency })
 
 const searchService = new SearchService({ client: searchClient })
 const searchController = new SearchController({
-  answersService,
-  postService,
   searchService,
 })
 

@@ -2,8 +2,6 @@ import sequelize, {
   Post,
   Answer,
   Tag,
-  PostTag,
-  Permission,
   Agency,
   User,
   Topic,
@@ -20,12 +18,11 @@ import { promises as fs } from 'fs'
 // User has permissions to add agencyTag and tags for all rows.
 
 // Procedure:
-// The CSV should have three columns titled 'tag', 'question', 'answer'. Other columns will
+// The CSV should have three columns titled 'topic', 'question', 'answer'. Other columns will
 // be ignored. From each row, it will create a question and answer and link them to each other.
-// Then it will link the agency and the tags to the post. It only adds one agency and topic tag.
-// Additional ones will have to be created manually.
-// It will not alter agencies, tags, users or permission. Those have to be created first
-// It will alter tables posts, posttags, answers.
+// Then it will link the agency and topic to the post.
+// It will not alter agencies, tags, or users. Those have to be created first
+// It will alter tables posts, answers.
 
 // To run:
 // Install ts-node if not done so, change directory to /util and run
@@ -34,10 +31,9 @@ import { promises as fs } from 'fs'
 // **********************************
 // CHANGE THESE SETTINGS:
 // User ID is id of user that creates the form
-// Agency ID is the ID of agency tag
-const user = { id: 4 }
-const agencyTag = { id: 5 }
+// Agency ID is the id of the agency that the user belongs to
 const agencyId = 5
+const user = { id: 4, agencyId }
 const fileName = 'example_data.csv'
 // **********************************
 
@@ -50,58 +46,36 @@ const fileName = 'example_data.csv'
     const agencyCount = await Agency.count()
     const tagCount = await Tag.count()
     const userCount = await User.count()
-    const permissionCount = await Permission.count()
+    const topicCount = await Topic.count()
 
-    // Check that user has permissions to add agencyTag
-    const userAgencyPermission = await Permission.findAll({
-      where: {
-        tagId: agencyTag.id,
-        userId: user.id,
-      },
-    })
-
-    if (userAgencyPermission.length !== 1) {
-      // User does not have permission to add agency tag. Throw error to rollback
-      throw new Error()
-    }
-
-    // Check that user has permissions to add every row's tags
-    const checkPermissionTags = async (tagname: string) => {
-      // Find tag
-      const topicTag = await Tag.findAll({
+    // Check that user has permissions to add every row's topics
+    const checkPermissionTopics = async (topicname: string) => {
+      // Find topic
+      const topic = await Topic.findAll({
         where: {
-          tagname: tagname,
+          name: topicname,
         },
       })
 
-      if (topicTag.length !== 1) {
-        // Tag does not exist. Throw error to rollback
+      if (topic.length !== 1) {
+        // Topic does not exist. Throw error to rollback
         throw new Error()
       }
 
-      // Check that user has permissions to add particular tag
-      const userTagPermission = await Permission.findAll({
-        where: {
-          tagId: topicTag[0].id,
-          userId: user.id,
-        },
-      })
-
-      if (userTagPermission.length !== 1) {
-        // User does not have permission to add tag. Throw error to rollback
+      if (user.agencyId !== topic[0].agencyId) {
+        // User does not have permission to add topic. Throw error to rollback
         throw new Error()
       }
     }
 
     for (const row of data) {
-      await checkPermissionTags(row.tag)
+      await checkPermissionTopics(row.topic)
     }
 
     // UPDATE
     const processOneRow = async (
       question: string,
       answerInput: string,
-      tagname: string,
       topicName: string,
     ) => {
       // console.log('Creating: ', tagname, question, answer)
@@ -110,7 +84,6 @@ const fileName = 'example_data.csv'
       const topic = await Topic.findOne({
         where: {
           name: topicName,
-          agencyId: agencyId,
         },
       })
 
@@ -143,42 +116,17 @@ const fileName = 'example_data.csv'
         },
         { transaction: t },
       )
-
-      // Link agency with post
-      const agencyPostTag = await PostTag.create(
-        {
-          postId: post.id,
-          tagId: agencyTag.id,
-        },
-        { transaction: t },
-      )
-
-      // Find tag
-      const topicTag = await Tag.findAll({
-        where: {
-          tagname: tagname,
-        },
-      })
-
-      // Link tag to post
-      const topicPostTag = await PostTag.create(
-        {
-          postId: post.id,
-          tagId: topicTag[0].id,
-        },
-        { transaction: t },
-      )
     }
 
     // Run it for every row
     for (const row of data) {
-      await processOneRow(row.question, row.answer, row.tag, row.topic)
+      await processOneRow(row.question, row.answer, row.topic)
     }
 
     // POST-UPDATE CHECKS
     if (agencyCount !== (await Agency.count())) throw new Error()
     if (tagCount !== (await Tag.count())) throw new Error()
     if (userCount !== (await User.count())) throw new Error()
-    if (permissionCount !== (await Permission.count())) throw new Error()
+    if (topicCount !== (await Topic.count())) throw new Error()
   })
 })()
