@@ -4,7 +4,4 @@ module.exports = {
   moduleNameMapper: {
     '~shared/(.*)': '<rootDir>/../shared/build/$1',
   },
-  testPathIgnorePatterns: [
-    '<rootDir>/src/modules/search/__tests__/opensearch-mock',
-  ],
 }
