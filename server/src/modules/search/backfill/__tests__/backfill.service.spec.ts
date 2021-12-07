@@ -5,8 +5,8 @@ import { BackfillService } from '../backfill.service'
 import { SearchEntry } from '../../search.service'
 
 // // Uncomment to test with live opensearch service
-// import { baseConfig, Environment } from '../../../bootstrap/config/base'
-// import { searchConfig } from '../../../bootstrap/config/search'
+// import { baseConfig, Environment } from '../../../../bootstrap/config/base'
+// import { searchConfig } from '../../../../bootstrap/config/search'
 // import { Client } from '@opensearch-project/opensearch'
 // import fs from 'fs'
 
