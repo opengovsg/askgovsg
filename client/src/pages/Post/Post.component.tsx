@@ -1,4 +1,13 @@
-import { Center, Flex, Spacer, Stack, Text, VStack } from '@chakra-ui/layout'
+import {
+  Box,
+  Center,
+  Flex,
+  Spacer,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/layout'
+import { useMultiStyleConfig } from '@chakra-ui/system'
 import { format, utcToZonedTime } from 'date-fns-tz'
 import { useEffect, useRef } from 'react'
 import { BiXCircle } from 'react-icons/bi'
@@ -29,10 +38,10 @@ import {
   GET_TOPIC_BY_ID_QUERY_KEY,
 } from '../../services/TopicService'
 import AnswerSection from './AnswerSection/AnswerSection.component'
-import './Post.styles.scss'
 import QuestionSection from './QuestionSection/QuestionSection.component'
 
 const Post = (): JSX.Element => {
+  const styles = useMultiStyleConfig('Post', {})
   // Does not need to handle logic when public post with id postId is not found because this is handled by server
   const { id: postId } = useParams()
   const { isLoading: isPostLoading, data: post } = useQuery(
@@ -100,9 +109,9 @@ const Post = (): JSX.Element => {
   const isLoading = isPostLoading || isAgencyLoading || isTopicLoading
 
   return isLoading ? (
-    <Spinner centerHeight="200px" />
+    <Spinner centerHeight={`${styles.spinner.height}`} />
   ) : (
-    <Flex direction="column" height="100%">
+    <Flex direction="column" sx={styles.container}>
       <PageTitle
         title={`${post?.title} - ${
           agency && agency.shortname.toUpperCase()
@@ -121,82 +130,55 @@ const Post = (): JSX.Element => {
       />
       <Center>
         <Stack
-          maxW="1188px"
-          px={{ base: '24px', sm: '88px' }}
-          direction={{ base: 'column', lg: 'row' }}
           spacing={{ base: '20px', lg: '88px' }}
+          direction={{ base: 'column', lg: 'row' }}
+          sx={styles.content}
         >
-          <div className="post-page">
+          <Box className="post-page">
             <Flex align="center">
-              <Flex
-                mt={{ base: '32px', sm: '60px' }}
-                mb={{ base: '32px', sm: '50px' }}
-              >
+              <Flex sx={styles.breadcrumb}>
                 {breadcrumbContentRef.current.length > 0 ? (
                   <NavBreadcrumb navOrder={breadcrumbContentRef.current} />
                 ) : null}
               </Flex>
               <Spacer />
               {isAgencyMember && agency && (
-                <div className="post-side-with-edit">
-                  <EditButton
-                    postId={Number(postId)}
-                    onDeleteLink={`/agency/${agency.shortname}`}
-                  />
-                </div>
+                <EditButton
+                  postId={Number(postId)}
+                  onDeleteLink={`/agency/${agency.shortname}`}
+                />
               )}
             </Flex>
-            <Text textStyle="h2" color="secondary.800">
-              {post?.title}
-            </Text>
+            <Text sx={styles.title}>{post?.title}</Text>
             {post?.status === PostStatus.Private ? (
-              <div className="subtitle-bar">
-                <div className="private-subtitle">
+              <Box sx={styles.subtitle} className="subtitle-bar">
+                <Flex sx={styles.private}>
                   <BiXCircle
-                    style={{ marginRight: '4px' }}
-                    color="neutral.500"
-                    size="24"
+                    style={{
+                      marginRight: `${styles.privateIcon.marginRight}`,
+                      color: `${styles.privateIcon.color}`,
+                    }}
+                    size={`${styles.privateIcon.fontSize}`}
                   />
-                  <span>
+                  <Box as="span">
                     This question remains private until an answer is posted.
-                  </span>
-                </div>
-              </div>
+                  </Box>
+                </Flex>
+              </Box>
             ) : null}
-            <div className="question-main">
-              <QuestionSection post={post} />
-              <AnswerSection answers={answers} />
-              <div className="post-time">
-                <time dateTime={formattedTimeString}>
-                  Last updated {formattedTimeString}
-                </time>
-              </div>
-            </div>
-          </div>
-          <VStack
-            w={{ base: 'auto', lg: '240px' }}
-            minW={{ base: 'auto', lg: '240px' }}
-            pt={{ base: '36px', sm: '60px', lg: '152px' }}
-            align="left"
-            color="secondary.800"
-          >
-            <Text
-              color="primary.500"
-              mb={{ base: '16px', sm: '0px' }}
-              textStyle="subhead-3"
-            >
-              Related Questions
-            </Text>
+            <QuestionSection post={post} />
+            <AnswerSection answers={answers} />
+            <Box sx={styles.lastUpdated}>
+              <time dateTime={formattedTimeString}>
+                Last updated {formattedTimeString}
+              </time>
+            </Box>
+          </Box>
+          <VStack sx={styles.relatedSection} align="left">
+            <Text sx={styles.relatedHeading}>Related Questions</Text>
             {post?.relatedPosts.map((relatedPost) => (
               <Link to={`/questions/${relatedPost.id}`}>
-                <Text
-                  py={{ base: '24px', sm: '32px' }}
-                  textStyle="subhead-2"
-                  fontWeight="normal"
-                  borderBottomWidth="1px"
-                >
-                  {relatedPost.title}
-                </Text>
+                <Text sx={styles.relatedLink}>{relatedPost.title}</Text>
               </Link>
             ))}
           </VStack>
