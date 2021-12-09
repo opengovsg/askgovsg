@@ -1,9 +1,8 @@
-import { Link, Text } from '@chakra-ui/react'
+import { Flex, Link, Text, useMultiStyleConfig } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { BasePostDto } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
 import EditButton from '../EditButton/EditButton.component'
-import './PostItem.styles.scss'
 
 // Note: PostItem is the component for the homepage
 const PostItem = ({
@@ -12,34 +11,25 @@ const PostItem = ({
   post: BasePostDto
 }): JSX.Element => {
   const { user } = useAuth()
+  const styles = useMultiStyleConfig('PostItem', {})
 
   const isAgencyMember = user && tags && user.agencyId === agencyId
 
   return (
-    <div className="post-with-stats flex">
-      <div className="post-item">
-        <div className="post-text">
-          {/* Title display area */}
-          <Link as={RouterLink} to={`/questions/${id}`}>
-            <Text
-              color="secondary.800"
-              _hover={{ color: 'secondary.600' }}
-              textStyle="h4"
-            >
-              {title}
-            </Text>
-          </Link>
-          {/* <div className="post-description-container">
+    <Flex sx={styles.container}>
+      {/* Title display area */}
+      <Link as={RouterLink} to={`/questions/${id}`}>
+        <Text sx={styles.linkText}>{title}</Text>
+      </Link>
+      {/* <Box sx={styles.description}>
             {description && <RichTextFrontPreview value={description} />}
-          </div> */}
-        </div>
-      </div>
+          </Box> */}
       {isAgencyMember && (
-        <div className="post-side-with-edit">
+        <Flex sx={styles.editWrapper}>
           <EditButton postId={id} />
-        </div>
+        </Flex>
       )}
-    </div>
+    </Flex>
   )
 }
 
