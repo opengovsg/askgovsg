@@ -34,7 +34,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "express-sitemap-xml": "^3.0.0",
-    "express-validator": "^6.13.0",
+    "express-validator": "^6.14.0",
     "express-winston": "^4.2.0",
     "helmet": "^4.6.0",
     "hot-shots": "^9.0.0",
