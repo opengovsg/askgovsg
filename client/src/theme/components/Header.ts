@@ -27,12 +27,12 @@ export const Header: ComponentMultiStyleConfig = {
     },
     expandedSearchContainer: {
       bg: 'white',
-      h: { base: '100px', xl: '152px' },
+      h: { base: '75px', xl: '152px' },
     },
     expandedSearch: {
       h: '56px',
       m: 'auto',
-      mt: { base: '20px', xl: '64px' },
+      mt: { base: '10px', xl: '64px' },
       px: { base: '24px', md: 'auto' },
       maxW: '680px',
       w: '100%',

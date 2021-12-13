@@ -196,17 +196,13 @@ const Header = (): JSX.Element => {
             </Collapse>
           ) : null}
           <Box sx={styles.expandedSearchContainer}>
-            <Flex sx={styles.expandedSearch}>
-              <SearchBox agencyId={agency?.id} />
-            </Flex>
+            <SearchBox sx={styles.expandedSearch} agencyId={agency?.id} />
           </Box>
         </>
       ) : (
         <Flex sx={styles.logoBarTabletDesktop}>
           <Logo />
-          <Flex sx={styles.compactSearch}>
-            <SearchBox agencyId={agency?.id} />
-          </Flex>
+          <SearchBox sx={styles.compactSearch} agencyId={agency?.id} />
           {agency?.website && <WebsiteLink />}
           {user && <AuthLinks />}
         </Flex>
