@@ -1,7 +1,7 @@
 import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { StatusCodes } from 'http-status-codes'
 import { Mocker } from '../../opensearch-mock'
-import { SearchEntry } from '../../search.service'
+import { SearchEntry } from '../../search.types'
 import { SyncService } from '../sync.service'
 
 // // Uncomment to test with live opensearch service

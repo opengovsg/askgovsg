@@ -6,7 +6,7 @@ import { AnswersService } from '../../answers/answers.service'
 import { DatabaseError } from '../../core/core.errors'
 import { InvalidTagsError, InvalidTopicsError } from '../../post/post.errors'
 import { PostService } from '../../post/post.service'
-import { SearchEntry } from '../search.service'
+import { SearchEntry } from '../search.types'
 import { BackfillService } from './backfill.service'
 
 const logger = createLogger(module)

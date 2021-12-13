@@ -2,7 +2,7 @@ import { ApiResponse, Client } from '@opensearch-project/opensearch'
 import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { ResultAsync } from 'neverthrow'
 import { createLogger } from '../../../bootstrap/logging'
-import { SearchEntry } from '../search.service'
+import { SearchEntry } from '../search.types'
 
 const logger = createLogger(module)
 

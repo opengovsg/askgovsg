@@ -1,8 +1,8 @@
 import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { StatusCodes } from 'http-status-codes'
 import { Mocker } from '../../opensearch-mock'
+import { SearchEntry } from '../../search.types'
 import { BackfillService } from '../backfill.service'
-import { SearchEntry } from '../../search.service'
 
 // // Uncomment to test with live opensearch service
 // import { baseConfig, Environment } from '../../../../bootstrap/config/base'

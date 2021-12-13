@@ -4,7 +4,7 @@ import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { StatusCodes } from 'http-status-codes'
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
 import { createLogger } from '../../../bootstrap/logging'
-import { SearchEntry } from '../search.service'
+import { SearchEntry } from '../search.types'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { errors } = require('@opensearch-project/opensearch')
