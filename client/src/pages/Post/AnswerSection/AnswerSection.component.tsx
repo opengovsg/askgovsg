@@ -11,7 +11,7 @@ const AnswerSection = ({
   return !answers ? (
     <SkeletonText />
   ) : (
-    <Box className="answer-section" w="auto" float="none" clear="both">
+    <Box className="answer-section" w="auto" float="none">
       {answers && answers.length > 0 ? (
         answers?.sort(sortByCreatedAt).map((answer) => (
           <Box className="answers" w="100%" mb="16px" color="neutral.900">
