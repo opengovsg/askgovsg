@@ -116,9 +116,7 @@ const HomePage = (): JSX.Element => {
           </Flex>
         </HStack>
       )}
-      <Box flex="1">
-        <OptionsMenu />
-      </Box>
+      <OptionsMenu />
       <Flex
         maxW="680px"
         m="auto"
