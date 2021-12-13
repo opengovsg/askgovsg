@@ -6,15 +6,6 @@ import { createLogger } from '../../bootstrap/logging'
 
 const logger = createLogger(module)
 
-export type SearchEntry = {
-  title: string
-  description: string | null
-  answers: string[]
-  agencyId: number
-  postId: number
-  topicId: number | null
-}
-
 export class SearchService {
   private client: Client
 

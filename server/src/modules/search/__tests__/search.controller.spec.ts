@@ -12,15 +12,9 @@ const { errors } = require('@opensearch-project/opensearch')
 describe('SearchController', () => {
   const indexName = 'search_entries'
 
-  const answersService = {
-    listAnswers: jest.fn(),
-  }
-  const postService = {
-    listPosts: jest.fn(),
-  }
   const searchService = {
-    indexAllData: jest.fn(),
     searchPosts: jest.fn(),
+    indexPost: jest.fn(),
   }
 
   const searchController = new SearchController({
@@ -42,11 +36,6 @@ describe('SearchController', () => {
     })
   }
 
-  const mockListPostsValue = {
-    posts: mockPosts,
-    totalItems: noOfItems,
-  }
-
   const mockReturnItems: { index: { _index: string; status: StatusCodes } }[] =
     []
   for (let i = 1; i <= noOfItems; i++) {
@@ -61,7 +50,7 @@ describe('SearchController', () => {
   describe('searchPosts', () => {
     const sampleHits = [
       {
-        _id: 'm42WIn0BbFqfMhuFmmR4',
+        _id: '2',
         _index: 'search_entries',
         _score: 0.8754687,
         _source: {
@@ -75,7 +64,7 @@ describe('SearchController', () => {
         _type: '_doc',
       },
       {
-        _id: 'mo2WIn0BbFqfMhuFmmR4',
+        _id: '1',
         _index: 'search_entries',
         _score: 0.18232156,
         _source: {
@@ -163,7 +152,25 @@ describe('SearchController', () => {
       expect(response.body).toStrictEqual(sampleHits)
     })
 
-    it('returns Internal Server Error when searchService throws Error', async () => {
+    it('returns Bad Request Error when agencyId is not an integer', async () => {
+      const app = express()
+      app.get(
+        '/search',
+        [query('agencyId').isInt().toInt(), query('query').isString().trim()],
+        searchController.searchPosts,
+      )
+      const request = supertest(app)
+      const response = await request.get(
+        '/search?agencyId=string&query=searchQuery',
+      )
+
+      expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
+      expect(response.body).toEqual({
+        message: 'Bad Request Error - query does not pass validation checks',
+      })
+    })
+
+    it('returns Internal Server Error when searchService.searchPosts throws Error', async () => {
       const mockedResponseError = new errors.ResponseError({
         body: { errors: {}, status: StatusCodes.BAD_REQUEST },
         statusCode: StatusCodes.BAD_REQUEST,

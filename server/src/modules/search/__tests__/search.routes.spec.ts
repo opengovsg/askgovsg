@@ -16,8 +16,8 @@ describe('/', () => {
       listPosts: jest.fn(),
     }
     const searchService = {
-      indexAllData: jest.fn(),
       searchPosts: jest.fn(),
+      indexPost: jest.fn(),
     }
 
     const controller = new SearchController({
