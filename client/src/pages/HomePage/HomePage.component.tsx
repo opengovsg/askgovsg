@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Flex,
+  HStack,
   Menu,
   MenuButton,
   MenuItem,
@@ -14,6 +15,7 @@ import { useEffect, useState } from 'react'
 import { BiSortAlt2 } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
+import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import PostQuestionButton from '../../components/PostQuestionButton/PostQuestionButton.component'
@@ -84,6 +86,36 @@ const HomePage = (): JSX.Element => {
             : undefined
         }
       />
+      {agency && !hasTopicsKey && (
+        <HStack
+          display="grid"
+          gridTemplateColumns="3fr 1fr"
+          py="auto"
+          minH={{
+            base: '175px',
+            sm: '232px',
+            lg: '224px',
+          }}
+          width={{
+            base: '90%',
+            sm: '75vw',
+            lg: '50vw',
+          }}
+          mx="auto"
+        >
+          <Text
+            textStyle={{ base: 'h2-mobile', sm: 'h1-mobile' }}
+            color="primary.500"
+          >
+            Need help?
+            <br />
+            {agency?.longname && `Answers from ${agency?.longname}`}
+          </Text>
+          <Flex ml="auto !important">
+            {agency && <AgencyLogo agency={agency} />}
+          </Flex>
+        </HStack>
+      )}
       <Box flex="1">
         <OptionsMenu />
       </Box>
