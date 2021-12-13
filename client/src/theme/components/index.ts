@@ -5,6 +5,8 @@ import { Header } from './Header'
 import { ImageBlock } from './ImageBlock'
 import { ImageControl } from './ImageControl'
 import { Pagination } from './Pagination'
+import { Post } from './Post'
+import { PostItem } from './PostItem'
 import { SearchBox } from './SearchBox'
 import { StyledToast } from './StyledToast'
 
@@ -15,6 +17,8 @@ export const components = {
   StyledToast,
   SearchBox,
   Pagination,
+  Post,
+  PostItem,
   ImageControl,
   ImageBlock,
   AskForm,
