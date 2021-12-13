@@ -1,7 +1,7 @@
 import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { StatusCodes } from 'http-status-codes'
+import { SearchEntry } from '~shared/types/api/search'
 import { Mocker } from '../../opensearch-mock'
-import { SearchEntry } from '../../search.types'
 import { BackfillService } from '../backfill.service'
 
 // // Uncomment to test with live opensearch service
