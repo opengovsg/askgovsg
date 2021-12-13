@@ -1,9 +1,8 @@
-import bodyParser from 'body-parser'
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
+import { okAsync } from 'neverthrow'
 import { Sequelize } from 'sequelize'
 import { ModelCtor } from 'sequelize/types'
-import { ModelDef } from '../../../types/sequelize'
 import supertest from 'supertest'
 import { Agency, Post, PostStatus, TagType, Topic } from '~shared/types/base'
 import {
@@ -14,6 +13,7 @@ import {
 } from '../../../models'
 import { PostCreation } from '../../../models/posts.model'
 import { ControllerHandler } from '../../../types/response-handler'
+import { ModelDef } from '../../../types/sequelize'
 import { SortType } from '../../../types/sort-type'
 import {
   createTestDatabase,
@@ -21,10 +21,10 @@ import {
   getModelDef,
   ModelName,
 } from '../../../util/jest-db'
+import { UserService } from '../../user/user.service'
 import { PostController } from '../post.controller'
 import { routePosts } from '../post.routes'
 import { PostService } from '../post.service'
-import { UserService } from '../../user/user.service'
 
 describe('/posts', () => {
   let db: Sequelize
@@ -65,6 +65,11 @@ describe('/posts', () => {
     authenticate,
   }
 
+  const searchSyncService = {
+    createPost: jest.fn(),
+    updatePost: jest.fn(),
+  }
+
   beforeAll(async () => {
     db = await createTestDatabase()
     Answer = getModel<AnswerModel>(db, ModelName.Answer)
@@ -82,7 +87,8 @@ describe('/posts', () => {
       Tag,
       User,
       Topic,
-      Agency,
+      searchSyncService,
+      sequelize: db,
     })
     mockAgency = await Agency.create({
       shortname: 'was',
@@ -191,6 +197,8 @@ describe('/posts', () => {
         topicId: mockTopic.id,
       }
 
+      searchSyncService.createPost.mockResolvedValue(okAsync({}))
+
       // Act
       const {
         status,
@@ -263,6 +271,8 @@ describe('/posts', () => {
         tagname: [mockTag.tagname],
         topicId: mockTopic.id,
       }
+
+      searchSyncService.updatePost.mockResolvedValue(okAsync({}))
 
       // Act
       const response = await request.put(path + `/${id}`).send(body)
