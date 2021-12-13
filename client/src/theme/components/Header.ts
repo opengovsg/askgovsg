@@ -19,22 +19,15 @@ export const Header: ComponentMultiStyleConfig = {
       top: 0,
       zIndex: 999,
     },
-    collapsedSearch: {
+    compactSearch: {
       h: '56px',
       m: 'auto',
-      px: { base: '24px', md: 'auto' },
       maxW: '680px',
       w: '100%',
-      mt: '-68px',
     },
     expandedSearchContainer: {
       bg: 'white',
       h: { base: '100px', xl: '152px' },
-    },
-    expandedSearchAgencyLogo: {
-      ml: '36px',
-      mt: '-55px',
-      display: { base: 'none', xl: 'flex' },
     },
     expandedSearch: {
       h: '56px',
@@ -44,12 +37,25 @@ export const Header: ComponentMultiStyleConfig = {
       maxW: '680px',
       w: '100%',
     },
-    logoBarContainer: {
+    logoBarMobile: {
+      h: '64px',
       bg: 'white',
       px: 8,
       py: 4,
       shrink: 0,
       align: 'center',
+    },
+    logoBarTabletDesktop: {
+      bg: 'white',
+      px: 8,
+      py: 4,
+      shrink: 0,
+      alignItems: 'center',
+      display: 'grid',
+      gridTemplateColumns: {
+        base: '1fr 1fr',
+        xl: '1fr 2fr 1fr',
+      },
     },
     logoBarRouterLink: {
       _hover: {
@@ -67,8 +73,9 @@ export const Header: ComponentMultiStyleConfig = {
       textStyle: 'logo',
       color: 'black',
     },
-    logoBarWebsiteLink: {
-      d: { base: 'none', sm: 'block' },
+    websiteLink: {
+      ml: 'auto',
+      d: { base: 'none', xl: 'flex' },
     },
   }),
 }
