@@ -638,9 +638,7 @@ export class PostService {
               postId: post.id,
             },
           )
-          if (createPostResponse.isErr()) {
-            throw createPostResponse.error
-          }
+          if (createPostResponse.isErr()) throw createPostResponse.error
           return post.id
         })
         return postId

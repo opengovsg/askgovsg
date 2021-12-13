@@ -17,8 +17,13 @@ const triggerIndexAllData = async (searchController: BackfillController) => {
 // To delete search_entries index locally: curl -XDELETE 'https://localhost:9200/search_entries' --insecure -u 'admin:admin'
 
 if (require.main === module) {
-  const answersService = new AnswersService({ Post, Answer })
   const searchSyncService = new SyncService({ client: searchClient })
+  const answersService = new AnswersService({
+    Post,
+    Answer,
+    searchSyncService,
+    sequelize,
+  })
   const postService = new PostService({
     Answer,
     Post,

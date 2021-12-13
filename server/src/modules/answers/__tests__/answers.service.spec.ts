@@ -1,3 +1,6 @@
+import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
+import { StatusCodes } from 'http-status-codes'
+import { errAsync, okAsync } from 'neverthrow'
 import { Sequelize } from 'sequelize'
 import {
   Agency,
@@ -16,6 +19,9 @@ import {
 } from '../../../util/jest-db'
 import { AnswersService } from '../answers.service'
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { errors } = require('@opensearch-project/opensearch')
+
 describe('AnswersService', () => {
   let agency: Agency
   let topic: Topic
@@ -27,11 +33,22 @@ describe('AnswersService', () => {
   let Post: ModelDef<Post, PostCreation>
   let Answer: ModelDef<Answer>
   let service: AnswersService
+
+  const searchSyncService = {
+    createPost: jest.fn(),
+    updatePost: jest.fn(),
+  }
+
   beforeAll(async () => {
     db = await createTestDatabase()
     Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
     Answer = getModelDef<Answer>(db, ModelName.Answer)
-    service = new AnswersService({ Post, Answer })
+    service = new AnswersService({
+      Post,
+      Answer,
+      searchSyncService,
+      sequelize: db,
+    })
 
     const Agency = getModelDef<Agency>(db, ModelName.Agency)
     agency = await Agency.create({
@@ -116,6 +133,8 @@ describe('AnswersService', () => {
         userId: user.id,
       }
 
+      searchSyncService.updatePost.mockResolvedValue(okAsync({}))
+
       const answerId = await service.createAnswer(attributes)
       const answer = await Answer.findByPk(answerId)
 
@@ -124,11 +143,41 @@ describe('AnswersService', () => {
       expect(answer).toMatchObject(attributes)
       expect(updatedPost?.status).toEqual(PostStatus.Public)
     })
+
+    it('throws and rollbacks transaction if sync with opensearch index fails', async () => {
+      const answersCountBefore = await Answer.count()
+
+      const body = 'Second Answer Body'
+      const attributes = {
+        body,
+        postId: post.id,
+        userId: user.id,
+      }
+
+      searchSyncService.updatePost.mockResolvedValue(
+        errAsync(
+          new errors.ResponseError({
+            body: { errors: {}, status: StatusCodes.BAD_REQUEST },
+            statusCode: StatusCodes.BAD_REQUEST,
+          }),
+        ),
+      )
+
+      await expect(service.createAnswer(attributes)).rejects.toBeInstanceOf(
+        ResponseError,
+      )
+
+      const answersCountAfter = await Answer.count()
+
+      expect(answersCountAfter).toBe(answersCountBefore)
+    })
   })
 
   describe('updateAnswer', () => {
     it('updates the body of the answer', async () => {
       const body = 'Second Answer Body'
+
+      searchSyncService.updatePost.mockResolvedValue(okAsync({}))
 
       const updateCount = await service.updateAnswer({
         id: answer.id,
@@ -139,6 +188,32 @@ describe('AnswersService', () => {
 
       expect(updateCount).toBe(1)
       expect(updatedAnswer?.body).toEqual(body)
+    })
+
+    it('throws and rollbacks transaction if sync with opensearch index fails', async () => {
+      const answersCountBefore = await Answer.count()
+
+      const body = 'Second Answer Body'
+
+      searchSyncService.updatePost.mockResolvedValue(
+        errAsync(
+          new errors.ResponseError({
+            body: { errors: {}, status: StatusCodes.BAD_REQUEST },
+            statusCode: StatusCodes.BAD_REQUEST,
+          }),
+        ),
+      )
+
+      await expect(
+        service.updateAnswer({
+          id: answer.id,
+          body,
+        }),
+      ).rejects.toBeInstanceOf(ResponseError)
+
+      const answersCountAfter = await Answer.count()
+
+      expect(answersCountAfter).toBe(answersCountBefore)
     })
   })
 
