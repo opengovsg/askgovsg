@@ -49,7 +49,7 @@ export class PostService {
   private Topic: ModelDef<Topic>
   private searchSyncService: Pick<
     SearchSyncService,
-    'createPost' | 'updatePost'
+    'createPost' | 'updatePost' | 'deletePost'
   >
   private sequelize: SequelizeType
 
@@ -69,7 +69,10 @@ export class PostService {
     Tag: ModelCtor<Tag>
     User: ModelCtor<User>
     Topic: ModelDef<Topic>
-    searchSyncService: Pick<SearchSyncService, 'createPost' | 'updatePost'>
+    searchSyncService: Pick<
+      SearchSyncService,
+      'createPost' | 'updatePost' | 'deletePost'
+    >
     sequelize: SequelizeType
   }) {
     this.Answer = Answer
@@ -654,14 +657,26 @@ export class PostService {
    * @returns void if successful
    */
   deletePost = async (id: number): Promise<void> => {
-    const update = await this.Post.update(
-      { status: PostStatus.Archived },
-      { where: { id: id } },
-    )
-    if (!update) {
-      throw new PostUpdateError()
-    } else {
-      return
+    try {
+      await this.sequelize.transaction(async (transaction) => {
+        const dbUpdate = await this.Post.update(
+          { status: PostStatus.Archived },
+          { where: { id: id }, transaction },
+        )
+
+        if (!dbUpdate) {
+          throw new PostUpdateError()
+        } else {
+          const searchDelete = await this.searchSyncService.deletePost(
+            this.searchIndexName,
+            id,
+          )
+          if (searchDelete.isErr()) throw searchDelete.error
+          return
+        }
+      })
+    } catch (error) {
+      throw error
     }
   }
 

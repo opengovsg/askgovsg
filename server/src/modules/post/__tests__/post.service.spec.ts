@@ -51,6 +51,7 @@ describe('PostService', () => {
   const searchSyncService = {
     createPost: jest.fn(),
     updatePost: jest.fn(),
+    deletePost: jest.fn(),
   }
 
   beforeAll(async () => {
@@ -414,23 +415,43 @@ describe('PostService', () => {
   })
 
   describe('deletePost', () => {
-    it('throws when post deletion fails', async () => {
-      const postId = mockPosts[mockPosts.length - 1].id + 20
-      try {
-        await postService.deletePost(postId)
-        throw new PostUpdateError()
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        if (error instanceof Error) {
-          expect(error.message).toBe('Post update failed')
-        }
-      }
+    // TODO: it('should throw PostUpdateError when Post.update fails')
+    it('throws error and rollbacks transaction if sync with opensearch index fails', async () => {
+      const postCountBefore = await Post.count()
+      const postArchiveBefore = await Post.findAndCountAll({
+        where: { status: PostStatus.Archived },
+      })
+
+      const postId = mockPosts[0].id
+      searchSyncService.deletePost.mockResolvedValue(
+        errAsync(
+          new errors.ResponseError({
+            body: { errors: {}, status: StatusCodes.BAD_REQUEST },
+            statusCode: StatusCodes.BAD_REQUEST,
+          }),
+        ),
+      )
+
+      await expect(postService.deletePost(postId)).rejects.toBeInstanceOf(
+        ResponseError,
+      )
+
+      const postCountAfter = await Post.count()
+      const postArchiveAfter = await Post.findAndCountAll({
+        where: { status: PostStatus.Archived },
+      })
+
+      expect(postCountAfter).toBe(postCountBefore)
+      expect(postArchiveAfter.count).toBe(postArchiveBefore.count)
     })
     it('archives post successfully', async () => {
       const postId = mockPosts[0].id
+      searchSyncService.deletePost.mockResolvedValue(okAsync({}))
       const postUpdateStatus = await postService.deletePost(postId)
       expect(postUpdateStatus).toBeUndefined()
     })
+
+    afterEach(() => jest.clearAllMocks())
   })
 
   describe('updatePost', () => {

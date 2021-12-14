@@ -35,9 +35,9 @@ export class SyncService {
       }),
       (err) => {
         logger.error({
-          message: 'Error while adding posts for OpenSearch - client.index',
+          message: 'Error while adding posts for OpenSearch - client.create',
           meta: {
-            function: 'searchPosts',
+            function: 'createPost',
           },
           error: err,
         })
@@ -68,9 +68,35 @@ export class SyncService {
       }),
       (err) => {
         logger.error({
-          message: 'Error while adding posts for OpenSearch - client.index',
+          message: 'Error while adding posts for OpenSearch - client.update',
           meta: {
-            function: 'searchPosts',
+            function: 'updatePost',
+          },
+          error: err,
+        })
+        return err as ResponseError
+      },
+    )
+  }
+
+  /**
+   * Deletes posts in opensearch index
+   * @param index index name
+   * @param id document id
+   * @returns results async with opensearch response
+   */
+  deletePost = (index: string, id: number) => {
+    return ResultAsync.fromPromise(
+      this.client.delete({
+        index,
+        id: `${id}`,
+        refresh: true,
+      }),
+      (err) => {
+        logger.error({
+          message: 'Error while adding posts for OpenSearch - client.delete',
+          meta: {
+            function: 'deletePost',
           },
           error: err,
         })
