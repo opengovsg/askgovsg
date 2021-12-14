@@ -78,4 +78,30 @@ export class SyncService {
       },
     )
   }
+
+  /**
+   * Deletes posts in opensearch index
+   * @param index index name
+   * @param id document id
+   * @returns results async with opensearch response
+   */
+  deletePost = (index: string, id: number) => {
+    return ResultAsync.fromPromise(
+      this.client.delete({
+        index,
+        id: `${id}`,
+        refresh: true,
+      }),
+      (err) => {
+        logger.error({
+          message: 'Error while adding posts for OpenSearch - client.delete',
+          meta: {
+            function: 'deletePost',
+          },
+          error: err,
+        })
+        return err as ResponseError
+      },
+    )
+  }
 }

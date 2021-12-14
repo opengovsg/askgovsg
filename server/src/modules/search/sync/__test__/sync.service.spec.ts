@@ -5,8 +5,8 @@ import { Mocker } from '../../opensearch-mock'
 import { SyncService } from '../sync.service'
 
 // // Uncomment to test with live opensearch service
-// import { baseConfig, Environment } from '../../../bootstrap/config/base'
-// import { searchConfig } from '../../../bootstrap/config/search'
+// import { baseConfig, Environment } from '../../../../bootstrap/config/base'
+// import { searchConfig } from '../../../../bootstrap/config/search'
 // import { Client } from '@opensearch-project/opensearch'
 // import fs from 'fs'
 
@@ -46,7 +46,7 @@ describe('Sync Service', () => {
     Connection: mock.getConnection(),
   })
 
-  const searchService: SyncService = new SyncService({
+  const syncService: SyncService = new SyncService({
     client,
   })
 
@@ -100,7 +100,7 @@ describe('Sync Service', () => {
         },
       )
 
-      const response = await searchService.createPost(indexName, searchEntry)
+      const response = await syncService.createPost(indexName, searchEntry)
       expect(response.isOk()).toBeTruthy()
       if (response.isOk()) {
         expect(response.value.body._index).toBe(indexName)
@@ -124,7 +124,7 @@ describe('Sync Service', () => {
         },
       )
 
-      const response = await searchService.createPost(indexName, searchEntry)
+      const response = await syncService.createPost(indexName, searchEntry)
       expect(response.isErr()).toBeTruthy()
       if (response.isErr()) {
         expect(response.error.statusCode).toBe(StatusCodes.BAD_REQUEST)
@@ -133,9 +133,7 @@ describe('Sync Service', () => {
     })
 
     // Comment when testing with live opensearch service
-    afterEach(async () => {
-      mock.clearAll()
-    })
+    afterEach(() => mock.clearAll())
   })
 
   describe('updatePost', () => {
@@ -159,7 +157,7 @@ describe('Sync Service', () => {
       )
 
       searchEntry.answers!.push('added answer 1')
-      const response = await searchService.updatePost(indexName, searchEntry)
+      const response = await syncService.updatePost(indexName, searchEntry)
       expect(response.isOk()).toBeTruthy()
       if (response.isOk()) {
         expect(response.value.body._index).toBe(indexName)
@@ -183,7 +181,7 @@ describe('Sync Service', () => {
         },
       )
 
-      const response = await searchService.updatePost(indexName, searchEntry)
+      const response = await syncService.updatePost(indexName, searchEntry)
       expect(response.isErr()).toBeTruthy()
       if (response.isErr()) {
         expect(response.error.statusCode).toBe(StatusCodes.BAD_REQUEST)
@@ -192,8 +190,57 @@ describe('Sync Service', () => {
     })
 
     // Comment when testing with live opensearch service
-    afterEach(async () => {
-      mock.clearAll()
+    afterEach(() => mock.clearAll())
+  })
+
+  describe('deletePost', () => {
+    it('successfully deletes post from index if post has been deleted', async () => {
+      // Comment when testing with live opensearch service
+      mock.add(
+        {
+          method: 'DELETE',
+          path: `/:indexName/_doc/${postId}`,
+        },
+        () => {
+          return {
+            _index: indexName,
+            _id: String(postId),
+            result: 'deleted',
+          }
+        },
+      )
+
+      const response = await syncService.deletePost(indexName, postId)
+      expect(response.isOk()).toBeTruthy()
+      if (response.isOk()) {
+        expect(response.value.body._index).toBe(indexName)
+        expect(response.value.body._id).toBe(String(postId))
+        expect(response.value.body.result).toBe('deleted')
+      }
     })
+    it('throws error when delete operation fails', async () => {
+      // Comment when testing with live opensearch service
+      mock.add(
+        {
+          method: 'DELETE',
+          path: `/:indexName/_doc/${postId}`,
+        },
+        () => {
+          return new errors.ResponseError({
+            body: { errors: {}, status: StatusCodes.NOT_FOUND },
+            statusCode: StatusCodes.NOT_FOUND,
+          })
+        },
+      )
+
+      const response = await syncService.deletePost(indexName, postId)
+      expect(response.isErr()).toBeTruthy()
+      if (response.isErr()) {
+        expect(response.error).toBeInstanceOf(ResponseError)
+      }
+    })
+
+    // Comment when testing with live opensearch service
+    afterEach(() => mock.clearAll())
   })
 })
