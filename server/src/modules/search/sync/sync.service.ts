@@ -35,9 +35,9 @@ export class SyncService {
       }),
       (err) => {
         logger.error({
-          message: 'Error while adding posts for OpenSearch - client.index',
+          message: 'Error while adding posts for OpenSearch - client.create',
           meta: {
-            function: 'searchPosts',
+            function: 'createPost',
           },
           error: err,
         })
@@ -68,9 +68,9 @@ export class SyncService {
       }),
       (err) => {
         logger.error({
-          message: 'Error while adding posts for OpenSearch - client.index',
+          message: 'Error while adding posts for OpenSearch - client.update',
           meta: {
-            function: 'searchPosts',
+            function: 'updatePost',
           },
           error: err,
         })
