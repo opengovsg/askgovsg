@@ -68,6 +68,7 @@ describe('/posts', () => {
   const searchSyncService = {
     createPost: jest.fn(),
     updatePost: jest.fn(),
+    deletePost: jest.fn(),
   }
 
   beforeAll(async () => {
@@ -239,6 +240,7 @@ describe('/posts', () => {
     it('returns 200 if post is deleted', async () => {
       const { id } = mockPosts[0]
       authService.hasPermissionToAnswer.mockResolvedValue(true)
+      searchSyncService.deletePost.mockResolvedValue(okAsync({}))
 
       const path = '/posts'
       const app = express()
