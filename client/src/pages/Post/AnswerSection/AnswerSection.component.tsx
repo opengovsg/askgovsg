@@ -1,4 +1,4 @@
-import { Box, SkeletonText } from '@chakra-ui/react'
+import { Box, Text, SkeletonText } from '@chakra-ui/react'
 import { GetAnswersForPostDto } from '../../../api'
 import { sortByCreatedAt } from '../../../util/date'
 import AnswerItem from './AnswerItem/AnswerItem.component'
@@ -26,7 +26,9 @@ const AnswerSection = ({
           borderColor="neutral.300"
           my="16px"
         >
-          <h2>No official answers yet</h2>
+          <Text textStyle="h2" color="primary.800">
+            No official answers yet
+          </Text>
         </Box>
       )}
     </Box>
