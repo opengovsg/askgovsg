@@ -1,8 +1,10 @@
+import { SearchHit } from '@opensearch-project/opensearch/api/types'
 import express from 'express'
 import { query } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
 import { errAsync, okAsync } from 'neverthrow'
 import supertest from 'supertest'
+import { SearchEntry } from '../../../../../shared/src/types/api'
 import { PostStatus } from '../../../../../shared/src/types/base'
 import { SearchController } from '../search.controller'
 
@@ -48,36 +50,33 @@ describe('SearchController', () => {
   }
 
   describe('searchPosts', () => {
-    const sampleHits = [
+    const searchEntries: SearchEntry[] = [
       {
-        _id: '2',
-        _index: 'search_entries',
-        _score: 0.8754687,
-        _source: {
-          agencyId: 2,
-          answer: 'answer 2000',
-          description: 'description 200',
-          postId: 2,
-          title: 'title 20',
-          topicId: null,
-        },
-        _type: '_doc',
+        agencyId: 2,
+        answers: ['answer 2000'],
+        description: 'description 200',
+        postId: 2,
+        title: 'title 20',
+        topicId: null,
       },
       {
-        _id: '1',
-        _index: 'search_entries',
-        _score: 0.18232156,
-        _source: {
-          agencyId: 1,
-          answer: 'answer 1000',
-          description: 'description 100',
-          postId: 1,
-          title: 'title 10',
-          topicId: null,
-        },
-        _type: '_doc',
+        agencyId: 1,
+        answers: ['answer 1000'],
+        description: 'description 100',
+        postId: 1,
+        title: 'title 10',
+        topicId: null,
       },
     ]
+    const sampleHits: SearchHit[] = searchEntries.map((entry) => {
+      return {
+        _id: `${entry.postId}`,
+        _index: indexName,
+        _score: 0.5,
+        _source: entry,
+        _type: '_doc',
+      }
+    })
     const sampleSearchPostsResponse = {
       body: {
         _shards: { failed: 0, skipped: 0, successful: 1, total: 1 },
@@ -149,7 +148,7 @@ describe('SearchController', () => {
       )
 
       expect(response.status).toEqual(StatusCodes.OK)
-      expect(response.body).toStrictEqual(sampleHits)
+      expect(response.body).toStrictEqual(searchEntries)
     })
 
     it('returns Bad Request Error when agencyId is not an integer', async () => {

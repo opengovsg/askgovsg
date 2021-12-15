@@ -1,3 +1,4 @@
+import { SearchHit } from '@opensearch-project/opensearch/api/types'
 import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
 import { createLogger } from '../../bootstrap/logging'
@@ -60,7 +61,12 @@ export class SearchController {
       )
     )
       .map((response) => {
-        return res.status(StatusCodes.OK).json(response.body.hits.hits)
+        const searchResults = response.body.hits.hits.map(
+          (result: SearchHit) => {
+            return result._source
+          },
+        )
+        return res.status(StatusCodes.OK).json(searchResults)
       })
       .mapErr((error) => {
         logger.error({
