@@ -98,10 +98,10 @@ const HomePage = (): JSX.Element => {
           }}
           width={{
             base: '90%',
-            sm: '75vw',
-            lg: '50vw',
+            sm: '77vw',
+            xl: '50vw',
           }}
-          mx="auto"
+          mx={{ base: '24px', sm: 'auto' }}
         >
           <Text
             textStyle={{ base: 'h2-mobile', sm: 'h1-mobile' }}

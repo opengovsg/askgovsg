@@ -18,6 +18,7 @@ export const Header: ComponentMultiStyleConfig = {
       position: 'sticky',
       top: 0,
       zIndex: 999,
+      bg: 'white',
     },
     compactSearch: {
       h: '56px',
@@ -47,7 +48,13 @@ export const Header: ComponentMultiStyleConfig = {
     },
     logoBarTabletDesktop: {
       bg: 'white',
-      px: 8,
+      px: { xl: '32px' },
+      width: {
+        base: '90%',
+        sm: '77vw',
+        xl: '100%',
+      },
+      mx: 'auto',
       py: 4,
       shrink: 0,
       alignItems: 'center',

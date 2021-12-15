@@ -40,8 +40,12 @@ const Masthead: FC = () => {
     sm: '0px',
   }
   return (
-    <Box bg="neutral.200" px={{ base: '24px', sm: '29px', xl: '33px' }}>
-      <Flex direction="row">
+    <Box bg="neutral.200" px={{ base: '24px', sm: 0, xl: '33px' }}>
+      <Flex
+        direction="row"
+        width={{ sm: '77vw' }}
+        mx={{ base: 0, sm: 'auto', xl: 0 }}
+      >
         <Center my={mastheadTopMarginY}>
           <Image
             src={LionHeadSymbol}
