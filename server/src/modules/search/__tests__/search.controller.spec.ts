@@ -1,8 +1,10 @@
+import { SearchHit } from '@opensearch-project/opensearch/api/types'
 import express from 'express'
 import { query } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
 import { errAsync, okAsync } from 'neverthrow'
 import supertest from 'supertest'
+import { SearchEntry } from '../../../../../shared/src/types/api'
 import { PostStatus } from '../../../../../shared/src/types/base'
 import { SearchController } from '../search.controller'
 
@@ -12,15 +14,9 @@ const { errors } = require('@opensearch-project/opensearch')
 describe('SearchController', () => {
   const indexName = 'search_entries'
 
-  const answersService = {
-    listAnswers: jest.fn(),
-  }
-  const postService = {
-    listPosts: jest.fn(),
-  }
   const searchService = {
-    indexAllData: jest.fn(),
     searchPosts: jest.fn(),
+    indexPost: jest.fn(),
   }
 
   const searchController = new SearchController({
@@ -42,11 +38,6 @@ describe('SearchController', () => {
     })
   }
 
-  const mockListPostsValue = {
-    posts: mockPosts,
-    totalItems: noOfItems,
-  }
-
   const mockReturnItems: { index: { _index: string; status: StatusCodes } }[] =
     []
   for (let i = 1; i <= noOfItems; i++) {
@@ -59,36 +50,33 @@ describe('SearchController', () => {
   }
 
   describe('searchPosts', () => {
-    const sampleHits = [
+    const searchEntries: SearchEntry[] = [
       {
-        _id: 'm42WIn0BbFqfMhuFmmR4',
-        _index: 'search_entries',
-        _score: 0.8754687,
-        _source: {
-          agencyId: 2,
-          answer: 'answer 2000',
-          description: 'description 200',
-          postId: 2,
-          title: 'title 20',
-          topicId: null,
-        },
-        _type: '_doc',
+        agencyId: 2,
+        answers: ['answer 2000'],
+        description: 'description 200',
+        postId: 2,
+        title: 'title 20',
+        topicId: null,
       },
       {
-        _id: 'mo2WIn0BbFqfMhuFmmR4',
-        _index: 'search_entries',
-        _score: 0.18232156,
-        _source: {
-          agencyId: 1,
-          answer: 'answer 1000',
-          description: 'description 100',
-          postId: 1,
-          title: 'title 10',
-          topicId: null,
-        },
-        _type: '_doc',
+        agencyId: 1,
+        answers: ['answer 1000'],
+        description: 'description 100',
+        postId: 1,
+        title: 'title 10',
+        topicId: null,
       },
     ]
+    const sampleHits: SearchHit[] = searchEntries.map((entry) => {
+      return {
+        _id: `${entry.postId}`,
+        _index: indexName,
+        _score: 0.5,
+        _source: entry,
+        _type: '_doc',
+      }
+    })
     const sampleSearchPostsResponse = {
       body: {
         _shards: { failed: 0, skipped: 0, successful: 1, total: 1 },
@@ -160,10 +148,28 @@ describe('SearchController', () => {
       )
 
       expect(response.status).toEqual(StatusCodes.OK)
-      expect(response.body).toStrictEqual(sampleHits)
+      expect(response.body).toStrictEqual(searchEntries)
     })
 
-    it('returns Internal Server Error when searchService throws Error', async () => {
+    it('returns Bad Request Error when agencyId is not an integer', async () => {
+      const app = express()
+      app.get(
+        '/search',
+        [query('agencyId').isInt().toInt(), query('query').isString().trim()],
+        searchController.searchPosts,
+      )
+      const request = supertest(app)
+      const response = await request.get(
+        '/search?agencyId=string&query=searchQuery',
+      )
+
+      expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
+      expect(response.body).toEqual({
+        message: 'Bad Request Error - query does not pass validation checks',
+      })
+    })
+
+    it('returns Internal Server Error when searchService.searchPosts throws Error', async () => {
       const mockedResponseError = new errors.ResponseError({
         body: { errors: {}, status: StatusCodes.BAD_REQUEST },
         statusCode: StatusCodes.BAD_REQUEST,

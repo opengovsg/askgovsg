@@ -8,7 +8,7 @@ import EditButton from '../EditButton/EditButton.component'
 const PostItem = ({
   post: { id, title, tags, agencyId },
 }: {
-  post: BasePostDto
+  post: Pick<BasePostDto, 'id' | 'title' | 'tags' | 'agencyId'>
 }): JSX.Element => {
   const { user } = useAuth()
   const styles = useMultiStyleConfig('PostItem', {})

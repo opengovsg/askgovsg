@@ -18,38 +18,51 @@ export const Header: ComponentMultiStyleConfig = {
       position: 'sticky',
       top: 0,
       zIndex: 999,
+      bg: 'white',
     },
-    collapsedSearch: {
+    compactSearch: {
       h: '56px',
       m: 'auto',
-      px: { base: '24px', md: 'auto' },
       maxW: '680px',
       w: '100%',
-      mt: '-68px',
     },
     expandedSearchContainer: {
       bg: 'white',
-      h: { base: '100px', xl: '152px' },
-    },
-    expandedSearchAgencyLogo: {
-      ml: '36px',
-      mt: '-55px',
-      display: { base: 'none', xl: 'flex' },
+      h: { base: '75px', xl: '152px' },
     },
     expandedSearch: {
       h: '56px',
       m: 'auto',
-      mt: { base: '20px', xl: '64px' },
+      mt: { base: '10px', xl: '64px' },
       px: { base: '24px', md: 'auto' },
       maxW: '680px',
       w: '100%',
     },
-    logoBarContainer: {
+    logoBarMobile: {
+      h: '64px',
       bg: 'white',
       px: 8,
       py: 4,
       shrink: 0,
       align: 'center',
+    },
+    logoBarTabletDesktop: {
+      bg: 'white',
+      px: { xl: '32px' },
+      width: {
+        base: '90%',
+        sm: '77vw',
+        xl: '100%',
+      },
+      mx: 'auto',
+      py: 4,
+      shrink: 0,
+      alignItems: 'center',
+      display: 'grid',
+      gridTemplateColumns: {
+        base: '1fr 1fr',
+        xl: '1fr 2fr 1fr',
+      },
     },
     logoBarRouterLink: {
       _hover: {
@@ -67,8 +80,9 @@ export const Header: ComponentMultiStyleConfig = {
       textStyle: 'logo',
       color: 'black',
     },
-    logoBarWebsiteLink: {
-      d: { base: 'none', sm: 'block' },
+    websiteLink: {
+      ml: 'auto',
+      d: { base: 'none', xl: 'flex' },
     },
   }),
 }

@@ -27,6 +27,7 @@ import { PostController } from '../modules/post/post.controller'
 import { PostService } from '../modules/post/post.service'
 import { SearchController } from '../modules/search/search.controller'
 import { SearchService } from '../modules/search/search.service'
+import { SyncService as SearchSyncService } from '../modules/search/sync/sync.service'
 import { TagsController } from '../modules/tags/tags.controller'
 import { TagsService } from '../modules/tags/tags.service'
 import { TopicsController } from '../modules/topics/topics.controller'
@@ -114,6 +115,7 @@ const mailService = new MailService({
   transport,
   mailFromEmail: mailConfig.senderConfig.mailFrom,
 })
+const searchSyncService = new SearchSyncService({ client: searchClient })
 const postService = new PostService({
   Answer,
   Post,
@@ -121,11 +123,17 @@ const postService = new PostService({
   Tag,
   User,
   Topic,
-  Agency,
+  searchSyncService,
+  sequelize,
 })
 const enquiryService = new EnquiryService({ Agency, mailService })
 const recaptchaService = new RecaptchaService({ axios, ...recaptchaConfig })
-const answersService = new AnswersService({ Post, Answer })
+const answersService = new AnswersService({
+  Post,
+  Answer,
+  searchSyncService,
+  sequelize,
+})
 const topicsService = new TopicsService({ Topic })
 const userService = new UserService({ User, Tag, Agency })
 

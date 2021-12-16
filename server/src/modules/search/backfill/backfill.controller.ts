@@ -1,12 +1,12 @@
 import { ResultAsync } from 'neverthrow'
 import sanitizeHtml from 'sanitize-html'
+import { SearchEntry } from '~shared/types/api/search'
 import { createLogger } from '../../../bootstrap/logging'
 import { SortType } from '../../../types/sort-type'
 import { AnswersService } from '../../answers/answers.service'
 import { DatabaseError } from '../../core/core.errors'
 import { InvalidTagsError, InvalidTopicsError } from '../../post/post.errors'
 import { PostService } from '../../post/post.service'
-import { SearchEntry } from '../search.service'
 import { BackfillService } from './backfill.service'
 
 const logger = createLogger(module)

@@ -1,9 +1,10 @@
 import { AnswersService } from '../modules/answers/answers.service'
+import { PostService } from '../modules/post/post.service'
 import { BackfillController } from '../modules/search/backfill/backfill.controller'
 import { BackfillService } from '../modules/search/backfill/backfill.service'
-import { PostService } from '../modules/post/post.service'
+import { SyncService } from '../modules/search/sync/sync.service'
 import { searchClient } from './search'
-import { Agency, Answer, Post, PostTag, Tag, Topic, User } from './sequelize'
+import { Answer, Post, PostTag, sequelize, Tag, Topic, User } from './sequelize'
 
 const triggerIndexAllData = async (searchController: BackfillController) => {
   const response = await searchController.indexAllData('search_entries')
@@ -16,7 +17,13 @@ const triggerIndexAllData = async (searchController: BackfillController) => {
 // To delete search_entries index locally: curl -XDELETE 'https://localhost:9200/search_entries' --insecure -u 'admin:admin'
 
 if (require.main === module) {
-  const answersService = new AnswersService({ Post, Answer })
+  const searchSyncService = new SyncService({ client: searchClient })
+  const answersService = new AnswersService({
+    Post,
+    Answer,
+    searchSyncService,
+    sequelize,
+  })
   const postService = new PostService({
     Answer,
     Post,
@@ -24,7 +31,8 @@ if (require.main === module) {
     Tag,
     User,
     Topic,
-    Agency,
+    searchSyncService,
+    sequelize,
   })
   const searchService = new BackfillService({ client: searchClient })
   const searchController = new BackfillController({

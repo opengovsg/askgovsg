@@ -22,6 +22,7 @@ import {
 import { AnswersController } from '../answers.controller'
 import { routeAnswers } from '../answers.routes'
 import { AnswersService } from '../answers.service'
+import { okAsync } from 'neverthrow'
 
 describe('/answers', () => {
   let agency: Agency
@@ -48,6 +49,11 @@ describe('/answers', () => {
   const app = express()
   const request = supertest(app)
 
+  const searchSyncService = {
+    createPost: jest.fn(),
+    updatePost: jest.fn(),
+  }
+
   beforeAll(async () => {
     db = await createTestDatabase()
     Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
@@ -55,7 +61,12 @@ describe('/answers', () => {
     const User = getModelDef<User>(db, ModelName.User)
     const Agency = getModelDef<Agency>(db, ModelName.Agency)
 
-    const answersService = new AnswersService({ Post, Answer })
+    const answersService = new AnswersService({
+      Post,
+      Answer,
+      searchSyncService,
+      sequelize: db,
+    })
     const controller = new AnswersController({
       answersService,
       authService,
@@ -165,6 +176,8 @@ describe('/answers', () => {
       const { id, body: text } = answer
       await Answer.destroy({ where: { id } })
 
+      searchSyncService.updatePost.mockResolvedValue(okAsync({}))
+
       const response = await request.post(`/${post.id}`).send({ text })
 
       const newAnswerId = Number(response.body)
@@ -179,6 +192,8 @@ describe('/answers', () => {
   describe('PUT /:id', () => {
     it('returns OK on valid submission', async () => {
       const text = 'Second Answer Body'
+      searchSyncService.updatePost.mockResolvedValue(okAsync({}))
+
       const response = await request.put(`/${answer.id}`).send({ text })
 
       const updatedAnswer = await Answer.findByPk(answer.id)

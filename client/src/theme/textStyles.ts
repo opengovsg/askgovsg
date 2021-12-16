@@ -43,6 +43,14 @@ export const textStyles = {
     letterSpacing: '-0.019em',
     fontFeatureSettings: "'tnum' on, 'lnum' on, 'cv05' on",
   },
+  'h2-mobile': {
+    ...baseTextStyle,
+    fontWeight: 300,
+    fontSize: '24px',
+    lineHeight: '32px',
+    letterSpacing: '-0.019em',
+    fontFeatureSettings: "'tnum' on, 'lnum' on, 'cv05' on",
+  },
   h3: {
     ...baseTextStyle,
     fontWeight: 600,

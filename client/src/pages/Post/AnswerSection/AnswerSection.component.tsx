@@ -1,8 +1,7 @@
-import { SkeletonText } from '@chakra-ui/react'
+import { Box, Text, SkeletonText } from '@chakra-ui/react'
 import { GetAnswersForPostDto } from '../../../api'
 import { sortByCreatedAt } from '../../../util/date'
 import AnswerItem from './AnswerItem/AnswerItem.component'
-import './AnswerSection.styles.scss'
 
 const AnswerSection = ({
   answers,
@@ -12,19 +11,27 @@ const AnswerSection = ({
   return !answers ? (
     <SkeletonText />
   ) : (
-    <div className="answer-section">
+    <Box className="answer-section" w="auto" float="none">
       {answers && answers.length > 0 ? (
         answers?.sort(sortByCreatedAt).map((answer) => (
-          <div key={answer.id} className="answers">
+          <Box className="answers" w="100%" mb="16px" color="neutral.900">
             <AnswerItem answer={answer} />
-          </div>
+          </Box>
         ))
       ) : (
-        <div className="answer-header">
-          <h2>No official answers yet</h2>
-        </div>
+        <Box
+          className="answer-header"
+          w="100%"
+          borderTop="1px solid"
+          borderColor="neutral.300"
+          my="16px"
+        >
+          <Text textStyle="h2" color="primary.800">
+            No official answers yet
+          </Text>
+        </Box>
       )}
-    </div>
+    </Box>
   )
 }
 

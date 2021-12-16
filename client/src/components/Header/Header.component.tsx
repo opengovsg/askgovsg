@@ -25,7 +25,6 @@ import {
   getPostById,
   GET_POST_BY_ID_QUERY_KEY,
 } from '../../services/PostService'
-import AgencyLogo from '../AgencyLogo/AgencyLogo.component'
 import LinkButton from '../LinkButton/LinkButton.component'
 import Masthead from '../Masthead/Masthead.component'
 import { SearchBox } from '../SearchBox/SearchBox.component'
@@ -86,12 +85,12 @@ const Header = (): JSX.Element => {
     </Flex>
   )
 
-  const WebsiteLinks = () => {
+  const WebsiteLink = () => {
     // Extract hostname from URL
     const website = `${agency?.website}`
     const hostname = new URL(website).hostname
     return (
-      <Link href={website} isExternal>
+      <Link sx={styles.websiteLink} href={website} isExternal>
         <Button
           rightIcon={<BiLinkExternal color="neutral.900" />}
           variant="link"
@@ -164,75 +163,49 @@ const Header = (): JSX.Element => {
     }
   }, [matchQuestions?.pathname])
 
-  const ExpandedSearch = () => {
+  const Logo = () => {
     return (
-      <Box sx={styles.expandedSearchContainer}>
-        <Flex direction="row">
-          <Flex sx={styles.expandedSearch}>
-            <SearchBox agencyId={agency?.id} />
-          </Flex>
-        </Flex>
-        {agencyShortName && (
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          <AgencyLogo {...styles.expandedSearchAgencyLogo} agency={agency} />
-        )}
-      </Box>
-    )
-  }
-
-  const LogoBar = () => {
-    return (
-      <Flex justify="space-between" sx={styles.logoBarContainer}>
-        <Link
-          sx={styles.logoBarRouterLink}
-          as={RouterLink}
-          to={agency ? `/agency/${agency.shortname}` : '/'}
-        >
-          <HStack>
-            <Box sx={styles.logoBarAsk}>
-              <Ask />
-            </Box>
-            <Text sx={styles.logoBarText}>
-              {agency?.shortname.toUpperCase() || 'gov'}
-            </Text>
-          </HStack>
-        </Link>
-
-        <Flex sx={styles.logoBarWebsiteLink}>
-          {agency?.website && <WebsiteLinks />}
-        </Flex>
-        {user && <AuthLinks />}
-      </Flex>
+      <Link
+        sx={styles.logoBarRouterLink}
+        as={RouterLink}
+        to={agency ? `/agency/${agency.shortname}` : '/'}
+      >
+        <HStack>
+          <Box sx={styles.logoBarAsk}>
+            <Ask />
+          </Box>
+          <Text sx={styles.logoBarText}>
+            {agency?.shortname.toUpperCase() || 'gov'}
+          </Text>
+        </HStack>
+      </Link>
     )
   }
 
   return (
     <Flex direction="column" sx={styles.root}>
       <Masthead />
-      {deviceType === device.desktop ? (
+      {deviceType === device.mobile ? (
         <>
-          <LogoBar />
-          {!headerIsOpen ? (
-            <Flex sx={styles.collapsedSearch}>
-              <SearchBox agencyId={agency?.id} />
-            </Flex>
-          ) : null}
           {!matchQuestions ? (
             <Collapse in={headerIsOpen} animateOpacity={false}>
-              <ExpandedSearch />
+              <Flex justify="space-between" sx={styles.logoBarMobile}>
+                <Logo />
+                {user && <AuthLinks />}
+              </Flex>
             </Collapse>
           ) : null}
+          <Box sx={styles.expandedSearchContainer}>
+            <SearchBox sx={styles.expandedSearch} agencyId={agency?.id} />
+          </Box>
         </>
       ) : (
-        <>
-          {!matchQuestions ? (
-            <Collapse in={headerIsOpen} animateOpacity={false}>
-              <LogoBar />
-            </Collapse>
-          ) : null}
-          <ExpandedSearch />
-        </>
+        <Flex sx={styles.logoBarTabletDesktop}>
+          <Logo />
+          <SearchBox sx={styles.compactSearch} agencyId={agency?.id} />
+          {agency?.website && <WebsiteLink />}
+          {user && <AuthLinks />}
+        </Flex>
       )}
     </Flex>
   )

@@ -1,5 +1,4 @@
 import { Box, Flex, Spacer } from '@chakra-ui/react'
-import Fuse from 'fuse.js'
 import { useQuery } from 'react-query'
 import { useLocation } from 'react-router-dom'
 import { BackToHome } from '../../components/BackToHome/BackToHome'
@@ -12,9 +11,9 @@ import {
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
 } from '../../services/AgencyService'
 import {
-  listPosts,
-  LIST_POSTS_FOR_SEARCH_QUERY_KEY,
-} from '../../services/PostService'
+  search as sendSearchRequest,
+  SEARCH_QUERY_KEY,
+} from '../../services/SearchService'
 
 const SearchResults = (): JSX.Element => {
   const { search } = useLocation()
@@ -26,16 +25,11 @@ const SearchResults = (): JSX.Element => {
     () => getAgencyByShortName({ shortname: `${agencyShortName}` }),
     { enabled: !!agencyShortName },
   )
-  const { data, isLoading } = useQuery(
-    [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agency?.id],
-    () => listPosts(undefined, agency?.id),
-  )
 
-  const foundPosts = new Fuse(data?.posts ?? [], {
-    keys: ['title', 'description'],
-  })
-    .search(searchQuery)
-    .map((res) => res.item)
+  const { data: foundPosts, isLoading } = useQuery(
+    [SEARCH_QUERY_KEY, agency?.id, searchQuery],
+    () => sendSearchRequest({ query: searchQuery, agencyId: agency?.id }),
+  )
 
   return isLoading ? (
     <Spinner centerHeight="200px" />
@@ -74,8 +68,18 @@ const SearchResults = (): JSX.Element => {
           w={{ base: '100%', md: undefined }}
           className="questions"
         >
-          {foundPosts.length > 0 ? (
-            foundPosts.map((post) => <PostItem key={post.id} post={post} />)
+          {foundPosts && foundPosts.length > 0 ? (
+            foundPosts.map((entry) => (
+              <PostItem
+                key={entry.postId}
+                post={{
+                  id: entry.postId,
+                  title: entry.title ?? '',
+                  tags: [],
+                  agencyId: entry.agencyId ?? 0,
+                }}
+              />
+            ))
           ) : (
             <>
               <Box

@@ -1,11 +1,16 @@
+import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
+import { StatusCodes } from 'http-status-codes'
+import { errAsync, okAsync } from 'neverthrow'
 import { ModelCtor, Sequelize } from 'sequelize/types'
+import { Agency, Post, PostStatus, TagType, Topic } from '~shared/types/base'
 import {
   Answer as AnswerModel,
-  Tag as TagModel,
   PostTag,
+  Tag as TagModel,
   User as UserModel,
 } from '../../../models'
-import { Agency, Post, PostStatus, TagType, Topic } from '~shared/types/base'
+import { PostCreation } from '../../../models/posts.model'
+import { ModelDef } from '../../../types/sequelize'
 import { SortType } from '../../../types/sort-type'
 import {
   createTestDatabase,
@@ -13,19 +18,19 @@ import {
   getModelDef,
   ModelName,
 } from '../../../util/jest-db'
-import { PostService } from '../post.service'
-import { ModelDef } from '../../../types/sequelize'
-import { PostCreation } from '../../../models/posts.model'
 import {
+  InvalidTagsAndTopicsError,
   InvalidTagsError,
   InvalidTopicsError,
   MissingPublicPostError,
-  MissingUserIdError,
   PostUpdateError,
   TagDoesNotExistError,
   TopicDoesNotExistError,
-  InvalidTagsAndTopicsError,
 } from '../post.errors'
+import { PostService } from '../post.service'
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { errors } = require('@opensearch-project/opensearch')
 
 describe('PostService', () => {
   let db: Sequelize
@@ -43,6 +48,12 @@ describe('PostService', () => {
   let mockTopic: Topic
   let mockAgency: Agency
 
+  const searchSyncService = {
+    createPost: jest.fn(),
+    updatePost: jest.fn(),
+    deletePost: jest.fn(),
+  }
+
   beforeAll(async () => {
     db = await createTestDatabase()
     Agency = getModelDef<Agency>(db, ModelName.Agency)
@@ -59,7 +70,8 @@ describe('PostService', () => {
       Tag,
       User,
       Topic,
-      Agency,
+      searchSyncService,
+      sequelize: db,
     })
     mockAgency = await Agency.create({
       shortname: 'was',
@@ -353,6 +365,34 @@ describe('PostService', () => {
         new TopicDoesNotExistError(),
       )
     })
+    it('throws and rollbacks transaction if sync with opensearch index fails', async () => {
+      const postCountBefore = await Post.count()
+
+      const postParams = {
+        title: 'Title',
+        description: 'Description',
+        userId: mockUser.id,
+        agencyId: mockUser.agencyId,
+        tagname: [mockTag.tagname],
+        topicId: mockTopic.id,
+      }
+
+      searchSyncService.createPost.mockResolvedValue(
+        errAsync(
+          new errors.ResponseError({
+            body: { errors: {}, status: StatusCodes.BAD_REQUEST },
+            statusCode: StatusCodes.BAD_REQUEST,
+          }),
+        ),
+      )
+
+      await expect(postService.createPost(postParams)).rejects.toBeInstanceOf(
+        ResponseError,
+      )
+
+      const postCountAfter = await Post.count()
+      expect(postCountAfter).toBe(postCountBefore)
+    })
     it('creates post on good input', async () => {
       const postParams = {
         title: 'Title',
@@ -362,6 +402,8 @@ describe('PostService', () => {
         tagname: [mockTag.tagname],
         topicId: mockTopic.id,
       }
+
+      searchSyncService.createPost.mockResolvedValue(okAsync({}))
 
       const postId = await postService.createPost(postParams)
 
@@ -373,23 +415,43 @@ describe('PostService', () => {
   })
 
   describe('deletePost', () => {
-    it('throws when post deletion fails', async () => {
-      const postId = mockPosts[mockPosts.length - 1].id + 20
-      try {
-        await postService.deletePost(postId)
-        throw new PostUpdateError()
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        if (error instanceof Error) {
-          expect(error.message).toBe('Post update failed')
-        }
-      }
+    // TODO: it('should throw PostUpdateError when Post.update fails')
+    it('throws error and rollbacks transaction if sync with opensearch index fails', async () => {
+      const postCountBefore = await Post.count()
+      const postArchiveBefore = await Post.findAndCountAll({
+        where: { status: PostStatus.Archived },
+      })
+
+      const postId = mockPosts[0].id
+      searchSyncService.deletePost.mockResolvedValue(
+        errAsync(
+          new errors.ResponseError({
+            body: { errors: {}, status: StatusCodes.BAD_REQUEST },
+            statusCode: StatusCodes.BAD_REQUEST,
+          }),
+        ),
+      )
+
+      await expect(postService.deletePost(postId)).rejects.toBeInstanceOf(
+        ResponseError,
+      )
+
+      const postCountAfter = await Post.count()
+      const postArchiveAfter = await Post.findAndCountAll({
+        where: { status: PostStatus.Archived },
+      })
+
+      expect(postCountAfter).toBe(postCountBefore)
+      expect(postArchiveAfter.count).toBe(postArchiveBefore.count)
     })
     it('archives post successfully', async () => {
       const postId = mockPosts[0].id
+      searchSyncService.deletePost.mockResolvedValue(okAsync({}))
       const postUpdateStatus = await postService.deletePost(postId)
       expect(postUpdateStatus).toBeUndefined()
     })
+
+    afterEach(() => jest.clearAllMocks())
   })
 
   describe('updatePost', () => {
@@ -434,6 +496,35 @@ describe('PostService', () => {
       )
     })
 
+    it('throws and rollbacks transaction if sync with opensearch index fails', async () => {
+      const postCountBefore = await Post.count()
+
+      const postParams = {
+        id: mockPosts[0].id,
+        userid: mockUser.id,
+        tagname: [mockTag.tagname],
+        topicId: null,
+        description: 'new description',
+        title: 'new title',
+      }
+
+      searchSyncService.updatePost.mockResolvedValue(
+        errAsync(
+          new errors.ResponseError({
+            body: { errors: {}, status: StatusCodes.BAD_REQUEST },
+            statusCode: StatusCodes.BAD_REQUEST,
+          }),
+        ),
+      )
+
+      await expect(postService.updatePost(postParams)).rejects.toBeInstanceOf(
+        ResponseError,
+      )
+
+      const postCountAfter = await Post.count()
+      expect(postCountAfter).toBe(postCountBefore)
+    })
+
     it('updates post on good tag input, no topic', async () => {
       const postParams = {
         id: mockPosts[0].id,
@@ -444,7 +535,10 @@ describe('PostService', () => {
         title: 'new title',
       }
 
+      searchSyncService.updatePost.mockResolvedValue(okAsync({}))
+
       const postUpdateStatus = await postService.updatePost(postParams)
+
       expect(postUpdateStatus).toBeTruthy()
     })
 
@@ -457,6 +551,8 @@ describe('PostService', () => {
         description: 'new description',
         title: 'new title',
       }
+
+      searchSyncService.updatePost.mockResolvedValue(okAsync({}))
 
       const postUpdateStatus = await postService.updatePost(postParams)
       expect(postUpdateStatus).toBeTruthy()
@@ -471,6 +567,8 @@ describe('PostService', () => {
         description: 'new description',
         title: 'new title',
       }
+
+      searchSyncService.updatePost.mockResolvedValue(okAsync({}))
 
       const postUpdateStatus = await postService.updatePost(postParams)
       expect(postUpdateStatus).toBeTruthy()

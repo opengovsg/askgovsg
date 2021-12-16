@@ -5,30 +5,28 @@ import {
   InputRightElement,
 } from '@chakra-ui/input'
 import { Box, Flex, UnorderedList } from '@chakra-ui/layout'
-import { useMultiStyleConfig } from '@chakra-ui/react'
+import { CSSObject, useMultiStyleConfig } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import Downshift, {
   DownshiftState,
   GetItemPropsOptions,
   StateChangeOptions,
 } from 'downshift'
-import Fuse from 'fuse.js'
+import { useState } from 'react'
 import { RefCallBack } from 'react-hook-form'
 import { BiSearch } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link, useNavigate } from 'react-router-dom'
-import { BasePostDto } from 'src/api'
+import { SearchEntry } from '~shared/types/api'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   getAgencyById,
   GET_AGENCY_BY_ID_QUERY_KEY,
 } from '../../services/AgencyService'
-import {
-  listPosts,
-  LIST_POSTS_FOR_SEARCH_QUERY_KEY,
-} from '../../services/PostService'
+import { search, SEARCH_QUERY_KEY } from '../../services/SearchService'
 
 export const SearchBox = ({
+  sx = {},
   placeholder,
   value,
   inputRef,
@@ -40,6 +38,7 @@ export const SearchBox = ({
   agencyId,
   ...inputProps
 }: {
+  sx?: CSSObject
   placeholder?: string
   value?: string
   inputRef?: RefCallBack
@@ -50,16 +49,20 @@ export const SearchBox = ({
   agencyId?: number
 } & InputProps): JSX.Element => {
   const styles = useMultiStyleConfig('SearchBox', {})
-  /*
-  Use LIST_POSTS_FOR_SEARCH_QUERY_KEY instead of LIST_POSTS_QUERY_KEY
-  Because the queries using LIST_POST_QUERY_KEY may be filtered by tags.
-  Use a separate query here to return all unfiltered posts for
-  client-side search 
-  */
-  const { data } = useQuery(
-    [LIST_POSTS_FOR_SEARCH_QUERY_KEY, agencyId],
-    // TODO: refactor to better split between when agencyShortName is present
-    () => listPosts(undefined, agencyId),
+
+  const [searchQueryStrState, setSearchQueryStrState] = useState('')
+  const [searchEntriesState, setSearchEntriesState] = useState<SearchEntry[]>(
+    [],
+  )
+
+  useQuery(
+    [SEARCH_QUERY_KEY, agencyId, searchQueryStrState],
+    () => search({ query: searchQueryStrState, agencyId }),
+    {
+      onSuccess: (data) => {
+        setSearchEntriesState(data)
+      },
+    },
   )
 
   const { data: agency } = useQuery(
@@ -121,15 +124,14 @@ export const SearchBox = ({
     handleAbandon(inputValue)
   }
 
-  const itemToString = (item: BasePostDto | null) => (item ? item.title : '')
-
-  const fuse = new Fuse(data?.posts || [], {
-    keys: ['title', 'description'],
-  })
+  // null type required due to Downshift's type definitions
+  // eslint-disable-next-line
+  const itemToString = (item: SearchEntry | null) =>
+    item?.title ? item.title : ''
 
   const stateReducer = (
-    _state: DownshiftState<BasePostDto>,
-    changes: StateChangeOptions<BasePostDto>,
+    _state: DownshiftState<SearchEntry>,
+    changes: StateChangeOptions<SearchEntry>,
   ) => {
     return changes.type === Downshift.stateChangeTypes.blurInput ||
       changes.type === Downshift.stateChangeTypes.mouseUp ||
@@ -146,17 +148,15 @@ export const SearchBox = ({
     itemToString,
     onClick,
   }: {
-    item: BasePostDto
+    item: SearchEntry
     index: number
-    getItemProps: (
-      options: GetItemPropsOptions<BasePostDto>,
-    ) => Omit<BasePostDto, 'id'>
+    getItemProps: (options: GetItemPropsOptions<SearchEntry>) => SearchEntry
     highlightedIndex: number | null
-    itemToString: (item: BasePostDto | null) => string
+    itemToString: (item: SearchEntry | null) => string
     onClick: () => void
   }) => (
     <Link
-      to={`/questions/${item.id}`}
+      to={`/questions/${item.postId}`}
       {...getItemProps({
         index,
         item,
@@ -177,9 +177,9 @@ export const SearchBox = ({
   )
 
   return (
-    <Flex sx={styles.form}>
+    <Flex sx={{ ...styles.form, ...sx }}>
       <Downshift
-        onChange={(selection) => navigate(`/questions/${selection?.id}`)}
+        onChange={(selection) => navigate(`/questions/${selection?.postId}`)}
         stateReducer={stateReducer}
         itemToString={itemToString}
         initialInputValue={value}
@@ -239,18 +239,21 @@ export const SearchBox = ({
                       sendSearchTimingToAnalytics()
                     }
                   },
+                  onKeyUpCapture: () => {
+                    setSearchQueryStrState(inputValue ?? '')
+                  },
                 })}
               />
             </InputGroup>
             <UnorderedList sx={styles.results} {...getMenuProps()}>
               {isOpen && inputValue
-                ? fuse.search(inputValue).map(({ item }, index) => {
+                ? searchEntriesState.map((entry, index) => {
                     return (
                       <SearchItem
-                        key={item.id}
+                        key={entry.postId}
                         onClick={() => sendSearchEventToAnalytics(inputValue)}
                         {...{
-                          item,
+                          item: entry,
                           index,
                           highlightedIndex,
                           getItemProps,

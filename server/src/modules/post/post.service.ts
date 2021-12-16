@@ -1,7 +1,5 @@
-import { constants } from 'perf_hooks'
+import type { Sequelize as SequelizeType } from 'sequelize'
 import Sequelize, {
-  FindAttributeOptions,
-  FindOptions,
   Model,
   ModelCtor,
   Op,
@@ -9,12 +7,14 @@ import Sequelize, {
   ProjectionAlias,
 } from 'sequelize'
 import { PostCreation } from 'src/models/posts.model'
-import { Post, PostStatus, Topic, Agency } from '~shared/types/base'
+import { Post, PostStatus, Topic } from '~shared/types/base'
 import { Answer, PostTag, Tag, User } from '../../models'
 import { PostEditType } from '../../types/post-type'
 import { ModelDef } from '../../types/sequelize'
 import { SortType } from '../../types/sort-type'
+import { SyncService as SearchSyncService } from '../search/sync/sync.service'
 import {
+  InvalidTagsAndTopicsError,
   InvalidTagsError,
   InvalidTopicsError,
   MissingPublicPostError,
@@ -22,7 +22,6 @@ import {
   PostUpdateError,
   TagDoesNotExistError,
   TopicDoesNotExistError,
-  InvalidTagsAndTopicsError,
 } from './post.errors'
 
 export type UserWithTagRelations = {
@@ -48,7 +47,12 @@ export class PostService {
   private Tag: ModelCtor<Tag>
   private User: ModelCtor<User>
   private Topic: ModelDef<Topic>
-  private Agency: ModelDef<Agency>
+  private searchSyncService: Pick<
+    SearchSyncService,
+    'createPost' | 'updatePost' | 'deletePost'
+  >
+  private sequelize: SequelizeType
+
   constructor({
     Answer,
     Post,
@@ -56,7 +60,8 @@ export class PostService {
     Tag,
     User,
     Topic,
-    Agency,
+    searchSyncService,
+    sequelize,
   }: {
     Answer: ModelCtor<Answer>
     Post: ModelDef<Post, PostCreation>
@@ -64,7 +69,11 @@ export class PostService {
     Tag: ModelCtor<Tag>
     User: ModelCtor<User>
     Topic: ModelDef<Topic>
-    Agency: ModelDef<Agency>
+    searchSyncService: Pick<
+      SearchSyncService,
+      'createPost' | 'updatePost' | 'deletePost'
+    >
+    sequelize: SequelizeType
   }) {
     this.Answer = Answer
     this.Post = Post
@@ -72,8 +81,11 @@ export class PostService {
     this.Tag = Tag
     this.User = User
     this.Topic = Topic
-    this.Agency = Agency
+    this.searchSyncService = searchSyncService
+    this.sequelize = sequelize
   }
+
+  private searchIndexName = 'search_entries'
 
   private answerCountLiteral: ProjectionAlias = [
     Sequelize.literal(`(
@@ -596,22 +608,46 @@ export class PostService {
       if (!topicValid && newPost.topicId) {
         throw new TopicDoesNotExistError()
       }
-      const post = await this.Post.create({
+      const sharedObjValues = {
         title: newPost.title,
         description: newPost.description,
-        userId: newPost.userId,
         agencyId: newPost.agencyId,
-        status: PostStatus.Private,
         topicId: topicValid?.id ?? null,
-      })
-      for (const tag of tagList) {
-        // Create a posttag for each tag
-        await this.PostTag.create({
-          postId: post.id,
-          tagId: tag.id,
-        })
       }
-      return post.id
+      try {
+        const postId = await this.sequelize.transaction(async (transaction) => {
+          const post = await this.Post.create(
+            {
+              ...sharedObjValues,
+              userId: newPost.userId,
+              status: PostStatus.Private,
+            },
+            { transaction },
+          )
+          for (const tag of tagList) {
+            // Create a posttag for each tag
+            await this.PostTag.create(
+              {
+                postId: post.id,
+                tagId: tag.id,
+              },
+              { transaction },
+            )
+          }
+          const createPostResponse = await this.searchSyncService.createPost(
+            this.searchIndexName,
+            {
+              ...sharedObjValues,
+              postId: post.id,
+            },
+          )
+          if (createPostResponse.isErr()) throw createPostResponse.error
+          return post.id
+        })
+        return postId
+      } catch (error) {
+        throw error
+      }
     }
   }
 
@@ -621,14 +657,26 @@ export class PostService {
    * @returns void if successful
    */
   deletePost = async (id: number): Promise<void> => {
-    const update = await this.Post.update(
-      { status: PostStatus.Archived },
-      { where: { id: id } },
-    )
-    if (!update) {
-      throw new PostUpdateError()
-    } else {
-      return
+    try {
+      await this.sequelize.transaction(async (transaction) => {
+        const dbUpdate = await this.Post.update(
+          { status: PostStatus.Archived },
+          { where: { id: id }, transaction },
+        )
+
+        if (!dbUpdate) {
+          throw new PostUpdateError()
+        } else {
+          const searchDelete = await this.searchSyncService.deletePost(
+            this.searchIndexName,
+            id,
+          )
+          if (searchDelete.isErr()) throw searchDelete.error
+          return
+        }
+      })
+    } catch (error) {
+      throw error
     }
   }
 
@@ -666,32 +714,59 @@ export class PostService {
         throw new TopicDoesNotExistError()
       }
 
-      let updated
-
-      updated = await this.Post.update(
-        { title, description, topicId: topicValid?.id },
-        { where: { id: id } },
-      )
-
-      if (tagList.length) {
-        await this.PostTag.destroy({ where: { postId: id } })
-
-        for (const tag of tagList) {
-          // Create a posttag for each tag
-          updated = await this.PostTag.create({
-            postId: id,
-            tagId: tag.id,
-          })
-        }
+      const sharedObjValues = {
+        title,
+        description,
+        topicId: topicValid?.id ?? null,
       }
 
-      // easier way is to delete anything of the postId and recreate
-      // of course calculating the changes would be the way to go
+      try {
+        const updated = await this.sequelize.transaction(
+          async (transaction) => {
+            let updated
+            updated = await this.Post.update(sharedObjValues, {
+              where: { id: id },
+              transaction,
+            })
 
-      if (updated) {
-        return true
+            if (tagList.length) {
+              await this.PostTag.destroy({
+                where: { postId: id },
+                transaction,
+              })
+
+              for (const tag of tagList) {
+                // Create a posttag for each tag
+                updated = await this.PostTag.create(
+                  {
+                    postId: id,
+                    tagId: tag.id,
+                  },
+                  { transaction },
+                )
+              }
+            }
+
+            const updatePostResponse = await this.searchSyncService.updatePost(
+              this.searchIndexName,
+              {
+                ...sharedObjValues,
+                postId: id,
+              },
+            )
+            if (updatePostResponse.isErr()) throw updatePostResponse.error
+            return updated
+          },
+        )
+
+        // easier way is to delete anything of the postId and recreate
+        // of course calculating the changes would be the way to go
+
+        if (updated) return true
+        else return false
+      } catch (error) {
+        throw error
       }
-      return false
     }
   }
 }
