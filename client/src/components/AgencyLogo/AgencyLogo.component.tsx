@@ -20,7 +20,6 @@ const AgencyLogo = ({
       width="120px"
       height="120px"
       p="5px"
-      position="relative"
       justifyContent="center"
       alignItems="center"
       overflow="hidden"

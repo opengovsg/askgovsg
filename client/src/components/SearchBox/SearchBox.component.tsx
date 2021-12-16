@@ -5,7 +5,7 @@ import {
   InputRightElement,
 } from '@chakra-ui/input'
 import { Box, Flex, UnorderedList } from '@chakra-ui/layout'
-import { useMultiStyleConfig } from '@chakra-ui/react'
+import { CSSObject, useMultiStyleConfig } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import Downshift, {
   DownshiftState,
@@ -26,6 +26,7 @@ import {
 import { search, SEARCH_QUERY_KEY } from '../../services/SearchService'
 
 export const SearchBox = ({
+  sx = {},
   placeholder,
   value,
   inputRef,
@@ -37,6 +38,7 @@ export const SearchBox = ({
   agencyId,
   ...inputProps
 }: {
+  sx?: CSSObject
   placeholder?: string
   value?: string
   inputRef?: RefCallBack
@@ -175,7 +177,7 @@ export const SearchBox = ({
   )
 
   return (
-    <Flex sx={styles.form}>
+    <Flex sx={{ ...styles.form, ...sx }}>
       <Downshift
         onChange={(selection) => navigate(`/questions/${selection?.postId}`)}
         stateReducer={stateReducer}
