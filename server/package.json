@@ -31,7 +31,7 @@
     "convict-format-with-validator": "^6.2.0",
     "cors": "2.8.5",
     "datadog-winston": "^1.5.1",
-    "express": "^4.17.1",
+    "express": "^4.17.2",
     "express-session": "^1.17.2",
     "express-sitemap-xml": "^3.0.0",
     "express-validator": "^6.14.0",
