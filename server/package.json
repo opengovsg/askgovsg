@@ -48,7 +48,7 @@
     "nanoid": "^3.1.30",
     "neverthrow": "^4.3.1",
     "nodemailer": "^6.7.2",
-    "passport": "^0.5.1",
+    "passport": "^0.5.2",
     "passport-local": "^1.0.0",
     "sanitize-html": "^2.6.1",
     "sequelize": "^6.11.0",
