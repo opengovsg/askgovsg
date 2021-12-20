@@ -62,6 +62,14 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
   npm run seq-cli db:seed:all
   ```
 
+* Run search_entries index backfill script for OpenSearch integration:
+
+  ```
+  cd server/src/bootstrap && npx ts-node search-backfill-trigger.ts
+  ```
+
+* To verify that the search_entries index has been successfully built, run `curl -HEAD 'https://localhost:9200/search_entries' --insecure -u 'admin:admin'`
+
 * Optional: Use Dbeaver to connect to the local MySQL server at `127.0.0.1:3306`, using the username and password in `.env`
 
 * Check that your Database ER Diagram looks like this:
@@ -143,6 +151,10 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 - `Error: error:0308010C:digital envelope routines::unsupported`
 
   Try using Node.js 16.
+
+### OpenSearch Related
+
+- If you need to delete search_entries index, run `curl -XDELETE 'https://localhost:9200/search_entries' --insecure -u 'admin:admin'`
 
 ## API Endpoints
 
