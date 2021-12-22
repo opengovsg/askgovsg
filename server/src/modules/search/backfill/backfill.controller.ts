@@ -42,6 +42,10 @@ export class BackfillController {
    * @returns result async with error or response
    */
   indexAllData = async (indexName: string) => {
+    logger.info({
+      message: `Querying data from database`,
+      meta: { function: `indexAllData` },
+    })
     return await ResultAsync.fromPromise(
       this.postService.listPosts({
         sort: SortType.Top,
@@ -61,6 +65,10 @@ export class BackfillController {
     )
       .map(async (postResponse) => {
         const searchEntriesDataset: SearchEntry[] = []
+        logger.info({
+          message: `Creating searchEntriesDataset for ${postResponse.posts.length} posts`,
+          meta: { function: `indexAllData` },
+        })
         for (const post of postResponse.posts) {
           const listAnswersResult = await ResultAsync.fromPromise(
             this.answersService.listAnswers(post.id),
@@ -98,6 +106,10 @@ export class BackfillController {
             return listAnswersResult
           }
         }
+        logger.info({
+          message: `Indexing searchEntriesDataset on search service`,
+          meta: { function: `indexAllData` },
+        })
         return await this.searchService.indexAllData(
           indexName,
           searchEntriesDataset,
