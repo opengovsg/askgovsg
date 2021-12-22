@@ -16,4 +16,17 @@ export const indexConfig = {
       },
     },
   },
+  mappings: {
+    properties: {
+      agencyId: {
+        type: 'integer',
+      },
+      postId: {
+        type: 'integer',
+      },
+      topicId: {
+        type: 'integer',
+      },
+    },
+  },
 }
