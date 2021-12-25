@@ -156,6 +156,14 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 
 - If you need to delete search_entries index, run `curl -XDELETE 'https://localhost:9200/search_entries' --insecure -u 'admin:admin'`
 
+### Port number Related
+
+- `Error: listen EADDRINUSE: address already in use :::5000`
+
+  This is an issue with Apple using port 5000 for AirPlay Receiver, beginning in macOS 12 Monterey. See [here](https://developer.apple.com/forums/thread/682332) and [here](https://www.reddit.com/r/webdev/comments/qg8yt9/apple_took_over_port_5000_in_the_latest_macos/).
+  
+  Solution: Disable AirPlay Receiver in System Settings > Sharing.
+
 ## API Endpoints
 
 #### Base Url - `http://localhost:5000/api/v1`
