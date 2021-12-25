@@ -2,7 +2,7 @@
   "name": "askgovsg",
   "version": "1.0.0",
   "description": "Ask.gov.sg - Official Answers from the Singapore Government",
-  "main": "build/server/index.js",
+  "main": "server/build/index.js",
   "scripts": {
     "start": "npm --prefix server start",
     "build-frontend": "npm run build --prefix client",
