@@ -65,7 +65,7 @@
     "@types/react-draft-wysiwyg": "^1.13.2",
     "@types/react-google-recaptcha": "^2.1.2",
     "@types/react-router-dom": "^5.3.2",
-    "@types/sanitize-html": "^2.6.0",
+    "@types/sanitize-html": "^2.6.1",
     "@types/styled-components": "^5.1.18",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^4.0.0",
