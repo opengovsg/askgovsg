@@ -23,7 +23,7 @@ const baseSchema: Schema<BaseConfig> = {
   serverPort: {
     doc: 'Application port',
     format: 'port',
-    default: 5000,
+    default: 6174,
     env: 'SERVER_PORT',
   },
   logoHost: {
