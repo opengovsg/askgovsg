@@ -77,7 +77,7 @@ app.use(requestLoggingMiddleware)
 
 // cors enable
 app.options('*', cors<express.Request>())
-app.use(cors({ origin: 'http://localhost:5000' }))
+app.use(cors({ origin: `http://localhost:${process.env.SERVER_PORT}` }))
 
 // security config
 app.use(helmet(helmetOptions))
