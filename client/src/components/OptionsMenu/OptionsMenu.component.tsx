@@ -10,6 +10,7 @@ import {
   Spacer,
   Stack,
   SimpleGrid,
+  useMultiStyleConfig,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
@@ -50,6 +51,7 @@ const OptionsMenu = (): ReactElement => {
   )
 
   const [queryState, setQueryState] = useState('')
+  const styles = useMultiStyleConfig('OptionsMenu', { hasTopicsKey })
 
   useEffect(() => {
     setQueryState(getTopicsQuery(location.search))
@@ -116,39 +118,15 @@ const OptionsMenu = (): ReactElement => {
     .map((agency) => agency.shortname)
     .filter((shortname) => shortname !== agencyShortName)
 
-  // TODO: <Flex> is repeated for tagsToShow and agencyShortNames, figure out a way to apply DRY
   const optionsMenu = (
-    <SimpleGrid
-      templateColumns={{ base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
-      maxW="620px"
-      m="auto"
-      spacingX={
-        hasTopicsKey ? { base: undefined, sm: '16px' } : { base: '16px' }
-      }
-      spacingY={
-        hasTopicsKey ? { base: undefined, sm: '16px' } : { base: '16px' }
-      }
-      py={hasTopicsKey ? { base: undefined, sm: '48px' } : { base: '48px' }}
-    >
+    <SimpleGrid sx={styles.accordionGrid}>
       {agency
         ? topicsToShow.map(({ id, name }) => {
             return (
               <Flex
-                h="72px"
-                w={hasTopicsKey ? '100%' : { base: '87%', sm: '100%' }}
-                mx={hasTopicsKey ? undefined : { base: 'auto', md: undefined }}
-                alignItems="center"
-                textAlign="left"
-                textStyle="h4"
-                boxShadow="base"
-                role="group"
-                borderTopWidth={
-                  hasTopicsKey ? { base: '1px', sm: '0px' } : undefined
-                }
-                borderTopColor={hasTopicsKey ? 'secondary.500' : undefined}
-                bg="secondary.700"
-                color="white"
+                sx={styles.accordionItem}
                 _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
+                role="group"
                 as={RouterLink}
                 key={id}
                 to={getRedirectURLTopics(name, agency)}
@@ -171,21 +149,8 @@ const OptionsMenu = (): ReactElement => {
         : agencyShortNamesToShow.map((shortname) => {
             return (
               <Flex
-                h="72px"
-                w={hasTopicsKey ? '100%' : { base: '87%', sm: '100%' }}
-                mx={hasTopicsKey ? undefined : { base: 'auto', md: undefined }}
-                alignItems="center"
-                textAlign="left"
-                textStyle="h4"
-                boxShadow="base"
+                sx={styles.accordionItem}
                 role="group"
-                borderTopWidth={
-                  hasTopicsKey ? { base: '1px', sm: '0px' } : undefined
-                }
-                borderTopColor={hasTopicsKey ? 'secondary.500' : undefined}
-                bg="secondary.700"
-                color="white"
-                _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
                 as={RouterLink}
                 key={shortname}
                 to={getRedirectURLAgency(shortname)}
@@ -208,11 +173,7 @@ const OptionsMenu = (): ReactElement => {
       <AccordionItem border="none">
         <AccordionButton
           ref={accordionRef}
-          px="0px"
-          py="0px"
-          pt={hasTopicsKey ? '24px' : undefined}
-          pb={hasTopicsKey ? '16px' : undefined}
-          shadow="md"
+          sx={styles.accordionButton}
           _expanded={
             hasTopicsKey
               ? { shadow: 'none' }
@@ -221,23 +182,10 @@ const OptionsMenu = (): ReactElement => {
               : undefined
           }
           _hover={{ bg: hasTopicsKey ? 'secondary.600' : undefined }}
-          bg={hasTopicsKey ? 'secondary.700' : 'secondary.800'}
         >
-          <Flex
-            maxW="680px"
-            m="auto"
-            w="100%"
-            px={8}
-            textAlign="left"
-            role="group"
-          >
+          <Flex sx={styles.accordionFlexBox} role="group">
             <Stack spacing={1}>
-              <Text
-                textStyle="subhead-3"
-                color="primary.400"
-                pt={hasTopicsKey ? '8px' : undefined}
-                mt={hasTopicsKey ? undefined : '36px'}
-              >
+              <Text sx={styles.accordionHeader}>
                 {agency
                   ? hasTopicsKey
                     ? 'TOPIC'
@@ -246,10 +194,8 @@ const OptionsMenu = (): ReactElement => {
               </Text>
               {hasTopicsKey ? (
                 <Text
-                  textStyle="h3"
+                  sx={styles.accordionSubHeader}
                   fontWeight={queryState ? '600' : '400'}
-                  color="white"
-                  pt="8px"
                 >
                   {agency
                     ? queryState
