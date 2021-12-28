@@ -106,7 +106,7 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
   
   Frontend server accessible on `localhost:3000`
   
-  Backend server accessible on `localhost:5000/api/v1`
+  Backend server accessible on `localhost:6174/api/v1`
   
   Local mail server `MailDev` accessible on `localhost:1080`
 
@@ -158,7 +158,7 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 
 ## API Endpoints
 
-#### Base Url - `http://localhost:5000/api/v1`
+#### Base Url - `http://localhost:6174/api/v1`
 
 #### Agencies
 - `GET /agencies?<longname, shortname>`
