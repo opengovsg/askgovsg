@@ -226,7 +226,9 @@ const HomePage = (): JSX.Element => {
             agencyId={agency?.id}
             topics={queryState}
             pageSize={isAuthenticatedOfficer ? 50 : hasTopicsKey ? 30 : 10}
-            listAnswerable={isAuthenticatedOfficer}
+            listAnswerable={
+              isAuthenticatedOfficer && user.agencyId === agency?.id
+            }
             footerControl={
               isAuthenticatedOfficer || hasTopicsKey ? undefined : (
                 <Button
