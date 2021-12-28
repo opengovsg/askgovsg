@@ -5,6 +5,7 @@ import { StatusCodes } from 'http-status-codes'
 import { errAsync, okAsync, ResultAsync } from 'neverthrow'
 import { SearchEntry } from '~shared/types/api/search'
 import { createLogger } from '../../../bootstrap/logging'
+import { indexConfig } from './index-config'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { errors } = require('@opensearch-project/opensearch')
@@ -47,6 +48,7 @@ export class BackfillService {
       const indiciesCreateResponse = await ResultAsync.fromPromise(
         this.client.indices.create({
           index: indexName,
+          body: indexConfig,
         }),
         (error) => {
           logger.error({

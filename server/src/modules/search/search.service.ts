@@ -26,6 +26,7 @@ export class SearchService {
       fields: ['title', 'description', 'answers'],
       type: 'most_fields',
       fuzziness: 'AUTO',
+      analyzer: 'stop',
     }
     return ResultAsync.fromPromise(
       this.client.search({
