@@ -55,5 +55,30 @@ export const OptionsMenu: ComponentMultiStyleConfig = {
       px: 8,
       textAlign: 'left',
     },
+    sideMenuBox: {
+      position: 'sticky',
+      top: '0',
+      ml: '32px !important',
+      pt: '128px',
+      mt: '-70px',
+    },
+    sideMenuTopicHeader: {
+      color: 'primary.500',
+      textStyle: 'subhead-3',
+      mb: '20px',
+      d: 'block',
+      px: '24px',
+    },
+    sideMenuTopicText: {
+      h: '24px',
+      d: 'block',
+    },
+    sideMenuTopicSelect: {
+      alignItems: 'flex-start',
+      h: '56px',
+      w: '280px',
+      p: '16px 24px',
+      rounded: 'md',
+    },
   }),
 }

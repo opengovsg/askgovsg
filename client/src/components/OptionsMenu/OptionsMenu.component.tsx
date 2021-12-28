@@ -14,10 +14,16 @@ import {
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
-import { LegacyRef, useEffect, useState, ReactElement, createRef } from 'react'
+import {
+  Fragment,
+  LegacyRef,
+  useEffect,
+  useState,
+  ReactElement,
+  createRef,
+} from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
-import { Topic } from '~shared/types/base'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   Agency,
@@ -38,6 +44,7 @@ import {
   isSpecified,
   getTopicsQuery,
 } from '../../util/urlparser'
+import { bySpecifiedOrder } from './OptionsMenuUtil.component'
 
 const OptionsMenu = (): ReactElement => {
   const [hasTopicsKey, setHasTopicsKey] = useState(false)
@@ -91,28 +98,9 @@ const OptionsMenu = (): ReactElement => {
     listAgencyShortNames(),
   )
 
-  const bySpecifiedOrder =
-    agency && Array.isArray(agency.displayOrder)
-      ? (a: Topic, b: Topic) => {
-          const aDisplayOrder = (agency.displayOrder || []).indexOf(a.id)
-          const bDisplayOrder = (agency.displayOrder || []).indexOf(b.id)
-          if (aDisplayOrder !== -1 && bDisplayOrder !== -1) {
-            return aDisplayOrder > bDisplayOrder ? 1 : -1
-          } else if (aDisplayOrder !== -1) {
-            // a has an enforced display order, so a should be further up
-            return -1
-          } else if (bDisplayOrder !== -1) {
-            // b has an enforced display order, so a should be further down
-            return 1
-          } else {
-            return a.name > b.name ? 1 : -1
-          }
-        }
-      : (a: Topic, b: Topic) => (a.name > b.name ? 1 : -1)
-
   const topicsToShow = (topics || [])
     .filter((topic) => topic.name !== queryState)
-    .sort(bySpecifiedOrder)
+    .sort(bySpecifiedOrder(agency))
 
   const agencyShortNamesToShow = (agencyShortNames || [])
     .map((agency) => agency.shortname)
@@ -168,8 +156,13 @@ const OptionsMenu = (): ReactElement => {
     </SimpleGrid>
   )
 
-  return (
-    <Accordion allowMultiple allowToggle index={hasTopicsKey ? undefined : [0]}>
+  const accordionMenu = (
+    <Accordion
+      id="options-menu-accordion"
+      allowMultiple
+      allowToggle
+      index={hasTopicsKey ? undefined : [0]}
+    >
       <AccordionItem border="none">
         <AccordionButton
           ref={accordionRef}
@@ -221,6 +214,8 @@ const OptionsMenu = (): ReactElement => {
       </AccordionItem>
     </Accordion>
   )
+
+  return <Fragment>{accordionMenu}</Fragment>
 }
 
 export default OptionsMenu
