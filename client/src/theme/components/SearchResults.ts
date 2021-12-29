@@ -14,10 +14,10 @@ export const SearchResults = makeMultiStyleConfig({
     maxW: 'calc(793px + 48px * 2)',
   },
   questionsGrid: {
-    mb: '32px',
+    mb: { base: '32px', md: '58px' },
     flexDirection: 'column',
   },
-  questionsHeadline: {
+  resultsHeadline: {
     textStyle: 'h4',
   },
   searchQuery: { as: 'h2', fontSize: '24px', fontWeight: 'semibold' },
@@ -28,5 +28,10 @@ export const SearchResults = makeMultiStyleConfig({
   },
   noResultsCaption: {
     mb: '8px',
+  },
+  questionsHeadline: {
+    textStyle: 'subhead-3',
+    color: 'primary.500',
+    mb: { sm: '26px' },
   },
 })

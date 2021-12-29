@@ -6,6 +6,7 @@ export const PostItem = makeMultiStyleConfig({
     py: '24px',
     borderBottom: '1px solid',
     borderBottomColor: 'neutral.300',
+    flexDirection: 'column',
   },
   content: {
     maxW: '1188px',
@@ -24,6 +25,11 @@ export const PostItem = makeMultiStyleConfig({
     '& .public-DraftStyleDefault-block': {
       my: 0,
     },
+  },
+  answer: {
+    textStyle: { base: 'body-2', sm: 'body-1' },
+    color: 'secondary.800',
+    mt: { base: '16px', sm: '8px' },
   },
   editWrapper: {
     alignItems: 'center',

@@ -21,6 +21,7 @@ import {
 
 const SearchResults = (): JSX.Element => {
   const styles = useMultiStyleConfig('SearchResults', {})
+  const MAX_CHAR = 120
   const { search } = useLocation()
   const searchParams = new URLSearchParams(search)
   const searchQuery = searchParams.get('search') ?? ''
@@ -130,6 +131,9 @@ const SearchResults = (): JSX.Element => {
               </Box>
               <Box sx={styles.searchQuery}>"{searchQuery}"</Box>
             </Flex>
+            <Box sx={styles.questionsHeadline} className="questions-headline">
+              {foundPosts && foundPosts.length > 0 ? 'QUESTIONS' : null}
+            </Box>
             <Box sx={styles.questions} className="questions">
               {foundPosts && foundPosts.length > 0 ? (
                 foundPosts.map((entry) => (
@@ -140,6 +144,12 @@ const SearchResults = (): JSX.Element => {
                       title: entry.title ?? '',
                       tags: [],
                       agencyId: entry.agencyId ?? 0,
+                      answer: entry.answers
+                        ? entry.answers[0].length > MAX_CHAR
+                          ? `${entry.answers[0].substring(0, MAX_CHAR)}...`
+                          : entry.answers[0]
+                        : '',
+                      searchQuery: searchQuery,
                     }}
                   />
                 ))
