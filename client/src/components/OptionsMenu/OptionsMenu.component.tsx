@@ -14,14 +14,7 @@ import {
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
-import {
-  Fragment,
-  LegacyRef,
-  useEffect,
-  useState,
-  ReactElement,
-  createRef,
-} from 'react'
+import { LegacyRef, useEffect, useState, ReactElement, createRef } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
@@ -44,7 +37,7 @@ import {
   isSpecified,
   getTopicsQuery,
 } from '../../util/urlparser'
-import { bySpecifiedOrder } from './OptionsMenuUtil.component'
+import { bySpecifiedOrder } from './util'
 
 const OptionsMenu = (): ReactElement => {
   const [hasTopicsKey, setHasTopicsKey] = useState(false)
@@ -215,7 +208,7 @@ const OptionsMenu = (): ReactElement => {
     </Accordion>
   )
 
-  return <Fragment>{accordionMenu}</Fragment>
+  return <>{accordionMenu}</>
 }
 
 export default OptionsMenu
