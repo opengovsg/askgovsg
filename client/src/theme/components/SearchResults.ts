@@ -5,8 +5,8 @@ export const SearchResults = makeMultiStyleConfig({
     height: '200px',
   },
   breadcrumb: {
-    mt: { base: '32px', sm: '60px' },
-    mb: { base: '32px', sm: '50px' },
+    mt: { base: '24px', sm: '60px' },
+    mb: { base: '32px', sm: '64px' },
   },
   questionsPage: {
     px: { base: '32px', md: '48px' },
@@ -14,20 +14,19 @@ export const SearchResults = makeMultiStyleConfig({
     maxW: 'calc(793px + 48px * 2)',
   },
   questionsGrid: {
-    textStyle: 'display-2',
-    as: 'h3',
-    mb: '24px',
-    flex: '1 auto',
+    mb: '32px',
+    flexDirection: 'column',
   },
   questionsHeadline: {
-    as: 'h3',
-    textStyle: 'display-2',
-    mb: '24px',
-    flex: '1 auto',
+    textStyle: 'h4',
   },
+  searchQuery: { as: 'h2', fontSize: '24px', fontWeight: 'semibold' },
   questions: { padding: '0', w: { base: '100%', md: undefined } },
   noResults: {
     textStyle: 'subhead-1',
-    color: 'gray.800',
+    color: 'secondary.800',
+  },
+  noResultsCaption: {
+    mb: '8px',
   },
 })

@@ -122,8 +122,13 @@ const SearchResults = (): JSX.Element => {
             </Flex>
             <Flex sx={styles.questionsGrid} className="questions-grid">
               <Box sx={styles.questionsHeadline} className="questions-headline">
-                {searchQuery ? 'Search Results' : 'All Questions'}
+                {foundPosts && foundPosts.length > 0
+                  ? foundPosts.length === 1
+                    ? `${foundPosts?.length} result found for`
+                    : `${foundPosts?.length} results found for`
+                  : 'No results found for'}
               </Box>
+              <Box sx={styles.searchQuery}>"{searchQuery}"</Box>
             </Flex>
             <Box sx={styles.questions} className="questions">
               {foundPosts && foundPosts.length > 0 ? (
@@ -141,10 +146,13 @@ const SearchResults = (): JSX.Element => {
               ) : (
                 <>
                   <Box sx={styles.noResults} className="no-results">
-                    {`No results found for "${searchQuery}".`}
-                  </Box>
-                  <Box>
-                    {`Try rephrasing your question, or check your spelling.`}
+                    <Box sx={styles.noResultsCaption}>
+                      Your search did not match any questions and answers. Try
+                      another search?
+                    </Box>
+                    <Box>- Check if the spelling is correct</Box>
+                    <Box>- Use different keywords</Box>
+                    <Box>- Try general keywords</Box>
                   </Box>
                 </>
               )}
