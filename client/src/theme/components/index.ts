@@ -9,6 +9,7 @@ import { Post } from './Post'
 import { PostItem } from './PostItem'
 import { SearchBox } from './SearchBox'
 import { StyledToast } from './StyledToast'
+import { OptionsMenu } from './OptionsMenu'
 
 export const components = {
   AuthForm,
@@ -22,4 +23,5 @@ export const components = {
   ImageControl,
   ImageBlock,
   AskForm,
+  OptionsMenu,
 }

@@ -1,7 +1,7 @@
 import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { StatusCodes } from 'http-status-codes'
 import { errAsync, okAsync } from 'neverthrow'
-import { ModelCtor, Sequelize } from 'sequelize/types'
+import { ModelCtor, Sequelize } from 'sequelize'
 import { Agency, Post, PostStatus, TagType, Topic } from '~shared/types/base'
 import {
   Answer as AnswerModel,

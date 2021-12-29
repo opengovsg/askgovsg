@@ -1,8 +1,7 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { okAsync } from 'neverthrow'
-import { Sequelize } from 'sequelize'
-import { ModelCtor } from 'sequelize/types'
+import { Sequelize, ModelCtor } from 'sequelize'
 import supertest from 'supertest'
 import { Agency, Post, PostStatus, TagType, Topic } from '~shared/types/base'
 import {

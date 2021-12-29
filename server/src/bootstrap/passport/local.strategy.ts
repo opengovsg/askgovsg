@@ -1,6 +1,6 @@
 import passport from 'passport'
 import passportLocal from 'passport-local'
-import { ModelCtor } from 'sequelize/types'
+import { ModelCtor } from 'sequelize'
 import { Token, User } from '../../models'
 import { verifyHash } from '../../util/hash'
 const LocalStrategy = passportLocal.Strategy

@@ -9,6 +9,7 @@ import {
   MenuList,
   Spacer,
   Stack,
+  VStack,
   Text,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
@@ -34,6 +35,7 @@ import {
 } from '../../services/TopicService'
 import { isUserPublicOfficer } from '../../services/user.service'
 import { getTopicsQuery, isSpecified } from '../../util/urlparser'
+import OptionsSideMenu from '../../components/OptionsMenu/OptionsSideMenu.component'
 
 const HomePage = (): JSX.Element => {
   const [hasTopicsKey, setHasTopicsKey] = useState(false)
@@ -72,8 +74,37 @@ const HomePage = (): JSX.Element => {
 
   const isAuthenticatedOfficer = user !== null && isUserPublicOfficer(user)
 
+  const device = {
+    mobile: 'mobile',
+    tablet: 'tablet',
+    desktop: 'desktop',
+  }
+
+  const [deviceType, setDeviceType] = useState(
+    window.innerWidth < 480
+      ? device.mobile
+      : window.innerWidth < 1440
+      ? device.tablet
+      : device.desktop,
+  )
+
+  const checkViewportSize = () => {
+    setDeviceType(
+      window.innerWidth < 480
+        ? device.mobile
+        : window.innerWidth < 1440
+        ? device.tablet
+        : device.desktop,
+    )
+  }
+
+  useEffect(() => {
+    window.addEventListener('resize', checkViewportSize)
+    return () => window.removeEventListener('resize', checkViewportSize)
+  }, [])
+
   return (
-    <Flex direction="column" height="100%" className="home-page">
+    <Flex direction="column" height="100%" id="home-page">
       <PageTitle
         title={
           agency ? `${agency?.shortname.toUpperCase()} FAQ - AskGov` : undefined
@@ -88,6 +119,7 @@ const HomePage = (): JSX.Element => {
       />
       {agency && !hasTopicsKey && (
         <HStack
+          id="hero-landing-page"
           display="grid"
           gridTemplateColumns="3fr 1fr"
           py="auto"
@@ -116,138 +148,186 @@ const HomePage = (): JSX.Element => {
           </Flex>
         </HStack>
       )}
-      <OptionsMenu />
-      <Flex
-        maxW="680px"
-        m="auto"
-        w="100%"
-        pt={{ base: '32px', sm: '80px', xl: '90px' }}
-        px={8}
-        direction={{ base: 'column', lg: 'row' }}
-      >
-        <Box flex="5">
-          {(topics ?? [])
-            .filter(({ name }) => name === queryState)
-            .map((topic) => {
-              return topic.description ? (
-                <Text textStyle="body-1" color="neutral.900" mb="50px">
-                  {topic.description}
-                </Text>
-              ) : null
-            })}
-          <Flex
-            flexDir={{ base: 'column-reverse', sm: 'row' }}
-            mb={5}
-            justifyContent="space-between"
-          >
-            <Text
-              color="primary.500"
-              textStyle="subhead-3"
-              mt={{ base: '32px', sm: 0 }}
-              mb={{ sm: '20px' }}
-              d="block"
-            >
-              {hasTopicsKey
-                ? queryState
-                  ? 'QUESTIONS ON THIS TOPIC'
-                  : 'ALL QUESTIONS'
-                : 'TOP QUESTIONS'}
-            </Text>
-            {/* Dropdown stuff */}
-            {/* Hidden for officer because of the subcomponents in officer dashboard */}
-            {/* that requires different treatment */}
-            <Stack
-              spacing={{ base: 2, sm: 4 }}
-              direction={{ base: 'column', md: 'row' }}
-            >
-              <Menu matchWidth autoSelect={false} offset={[0, 0]}>
-                {() => (
-                  <>
-                    <MenuButton
-                      as={Button}
-                      variant="outline"
-                      borderColor="secondary.700"
-                      color="secondary.700"
-                      borderRadius="4px"
-                      borderWidth="1px"
-                      w={{ base: '100%', sm: '171px' }}
-                      textStyle="body-1"
-                      textAlign="left"
-                      d={{ base: hasTopicsKey ? 'block' : 'none' }}
-                    >
-                      <Flex justifyContent="space-between" alignItems="center">
-                        <Text textStyle="body-1">{sortState.label}</Text>
-                        <BiSortAlt2 />
-                      </Flex>
-                    </MenuButton>
-                    <MenuList
-                      minW={0}
-                      borderRadius={0}
-                      borderWidth={0}
-                      boxShadow="0px 0px 10px rgba(216, 222, 235, 0.5)"
-                    >
-                      {options.map(({ value, label }, i) => (
-                        <MenuItem
-                          key={i}
-                          h="48px"
-                          ps={4}
-                          textStyle={
-                            sortState.value === value ? 'subhead-1' : 'body-1'
-                          }
-                          fontWeight={
-                            sortState.value === value ? '500' : 'normal'
-                          }
-                          letterSpacing="-0.011em"
-                          bg={
-                            sortState.value === value ? 'primary.200' : 'white'
-                          }
-                          _hover={
-                            sortState.value === value
-                              ? { bg: 'primary.200' }
-                              : { bg: 'primary.100' }
-                          }
-                          onClick={() => {
-                            setSortState(options[i])
-                          }}
-                        >
-                          {label}
-                        </MenuItem>
-                      ))}
-                    </MenuList>
-                  </>
-                )}
-              </Menu>
-              {isAuthenticatedOfficer && <PostQuestionButton />}
-            </Stack>
+      {agency && hasTopicsKey && queryState && deviceType === device.desktop && (
+        <Flex bg="secondary.800" id="hero-landing-page-desktop">
+          <Box ml="46px" pt="128px" position="absolute">
+            {agency && <AgencyLogo agency={agency} />}
+          </Box>
+          <Flex maxW="680px" m="auto" w="100%" minH="224px">
+            <VStack alignItems="flex-start" pt="64px">
+              <Text textStyle="h2" color="white">
+                {queryState}
+              </Text>
+              <Text>
+                {(topics ?? [])
+                  .filter(({ name }) => name === queryState)
+                  .map((topic) => {
+                    return topic.description ? (
+                      <Text textStyle="body-1" color="white" mb="50px">
+                        {topic.description}
+                      </Text>
+                    ) : null
+                  })}
+              </Text>
+            </VStack>
           </Flex>
-          {/* List of Posts depending on whether user is citizen or agency officer */}
-          <QuestionsListComponent
-            sort={sortState.value}
-            agencyId={agency?.id}
-            topics={queryState}
-            pageSize={isAuthenticatedOfficer ? 50 : hasTopicsKey ? 30 : 10}
-            listAnswerable={
-              isAuthenticatedOfficer && user.agencyId === agency?.id
-            }
-            footerControl={
-              isAuthenticatedOfficer || hasTopicsKey ? undefined : (
-                <Button
-                  mt={{ base: '40px', sm: '48px', xl: '58px' }}
-                  variant="outline"
-                  color="secondary.700"
-                  borderColor="secondary.700"
-                  onClick={() => {
-                    window.scrollTo(0, 0)
-                    navigate('?topics=')
-                  }}
-                >
-                  <Text textStyle="subhead-1">View all questions</Text>
-                </Button>
-              )
-            }
-          />
-        </Box>
-      </Flex>
+        </Flex>
+      )}
+      {!(deviceType === device.desktop && hasTopicsKey && queryState) && (
+        <OptionsMenu />
+      )}
+      <HStack
+        id="main"
+        alignItems="flex-start"
+        display="grid"
+        gridTemplateColumns={{
+          base: '1fr',
+          xl: hasTopicsKey && queryState ? '1fr 2fr 1fr' : '1fr',
+        }}
+      >
+        {deviceType === device.desktop && hasTopicsKey && queryState && (
+          <OptionsSideMenu agency={agency} />
+        )}
+        <Flex
+          id="questions"
+          maxW="680px"
+          m="auto"
+          justifySelf="center"
+          w="100%"
+          pt={{ base: '32px', sm: '80px', xl: '90px' }}
+          px={8}
+          direction={{ base: 'column', lg: 'row' }}
+        >
+          <Box flex="5">
+            {deviceType !== device.desktop &&
+              (topics ?? [])
+                .filter(({ name }) => name === queryState)
+                .map((topic) => {
+                  return topic.description ? (
+                    <Text textStyle="body-1" color="neutral.900" mb="50px">
+                      {topic.description}
+                    </Text>
+                  ) : null
+                })}
+            <Flex
+              flexDir={{ base: 'column-reverse', sm: 'row' }}
+              mb={5}
+              justifyContent="space-between"
+            >
+              <Text
+                color="primary.500"
+                textStyle="subhead-3"
+                mt={{ base: '32px', sm: 0 }}
+                mb={{ sm: '20px' }}
+                d="block"
+              >
+                {hasTopicsKey
+                  ? queryState
+                    ? 'QUESTIONS ON THIS TOPIC'
+                    : 'ALL QUESTIONS'
+                  : 'TOP QUESTIONS'}
+              </Text>
+              {/* Dropdown stuff */}
+              {/* Hidden for officer because of the subcomponents in officer dashboard */}
+              {/* that requires different treatment */}
+              <Stack
+                spacing={{ base: 2, sm: 4 }}
+                direction={{ base: 'column', md: 'row' }}
+              >
+                <Menu matchWidth autoSelect={false} offset={[0, 0]}>
+                  {() => (
+                    <>
+                      <MenuButton
+                        as={Button}
+                        variant="outline"
+                        borderColor="secondary.700"
+                        color="secondary.700"
+                        borderRadius="4px"
+                        borderWidth="1px"
+                        w={{ base: '100%', sm: '171px' }}
+                        textStyle="body-1"
+                        textAlign="left"
+                        d={{ base: hasTopicsKey ? 'block' : 'none' }}
+                      >
+                        <Flex
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Text textStyle="body-1">{sortState.label}</Text>
+                          <BiSortAlt2 />
+                        </Flex>
+                      </MenuButton>
+                      <MenuList
+                        minW={0}
+                        borderRadius={0}
+                        borderWidth={0}
+                        boxShadow="0px 0px 10px rgba(216, 222, 235, 0.5)"
+                      >
+                        {options.map(({ value, label }, i) => (
+                          <MenuItem
+                            key={i}
+                            h="48px"
+                            ps={4}
+                            textStyle={
+                              sortState.value === value ? 'subhead-1' : 'body-1'
+                            }
+                            fontWeight={
+                              sortState.value === value ? '500' : 'normal'
+                            }
+                            letterSpacing="-0.011em"
+                            bg={
+                              sortState.value === value
+                                ? 'primary.200'
+                                : 'white'
+                            }
+                            _hover={
+                              sortState.value === value
+                                ? { bg: 'primary.200' }
+                                : { bg: 'primary.100' }
+                            }
+                            onClick={() => {
+                              setSortState(options[i])
+                            }}
+                          >
+                            {label}
+                          </MenuItem>
+                        ))}
+                      </MenuList>
+                    </>
+                  )}
+                </Menu>
+                {isAuthenticatedOfficer && <PostQuestionButton />}
+              </Stack>
+            </Flex>
+            {/* List of Posts depending on whether user is citizen or agency officer */}
+            <QuestionsListComponent
+              sort={sortState.value}
+              agencyId={agency?.id}
+              topics={queryState}
+              pageSize={isAuthenticatedOfficer ? 50 : hasTopicsKey ? 30 : 10}
+              listAnswerable={
+                isAuthenticatedOfficer && user.agencyId === agency?.id
+              }
+              footerControl={
+                isAuthenticatedOfficer || hasTopicsKey ? undefined : (
+                  <Button
+                    mt={{ base: '40px', sm: '48px', xl: '58px' }}
+                    variant="outline"
+                    color="secondary.700"
+                    borderColor="secondary.700"
+                    onClick={() => {
+                      window.scrollTo(0, 0)
+                      navigate('?topics=')
+                    }}
+                  >
+                    <Text textStyle="subhead-1">View all questions</Text>
+                  </Button>
+                )
+              }
+            />
+          </Box>
+        </Flex>
+      </HStack>
       <Spacer />
       <CitizenRequest agency={agency} />
     </Flex>
