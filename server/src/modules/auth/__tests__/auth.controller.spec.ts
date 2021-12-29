@@ -6,7 +6,7 @@ import { AuthController } from '../auth.controller'
 import { mocked } from 'ts-jest/utils'
 import { generateRandomDigits, hashData } from '../../../util/hash'
 import { Token as TokenModel } from '../../../models'
-import { Sequelize, ModelCtor } from 'sequelize/types'
+import { Sequelize, ModelCtor } from 'sequelize'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import passport from 'passport'
 

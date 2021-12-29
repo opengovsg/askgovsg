@@ -1,5 +1,5 @@
 import minimatch from 'minimatch'
-import { ModelCtor } from 'sequelize/types'
+import { ModelCtor } from 'sequelize'
 import { Post, PostStatus, Topic } from '~shared/types/base'
 import { createLogger } from '../../bootstrap/logging'
 import { User } from '../../models'

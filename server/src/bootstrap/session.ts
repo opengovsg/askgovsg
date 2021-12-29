@@ -1,7 +1,7 @@
 import init from 'connect-session-sequelize'
 import { RequestHandler } from 'express'
 import session, { SessionOptions } from 'express-session'
-import { Sequelize } from 'sequelize/types'
+import { Sequelize } from 'sequelize'
 import { authConfig } from './config/auth'
 import { baseConfig, Environment } from './config/base'
 

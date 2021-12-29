@@ -1,6 +1,6 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { Sequelize } from 'sequelize/types'
+import { Sequelize } from 'sequelize'
 import { PostCreation } from '../../../models/posts.model'
 import { ModelDef } from '../../../types/sequelize'
 import {
