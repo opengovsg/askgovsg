@@ -305,7 +305,9 @@ const HomePage = (): JSX.Element => {
               agencyId={agency?.id}
               topics={queryState}
               pageSize={isAuthenticatedOfficer ? 50 : hasTopicsKey ? 30 : 10}
-              listAnswerable={isAuthenticatedOfficer}
+              listAnswerable={
+                isAuthenticatedOfficer && user.agencyId === agency?.id
+              }
               footerControl={
                 isAuthenticatedOfficer || hasTopicsKey ? undefined : (
                   <Button
@@ -326,7 +328,6 @@ const HomePage = (): JSX.Element => {
           </Box>
         </Flex>
       </HStack>
-
       <Spacer />
       <CitizenRequest agency={agency} />
     </Flex>
