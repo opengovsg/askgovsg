@@ -115,14 +115,14 @@ const SearchResults = (): JSX.Element => {
           </>
         )}
         <VStack id="search-results">
-          <Box sx={styles.questionsPage} className="questions-page">
+          <Flex sx={styles.questionsPage} className="questions-page">
             <Flex sx={styles.breadcrumb}>
               {breadcrumbContentRef.current.length > 0 ? (
                 <NavBreadcrumb navOrder={breadcrumbContentRef.current} />
               ) : null}
             </Flex>
             <Flex sx={styles.questionsGrid} className="questions-grid">
-              <Box sx={styles.questionsHeadline} className="questions-headline">
+              <Box sx={styles.resultsHeadline} className="questions-headline">
                 {foundPosts && foundPosts.length > 0
                   ? foundPosts.length === 1
                     ? `${foundPosts?.length} result found for`
@@ -154,20 +154,18 @@ const SearchResults = (): JSX.Element => {
                   />
                 ))
               ) : (
-                <>
-                  <Box sx={styles.noResults} className="no-results">
-                    <Box sx={styles.noResultsCaption}>
-                      Your search did not match any questions and answers. Try
-                      another search?
-                    </Box>
-                    <Box>- Check if the spelling is correct</Box>
-                    <Box>- Use different keywords</Box>
-                    <Box>- Try general keywords</Box>
+                <Box sx={styles.noResults} className="no-results">
+                  <Box sx={styles.noResultsCaption}>
+                    Your search did not match any questions and answers. Try
+                    another search?
                   </Box>
-                </>
+                  <Box>- Check if the spelling is correct</Box>
+                  <Box>- Use different keywords</Box>
+                  <Box>- Try general keywords</Box>
+                </Box>
               )}
             </Box>
-          </Box>
+          </Flex>
         </VStack>
       </HStack>
 

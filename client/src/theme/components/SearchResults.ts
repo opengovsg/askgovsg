@@ -11,7 +11,8 @@ export const SearchResults = makeMultiStyleConfig({
   questionsPage: {
     px: { base: '32px', md: '48px' },
     mx: 'auto',
-    maxW: 'calc(793px + 48px * 2)',
+    w: { md: 'calc(793px + 48px * 2)' },
+    flexDirection: 'column',
   },
   questionsGrid: {
     mb: { base: '32px', md: '58px' },
@@ -19,6 +20,7 @@ export const SearchResults = makeMultiStyleConfig({
   },
   resultsHeadline: {
     textStyle: 'h4',
+    mb: '8px',
   },
   searchQuery: { as: 'h2', fontSize: '24px', fontWeight: 'semibold' },
   questions: { padding: '0', w: { base: '100%', md: undefined } },
