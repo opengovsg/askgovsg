@@ -70,12 +70,12 @@ export const OptionsMenu: ComponentMultiStyleConfig = {
       px: '24px',
     },
     sideMenuTopicText: {
-      h: '24px',
+      minH: '24px',
       d: 'block',
     },
     sideMenuTopicSelect: {
       alignItems: 'flex-start',
-      h: '56px',
+      minH: '56px',
       w: '280px',
       p: '16px 24px',
       rounded: 'md',
