@@ -4,19 +4,21 @@ import Footer from './components/Footer/Footer.component'
 import Header from './components/Header/Header.component'
 import { AuthProvider } from './contexts/AuthContext'
 import { GoogleAnalyticsProvider } from './contexts/googleAnalytics'
+import { useEnvironment } from './hooks/useEnvironment'
 import { useFullstory } from './hooks/useFullstory'
 import Routes from './routes'
 import { theme } from './theme'
 
 const App = (): JSX.Element => {
   useFullstory()
+  const { data, isSuccess } = useEnvironment()
 
   return (
     <GoogleAnalyticsProvider>
       <ChakraProvider theme={theme}>
         <AuthProvider>
           <>
-            <Banner />
+            <Banner data={data} isSuccess={isSuccess} />
             <Header />
             <Routes />
             <Footer />
