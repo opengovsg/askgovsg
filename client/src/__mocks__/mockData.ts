@@ -77,7 +77,7 @@ export const MockAgencyData = {
   shortname: 'ABC',
   longname: "Amy's Bacon Company",
   email: 'ABC@abc.com',
-  logo: 'ABC.png',
+  logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
   noEnquiriesMessage: null,
   website: null,
   displayOrder: [],
