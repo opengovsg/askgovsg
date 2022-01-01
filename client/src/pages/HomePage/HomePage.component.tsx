@@ -186,7 +186,7 @@ const HomePage = (): JSX.Element => {
         }}
       >
         {deviceType === device.desktop && hasTopicsKey && queryState && (
-          <OptionsSideMenu agency={agency} />
+          <OptionsSideMenu agency={agency} queryStateProp={queryState} />
         )}
         <Flex
           id="questions"
