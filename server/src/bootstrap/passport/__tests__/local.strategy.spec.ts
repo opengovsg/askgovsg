@@ -1,7 +1,7 @@
 import passport from 'passport'
 import { Token as TokenModel, User as UserModel } from '../../../models'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
-import { ModelCtor, Sequelize } from 'sequelize/types'
+import { ModelCtor, Sequelize } from 'sequelize'
 import * as hash from '../../../util/hash'
 import { Strategy, VerifyFunction } from 'passport-local'
 import { localStrategy, MAX_OTP_ATTEMPTS } from '../local.strategy'

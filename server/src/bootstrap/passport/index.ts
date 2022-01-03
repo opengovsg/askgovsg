@@ -2,7 +2,7 @@ import express from 'express'
 import passport from 'passport'
 import { localStrategy } from './local.strategy'
 import { Token, User } from '../../models'
-import { ModelCtor } from 'sequelize/types'
+import { ModelCtor } from 'sequelize'
 
 export const passportConfig = (
   app: express.Application,
