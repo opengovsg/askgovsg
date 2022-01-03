@@ -112,6 +112,7 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 
 * Default home page is not authorised. To become authorised user, login via `localhost:3000/login`, enter `enquiries@was.gov.sg`. Then go to the mail server to obtain the OTP
 
+* To view UI components on storybook (accessible on `localhost:6006`): `npm run storybook`
 
 ## Common Problems
 
