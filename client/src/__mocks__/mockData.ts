@@ -1,9 +1,9 @@
 import { PostStatus } from '~shared/types/base'
 
 export const MockAgencyShortNameData = [
-  { shortname: 'abc' },
-  { shortname: 'def' },
-  { shortname: 'ghi' },
+  { shortname: 'was' },
+  { shortname: 'tmg' },
+  { shortname: 'mof' },
 ]
 
 export const MockTopicData = [
@@ -74,9 +74,9 @@ export const MockAgencyData = {
   id: 11,
   createdAt: new Date(),
   updatedAt: new Date(),
-  shortname: 'ABC',
-  longname: "Amy's Bacon Company",
-  email: 'ABC@abc.com',
+  shortname: 'tmg',
+  longname: 'Test Ministry of Grants',
+  email: 'TMG@tmg.gov.sg',
   logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
   noEnquiriesMessage: null,
   website: null,

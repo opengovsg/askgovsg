@@ -8,6 +8,7 @@ import { initialize, mswDecorator } from 'msw-storybook-addon'
 import { rest } from 'msw'
 import { HelmetProvider } from 'react-helmet-async'
 import { MockUserData } from '../src/__mocks__/mockData'
+import { breakpoints } from '../src/theme/breakpoints'
 
 // Initialize Mock Service Worker
 initialize()
@@ -33,25 +34,39 @@ const withChakra = (StoryFn: Function) => {
 export const decorators = [withChakra, mswDecorator]
 
 const customViewports = {
-  desktop: {
-    name: 'Desktop',
+  xs: {
+    name: 'xs',
     styles: {
-      width: '1440px',
-      height: '963px',
+      width: breakpoints.xs,
+      height: '601px',
     },
   },
-  tablet: {
-    name: 'Tablet',
+  sm: {
+    name: 'sm',
     styles: {
-      width: '780px',
+      width: breakpoints.sm,
+      height: '601px',
+    },
+  },
+  md: {
+    name: 'md',
+    styles: {
+      width: breakpoints.md,
       height: '801px',
     },
   },
-  mobile: {
-    name: 'Mobile',
+  lg: {
+    name: 'lg',
     styles: {
-      width: '470px',
-      height: '601px',
+      width: breakpoints.lg,
+      height: '801px',
+    },
+  },
+  xl: {
+    name: 'xl',
+    styles: {
+      width: breakpoints.xl,
+      height: '801px',
     },
   },
 }
