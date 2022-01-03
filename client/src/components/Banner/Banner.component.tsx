@@ -1,8 +1,20 @@
 import { Box } from '@chakra-ui/layout'
-import { useEnvironment } from '../../hooks/useEnvironment'
 
-export const Banner = (): JSX.Element | null => {
-  const { data, isSuccess } = useEnvironment()
+type bannerDataType =
+  | {
+      bannerMessage: string
+      googleAnalyticsId: string
+      fullStoryOrgId: string
+    }
+  | undefined
+
+export const Banner = ({
+  data,
+  isSuccess,
+}: {
+  data: bannerDataType
+  isSuccess: boolean
+}): JSX.Element | null => {
   return isSuccess && data?.bannerMessage ? (
     <Box
       h="50px"
