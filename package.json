@@ -18,7 +18,8 @@
     "test": "npm run build-shared && npm --prefix server test && CI=true npm --prefix client test -- --passWithNoTests",
     "lint": "npm run --prefix server lint && npm run --prefix client lint && npm run --prefix shared lint",
     "lint-ci": "npm run --prefix server lint-ci && npm run --prefix client lint-ci && npm run --prefix shared lint-ci",
-    "seq-cli": "npm run --prefix server seq-cli"
+    "seq-cli": "npm run --prefix server seq-cli",
+    "storybook": "npm run --prefix client storybook"
   },
   "author": "Open Government Products, GovTech Singapore (https://open.gov.sg)",
   "contributors": [
