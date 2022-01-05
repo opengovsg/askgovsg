@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@chakra-ui/react": "^1.7.3",
-    "@chakra-ui/storybook-addon": "^0.0.0-dev-2021119215843",
+    "@chakra-ui/storybook-addon": "^1.0.0",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@fullstory/browser": "^1.4.10",
