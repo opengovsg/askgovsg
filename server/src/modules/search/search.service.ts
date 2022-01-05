@@ -34,6 +34,12 @@ export class SearchService {
         body: {
           query: { multi_match: multiMatchQuery },
           ...(agencyId && { post_filter: { term: { agencyId: agencyId } } }),
+          highlight: {
+            fields: { title: {}, description: {}, answers: {} },
+            pre_tags: '<b>',
+            post_tags: '</b>',
+            fragment_size: 200,
+          },
         },
       }),
       (err) => {

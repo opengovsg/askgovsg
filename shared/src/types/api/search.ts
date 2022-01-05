@@ -1,3 +1,9 @@
+export type HighlightSearchEntry = {
+  title?: string[]
+  description?: string[]
+  answers?: string[]
+}
+
 export type SearchEntry = {
   postId: number
   title?: string
@@ -5,4 +11,9 @@ export type SearchEntry = {
   answers?: string[]
   agencyId?: number
   topicId?: number | null
+}
+
+export type SearchEntryWithHighlight = {
+  result: SearchEntry
+  highlight?: HighlightSearchEntry
 }

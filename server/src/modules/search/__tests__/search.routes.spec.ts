@@ -3,7 +3,7 @@ import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { okAsync } from 'neverthrow'
 import supertest from 'supertest'
-import { SearchEntry } from '../../../../../shared/src/types/api'
+import { SearchEntryWithHighlight } from '../../../../../shared/src/types/api'
 import { SearchController } from '../search.controller'
 import { routeSearch } from '../search.routes'
 
@@ -22,31 +22,42 @@ describe('/', () => {
     const router = routeSearch({ controller })
     const indexName = 'search_entries'
 
-    const searchEntries: SearchEntry[] = [
+    const searchEntries: SearchEntryWithHighlight[] = [
       {
-        agencyId: 2,
-        answers: ['answer 2000'],
-        description: 'description 200',
-        postId: 2,
-        title: 'title 20',
-        topicId: null,
+        result: {
+          agencyId: 2,
+          answers: ['answer 2000'],
+          description: 'description 200',
+          postId: 2,
+          title: 'title 20',
+          topicId: null,
+        },
+        highlight: {
+          title: ['<b>title</b> 20'],
+        },
       },
       {
-        agencyId: 1,
-        answers: ['answer 1000'],
-        description: 'description 100',
-        postId: 1,
-        title: 'title 10',
-        topicId: null,
+        result: {
+          agencyId: 1,
+          answers: ['answer 1000'],
+          description: 'description 100',
+          postId: 1,
+          title: 'title 10',
+          topicId: null,
+        },
+        highlight: {
+          title: ['<b>title</b> 10'],
+        },
       },
     ]
     const sampleHits: SearchHit[] = searchEntries.map((entry) => {
       return {
-        _id: `${entry.postId}`,
+        _id: `${entry.result.postId}`,
         _index: indexName,
         _score: 0.125,
-        _source: entry,
+        _source: entry.result,
         _type: '_doc',
+        highlight: entry.highlight,
       }
     })
 
