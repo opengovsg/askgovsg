@@ -17,7 +17,7 @@ import { RefCallBack } from 'react-hook-form'
 import { BiSearch } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link, useNavigate } from 'react-router-dom'
-import { SearchEntry } from '~shared/types/api'
+import { SearchEntryWithHighlight } from '~shared/types/api'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   getAgencyById,
@@ -51,9 +51,9 @@ export const SearchBox = ({
   const styles = useMultiStyleConfig('SearchBox', {})
 
   const [searchQueryStrState, setSearchQueryStrState] = useState('')
-  const [searchEntriesState, setSearchEntriesState] = useState<SearchEntry[]>(
-    [],
-  )
+  const [searchEntriesState, setSearchEntriesState] = useState<
+    SearchEntryWithHighlight[]
+  >([])
 
   useQuery(
     [SEARCH_QUERY_KEY, agencyId, searchQueryStrState],
@@ -126,12 +126,12 @@ export const SearchBox = ({
 
   // null type required due to Downshift's type definitions
   // eslint-disable-next-line
-  const itemToString = (item: SearchEntry | null) =>
-    item?.title ? item.title : ''
+  const itemToString = (item: SearchEntryWithHighlight | null) =>
+    item?.result.title ?? ''
 
   const stateReducer = (
-    _state: DownshiftState<SearchEntry>,
-    changes: StateChangeOptions<SearchEntry>,
+    _state: DownshiftState<SearchEntryWithHighlight>,
+    changes: StateChangeOptions<SearchEntryWithHighlight>,
   ) => {
     return changes.type === Downshift.stateChangeTypes.blurInput ||
       changes.type === Downshift.stateChangeTypes.mouseUp ||
@@ -148,15 +148,17 @@ export const SearchBox = ({
     itemToString,
     onClick,
   }: {
-    item: SearchEntry
+    item: SearchEntryWithHighlight
     index: number
-    getItemProps: (options: GetItemPropsOptions<SearchEntry>) => SearchEntry
+    getItemProps: (
+      options: GetItemPropsOptions<SearchEntryWithHighlight>,
+    ) => SearchEntryWithHighlight
     highlightedIndex: number | null
-    itemToString: (item: SearchEntry | null) => string
+    itemToString: (item: SearchEntryWithHighlight | null) => string
     onClick: () => void
   }) => (
     <Link
-      to={`/questions/${item.postId}`}
+      to={`/questions/${item.result.postId}`}
       {...getItemProps({
         index,
         item,
@@ -179,7 +181,9 @@ export const SearchBox = ({
   return (
     <Flex sx={{ ...styles.form, ...sx }}>
       <Downshift
-        onChange={(selection) => navigate(`/questions/${selection?.postId}`)}
+        onChange={(selection) =>
+          navigate(`/questions/${selection?.result.postId}`)
+        }
         stateReducer={stateReducer}
         itemToString={itemToString}
         initialInputValue={value}
@@ -250,7 +254,7 @@ export const SearchBox = ({
                 ? searchEntriesState.map((entry, index) => {
                     return (
                       <SearchItem
-                        key={entry.postId}
+                        key={entry.result.postId}
                         onClick={() => sendSearchEventToAnalytics(inputValue)}
                         {...{
                           item: entry,
