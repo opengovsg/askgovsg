@@ -550,6 +550,22 @@ module.exports = {
       ],
       {},
     )
+
+    await queryInterface.bulkInsert(
+      'publicusers',
+      [
+        {
+          id: 1,
+          sgid: 'S1234567E',
+          displayname: 'user001',
+          email: 'user@open.gov.sg',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          active: true,
+        },
+      ],
+      {},
+    )
   },
 
   down: async (queryInterface) => {
@@ -560,5 +576,6 @@ module.exports = {
     await queryInterface.bulkDelete('users', null, {})
     await queryInterface.bulkDelete('agencies', null, {})
     await queryInterface.bulkDelete('tags', null, {})
+    await queryInterface.bulkDelete('publicusers', null, {})
   },
 }

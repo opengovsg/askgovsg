@@ -8,6 +8,7 @@ import {
   defineToken,
   defineUser,
   defineTopic,
+  definePublicUser,
 } from '../models'
 import { dbConfig } from './config/database'
 
@@ -29,5 +30,6 @@ export const { Post, PostTag } = definePostAndPostTag(sequelize, {
   Topic,
 })
 export const Answer = defineAnswer(sequelize, { User, Post })
+export const { PublicUser } = definePublicUser(sequelize, { emailValidator })
 
 export default sequelize

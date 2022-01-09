@@ -20,6 +20,7 @@ export enum ModelName {
   User = 'user',
   Token = 'token',
   Topic = 'topic',
+  PublicUser = 'publicuser',
 }
 
 /**
