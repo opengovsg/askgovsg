@@ -1,6 +1,7 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
+import { UserAuthType } from '~shared/types/api'
 import { ControllerHandler } from '../../../types/response-handler'
 import { PostController } from '../post.controller'
 
@@ -42,14 +43,14 @@ describe('PostController', () => {
   })
 
   // Set up auth middleware to inject user
-  let user: Express.User | undefined = { id: 1 }
+  let user: Express.User | undefined = { id: 1, type: UserAuthType.Agency }
   const middleware: ControllerHandler = (req, res, next) => {
     req.user = user
     next()
   }
 
   beforeEach(() => {
-    user = { id: 1 }
+    user = { id: 1, type: UserAuthType.Agency }
   })
   afterEach(async () => {
     jest.clearAllMocks()

@@ -8,7 +8,11 @@ import supertest, { Session } from 'supertest-session'
 import { Agency, Post, Topic } from '~shared/types/base'
 import { createAuthedSession, logoutSession } from '../../../../tests/mock-auth'
 import { passportConfig } from '../../../bootstrap/passport'
-import { Token as TokenModel, User as UserModel } from '../../../models'
+import {
+  Token as TokenModel,
+  User as UserModel,
+  PublicUser as PublicUserModel,
+} from '../../../models'
 import { ModelDef, ModelInstance } from '../../../types/sequelize'
 import {
   createTestDatabase,
@@ -32,6 +36,11 @@ describe('/auth', () => {
     createOfficer: jest.fn(),
     loadUser: jest.fn(),
   }
+  const publicUserService = {
+    loadPublicUser: jest.fn(),
+    loadPublicUserBySgid: jest.fn(),
+    createPublicUserBySgid: jest.fn(),
+  }
   let authService: AuthService
   let authController: AuthController
 
@@ -47,6 +56,7 @@ describe('/auth', () => {
   let Token: ModelCtor<TokenModel>
   let Agency: ModelDef<Agency>
   let User: ModelCtor<UserModel>
+  let PublicUser: ModelCtor<PublicUserModel>
   let Topic: ModelDef<Topic>
   let Post: ModelDef<Post, PostCreation>
   let mockUser: UserModel
@@ -58,6 +68,7 @@ describe('/auth', () => {
     Agency = getModelDef<Agency>(db, ModelName.Agency)
     User = getModel<UserModel>(db, ModelName.User)
     Post = getModelDef<Post, PostCreation>(db, ModelName.Post)
+    PublicUser = getModel<PublicUserModel>(db, ModelName.PublicUser)
     mockAgency = await Agency.create({
       shortname: 'was',
       longname: 'Work Allocation Singapore',
@@ -82,6 +93,7 @@ describe('/auth', () => {
       mailService,
       authService,
       userService,
+      publicUserService,
       Token,
     })
 
@@ -94,7 +106,7 @@ describe('/auth', () => {
         store: new session.MemoryStore(),
       }),
     )
-    passportConfig(app, Token, User)
+    passportConfig(app, Token, User, PublicUser)
 
     // passport before route
     app.use(

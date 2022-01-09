@@ -1,6 +1,7 @@
 import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
+import { UserAuthType } from '~shared/types/api'
 import { ControllerHandler } from '../../../types/response-handler'
 
 import { AuthMiddleware } from '../auth.middleware'
@@ -9,7 +10,7 @@ describe('auth.middleware', () => {
   const path = '/auth'
   const authMiddleware = new AuthMiddleware()
   // Set up auth middleware to inject user
-  const user: Express.User | undefined = { id: 1 }
+  const user: Express.User | undefined = { id: 1, type: UserAuthType.Agency }
   let isAuthenticated = true
   const middleware: ControllerHandler = (req, res, next) => {
     req.isAuthenticated = () => isAuthenticated

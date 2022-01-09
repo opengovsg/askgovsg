@@ -4,6 +4,7 @@ import { okAsync } from 'neverthrow'
 import { Sequelize, ModelCtor } from 'sequelize'
 import supertest from 'supertest'
 import { Agency, Post, PostStatus, TagType, Topic } from '~shared/types/base'
+import { UserAuthType } from '~shared/types/api'
 import {
   Answer as AnswerModel,
   PostTag,
@@ -56,7 +57,7 @@ describe('/posts', () => {
   }
 
   const authenticate: ControllerHandler = (req, res, next) => {
-    req.user = { id: mockUser.id }
+    req.user = { id: mockUser.id, type: UserAuthType.Agency }
     next()
   }
 

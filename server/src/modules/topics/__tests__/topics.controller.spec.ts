@@ -6,6 +6,7 @@ import { ControllerHandler } from '../../../types/response-handler'
 import { errAsync, okAsync } from 'neverthrow'
 import { MissingTopicError } from '../topics.errors'
 import { DatabaseError } from '../../core/core.errors'
+import { UserAuthType } from '~shared/types/api'
 
 describe('TopicsController', () => {
   const path = '/topics'
@@ -33,7 +34,7 @@ describe('TopicsController', () => {
   })
 
   // Set up auth middleware to inject user
-  let user: Express.User | undefined = { id: 1 }
+  let user: Express.User | undefined = { id: 1, type: UserAuthType.Agency }
   const middleware: ControllerHandler = (req, res, next) => {
     req.user = user
     next()
@@ -65,7 +66,7 @@ describe('TopicsController', () => {
   }
 
   beforeEach(() => {
-    user = { id: 1 }
+    user = { id: 1, type: UserAuthType.Agency }
     jest.resetAllMocks()
   })
 

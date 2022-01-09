@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import { ControllerHandler } from '../../../types/response-handler'
 import supertest from 'supertest'
 import { AnswersController } from '../answers.controller'
+import { UserAuthType } from '~shared/types/api'
 
 describe('AnswersController', () => {
   const answersService = {
@@ -21,7 +22,7 @@ describe('AnswersController', () => {
   })
 
   // Set up auth middleware to inject user
-  const goodUser = { id: 1 }
+  const goodUser = { id: 1, type: UserAuthType.Agency }
   let user: Express.User | undefined = goodUser
   const middleware: ControllerHandler = (req, _res, next) => {
     req.user = user

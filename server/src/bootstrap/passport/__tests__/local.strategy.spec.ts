@@ -5,6 +5,7 @@ import { ModelCtor, Sequelize } from 'sequelize'
 import * as hash from '../../../util/hash'
 import { Strategy, VerifyFunction } from 'passport-local'
 import { localStrategy, MAX_OTP_ATTEMPTS } from '../local.strategy'
+import { UserAuthType } from '~shared/types/api'
 
 jest.mock('passport-local', () => {
   const mLocalStrategy = jest.fn()
@@ -67,6 +68,7 @@ describe('localStrategy', () => {
     verifySpy.mockResolvedValue(true)
     await localStrategy(Token, User)
     const mockedUser = await User.findOne()
+    const mockedAuthUserDto = { id: mockedUser?.id, type: UserAuthType.Agency }
 
     // Act
     await verifyRef(mockedUsername, mockedOtp, mockedDone)
@@ -77,7 +79,7 @@ describe('localStrategy', () => {
       { usernameField: 'email', passwordField: 'otp' },
       expect.any(Function),
     )
-    expect(mockedDone).toBeCalledWith(null, mockedUser)
+    expect(mockedDone).toBeCalledWith(null, mockedAuthUserDto)
   })
 
   it('should return false if no otp sent for user', async () => {

@@ -9,6 +9,7 @@ import { Token as TokenModel } from '../../../models'
 import { Sequelize, ModelCtor } from 'sequelize'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import passport from 'passport'
+import { UserAuthType } from '~shared/types/api'
 
 jest.mock('../../../util/hash')
 jest.mock('passport')
@@ -33,11 +34,16 @@ const userService = {
   createOfficer: jest.fn(),
   loadUser: jest.fn(),
 }
+const publicUserService = {
+  loadPublicUser: jest.fn(),
+  loadPublicUserBySgid: jest.fn(),
+  createPublicUserBySgid: jest.fn(),
+}
 let authController: AuthController
 
 const path = '/auth'
 // Set up auth middleware to inject user
-const user: Express.User | undefined = { id: 1 }
+const user: Express.User | undefined = { id: 1, type: UserAuthType.Agency }
 const isAuthenticated = true
 const middleware: ControllerHandler = (req, res, next) => {
   req.isAuthenticated = () => isAuthenticated
@@ -81,6 +87,7 @@ beforeAll(async () => {
     mailService,
     authService,
     userService,
+    publicUserService,
     Token,
   })
   app.get(path, authController.loadUser)
@@ -101,8 +108,9 @@ describe('auth.controller', () => {
   describe('loadUser', () => {
     it('should return 200 when user id is valid', async () => {
       // Arrange
-      const userData = { email: VALID_EMAIL }
+      const userData = { email: VALID_EMAIL, agencyId: 1 }
       userService.loadUser.mockReturnValue(userData)
+      publicUserService.loadPublicUser.mockReturnValue(null)
 
       // Act
       const response = await request.get(path)

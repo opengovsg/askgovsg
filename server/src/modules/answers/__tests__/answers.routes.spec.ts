@@ -23,6 +23,7 @@ import { AnswersController } from '../answers.controller'
 import { routeAnswers } from '../answers.routes'
 import { AnswersService } from '../answers.service'
 import { okAsync } from 'neverthrow'
+import { UserAuthType } from '~shared/types/api'
 
 describe('/answers', () => {
   let agency: Agency
@@ -111,7 +112,7 @@ describe('/answers', () => {
   })
 
   beforeEach(async () => {
-    authUser = { id: user.id }
+    authUser = { id: user.id, type: UserAuthType.Agency }
     await Post.destroy({ truncate: true })
     await Answer.destroy({ truncate: true })
     post = await Post.create({

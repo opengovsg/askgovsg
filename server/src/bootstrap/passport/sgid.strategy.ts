@@ -7,7 +7,9 @@ import * as jose from 'jose'
 import fs from 'fs'
 import path from 'path'
 
-const { origin: issuer } = new URL(process.env.SGID_ENDPOINT ?? '')
+const { origin: issuer } = new URL(
+  process.env.SGID_ENDPOINT ?? 'http://localhost:5156/sgid/v1/oauth',
+)
 
 const privKeyPem = fs
   .readFileSync(
@@ -27,9 +29,9 @@ const { Client } = new Issuer({
 })
 
 const sgidClient = new Client({
-  client_id: process.env.SGID_CLIENT_ID ?? '',
+  client_id: process.env.SGID_CLIENT_ID ?? 'askgov',
   client_secret: process.env.SGID_CLIENT_SECRET,
-  redirect_uris: [process.env.SGID_REDIRECT_URI ?? ''],
+  redirect_uris: [process.env.SGID_REDIRECT_URI ?? 'http://localhost:3000'],
   scope: 'openid name',
 })
 

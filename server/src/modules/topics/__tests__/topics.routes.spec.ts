@@ -13,6 +13,7 @@ import { ModelDef, Creation } from '../../../types/sequelize'
 import express from 'express'
 import supertest from 'supertest'
 import { StatusCodes } from 'http-status-codes'
+import { UserAuthType } from '~shared/types/api'
 
 describe('/topics', () => {
   const path = '/topics'
@@ -87,7 +88,7 @@ describe('/topics', () => {
   })
 
   beforeEach(async () => {
-    authUser = { id: mockUser.id }
+    authUser = { id: mockUser.id, type: UserAuthType.Agency }
     jest.resetAllMocks()
   })
 
