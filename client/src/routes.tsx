@@ -12,6 +12,7 @@ import NotFound from './pages/NotFound/NotFound.component'
 import Post from './pages/Post/Post.component'
 import PostForm from './pages/PostForm/PostForm.component'
 import SearchResults from './pages/SearchResults/SearchResults.component'
+import UserLogin from './pages/UserLogin/UserLogin.component'
 import withPageTitle from './services/withPageTitle'
 
 const HomePageComponent = withPageTitle({
@@ -67,6 +68,11 @@ const AgencyPrivacyComponent = withPageTitle({
   title: 'Privacy (Agency)',
 })
 
+const UserLoginComponent = withPageTitle({
+  component: UserLogin,
+  title: 'User Login',
+})
+
 const Routes = (): JSX.Element => {
   return (
     <ReactRoutes>
@@ -82,6 +88,7 @@ const Routes = (): JSX.Element => {
       <Route path="/privacy" element={<CitizenPrivacyComponent />} />
       <Route path="/agency-privacy" element={<AgencyPrivacyComponent />} />
       <Route path="*" element={<NotFoundComponent />} />
+      <Route path="/user-login" element={<UserLoginComponent />} />
     </ReactRoutes>
   )
 }

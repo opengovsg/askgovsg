@@ -81,7 +81,7 @@ const Header = (): JSX.Element => {
           />
         </>
       )}
-      <LinkButton text={'Log out'} link={'/login'} handleClick={logout} />
+      <LinkButton text={'Log out'} link={'/'} handleClick={logout} />
     </Flex>
   )
 
