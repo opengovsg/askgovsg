@@ -1,4 +1,5 @@
 import convict, { Schema } from 'convict'
+import { baseConfig, Environment } from './base'
 
 export type AuthConfig = {
   sessionSecret: string
@@ -24,3 +25,8 @@ const authSchema: Schema<AuthConfig> = {
 export const authConfig = convict(authSchema)
   .validate({ allowed: 'strict' })
   .getProperties()
+
+export const callbackRedirectURL =
+  baseConfig.nodeEnv === Environment.Dev
+    ? 'http://localhost:3000'
+    : 'https://ask.gov.sg'

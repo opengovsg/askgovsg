@@ -1,5 +1,6 @@
 import express from 'express'
 import { body } from 'express-validator'
+import passport from 'passport'
 import { AuthController } from './auth.controller'
 import { AuthMiddleware } from './auth.middleware'
 
@@ -72,6 +73,10 @@ export const routeAuth = ({
    * @access  private
    */
   router.post('/logout', controller.handleLogout)
+
+  // TODO: add comments
+  router.get('/sgid/login', passport.authenticate('sgid'))
+  router.get('/callback', controller.handleSgidLogin)
 
   return router
 }

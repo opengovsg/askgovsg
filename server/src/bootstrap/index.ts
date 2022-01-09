@@ -9,6 +9,7 @@ import { StatsD } from 'hot-shots'
 import { StatusCodes } from 'http-status-codes'
 import { createTransport } from 'nodemailer'
 import path from 'path'
+import { PublicUserService } from '../modules/publicuser/publicuser.service'
 import { checkOwnershipUsing } from '../middleware/checkOwnership'
 import { AgencyController } from '../modules/agency/agency.controller'
 import { AgencyService } from '../modules/agency/agency.service'
@@ -63,6 +64,7 @@ import {
   Token,
   Topic,
   User,
+  PublicUser,
 } from './sequelize'
 import sessionMiddleware from './session'
 
@@ -89,7 +91,7 @@ app.use(express.json())
 // passport and session
 app.set('trust proxy', 1) // trust first proxy
 app.use(sessionMiddleware(sequelize))
-passportConfig(app, Token, User)
+passportConfig(app, Token, User, PublicUser)
 
 // all the api routes
 // This must come before app.get('*') to avoid overriding API routes
@@ -136,6 +138,7 @@ const answersService = new AnswersService({
 })
 const topicsService = new TopicsService({ Topic })
 const userService = new UserService({ User, Tag, Agency })
+const publicUserService = new PublicUserService({ PublicUser })
 
 const searchService = new SearchService({ client: searchClient })
 const searchController = new SearchController({
@@ -160,6 +163,7 @@ const apiOptions = {
       mailService,
       authService,
       userService,
+      publicUserService,
       Token,
     }),
     authMiddleware,

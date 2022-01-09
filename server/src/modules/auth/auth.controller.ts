@@ -3,8 +3,14 @@ import { StatusCodes } from 'http-status-codes'
 import { isEmpty } from 'lodash'
 import passport from 'passport'
 import { ModelCtor } from 'sequelize'
+import { callbackRedirectURL } from '../../bootstrap/config/auth'
 import { Message } from 'src/types/message-type'
-import { ErrorDto, LoadUserDto } from '~shared/types/api'
+import {
+  ErrorDto,
+  LoadPublicUserDto,
+  LoadUserDto,
+  UserAuthType,
+} from '~shared/types/api'
 import { createLogger } from '../../bootstrap/logging'
 import { Token } from '../../models'
 import { UserService } from '../../modules/user/user.service'
@@ -12,6 +18,7 @@ import { ControllerHandler } from '../../types/response-handler'
 import { generateRandomDigits, hashData } from '../../util/hash'
 import { createValidationErrMessage } from '../../util/validation-error'
 import { MailService } from '../mail/mail.service'
+import { PublicUserService } from '../publicuser/publicuser.service'
 import { AuthService } from './auth.service'
 
 const OTP_LENGTH = 6
@@ -22,22 +29,26 @@ export class AuthController {
   private mailService: Public<MailService>
   private authService: Public<AuthService>
   private userService: Public<UserService>
+  private publicUserService: Public<PublicUserService>
   private Token: ModelCtor<Token>
 
   constructor({
     mailService,
     authService,
     userService,
+    publicUserService,
     Token,
   }: {
     mailService: Public<MailService>
     authService: Public<AuthService>
     userService: Public<UserService>
+    publicUserService: Public<PublicUserService>
     Token: ModelCtor<Token>
   }) {
     this.mailService = mailService
     this.authService = authService
     this.userService = userService
+    this.publicUserService = publicUserService
     this.Token = Token
   }
 
@@ -47,11 +58,12 @@ export class AuthController {
    * @returns 500 if user id not found
    * @returns 500 if database error
    */
-  loadUser: ControllerHandler<unknown, LoadUserDto | ErrorDto> = async (
-    req,
-    res,
-  ) => {
+  loadUser: ControllerHandler<
+    unknown,
+    LoadPublicUserDto | LoadUserDto | ErrorDto
+  > = async (req, res) => {
     const id = req.user?.id
+    const type = req.user?.type
     if (!id) {
       logger.error({
         message: 'User not found after being authenticated',
@@ -62,19 +74,39 @@ export class AuthController {
       })
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(null)
     }
-    try {
-      const user = await this.userService.loadUser(id)
-      return res.status(StatusCodes.OK).json(user)
-    } catch (error) {
-      logger.error({
-        message: 'Database Error while loading user',
-        meta: {
-          function: 'loadUser',
-          userId: req.user?.id,
-        },
-        error,
-      })
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(null)
+
+    if (type === UserAuthType.Public) {
+      try {
+        const user = await this.publicUserService.loadPublicUser(id)
+        return res.status(StatusCodes.OK).json(user)
+      } catch (error) {
+        logger.error({
+          message: 'Database Error while loading public user',
+          meta: {
+            function: 'loadPublicUser',
+            userId: req.user?.id,
+          },
+          error,
+        })
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(null)
+      }
+    }
+
+    if (type === UserAuthType.Agency) {
+      try {
+        const user = await this.userService.loadUser(id)
+        return res.status(StatusCodes.OK).json(user)
+      } catch (error) {
+        logger.error({
+          message: 'Database Error while loading user',
+          meta: {
+            function: 'loadUser',
+            userId: req.user?.id,
+          },
+          error,
+        })
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(null)
+      }
     }
   }
 
@@ -281,5 +313,97 @@ export class AuthController {
       res.clearCookie('connect.sid')
       return res.status(StatusCodes.OK).json({ message: 'Sign out successful' })
     })
+  }
+
+  /**
+   * Verify otp received by the user
+   * @body email email of user
+   * @body otp otp of user
+   * @returns 200 if successful login
+   * @returns 400 if validation of body fails
+   * @returns 422 if no otp was sent for user or wrong otp
+   * @returns 500 if database error
+   */
+  handleSgidLogin: ControllerHandler<
+    undefined,
+    ErrorDto, // success case has no return data
+    undefined,
+    { code: string; state: string | undefined }
+  > = async (req, res, next) => {
+    passport.authenticate('sgid', {}, (error, user, info: Message) => {
+      if (error) {
+        logger.error({
+          message: 'Error while authenticating',
+          meta: {
+            function: 'handleSgidLogin',
+          },
+          error,
+        })
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: 'Server Error' })
+      }
+      if (!user) {
+        logger.warn({
+          message: info.message,
+          meta: {
+            function: 'handleSgidLogin',
+          },
+        })
+        return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json(info)
+      }
+      req.logIn(user, (error) => {
+        if (error) {
+          logger.error({
+            message: 'Error while logging in',
+            meta: {
+              function: 'handleSgidLogin',
+            },
+            error,
+          })
+          return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ message: 'Server Error' })
+        }
+        //
+        /**
+         * Regenerate session to mitigate session fixation
+         * We regenerate the session upon logging in so an
+         * anonymous session cookie cannot be used
+         */
+        const passportSession = req.session.passport
+        req.session.regenerate(function (error) {
+          if (error) {
+            logger.error({
+              message: 'Error while regenerating session',
+              meta: {
+                function: 'handleSgidLogin',
+              },
+              error,
+            })
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .json({ message: 'Server Error' })
+          }
+          //req.session.passport is now undefined
+          req.session.passport = passportSession
+          req.session.save(function (error) {
+            if (error) {
+              logger.error({
+                message: 'Error while saving regenerated session',
+                meta: {
+                  function: 'handleSgidLogin',
+                },
+                error,
+              })
+              return res
+                .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                .json({ message: 'Server Error' })
+            }
+            return res.redirect(callbackRedirectURL)
+          })
+        })
+      })
+    })(req, res, next)
   }
 }

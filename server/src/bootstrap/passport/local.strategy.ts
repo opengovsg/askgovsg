@@ -1,6 +1,7 @@
 import passport from 'passport'
 import passportLocal from 'passport-local'
 import { ModelCtor } from 'sequelize'
+import { AuthUserDto, UserAuthType } from '~shared/types/api'
 import { Token, User } from '../../models'
 import { verifyHash } from '../../util/hash'
 const LocalStrategy = passportLocal.Strategy
@@ -35,13 +36,17 @@ export const localStrategy = (
               })
             }
           }
-          const user = await User.findOne({ where: { username: email } })
-          if (!user) {
+          const agencyUser = await User.findOne({ where: { username: email } })
+          if (!agencyUser) {
             return done(null, false, {
               message: 'No user exists with this email',
             })
           }
           await Token.destroy({ where: { contact: email } })
+          const user: AuthUserDto = {
+            id: agencyUser.id,
+            type: UserAuthType.Agency,
+          }
           return done(null, user)
         } catch (error) {
           return done(error)
