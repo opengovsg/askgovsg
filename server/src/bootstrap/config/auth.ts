@@ -10,7 +10,7 @@ const authSchema: Schema<AuthConfig> = {
   sessionSecret: {
     doc: 'Session secret',
     format: String,
-    default: null,
+    default: '',
     env: 'SESSION_SECRET',
     sensitive: true,
   },
