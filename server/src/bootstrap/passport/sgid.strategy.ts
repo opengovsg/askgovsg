@@ -4,21 +4,12 @@ import { PublicUser } from '../../models'
 import { ModelCtor } from 'sequelize/dist'
 import { AuthUserDto, UserAuthType } from '~shared/types/api'
 import * as jose from 'jose'
-import fs from 'fs'
-import path from 'path'
 
 const { origin: issuer } = new URL(
   process.env.SGID_ENDPOINT ?? 'http://localhost:5156/sgid/v1/oauth',
 )
 
-const privKeyPem = fs
-  .readFileSync(
-    path.resolve(
-      __dirname,
-      process.env.SGID_PRIV_KEY || '../../../certs/static/private_key.pem',
-    ),
-  )
-  .toString()
+const privKeyPem = (process.env.SGID_PRIV_KEY ?? '').replace(/\\n/g, '\n')
 
 const { Client } = new Issuer({
   issuer,
