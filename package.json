@@ -27,7 +27,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^6.5.1",
+    "concurrently": "^7.0.0",
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.1.7"
