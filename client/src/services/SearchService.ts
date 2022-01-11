@@ -1,4 +1,4 @@
-import { SearchEntry } from '~shared/types/api'
+import { SearchEntryWithHighlight } from '~shared/types/api'
 import { ApiClient } from '../api'
 
 const SEARCH_API_BASE = '/search'
@@ -10,8 +10,8 @@ export const search = async ({
 }: {
   query: string
   agencyId?: number
-}): Promise<SearchEntry[]> => {
-  return ApiClient.get<SearchEntry[]>(SEARCH_API_BASE, {
+}): Promise<SearchEntryWithHighlight[]> => {
+  return ApiClient.get<SearchEntryWithHighlight[]>(SEARCH_API_BASE, {
     params: { query, agencyId },
   }).then(({ data }) => data)
 }

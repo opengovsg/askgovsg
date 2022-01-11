@@ -138,18 +138,25 @@ const SearchResults = (): JSX.Element => {
               {foundPosts && foundPosts.length > 0 ? (
                 foundPosts.map((entry) => (
                   <PostItem
-                    key={entry.postId}
+                    key={entry.result.postId}
                     post={{
-                      id: entry.postId,
-                      title: entry.title ?? '',
+                      id: entry.result.postId,
+                      title: entry.result.title ?? '',
                       tags: [],
-                      agencyId: entry.agencyId ?? 0,
-                      answer: entry.answers
-                        ? entry.answers[0].length > MAX_CHAR
-                          ? `${entry.answers[0].substring(0, MAX_CHAR)}...`
-                          : entry.answers[0]
+                      agencyId: entry.result.agencyId ?? 0,
+                      answer: entry.result.answers
+                        ? entry.result.answers[0].length > MAX_CHAR
+                          ? `${entry.result.answers[0].substring(
+                              0,
+                              MAX_CHAR,
+                            )}...`
+                          : entry.result.answers[0]
                         : '',
-                      searchQuery: searchQuery,
+                      highlight: entry.highlight ?? {
+                        title: [],
+                        description: [],
+                        answers: [],
+                      },
                     }}
                   />
                 ))

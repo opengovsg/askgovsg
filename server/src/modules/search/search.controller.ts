@@ -63,7 +63,7 @@ export class SearchController {
       .map((response) => {
         const searchResults = response.body.hits.hits.map(
           (result: SearchHit) => {
-            return result._source
+            return { result: result._source, highlight: result.highlight }
           },
         )
         return res.status(StatusCodes.OK).json(searchResults)

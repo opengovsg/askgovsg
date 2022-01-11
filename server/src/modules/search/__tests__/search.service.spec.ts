@@ -1,6 +1,6 @@
 import { ResponseError } from '@opensearch-project/opensearch/lib/errors'
 import { StatusCodes } from 'http-status-codes'
-import { SearchEntry } from '~shared/types/api/search'
+import { SearchEntryWithHighlight } from '~shared/types/api/search'
 import { Mocker } from '../opensearch-mock'
 import { SearchService } from '../search.service'
 
@@ -52,16 +52,21 @@ describe('Search Service', () => {
 
   const indexName = 'search_entries'
 
-  const searchEntriesDataset: SearchEntry[] = []
+  const searchEntriesDataset: SearchEntryWithHighlight[] = []
 
   for (let i = 1; i < 3; i++) {
     searchEntriesDataset.push({
-      title: `title ${i * 10}`,
-      description: `description ${i * 100}`,
-      answers: [`answer ${i * 1000}`],
-      agencyId: i,
-      postId: i,
-      topicId: null,
+      result: {
+        title: `title ${i * 10}`,
+        description: `description ${i * 100}`,
+        answers: [`answer ${i * 1000}`],
+        agencyId: i,
+        postId: i,
+        topicId: null,
+      },
+      highlight: {
+        title: [],
+      },
     })
   }
 
@@ -175,6 +180,9 @@ describe('Search Service', () => {
                     topicId: null,
                   },
                   _type: '_doc',
+                  highlight: {
+                    title: ['<b>title 20</b>'],
+                  },
                 },
                 {
                   _index: indexName,
@@ -188,6 +196,9 @@ describe('Search Service', () => {
                     topicId: null,
                   },
                   _type: '_doc',
+                  highlight: {
+                    title: ['<b>title</b> 10'],
+                  },
                 },
               ],
             },
