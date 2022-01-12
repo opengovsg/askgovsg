@@ -32,6 +32,7 @@ export const helmetOptions = {
         'https://ssl.google-analytics.com/',
         'https://www.googletagmanager.com/',
         'https://rs.fullstory.com',
+        'https://api.id.gov.sg/',
       ],
       frameSrc: ["'self'", 'https://www.google.com'],
       frameAncestors: ["'self'"],
