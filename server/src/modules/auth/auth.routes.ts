@@ -80,7 +80,11 @@ export const routeAuth = ({
    * @returns 302 with sgid oidc link
    * @access  private
    */
-  router.get('/sgid/login', passport.authenticate('sgid'))
+  router.get('/sgid/login', async (req, res, next) => {
+    console.log('/sgid/login', req.session)
+    console.log('/sgid/login session id', req.sessionID)
+    passport.authenticate('sgid')(req, res, next)
+  })
 
   /**
    * Sgid Callback
