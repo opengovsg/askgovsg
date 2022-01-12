@@ -9,6 +9,7 @@ import {
   defineToken,
   defineUser,
   defineTopic,
+  definePublicUser,
 } from '../models'
 
 export enum ModelName {
@@ -43,6 +44,7 @@ export const createTestDatabase = async (): Promise<Sequelize> => {
     Topic,
   })
   const Answer = defineAnswer(sequelize, { User, Post })
+  const PublicUser = definePublicUser(sequelize, { emailValidator })
 
   await sequelize.sync()
 

@@ -7,6 +7,7 @@ import {
 } from './components/PrivacyTerms'
 import EditForm from './pages/EditForm/EditForm.component'
 import HomePage from './pages/HomePage/HomePage.component'
+import InvalidUserLogin from './pages/Login/InvalidUserLogin.component'
 import Login from './pages/Login/Login.component'
 import NotFound from './pages/NotFound/NotFound.component'
 import Post from './pages/Post/Post.component'
@@ -73,6 +74,11 @@ const UserLoginComponent = withPageTitle({
   title: 'User Login',
 })
 
+const InvalidUserLoginComponent = withPageTitle({
+  component: InvalidUserLogin,
+  title: 'User Unauthorised',
+})
+
 const Routes = (): JSX.Element => {
   return (
     <ReactRoutes>
@@ -89,6 +95,7 @@ const Routes = (): JSX.Element => {
       <Route path="/agency-privacy" element={<AgencyPrivacyComponent />} />
       <Route path="*" element={<NotFoundComponent />} />
       <Route path="/user-login" element={<UserLoginComponent />} />
+      <Route path="/unauthorised" element={<InvalidUserLoginComponent />} />
     </ReactRoutes>
   )
 }

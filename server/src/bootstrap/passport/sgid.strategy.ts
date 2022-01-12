@@ -9,8 +9,6 @@ const { origin: issuer } = new URL(
   process.env.SGID_ENDPOINT ?? 'http://localhost:5156/sgid/v1/oauth',
 )
 
-const privKeyPem = (process.env.SGID_PRIV_KEY ?? '').replace(/\\n/g, '\n')
-
 const { Client } = new Issuer({
   issuer,
   authorization_endpoint: `${process.env.SGID_ENDPOINT}/authorize`,
@@ -23,16 +21,68 @@ const sgidClient = new Client({
   client_id: process.env.SGID_CLIENT_ID ?? 'askgov',
   client_secret: process.env.SGID_CLIENT_SECRET,
   redirect_uris: [process.env.SGID_REDIRECT_URI ?? 'http://localhost:3000'],
-  scope: 'openid name',
 })
 
-export const sgidStrategy = (PublicUser: ModelCtor<PublicUser>): void => {
+const sgidCallback = (
+  PublicUser: ModelCtor<PublicUser>,
+  privKeyPem: string,
+) => {
+  return async (
+    tokenset: TokenSet,
+    userinfo: UserinfoResponse,
+    done: (err: unknown, user?: AuthUserDto) => void,
+  ) => {
+    try {
+      // Note: Passing the userinfo param checks the id token's sub against the userinfo's sub
+
+      // Import private key
+      const decoder = new TextDecoder()
+      const privateKey = await jose.importPKCS8(privKeyPem, 'A256GCMKW')
+
+      // Decrypt encrypted symmetric key
+      const decryptedPayloadKey = await jose
+        .generalDecrypt(userinfo.key, privateKey)
+        .then(({ plaintext }) => decoder.decode(plaintext))
+        .then(JSON.parse)
+        .then(jose.importJWK)
+
+      // Decrypt encrypted myinfo details
+      const name = await jose
+        .flattenedDecrypt(userinfo.data['myinfo.name'], decryptedPayloadKey)
+        .then(({ plaintext }) => decoder.decode(plaintext))
+
+      // Note: findOrCreate returns [user, created]
+      const [user] = await PublicUser.findOrCreate({
+        where: { sgid: tokenset.claims().sub },
+        defaults: {
+          active: true,
+          displayname: name,
+        },
+      })
+
+      const authUser: AuthUserDto = {
+        id: user.id,
+        type: UserAuthType.Public,
+      }
+      return done(null, authUser)
+    } catch (error) {
+      return done(error)
+    }
+  }
+}
+
+export const sgidStrategy = (
+  PublicUser: ModelCtor<PublicUser>,
+  privateKeyPem: string,
+): void => {
   passport.use(
     'sgid',
     new Strategy(
       {
         client: sgidClient,
-        params: {},
+        params: {
+          scope: 'openid myinfo.name',
+        },
         extras: {
           exchangeBody: {
             client_id: process.env.SGID_CLIENT_ID,
@@ -43,49 +93,11 @@ export const sgidStrategy = (PublicUser: ModelCtor<PublicUser>): void => {
         passReqToCallback: false,
         usePKCE: false,
       },
-      async (
-        tokenset: TokenSet,
-        userinfo: UserinfoResponse,
-        done: (err: unknown, user?: AuthUserDto) => void,
-      ) => {
-        try {
-          // Note: Passing the userinfo param checks the id token's sub against the userinfo's sub
-
-          // Import private key
-          const decoder = new TextDecoder()
-          const privateKey = await jose.importPKCS8(privKeyPem, 'A256GCMKW')
-
-          // Decrypt encrypted symmetric key
-          const decryptedPayloadKey = await jose
-            .generalDecrypt(userinfo.key, privateKey)
-            .then(({ plaintext }) => decoder.decode(plaintext))
-            .then(JSON.parse)
-            .then(jose.importJWK)
-
-          // Decrypt encrypted myinfo details
-          const name = await jose
-            .flattenedDecrypt(userinfo.data['myinfo.name'], decryptedPayloadKey)
-            .then(({ plaintext }) => decoder.decode(plaintext))
-
-          // Note: findOrCreate returns an array
-          const users = await PublicUser.findOrCreate({
-            where: { sgid: tokenset.claims().sub },
-            defaults: {
-              active: true,
-              displayname: name,
-            },
-          })
-
-          const user: AuthUserDto = {
-            id: users[0].id,
-            type: UserAuthType.Public,
-          }
-
-          return done(null, user)
-        } catch (error) {
-          return done(error)
-        }
-      },
+      sgidCallback(PublicUser, privateKeyPem),
     ),
   )
+}
+
+export const _sgidStrategy = {
+  sgidCallback,
 }

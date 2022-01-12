@@ -106,7 +106,7 @@ afterAll(async () => {
 
 describe('auth.controller', () => {
   describe('loadUser', () => {
-    it('should return 200 when user id is valid', async () => {
+    it('should return 200 when agency user id is valid', async () => {
       // Arrange
       const userData = { email: VALID_EMAIL, agencyId: 1 }
       userService.loadUser.mockReturnValue(userData)

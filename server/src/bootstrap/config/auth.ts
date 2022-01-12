@@ -30,3 +30,8 @@ export const callbackRedirectURL =
   baseConfig.nodeEnv === Environment.Dev
     ? 'http://localhost:3000'
     : 'https://ask.gov.sg'
+
+export const callbackRedirectUnauthorisedURL =
+  baseConfig.nodeEnv === Environment.Dev
+    ? 'http://localhost:3000/unauthorised'
+    : 'https://ask.gov.sg/unauthorised'

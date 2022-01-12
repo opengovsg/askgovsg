@@ -24,6 +24,7 @@ import { AuthController } from '../auth.controller'
 import { AuthMiddleware } from '../auth.middleware'
 import { routeAuth } from '../auth.routes'
 import { AuthService } from '../auth.service'
+import { parse } from 'querystring'
 
 describe('/auth', () => {
   const path = '/auth'
@@ -59,7 +60,7 @@ describe('/auth', () => {
   let PublicUser: ModelCtor<PublicUserModel>
   let Topic: ModelDef<Topic>
   let Post: ModelDef<Post, PostCreation>
-  let mockUser: UserModel
+  let mockAgencyUser: UserModel
   let mockAgency: ModelInstance<Agency>
 
   beforeAll(async () => {
@@ -78,7 +79,7 @@ describe('/auth', () => {
       logo: 'https://logos.ask.gov.sg/askgov-logo.svg',
       displayOrder: [],
     })
-    mockUser = await User.create({
+    mockAgencyUser = await User.create({
       username: VALID_EMAIL,
       displayname: '',
       agencyId: mockAgency.id,
@@ -137,9 +138,12 @@ describe('/auth', () => {
 
     it('should return 200 with user data when logged in', async () => {
       // Arrange
-      userService.loadUser.mockReturnValueOnce(mockUser)
+      userService.loadUser.mockReturnValueOnce(mockAgencyUser)
       // Log in user
-      const session = await createAuthedSession(mockUser.username, request)
+      const session = await createAuthedSession(
+        mockAgencyUser.username,
+        request,
+      )
 
       // Act
       const result = await session.get(path)
@@ -149,16 +153,19 @@ describe('/auth', () => {
       // Body should be an user object.
       expect(result.body).toMatchObject({
         // Required since that's how the data is sent out from the application.
-        username: mockUser.username,
-        id: mockUser.id,
+        username: mockAgencyUser.username,
+        id: mockAgencyUser.id,
       })
     })
 
     it('should return 400 if logged out after logging in', async () => {
       // Log in user
       // Arrange
-      userService.loadUser.mockReturnValueOnce(mockUser)
-      const session = await createAuthedSession(mockUser.username, request)
+      userService.loadUser.mockReturnValueOnce(mockAgencyUser)
+      const session = await createAuthedSession(
+        mockAgencyUser.username,
+        request,
+      )
 
       // Act
       let result = await session.get(path)
@@ -173,6 +180,38 @@ describe('/auth', () => {
       // Assert
       expect(result.status).toEqual(StatusCodes.UNAUTHORIZED)
       expect(result.body).toStrictEqual({ message: 'User is unauthorized.' })
+    })
+  })
+
+  describe('/sgid/login', () => {
+    it('should return redirect with well-formed sgid url', async () => {
+      // Act
+      const result = await request.get('/auth/sgid/login')
+      const resultLocation = parse(result.header.location.split('?')[1])
+
+      // Assert
+      expect(result.status).toEqual(StatusCodes.MOVED_TEMPORARILY)
+      expect(resultLocation).toHaveProperty('response_type', 'code')
+      expect(resultLocation).toHaveProperty('scope', 'openid myinfo.name')
+      expect(resultLocation).toHaveProperty('client_id')
+      expect(resultLocation).toHaveProperty('redirect_uri')
+      expect(resultLocation).toHaveProperty('state')
+    })
+  })
+
+  describe('/callback', () => {
+    it('should return redirect if no code and state params', async () => {
+      // Act
+      const result = await request.get('/auth/callback')
+      const resultLocation = parse(result.header.location.split('?')[1])
+
+      // Assert
+      expect(result.status).toEqual(StatusCodes.MOVED_TEMPORARILY)
+      expect(resultLocation).toHaveProperty('response_type', 'code')
+      expect(resultLocation).toHaveProperty('scope', 'openid myinfo.name')
+      expect(resultLocation).toHaveProperty('client_id')
+      expect(resultLocation).toHaveProperty('redirect_uri')
+      expect(resultLocation).toHaveProperty('state')
     })
   })
 })

@@ -3,7 +3,10 @@ import { StatusCodes } from 'http-status-codes'
 import { isEmpty } from 'lodash'
 import passport from 'passport'
 import { ModelCtor } from 'sequelize'
-import { callbackRedirectURL } from '../../bootstrap/config/auth'
+import {
+  callbackRedirectUnauthorisedURL,
+  callbackRedirectURL,
+} from '../../bootstrap/config/auth'
 import { Message } from 'src/types/message-type'
 import {
   ErrorDto,
@@ -317,16 +320,15 @@ export class AuthController {
 
   /**
    * Verify otp received by the user
-   * @body email email of user
-   * @body otp otp of user
-   * @returns 200 if successful login
-   * @returns 400 if validation of body fails
-   * @returns 422 if no otp was sent for user or wrong otp
-   * @returns 500 if database error
+   * @params code
+   * @params state
+   * @returns 302 to home page if successful login
+   * @returns 302 to unauthorised page if error
+   * @returns 302 to sgid auth page if no state or code params received
    */
   handleSgidLogin: ControllerHandler<
     undefined,
-    ErrorDto, // success case has no return data
+    undefined,
     undefined,
     { code: string; state: string | undefined }
   > = async (req, res, next) => {
@@ -339,9 +341,7 @@ export class AuthController {
           },
           error,
         })
-        return res
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ message: 'Server Error' })
+        return res.redirect(callbackRedirectUnauthorisedURL)
       }
       if (!user) {
         logger.warn({
@@ -350,7 +350,7 @@ export class AuthController {
             function: 'handleSgidLogin',
           },
         })
-        return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json(info)
+        res.redirect(callbackRedirectUnauthorisedURL)
       }
       req.logIn(user, (error) => {
         if (error) {
@@ -361,9 +361,7 @@ export class AuthController {
             },
             error,
           })
-          return res
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .json({ message: 'Server Error' })
+          return res.redirect(callbackRedirectUnauthorisedURL)
         }
         //
         /**
@@ -381,9 +379,7 @@ export class AuthController {
               },
               error,
             })
-            return res
-              .status(StatusCodes.INTERNAL_SERVER_ERROR)
-              .json({ message: 'Server Error' })
+            return res.redirect(callbackRedirectUnauthorisedURL)
           }
           //req.session.passport is now undefined
           req.session.passport = passportSession
@@ -396,9 +392,7 @@ export class AuthController {
                 },
                 error,
               })
-              return res
-                .status(StatusCodes.INTERNAL_SERVER_ERROR)
-                .json({ message: 'Server Error' })
+              return res.redirect(callbackRedirectUnauthorisedURL)
             }
             return res.redirect(callbackRedirectURL)
           })

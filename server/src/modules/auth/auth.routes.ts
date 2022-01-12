@@ -74,8 +74,22 @@ export const routeAuth = ({
    */
   router.post('/logout', controller.handleLogout)
 
-  // TODO: add comments
+  /**
+   * Sgid Login
+   * @route   POST /api/auth/sgid/login
+   * @returns 302 with sgid oidc link
+   * @access  private
+   */
   router.get('/sgid/login', passport.authenticate('sgid'))
+
+  /**
+   * Sgid Callback
+   * @route   GET /api/auth/callback
+   * @returns 302 to home page if successful login
+   * @returns 302 to unauthorised page if error
+   * @returns 302 to sgid auth page if no state or code params received
+   * @access  private
+   */
   router.get('/callback', controller.handleSgidLogin)
 
   return router

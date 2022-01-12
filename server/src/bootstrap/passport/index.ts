@@ -6,6 +6,8 @@ import { ModelCtor } from 'sequelize'
 import { sgidStrategy } from './sgid.strategy'
 import { AuthUserDto } from '~shared/types/api'
 
+const privateKeyPem = (process.env.SGID_PRIV_KEY ?? '').replace(/\\n/g, '\n')
+
 export const passportConfig = (
   app: express.Application,
   Token: ModelCtor<Token>,
@@ -13,7 +15,7 @@ export const passportConfig = (
   PublicUser: ModelCtor<PublicUser>,
 ): void => {
   localStrategy(Token, User)
-  sgidStrategy(PublicUser)
+  sgidStrategy(PublicUser, privateKeyPem)
   app.use(passport.initialize())
   app.use(passport.session())
 
