@@ -21,6 +21,9 @@ const sgidClient = new Client({
   client_id: process.env.SGID_CLIENT_ID ?? 'askgov',
   client_secret: process.env.SGID_CLIENT_SECRET,
   redirect_uris: [process.env.SGID_REDIRECT_URI ?? 'http://localhost:3000'],
+  token_endpoint_auth_method: 'client_secret_post',
+  id_token_signed_response_alg: 'RS256', // default
+  response_types: ['code'], // default
 })
 
 const sgidCallback = (
