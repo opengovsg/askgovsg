@@ -1,11 +1,13 @@
 import { Button, Center } from '@chakra-ui/react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { ApiClient } from '../../api'
 
 const onClick = async () => {
-  const response = await ApiClient.get('/auth/sgid/login')
-  window.location.href = response.request.responseURL
+  if (process.env.NODE_ENV === 'production') {
+    window.location.href = `${process.env.PUBLIC_URL}/api/v1/auth/sgid/login`
+  } else {
+    window.location.href = 'http://localhost:6174/api/v1/auth/sgid/login'
+  }
 }
 
 const UserLogin = (): JSX.Element => {

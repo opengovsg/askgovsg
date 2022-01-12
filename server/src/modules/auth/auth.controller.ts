@@ -333,6 +333,8 @@ export class AuthController {
     { code: string; state: string | undefined }
   > = async (req, res, next) => {
     passport.authenticate('sgid', {}, (error, user, info: Message) => {
+      console.log(req)
+      console.log(req.session)
       if (error) {
         logger.error({
           message: 'Error while authenticating',
