@@ -283,6 +283,8 @@ if (baseConfig.nodeEnv === Environment.Prod) {
     '/agency-terms',
     '/privacy',
     '/agency-privacy',
+    '/user-login',
+    '/unauthorised',
   ]
   for (const path of allStaticPaths) {
     app.get(path, (_req, res) =>

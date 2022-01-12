@@ -93,9 +93,9 @@ const Routes = (): JSX.Element => {
       <Route path="/agency-terms" element={<AgencyTermsComponent />} />
       <Route path="/privacy" element={<CitizenPrivacyComponent />} />
       <Route path="/agency-privacy" element={<AgencyPrivacyComponent />} />
-      <Route path="*" element={<NotFoundComponent />} />
       <Route path="/user-login" element={<UserLoginComponent />} />
       <Route path="/unauthorised" element={<InvalidUserLoginComponent />} />
+      <Route path="*" element={<NotFoundComponent />} />
     </ReactRoutes>
   )
 }
