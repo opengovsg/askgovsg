@@ -332,12 +332,12 @@ export class AuthController {
     undefined,
     { code: string; state: string | undefined }
   > = async (req, res, next) => {
-    console.log('controller req session', req.session)
-    console.log('controller req session id', req.sessionID)
-    console.log('controller req headers', req.rawHeaders)
-    console.log('controller res session id', res.req.sessionID)
+    // console.log('controller req session', req.session)
+    // console.log('controller req session id', req.sessionID)
+    // console.log('controller req headers', req.rawHeaders)
+    // console.log('controller res session id', res.req.sessionID)
     passport.authenticate('sgid', {}, (error, user, info: Message) => {
-      console.log('passport authenticate', req.rawHeaders)
+      // console.log('passport authenticate', req.rawHeaders)
       if (error) {
         logger.error({
           message: 'Error while authenticating',

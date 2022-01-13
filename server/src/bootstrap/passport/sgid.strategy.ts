@@ -43,8 +43,9 @@ const sgidCallback = (
       const privateKey = await jose.importPKCS8(privKeyPem, 'A256GCMKW')
 
       // Decrypt encrypted symmetric key
+      console.log(userinfo)
       const decryptedPayloadKey = await jose
-        .generalDecrypt(userinfo.key, privateKey)
+        .compactDecrypt(userinfo.key, privateKey)
         .then(({ plaintext }) => decoder.decode(plaintext))
         .then(JSON.parse)
         .then(jose.importJWK)

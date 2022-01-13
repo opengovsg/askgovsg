@@ -1,10 +1,10 @@
-import { FlattenedJWE, GeneralJWE } from 'jose'
+import { CompactJWE } from 'jose'
 
 export declare module 'openid-client' {
   interface UnknownObject {
     data: {
-      'myinfo.name': FlattenedJWE
+      'myinfo.name': CompactJWE
     }
-    key: GeneralJWE
+    key: CompactJWE
   }
 }
