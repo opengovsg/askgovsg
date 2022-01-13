@@ -34,7 +34,7 @@
     "react-select": "^5.2.1",
     "react-tabs": "^3.2.3",
     "sanitize-html": "^2.6.1",
-    "sass": "^1.47.0",
+    "sass": "^1.48.0",
     "styled-components": "^5.3.3",
     "uuid": "^8.3.2"
   },
