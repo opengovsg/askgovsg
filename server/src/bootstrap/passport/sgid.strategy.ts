@@ -52,7 +52,7 @@ const sgidCallback = (
 
       // Decrypt encrypted myinfo details
       const name = await jose
-        .flattenedDecrypt(userinfo.data['myinfo.name'], decryptedPayloadKey)
+        .compactDecrypt(userinfo.data['myinfo.name'], decryptedPayloadKey)
         .then(({ plaintext }) => decoder.decode(plaintext))
 
       // Note: findOrCreate returns [user, created]

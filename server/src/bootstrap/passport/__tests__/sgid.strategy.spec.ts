@@ -4,7 +4,7 @@ import { AuthUserDto, UserAuthType } from '~shared/types/api'
 import { _sgidStrategy } from '../sgid.strategy'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { PublicUser as PublicUserModel } from '../../../models'
-import { JWEDecryptionFailed } from 'jose/dist/types/util/errors'
+import { JWEInvalid, JWEDecryptionFailed } from 'jose/dist/types/util/errors'
 
 describe('sgidStrategy', () => {
   // const publicKey =
@@ -24,28 +24,10 @@ describe('sgidStrategy', () => {
   }
   const mockUserInfo = {
     sub: 'u=35',
-    key: {
-      recipients: [
-        {
-          encrypted_key:
-            'arN1YyapVzx_f_mxJx1cpmcYXt07Vs4fNCod3M7JOffTnzT4yPi4bE3qTxGmwwJxqqng_DzN1KdE-F_nwjOXf-E0aANyhlBvxcXtou8zc-QBy3T-AukObiykP03PtcgAveFz70mg4Gw4vRF4-Ik7_V7110Nk8PE41itg70TSFe8tc8M_mQsmVH5HUGFrJRH4zu-jo24nVQ4s810sgtGi_kBoI38gDe3b1Erd_9WMMmnYNXZPFJYiTzOTj7x_jDK_5rqlKuvR1JpFTlHR_aIb1ZUadUdjSfVUAG-puVHSawOdJcsazinSP4TSqNzJ-a0jTJfOtJSsZ6Z9dPwgLDPrCA',
-        },
-      ],
-      protected:
-        'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiUlNBLU9BRVAiLCJraWQiOiJiemEwZFhmNkZqbGExRlFyVkttQVR1WmI5LTRNOTBMeER1ZjN1akxZYnFnIn0',
-      iv: 'PJlI4Jw0sRKaokeWcqeCow',
-      ciphertext:
-        'TWV4a5-C-RKV9H_PqwvNWlD4x4cJJgyODVX3r1lnmgGRNJVHZ02lZDxJd80Pd8ilyaMvb6BYvh-m3o3ZWFzzAjL78GP3sAppYHL4OnxfNa5paoVnCyMAJEhK8NSh0g1PSt6SEhEQgeWIrQIZuKGAmO2vqfLZAGjoN4bJBd1bA7rK47yLAwsPso99lzm1OFxU',
-      tag: 'SSEWQwPFs7TDPn-PC3aHDQ',
-    },
+    key: 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiUlNBLU9BRVAiLCJraWQiOiJiemEwZFhmNkZqbGExRlFyVkttQVR1WmI5LTRNOTBMeER1ZjN1akxZYnFnIn0.jhmXgMWLU0kCj6SCAR8zxxzE_A0PVQeCJNrKlMXhN7m6A7atrrlLsND3Lt8EE7myBcQaUpggQuR8TdLjMVLAVCPV0rzYMHgASvmWN8M1CibIZlGKhcvVbcuHwqT5tC1JdSgzMowKch_K3M14rxxRVpqI7BQbnca5D997E69pFb1LLRAK2Zdqqaks99S3kTbNmrNqPrLsI0JCZLAAVljuOLl-zfsYg-a0L8nHzmfxp89jSKOFHnCaDO0h0MsPK3ZZIx-10B8SsgwUe3fFviT1LKIyim4UhZOrt_21yQuQOuiag7WsZxhxn5npWg18YB6wPZQPAMeY3dQouM8mdhqEgg.qIGi1cywsVgm3PDLIJxemQ.sF0s1htw0zpoCL0Ep6C9ouanbtLpchEEdk6rRd1TFmJNkI2mDYrNmTMuY60bEbeTQk6HUU1ppSZDK6u_ZCSpkRNw6_kNbpV_X0GcXr2wXGs-TLUAWC3AUijV2LrYI7I8efB8-8VSRSTZ6p3toFdekSYsCdsaXRN5CbuR46HRnFCUySm2ddsIsq28XSLw0azx.hyECWj6GMYI3Pn4OvW-BRQ',
     data: {
-      'myinfo.name': {
-        protected:
-          'eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiZGlyIiwia2lkIjoidVZ2U05CNGo3eThUbDczbXdxWWg1RzRZcEVaWk9nTy1oQWstOTU3T1pjUSJ9',
-        iv: 'PIjHt40ldbImLiBi',
-        ciphertext: 'GWBw_Wd858Geg-BBeC0',
-        tag: 'OpOgtyQAhAIus5oS81x9UQ',
-      },
+      'myinfo.name':
+        'eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiZGlyIiwia2lkIjoiZ09HUmdaeDdGd0IwaFMxSjJNM3dlaVc2VkNfWGxNV3JPZko3S0JncDR0byJ9..2QqBokMegQ-2daM2.7U6qH4ATIf82sX9wzxw.kpSwK0MT-qGO4YQwCwSL2A',
     },
   }
 
@@ -112,13 +94,13 @@ describe('sgidStrategy', () => {
   it('throws error if payload key is invalid', async () => {
     //Arrange
     const mockInvalidUserInfo = mockUserInfo
-    mockInvalidUserInfo.key.recipients[0].encrypted_key = 'invalid_key'
+    mockInvalidUserInfo.key = 'invalid_key'
 
     //Act
     await verifySgidCallback(mockTokenset, mockInvalidUserInfo, mockDone)
 
     //Assert
-    expect(mockDone).toBeCalledWith(new JWEDecryptionFailed())
+    expect(mockDone).toBeCalledWith(new JWEInvalid('Invalid Compact JWE'))
   })
 
   it('throws error if wrong private key', async () => {
@@ -139,6 +121,6 @@ describe('sgidStrategy', () => {
     )
 
     //Assert
-    expect(mockDone).toBeCalledWith(new JWEDecryptionFailed())
+    expect(mockDone).toBeCalledWith(new JWEInvalid('Invalid Compact JWE'))
   })
 })
