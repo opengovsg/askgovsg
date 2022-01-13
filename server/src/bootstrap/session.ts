@@ -13,7 +13,7 @@ const isDev =
 const cookieSettings: SessionOptions['cookie'] = {
   secure: !isDev, // true prevents cookie from being accessed over http
   maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  sameSite: 'none', // Use sameSite: None and secure:True to test oidc
+  sameSite: 'lax', // Use sameSite:Lax and secure:True to test oidc
 }
 
 const sessionMiddleware = (db: Sequelize): RequestHandler => {
