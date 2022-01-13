@@ -4,7 +4,7 @@ import { AuthUserDto, UserAuthType } from '~shared/types/api'
 import { _sgidStrategy } from '../sgid.strategy'
 import { createTestDatabase, getModel, ModelName } from '../../../util/jest-db'
 import { PublicUser as PublicUserModel } from '../../../models'
-import { JWEInvalid, JWEDecryptionFailed } from 'jose/dist/types/util/errors'
+import { JWEInvalid } from 'jose/dist/types/util/errors'
 
 describe('sgidStrategy', () => {
   // const publicKey =
