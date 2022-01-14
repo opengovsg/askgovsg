@@ -28,7 +28,7 @@ const UserLogin = (): JSX.Element => {
         color="white"
         onClick={onClick}
       >
-        Login using SingPass
+        Login using SingPass App
       </Button>
     </Center>
   )
