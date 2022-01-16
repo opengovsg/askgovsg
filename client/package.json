@@ -70,7 +70,7 @@
     "@storybook/manager-webpack5": "^6.4.9",
     "@storybook/node-logger": "^6.4.9",
     "@storybook/preset-create-react-app": "^4.0.0",
-    "@storybook/react": "^6.4.9",
+    "@storybook/react": "^6.4.13",
     "@types/draftjs-to-html": "^0.8.0",
     "@types/html-to-draftjs": "^1.4.0",
     "@types/react-dom": "^17.0.11",
