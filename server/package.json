@@ -90,7 +90,7 @@
     "find-my-way": "^5.1.1",
     "into-stream": "^6.0.0",
     "jest": "^27.4.7",
-    "lint-staged": "12.2",
+    "lint-staged": "12.3",
     "neat-csv": "^7.0.0",
     "prettier": "^2.5.1",
     "sequelize-cli": "^6.4.1",
