@@ -37,7 +37,7 @@ export const EnquiryModal = ({
   onConfirm,
   agency,
 }: EnquiryModalProps): JSX.Element => {
-  const { register, handleSubmit, reset, formState } = useForm()
+  const { register, handleSubmit, reset, formState } = useForm<Enquiry>()
   const { errors: formErrors } = formState
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [captchaResponse, setCaptchaResponse] = useState<string | null>(null)
@@ -99,7 +99,7 @@ export const EnquiryModal = ({
                 value=""
                 showSearchIcon={false}
                 searchOnEnter={false}
-                isInvalid={formErrors.questionTitle}
+                isInvalid={Boolean(formErrors.questionTitle)}
                 inputRef={ref}
                 agencyId={agency?.id}
                 {...questionTitleProps}
@@ -113,7 +113,7 @@ export const EnquiryModal = ({
               <Textarea
                 focusBorderColor="secondary.700"
                 errorBorderColor="error.500"
-                isInvalid={formErrors.description}
+                isInvalid={Boolean(formErrors.description)}
                 h="144px"
                 {...register('description', {
                   required: true,
@@ -131,7 +131,7 @@ export const EnquiryModal = ({
               <Input
                 focusBorderColor="secondary.700"
                 errorBorderColor="error.500"
-                isInvalid={formErrors.senderEmail}
+                isInvalid={Boolean(formErrors.senderEmail)}
                 placeholder="example@email.com"
                 {...register('senderEmail', {
                   required: true,
