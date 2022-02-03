@@ -39,4 +39,5 @@ export const helmetOptions = {
     },
     reportOnly: false,
   },
+  crossOriginResourcePolicy: { policy: 'same-site' },
 }
