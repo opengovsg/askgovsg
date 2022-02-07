@@ -15,7 +15,7 @@ const NotFound = (): JSX.Element => {
         <BackToHome mainPageName={null} />
       </Flex>
       <Flex direction="column" px={pagePX}>
-        <Heading align="center" size="4xl">
+        <Heading textAlign="center" size="4xl">
           Not Found
         </Heading>
         <Spacer minH={10} />
