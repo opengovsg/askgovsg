@@ -1,6 +1,5 @@
-import PostCell from './PostCell/PostCell.component'
-
-import './QuestionSection.styles.scss'
+import { Box, Text } from '@chakra-ui/react'
+import { RichTextPreview } from '../../../components/RichText/RichTextEditor.component'
 
 const QuestionSection = ({
   post,
@@ -8,13 +7,13 @@ const QuestionSection = ({
   post?: { description: string }
 }): JSX.Element => {
   return (
-    <>
-      <div className="question">
-        <div className="post-layout">
-          <PostCell post={post} />
-        </div>
-      </div>
-    </>
+    <Box pr="16px" mb="32px">
+      {post?.description && (
+        <Text textStyle="body-1" color="secondary.800">
+          <RichTextPreview value={post.description} />
+        </Text>
+      )}
+    </Box>
   )
 }
 
