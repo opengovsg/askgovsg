@@ -8,6 +8,7 @@ import { ImageControl } from './ImageControl'
 import { Pagination } from './Pagination'
 import { Post } from './Post'
 import { PostItem } from './PostItem'
+import { PrivacyTerms } from './PrivacyTerms'
 import { SearchBox } from './SearchBox'
 import { StyledToast } from './StyledToast'
 import { OptionsMenu } from './OptionsMenu'
@@ -23,6 +24,7 @@ export const components = {
   Pagination,
   Post,
   PostItem,
+  PrivacyTerms,
   ImageControl,
   ImageBlock,
   AskForm,
