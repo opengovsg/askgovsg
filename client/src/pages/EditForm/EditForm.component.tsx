@@ -1,4 +1,4 @@
-import { Spacer } from '@chakra-ui/react'
+import { Box, Spacer, useMultiStyleConfig } from '@chakra-ui/react'
 import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { Navigate, useParams, useNavigate } from 'react-router-dom'
@@ -24,10 +24,10 @@ import AskForm, {
   AskFormSubmission,
 } from '../PostForm/AskForm/AskForm.component'
 import { useStyledToast } from '../../components/StyledToast/StyledToast'
-import './EditForm.styles.scss'
 
 const EditForm = (): JSX.Element => {
   const { user } = useAuth()
+  const styles = useMultiStyleConfig('AdminForm', {})
   const queryclient = useQueryClient()
   const navigate = useNavigate()
   const { id } = useParams<'id'>()
@@ -115,16 +115,12 @@ const EditForm = (): JSX.Element => {
       <Spinner centerHeight="200px" />
     ) : (
       <>
-        <div className="edit-form-container">
-          <div className="edit-form-content">
+        <Box sx={styles.container}>
+          <Box sx={styles.content}>
             <Spacer h={['64px', '64px', '84px']} />
-            <div className="edit-form-header">
-              <div className="edit-form-headline fc-black-800">
-                Edit a Question
-              </div>
-            </div>
-            <div className="edit-form-section">
-              <div className="editform" style={{ width: '100%' }}>
+            <Box sx={styles.header}>Edit a Question</Box>
+            <Box sx={styles.section}>
+              <Box sx={styles.form} style={{ width: '100%' }}>
                 {/* Undefined checks to coerce types. In reality all data should have loaded. */}
                 <AskForm
                   inputPostData={{
@@ -143,10 +139,10 @@ const EditForm = (): JSX.Element => {
                   submitButtonText="Confirm changes"
                   onSubmit={onSubmit}
                 />
-              </div>
-            </div>
-          </div>
-        </div>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
         <Spacer minH={20} />
       </>
     )

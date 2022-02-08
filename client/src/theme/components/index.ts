@@ -1,3 +1,4 @@
+import { AdminForm } from './AdminForm'
 import { AskForm } from './AskForm'
 import { AuthForm } from './AuthForm'
 import { Button } from './Button'
@@ -14,6 +15,7 @@ import { SearchResults } from './SearchResults'
 
 export const components = {
   AuthForm,
+  AdminForm,
   Button,
   Header,
   StyledToast,
