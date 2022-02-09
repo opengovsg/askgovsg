@@ -1,4 +1,4 @@
-import { Spacer } from '@chakra-ui/react'
+import { Box, Spacer, useMultiStyleConfig } from '@chakra-ui/react'
 import { Fragment } from 'react'
 import { useQuery } from 'react-query'
 import { Navigate, useNavigate } from 'react-router-dom'
@@ -13,10 +13,10 @@ import {
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/TopicService'
 import AskForm, { AskFormSubmission } from './AskForm/AskForm.component'
-import './PostForm.styles.scss'
 
 const PostForm = (): JSX.Element => {
   const { user } = useAuth()
+  const styles = useMultiStyleConfig('AdminForm', {})
   const toast = useStyledToast()
   const navigate = useNavigate()
   if (!user) {
@@ -56,26 +56,22 @@ const PostForm = (): JSX.Element => {
       <Spinner centerHeight="200px" />
     ) : (
       <Fragment>
-        <div className="post-form-container">
-          <div className="post-form-content">
+        <Box sx={styles.container}>
+          <Box sx={styles.content}>
             <Spacer h={['64px', '64px', '84px']} />
-            <div className="post-form-header">
-              <div className="post-form-headline fc-black-800">
-                Post a Question
-              </div>
-            </div>
-            <div className="post-form-section">
-              <div className="postform" style={{ width: '100%' }}>
+            <Box sx={styles.header}>Post a Question</Box>
+            <Box sx={styles.section}>
+              <Box sx={styles.form}>
                 {/* Undefined checks to coerce types. In reality all data should have loaded. */}
                 <AskForm
                   topicOptions={topicData ?? []}
                   onSubmit={onSubmit}
                   submitButtonText="Post your question"
                 />
-              </div>
-            </div>
-          </div>
-        </div>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
         <Spacer minH={20} />
       </Fragment>
     )
