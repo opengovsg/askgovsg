@@ -78,6 +78,7 @@ const Header = (): JSX.Element => {
             mr={4}
             src={`https://secure.gravatar.com/avatar/${user.id}?s=164&d=identicon`}
             loading="lazy"
+            crossOrigin=""
           />
         </>
       )}
