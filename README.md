@@ -167,9 +167,9 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 
 #### Auth
 - `GET /auth`
-- `GET /auth/verifyotp`
-- `GET /auth/sendotp`
-- `GET /auth/logout`
+- `POST /auth/verifyotp`
+- `POST /auth/sendotp`
+- `POST /auth/logout`
 
 #### Users
 
