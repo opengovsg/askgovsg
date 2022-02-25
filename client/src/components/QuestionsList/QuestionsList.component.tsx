@@ -47,7 +47,7 @@ const QuestionsList = ({
     ? {
         queryKey: [
           LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
-          { sort, tags, topics, page, questionsPerPage: questionsPerPage },
+          { sort, tags, topics, page, questionsPerPage },
         ],
         queryFn: () =>
           listAnswerablePosts({
