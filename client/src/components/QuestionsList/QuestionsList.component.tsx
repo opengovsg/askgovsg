@@ -10,6 +10,12 @@ import {
 import Pagination from '../Pagination'
 import PostListComponent from '../PostList/PostList.component'
 import Spinner from '../Spinner/Spinner.component'
+import {
+  QuestionsDisplayState,
+  questionsDisplayStates,
+} from '../Questions/questions'
+import { Button, Text } from '@chakra-ui/react'
+import { NavigateFunction } from 'react-router-dom'
 
 interface QuestionsListProps {
   sort: string
@@ -17,7 +23,9 @@ interface QuestionsListProps {
   tags?: string
   topics?: string
   questionsPerPage: number
-  footerControl?: JSX.Element
+  showViewAllQuestionsButton: boolean
+  navigate: NavigateFunction
+  setQuestionsDisplayState: (state: QuestionsDisplayState) => void
   listAnswerable?: boolean
 }
 
@@ -27,7 +35,9 @@ const QuestionsList = ({
   tags,
   topics,
   questionsPerPage,
-  footerControl,
+  showViewAllQuestionsButton,
+  navigate,
+  setQuestionsDisplayState,
   listAnswerable,
 }: QuestionsListProps): JSX.Element => {
   // Pagination
@@ -84,7 +94,25 @@ const QuestionsList = ({
         defaultText={undefined}
       />
       <Center my={5}>
-        {footerControl ?? (
+        {showViewAllQuestionsButton ? (
+          <Button
+            mt={{ base: '40px', sm: '48px', xl: '58px' }}
+            variant="outline"
+            color="secondary.700"
+            borderColor="secondary.700"
+            onClick={() => {
+              window.scrollTo(0, 0)
+              navigate('?topics=')
+              setQuestionsDisplayState(
+                questionsDisplayStates.find(
+                  (state) => state.value === 'all',
+                ) as QuestionsDisplayState,
+              )
+            }}
+          >
+            <Text textStyle="subhead-1">View all questions</Text>
+          </Button>
+        ) : (
           <Flex mt={{ base: '40px', sm: '48px', xl: '58px' }}>
             <Pagination
               totalCount={data?.totalItems ?? 0}

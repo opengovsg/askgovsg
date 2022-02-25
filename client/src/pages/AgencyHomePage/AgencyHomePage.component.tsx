@@ -1,26 +1,10 @@
-import {
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Spacer,
-  Stack,
-  VStack,
-  Text,
-} from '@chakra-ui/react'
+import { Box, Flex, HStack, Spacer, VStack, Text } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-import { BiSortAlt2 } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
-import PostQuestionButton from '../../components/PostQuestionButton/PostQuestionButton.component'
-import QuestionsList from '../../components/QuestionsList/QuestionsList.component'
 import OptionsMenu from '../../components/OptionsMenu/OptionsMenu.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
@@ -40,13 +24,13 @@ import {
   DEFAULT_QUESTIONS_DISPLAY_STATE,
   DEFAULT_QUESTIONS_SORT_STATE,
 } from '../../components/Questions/questions'
-import { SortQuestionsMenu } from '../../components/SortQuestionsMenu/SortQuestionsMenu.component'
+import { Questions } from '../../components/Questions/Questions.component'
 
 const AgencyHomePage = (): JSX.Element => {
-  // const [questionsDisplayState, setQuestionsDisplayState] = useState(
-  //   DEFAULT_QUESTIONS_DISPLAY_STATE,
-  // )
-  // const [sortState, setSortState] = useState(DEFAULT_QUESTIONS_SORT_STATE)
+  const [questionsDisplayState, setQuestionsDisplayState] = useState(
+    DEFAULT_QUESTIONS_DISPLAY_STATE,
+  )
+  const [sortState, setSortState] = useState(DEFAULT_QUESTIONS_SORT_STATE)
   const navigate = useNavigate()
   const location = useLocation() // check URL
 
@@ -59,6 +43,7 @@ const AgencyHomePage = (): JSX.Element => {
   }, [location, hasTopicsKey])
 
   const { user } = useAuth()
+  const isAuthenticatedOfficer = user !== null && isUserPublicOfficer(user)
 
   const { agency: agencyShortName } = useParams()
   const { data: agency } = useQuery(
@@ -66,21 +51,11 @@ const AgencyHomePage = (): JSX.Element => {
     () => getAgencyByShortName({ shortname: `${agencyShortName}` }),
     { enabled: !!agencyShortName },
   )
-
   const { data: topics } = agency
     ? useQuery(GET_TOPICS_USED_BY_AGENCY_QUERY_KEY, () =>
         getTopicsUsedByAgency(agency.id),
       )
     : useQuery(FETCH_TOPICS_QUERY_KEY, () => fetchTopics())
-  // dropdown options
-  const options = [
-    { value: 'basic', label: 'Most recent' },
-    { value: 'top', label: 'Popular' },
-  ]
-  // dropdown state, default popular
-  const [sortState, setSortState] = useState(options[1])
-
-  const isAuthenticatedOfficer = user !== null && isUserPublicOfficer(user)
 
   // Is it fair to say officers will almost never be editing questions on tablet/mobile?
   const device = {
@@ -107,7 +82,6 @@ const AgencyHomePage = (): JSX.Element => {
     )
   }
 
-  // only run once when the page is rendered.
   useEffect(() => {
     window.addEventListener('resize', checkViewportSize)
     return () => window.removeEventListener('resize', checkViewportSize)
@@ -127,7 +101,7 @@ const AgencyHomePage = (): JSX.Element => {
             : undefined
         }
       />
-      {/*Need help? Answers from AGENCY banner */}
+      {/*Need help? Answers from AGENCY banner: only shown on agency home page before clicking into topics */}
       {agency && !hasTopicsKey && (
         <HStack
           id="hero-landing-page"
@@ -162,10 +136,11 @@ const AgencyHomePage = (): JSX.Element => {
       {/*Do we need both hasTopicsKey and topicQueryState? Surely they come together?
       Reasoning is: if isSpecified is false, getTopics query will return '', which is falsy.
       Or is it added to prevent potential bugs (e.g. hasTopicsKey and topQueryState are de-linked somehow)
-      Also, can deviceType === device.desktop && hasTopicsKey && topicQueryState be abstracted as  onDesktopAndSelectedTopic
-      UPDATE: oh no I'm wrong, when you click "View All Questions", user is navigated to "?topics=".
+      UPDATE: oh no I'm wrong, when you click "View All Questions", user is navigated to "?topics="
+      which would make hasTopicsKey true but topicsQueryState remains false.
+      Ideally, I would want to remove this pattern (viewing all questions has nothing to do with topics).
       */}
-      {/* Desktop-only Topic banner */}
+      {/* Desktop-only Topic banner: only visible when clicked into topic; coupled with OptionsSideMenu*/}
       {agency &&
         hasTopicsKey &&
         topicQueryState &&
@@ -194,8 +169,9 @@ const AgencyHomePage = (): JSX.Element => {
             </Flex>
           </Flex>
         )}
-      {/* Topics options menu */}
-      {/* idea is, between (Topic banner + side menu) and (Center menu), only one should show */}
+      {/* Topics Options menu: this is where topics mgmt function will be added*/}
+      {/* Currently, this is shown in AgencyHomePage and (topics page + non-desktop view) -> should be decoupled? */}
+      {/* In latter, mutually exclusive with (Desktop-only Topic banner + OptionsSideMenu) */}
       {!(deviceType === device.desktop && hasTopicsKey && topicQueryState) && (
         <OptionsMenu />
       )}
@@ -222,150 +198,32 @@ const AgencyHomePage = (): JSX.Element => {
           px={8}
           direction={{ base: 'column', lg: 'row' }}
         >
-          {/* Box that contains Q&A */}
-          <Box flex="5">
-            {deviceType !== device.desktop &&
-              (topics ?? [])
-                .filter(({ name }) => name === topicQueryState)
-                .map((topic) => {
-                  return topic.description ? (
-                    <Text textStyle="body-1" color="neutral.900" mb="50px">
-                      {topic.description}
-                    </Text>
-                  ) : null
-                })}
-            {/*Top row of "Questions" + 1 / 2 buttons*/}
-            <Flex
-              flexDir={{ base: 'column-reverse', sm: 'row' }}
-              mb={5}
-              justifyContent="space-between"
-            >
-              <Text
-                color="primary.500"
-                textStyle="subhead-3"
-                mt={{ base: '32px', sm: 0 }}
-                mb={{ sm: '20px' }}
-                d="block"
-              >
-                {hasTopicsKey
-                  ? topicQueryState
-                    ? 'QUESTIONS ON THIS TOPIC'
-                    : 'ALL QUESTIONS' // ALL QUESTIONS will never be shown. When do we want to show ALL QUESTIONS?
-                  : 'TOP QUESTIONS'}
-              </Text>
-              {/* Dropdown stuff */}
-              {/* Hidden for officer because of the subcomponents in officer dashboard */}
-              {/* that requires different treatment */}
-              <Stack
-                spacing={{ base: 2, sm: 4 }}
-                direction={{ base: 'column', md: 'row' }}
-              >
-                {/*<SortQuestionsMenu*/}
-                {/*  questionsDisplayState={questionsDisplayState}*/}
-                {/*  sortState={sortState}*/}
-                {/*  setSortState={setSortState}*/}
-                {/*/>*/}
-                <Menu matchWidth autoSelect={false} offset={[0, 0]}>
-                  {() => (
-                    <>
-                      <MenuButton
-                        as={Button}
-                        variant="outline"
-                        borderColor="secondary.700"
-                        color="secondary.700"
-                        borderRadius="4px"
-                        borderWidth="1px"
-                        w={{ base: '100%', sm: '171px' }}
-                        textStyle="body-1"
-                        textAlign="left"
-                        d={{ base: hasTopicsKey ? 'block' : 'none' }}
-                      >
-                        <Flex
-                          justifyContent="space-between"
-                          alignItems="center"
-                        >
-                          <Text textStyle="body-1">{sortState.label}</Text>
-                          <BiSortAlt2 />
-                        </Flex>
-                      </MenuButton>
-                      <MenuList
-                        minW={0}
-                        borderRadius={0}
-                        borderWidth={0}
-                        boxShadow="0px 0px 10px rgba(216, 222, 235, 0.5)"
-                      >
-                        {options.map(({ value, label }, i) => (
-                          <MenuItem
-                            key={i}
-                            h="48px"
-                            ps={4}
-                            textStyle={
-                              sortState.value === value ? 'subhead-1' : 'body-1'
-                            }
-                            fontWeight={
-                              sortState.value === value ? '500' : 'normal'
-                            }
-                            letterSpacing="-0.011em"
-                            bg={
-                              sortState.value === value
-                                ? 'primary.200'
-                                : 'white'
-                            }
-                            _hover={
-                              sortState.value === value
-                                ? { bg: 'primary.200' }
-                                : { bg: 'primary.100' }
-                            }
-                            onClick={() => {
-                              setSortState(options[i])
-                            }}
-                          >
-                            {label}
-                          </MenuItem>
-                        ))}
-                      </MenuList>
-                    </>
-                  )}
-                </Menu>
-                {isAuthenticatedOfficer && <PostQuestionButton />}
-              </Stack>
-            </Flex>
-            {/* List of Posts depending on whether user is citizen or agency officer */}
-            <QuestionsList
-              sort={sortState.value}
-              agencyId={agency?.id}
-              topics={topicQueryState}
-              questionsPerPage={
-                isAuthenticatedOfficer ? 50 : hasTopicsKey ? 30 : 10
-              }
-              // questionsperPage={
-              //   isAuthenticatedOfficer
-              //     ? 50
-              //     : questionsDisplayState.questionsPerPage
-              // }
-              listAnswerable={
-                isAuthenticatedOfficer && user.agencyId === agency?.id
-              }
-              footerControl={
-                // isAuthenticatedOfficer || questionsDisplayState.value === 'all' ? undefined : (
-                isAuthenticatedOfficer || hasTopicsKey ? undefined : (
-                  // View all questions button for citizen
-                  <Button
-                    mt={{ base: '40px', sm: '48px', xl: '58px' }}
-                    variant="outline"
-                    color="secondary.700"
-                    borderColor="secondary.700"
-                    onClick={() => {
-                      window.scrollTo(0, 0)
-                      navigate('?topics=')
-                    }}
-                  >
-                    <Text textStyle="subhead-1">View all questions</Text>
-                  </Button>
-                )
-              }
-            />
-          </Box>
+          {deviceType !== device.desktop &&
+            (topics ?? [])
+              .filter(({ name }) => name === topicQueryState)
+              .map((topic) => {
+                return topic.description ? (
+                  <Text textStyle="body-1" color="neutral.900" mb="50px">
+                    {topic.description}
+                  </Text>
+                ) : null
+              })}
+          <Questions
+            questionsDisplayState={questionsDisplayState}
+            setQuestionsDisplayState={setQuestionsDisplayState}
+            sortState={sortState}
+            setSortState={setSortState}
+            isAuthenticatedOfficer={isAuthenticatedOfficer}
+            questionsPerPage={
+              isAuthenticatedOfficer
+                ? 50
+                : questionsDisplayState.questionsPerPage
+            }
+            navigate={navigate}
+            showViewAllQuestionsButton={
+              isAuthenticatedOfficer || questionsDisplayState.value === 'all'
+            }
+          />
         </Flex>
       </HStack>
       <Spacer />

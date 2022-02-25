@@ -6,18 +6,18 @@ import { Flex, Stack, Text } from '@chakra-ui/react'
 import { SortQuestionsMenu } from '../SortQuestionsMenu/SortQuestionsMenu.component'
 import PostQuestionButton from '../PostQuestionButton/PostQuestionButton.component'
 
-interface QuestionsListHeaderProps {
+interface QuestionsHeaderProps {
   questionsDisplayState: QuestionsDisplayState
   sortState: QuestionSortState
   setSortState: (sortState: QuestionSortState) => void
   isAuthenticatedOfficer: boolean
 }
-export const QuestionsListHeader = ({
+export const QuestionsHeader = ({
   questionsDisplayState,
   sortState,
   setSortState,
   isAuthenticatedOfficer,
-}: QuestionsListHeaderProps): JSX.Element => {
+}: QuestionsHeaderProps): JSX.Element => {
   return (
     <Flex
       flexDir={{ base: 'column-reverse', sm: 'row' }}
