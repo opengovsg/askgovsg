@@ -46,7 +46,7 @@ const HomePage = (): JSX.Element => {
             isAuthenticatedOfficer={false}
             questionsPerPage={questionsDisplayState.questionsPerPage}
             navigate={navigate}
-            showViewAllQuestionsButton={questionsDisplayState.value === 'all'}
+            showViewAllQuestionsButton={questionsDisplayState.value !== 'all'}
           />
         </Flex>
       </HStack>

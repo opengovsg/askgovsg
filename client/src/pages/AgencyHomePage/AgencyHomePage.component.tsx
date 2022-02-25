@@ -221,7 +221,7 @@ const AgencyHomePage = (): JSX.Element => {
             }
             navigate={navigate}
             showViewAllQuestionsButton={
-              isAuthenticatedOfficer || questionsDisplayState.value === 'all'
+              questionsDisplayState.value !== 'all' && !isAuthenticatedOfficer
             }
           />
         </Flex>
