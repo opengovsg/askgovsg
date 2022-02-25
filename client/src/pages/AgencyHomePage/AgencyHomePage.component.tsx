@@ -94,6 +94,62 @@ const AgencyHomePage = (): JSX.Element => {
     return () => window.removeEventListener('resize', checkViewportSize)
   }, [])
 
+  const bannerWithNeedHelpAndAgencyLogo = (
+    <HStack
+      id="hero-landing-page"
+      display="grid"
+      gridTemplateColumns="3fr 1fr"
+      py="auto"
+      minH={{
+        base: '175px',
+        sm: '232px',
+        lg: '224px',
+      }}
+      width={{
+        base: '90%',
+        sm: '77vw',
+        xl: '50vw',
+      }}
+      mx={{ base: '24px', sm: 'auto' }}
+    >
+      <Text
+        textStyle={{ base: 'h2-mobile', sm: 'h1-mobile' }}
+        color="primary.500"
+      >
+        Need help?
+        <br />
+        {agency?.longname && `Answers from ${agency?.longname}`}
+      </Text>
+      <Flex ml="auto !important">
+        {agency && <AgencyLogo agency={agency} />}
+      </Flex>
+    </HStack>
+  )
+  const desktopOnlyStaticTopicsBanner = (
+    <Flex bg="secondary.800" id="hero-landing-page-desktop">
+      <Box ml="46px" pt="128px" position="absolute">
+        {agency && <AgencyLogo agency={agency} />}
+      </Box>
+      <Flex maxW="680px" m="auto" w="100%" minH="224px">
+        <VStack alignItems="flex-start" pt="64px">
+          <Text textStyle="h2" color="white">
+            {topicQueryState}
+          </Text>
+          <Text>
+            {(topics ?? [])
+              .filter(({ name }) => name === topicQueryState)
+              .map((topic) => {
+                return topic.description ? (
+                  <Text textStyle="body-1" color="white" mb="50px">
+                    {topic.description}
+                  </Text>
+                ) : null
+              })}
+          </Text>
+        </VStack>
+      </Flex>
+    </Flex>
+  )
   return (
     <Flex direction="column" height="100%" id="home-page">
       <PageTitle
@@ -108,67 +164,14 @@ const AgencyHomePage = (): JSX.Element => {
             : undefined
         }
       />
-      {/*Need help? Answers from AGENCY banner: only shown on agency home page before clicking into topics */}
-      {agency && !hasTopicsKey && (
-        <HStack
-          id="hero-landing-page"
-          display="grid"
-          gridTemplateColumns="3fr 1fr"
-          py="auto"
-          minH={{
-            base: '175px',
-            sm: '232px',
-            lg: '224px',
-          }}
-          width={{
-            base: '90%',
-            sm: '77vw',
-            xl: '50vw',
-          }}
-          mx={{ base: '24px', sm: 'auto' }}
-        >
-          <Text
-            textStyle={{ base: 'h2-mobile', sm: 'h1-mobile' }}
-            color="primary.500"
-          >
-            Need help?
-            <br />
-            {agency?.longname && `Answers from ${agency?.longname}`}
-          </Text>
-          <Flex ml="auto !important">
-            {agency && <AgencyLogo agency={agency} />}
-          </Flex>
-        </HStack>
-      )}
-      {/* Desktop-only static topics banner: only visible when clicked into topic; coupled with OptionsSideMenu*/}
+      {/* only shown on agency home page before clicking into topics */}
+      {agency && !hasTopicsKey && bannerWithNeedHelpAndAgencyLogo}
+      {/*  only visible when clicked into topic; coupled with OptionsSideMenu*/}
       {agency &&
         hasTopicsKey &&
         topicQueryState &&
-        deviceType === device.desktop && (
-          <Flex bg="secondary.800" id="hero-landing-page-desktop">
-            <Box ml="46px" pt="128px" position="absolute">
-              {agency && <AgencyLogo agency={agency} />}
-            </Box>
-            <Flex maxW="680px" m="auto" w="100%" minH="224px">
-              <VStack alignItems="flex-start" pt="64px">
-                <Text textStyle="h2" color="white">
-                  {topicQueryState}
-                </Text>
-                <Text>
-                  {(topics ?? [])
-                    .filter(({ name }) => name === topicQueryState)
-                    .map((topic) => {
-                      return topic.description ? (
-                        <Text textStyle="body-1" color="white" mb="50px">
-                          {topic.description}
-                        </Text>
-                      ) : null
-                    })}
-                </Text>
-              </VStack>
-            </Flex>
-          </Flex>
-        )}
+        deviceType === device.desktop &&
+        desktopOnlyStaticTopicsBanner}
       {/* Topics Options menu: this is where topics mgmt function will be added*/}
       {/* Currently, this is shown in AgencyHomePage and (topics page + non-desktop view) -> should be decoupled? */}
       {/* In latter, mutually exclusive with (Desktop-only Topic banner + OptionsSideMenu) */}
