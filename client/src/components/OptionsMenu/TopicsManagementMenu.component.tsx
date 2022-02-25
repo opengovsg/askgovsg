@@ -22,8 +22,6 @@ import {
   Agency,
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
-  listAgencyShortNames,
-  LIST_AGENCY_SHORTNAMES,
 } from '../../services/AgencyService'
 import {
   fetchTopics,
@@ -33,12 +31,17 @@ import {
 } from '../../services/TopicService'
 import {
   getRedirectURLTopics,
-  getRedirectURLAgency,
   isSpecified,
   getTopicsQuery,
 } from '../../util/urlparser'
 import { bySpecifiedOrder } from './util'
 
+/*
+ * Actually, to make this component truly extensible (i.e. to support nested topics)
+ * we should  (1) detect whether it exists at an AgencyHomePage or within a topic
+ * (2) render the level of topics accordingly. The interface should be consistent
+ * across both instances (which is not the case now; within topic, menu is folded)
+ * */
 const TopicsManagementMenu = (): ReactElement => {
   const [hasTopicsKey, setHasTopicsKey] = useState(false)
   const { agency: agencyShortName } = useParams<'agency'>()
@@ -50,11 +53,11 @@ const TopicsManagementMenu = (): ReactElement => {
     { enabled: agencyShortName !== undefined },
   )
 
-  const [queryState, setQueryState] = useState('')
+  const [queryTopicsState, setQueryTopicsState] = useState('')
   const styles = useMultiStyleConfig('OptionsMenu', { hasTopicsKey })
 
   useEffect(() => {
-    setQueryState(getTopicsQuery(location.search))
+    setQueryTopicsState(getTopicsQuery(location.search))
     const topicsSpecified = isSpecified(location.search, 'topics')
     setHasTopicsKey(topicsSpecified)
   })
@@ -87,65 +90,36 @@ const TopicsManagementMenu = (): ReactElement => {
       )
     : useQuery(FETCH_TOPICS_QUERY_KEY, () => fetchTopics())
 
-  const { data: agencyShortNames } = useQuery(LIST_AGENCY_SHORTNAMES, () =>
-    listAgencyShortNames(),
-  )
-
-  const topicsToShow = (topics || [])
-    .filter((topic) => topic.name !== queryState)
+  const topicsToShow = topics
+    ?.filter((topic) => topic.name !== queryTopicsState)
     .sort(bySpecifiedOrder(agency))
 
-  const agencyShortNamesToShow = (agencyShortNames || [])
-    .map((agency) => agency.shortname)
-    .filter((shortname) => shortname !== agencyShortName)
-
   const optionsMenu = (
+    // topics mgmt functionality goes here
     <SimpleGrid sx={styles.accordionGrid}>
-      {agency
-        ? topicsToShow.map(({ id, name }) => {
-            return (
-              <Flex
-                sx={styles.accordionItem}
-                _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
-                role="group"
-                as={RouterLink}
-                key={id}
-                to={getRedirectURLTopics(name, agency)}
-                onClick={() => {
-                  sendClickTopicEventToAnalytics(name)
-                  setQueryState(name)
-                  accordionRef.current?.click()
-                }}
-              >
-                <Flex m="auto" w="100%" px={8}>
-                  <Text>{name}</Text>
-                  <Spacer />
-                  <Flex alignItems="center">
-                    <BiRightArrowAlt />
-                  </Flex>
-                </Flex>
-              </Flex>
-            )
-          })
-        : agencyShortNamesToShow.map((shortname) => {
-            return (
-              <Flex
-                sx={styles.accordionItem}
-                role="group"
-                as={RouterLink}
-                key={shortname}
-                to={getRedirectURLAgency(shortname)}
-              >
-                <Flex m="auto" w="100%" px={8}>
-                  <Text>{shortname.toUpperCase()}</Text>
-                  <Spacer />
-                  <Flex alignItems="center">
-                    <BiRightArrowAlt />
-                  </Flex>
-                </Flex>
-              </Flex>
-            )
-          })}
+      {topicsToShow?.map(({ id, name }) => (
+        <Flex
+          sx={styles.accordionItem}
+          _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
+          role="group"
+          as={RouterLink}
+          key={id}
+          to={getRedirectURLTopics(name, agency)}
+          onClick={() => {
+            sendClickTopicEventToAnalytics(name)
+            setQueryTopicsState(name)
+            accordionRef.current?.click()
+          }}
+        >
+          <Flex m="auto" w="100%" px={8}>
+            <Text>{name}</Text>
+            <Spacer />
+            <Flex alignItems="center">
+              <BiRightArrowAlt />
+            </Flex>
+          </Flex>
+        </Flex>
+      ))}
     </SimpleGrid>
   )
 
@@ -154,50 +128,22 @@ const TopicsManagementMenu = (): ReactElement => {
       id="options-menu-accordion"
       allowMultiple
       allowToggle
-      index={hasTopicsKey ? undefined : [0]}
+      index={[0]}
     >
       <AccordionItem border="none">
         <AccordionButton
           ref={accordionRef}
           sx={styles.accordionButton}
-          _expanded={
-            hasTopicsKey
-              ? { shadow: 'none' }
-              : !agency
-              ? { color: 'primary.500' }
-              : undefined
-          }
-          _hover={{ bg: hasTopicsKey ? 'secondary.600' : undefined }}
+          _hover={{ bg: undefined }}
         >
           <Flex sx={styles.accordionFlexBox} role="group">
             <Stack spacing={1}>
               <Text sx={styles.accordionHeader}>
-                {agency
-                  ? hasTopicsKey
-                    ? 'TOPIC'
-                    : 'EXPLORE A TOPIC'
-                  : 'AGENCIES'}
+                MANAGE YOUR TOPICS (Agency Homepage; TMM here)
               </Text>
-              {hasTopicsKey ? (
-                <Text
-                  sx={styles.accordionSubHeader}
-                  fontWeight={queryState ? '600' : '400'}
-                >
-                  {agency
-                    ? queryState
-                      ? queryState
-                      : 'Select a Topic'
-                    : 'Select an Agency'}
-                </Text>
-              ) : (
-                <Text></Text>
-              )}
             </Stack>
             <Spacer />
-            <AccordionIcon
-              mt="48px"
-              color={hasTopicsKey ? 'white' : 'secondary.800'}
-            />
+            <AccordionIcon mt="48px" color={'secondary.800'} />
           </Flex>
         </AccordionButton>
         <AccordionPanel p={0} shadow="md" bg="secondary.800">
