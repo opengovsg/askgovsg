@@ -68,7 +68,7 @@ const QuestionsList = ({
             tags,
             topics,
             page,
-            questionsPerPage: questionsPerPage,
+            questionsPerPage,
           },
         ],
         queryFn: () =>

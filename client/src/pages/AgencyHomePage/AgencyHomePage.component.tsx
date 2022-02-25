@@ -210,6 +210,8 @@ const AgencyHomePage = (): JSX.Element => {
               })}
           <Questions
             questionsDisplayState={questionsDisplayState}
+            agencyId={agency?.id}
+            topics={topicQueryState}
             setQuestionsDisplayState={setQuestionsDisplayState}
             sortState={sortState}
             setSortState={setSortState}
