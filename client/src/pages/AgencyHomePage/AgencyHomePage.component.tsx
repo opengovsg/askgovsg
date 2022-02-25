@@ -34,6 +34,13 @@ const AgencyHomePage = (): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation() // check URL
 
+  /*Do we need both hasTopicsKey and topicQueryState? Surely they come together?
+  Reasoning is: if isSpecified is false, getTopics query will return '', which is falsy.
+  Or is it added to prevent potential bugs (e.g. hasTopicsKey and topQueryState are de-linked somehow)
+  UPDATE: oh no I'm wrong, when you click "View All Questions", user is navigated to "?topics="
+  which would make hasTopicsKey true but topicsQueryState remains false.
+  Ideally, I would want to remove this pattern (viewing all questions has nothing to do with topics).
+  */
   const [topicQueryState, setTopicQueryState] = useState('')
   const [hasTopicsKey, setHasTopicsKey] = useState(false)
   useEffect(() => {
@@ -57,7 +64,7 @@ const AgencyHomePage = (): JSX.Element => {
       )
     : useQuery(FETCH_TOPICS_QUERY_KEY, () => fetchTopics())
 
-  // Is it fair to say officers will almost never be editing questions on tablet/mobile?
+  // Designer: fair to assume user will almost always edit on desktop
   const device = {
     mobile: 'mobile',
     tablet: 'tablet',
@@ -133,14 +140,7 @@ const AgencyHomePage = (): JSX.Element => {
           </Flex>
         </HStack>
       )}
-      {/*Do we need both hasTopicsKey and topicQueryState? Surely they come together?
-      Reasoning is: if isSpecified is false, getTopics query will return '', which is falsy.
-      Or is it added to prevent potential bugs (e.g. hasTopicsKey and topQueryState are de-linked somehow)
-      UPDATE: oh no I'm wrong, when you click "View All Questions", user is navigated to "?topics="
-      which would make hasTopicsKey true but topicsQueryState remains false.
-      Ideally, I would want to remove this pattern (viewing all questions has nothing to do with topics).
-      */}
-      {/* Desktop-only Topic banner: only visible when clicked into topic; coupled with OptionsSideMenu*/}
+      {/* Desktop-only static topics banner: only visible when clicked into topic; coupled with OptionsSideMenu*/}
       {agency &&
         hasTopicsKey &&
         topicQueryState &&
