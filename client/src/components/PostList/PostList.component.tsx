@@ -1,7 +1,8 @@
-import { Text } from '@chakra-ui/react'
-import * as FullStory from '@fullstory/browser'
 import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
+import { Text } from '@chakra-ui/react'
+import * as FullStory from '@fullstory/browser'
+
 import { BasePostDto } from '../../api'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import PostItem from '../PostItem/PostItem.component'

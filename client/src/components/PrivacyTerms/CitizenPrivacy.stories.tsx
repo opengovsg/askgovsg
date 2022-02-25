@@ -1,4 +1,5 @@
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
+
 import CitizenPrivacy from './CitizenPrivacy.component'
 
 export default {

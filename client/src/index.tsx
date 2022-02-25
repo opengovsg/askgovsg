@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
-import ScrollToTop from './components/ScrollToTop/ScrollToTop.component'
-import { HelmetProvider } from 'react-helmet-async'
+import { BrowserRouter } from 'react-router-dom'
 
+import ScrollToTop from './components/ScrollToTop/ScrollToTop.component'
 import App from './App'
 
 const queryClient = new QueryClient()

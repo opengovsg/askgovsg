@@ -1,4 +1,5 @@
 import { SearchEntryWithHighlight } from '~shared/types/api'
+
 import { ApiClient } from '../api'
 
 const SEARCH_API_BASE = '/search'

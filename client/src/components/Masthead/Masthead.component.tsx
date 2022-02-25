@@ -1,17 +1,17 @@
 import { FC, useState } from 'react'
+import { BiChevronDown, BiChevronUp, BiLinkExternal } from 'react-icons/bi'
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Icon,
+  Image,
+  Link,
+  Text,
+} from '@chakra-ui/react'
 
 import LionHeadSymbol from '../../assets/lion-head-symbol.svg'
-import {
-  Text,
-  Flex,
-  Center,
-  Image,
-  Button,
-  Box,
-  Icon,
-  Link,
-} from '@chakra-ui/react'
-import { BiChevronUp, BiChevronDown, BiLinkExternal } from 'react-icons/bi'
 
 const Masthead: FC = () => {
   const [mastheadExpanded, setMastheadExpanded] = useState(false)

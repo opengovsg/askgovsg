@@ -1,9 +1,10 @@
 import React from 'react'
+import { BiX } from 'react-icons/bi'
 import {
   Box,
   HStack,
-  IconButton,
   Icon,
+  IconButton,
   RenderProps,
   Spacer,
   Text,
@@ -11,8 +12,8 @@ import {
   useToast,
   UseToastOptions,
 } from '@chakra-ui/react'
+
 import { BiCheckFilledCircle, BiErrorFilledCircle } from '../Icons'
-import { BiX } from 'react-icons/bi'
 
 export const useStyledToast = (): ((
   props: UseToastOptions,

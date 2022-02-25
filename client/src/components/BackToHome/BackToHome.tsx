@@ -1,6 +1,6 @@
-import { Center, Link, Text } from '@chakra-ui/react'
 import { BiArrowBack } from 'react-icons/bi'
 import { Link as RouterLink } from 'react-router-dom'
+import { Center, Link, Text } from '@chakra-ui/react'
 
 export const BackToHome = ({
   mainPageName,

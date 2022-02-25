@@ -1,3 +1,4 @@
+import { Link as RouterLink } from 'react-router-dom'
 import {
   Box,
   Image,
@@ -6,7 +7,7 @@ import {
   SpaceProps,
   Spinner,
 } from '@chakra-ui/react'
-import { Link as RouterLink } from 'react-router-dom'
+
 import { Agency } from '~shared/types/base'
 
 const AgencyLogo = ({

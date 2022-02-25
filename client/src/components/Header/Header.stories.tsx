@@ -1,5 +1,6 @@
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { rest } from 'msw'
+
 import Header from './Header.component'
 
 export default {

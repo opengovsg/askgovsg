@@ -1,42 +1,44 @@
+import { createRef, LegacyRef, ReactElement, useEffect, useState } from 'react'
+import { BiRightArrowAlt } from 'react-icons/bi'
+import { useQuery } from 'react-query'
+import { Link as RouterLink, useParams } from 'react-router-dom'
 import {
   Accordion,
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Spinner,
-  Text,
   Flex,
-  Spacer,
-  Stack,
   SimpleGrid,
+  Spacer,
+  Spinner,
+  Stack,
+  Text,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
-import { BiRightArrowAlt } from 'react-icons/bi'
-import { LegacyRef, useEffect, useState, ReactElement, createRef } from 'react'
-import { useQuery } from 'react-query'
-import { Link as RouterLink, useParams } from 'react-router-dom'
+
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   Agency,
-  getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
-  listAgencyShortNames,
+  getAgencyByShortName,
   LIST_AGENCY_SHORTNAMES,
+  listAgencyShortNames,
 } from '../../services/AgencyService'
 import {
-  fetchTopics,
   FETCH_TOPICS_QUERY_KEY,
-  getTopicsUsedByAgency,
+  fetchTopics,
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+  getTopicsUsedByAgency,
 } from '../../services/TopicService'
 import {
-  getRedirectURLTopics,
   getRedirectURLAgency,
-  isSpecified,
+  getRedirectURLTopics,
   getTopicsQuery,
+  isSpecified,
 } from '../../util/urlparser'
+
 import { bySpecifiedOrder } from './util'
 
 const OptionsMenu = (): ReactElement => {

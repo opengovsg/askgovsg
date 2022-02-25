@@ -1,4 +1,5 @@
 import { TagType } from '~shared/types/base'
+
 import { BaseModelParams } from './common'
 
 export type BaseTagDto = BaseModelParams & {

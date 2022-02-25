@@ -1,3 +1,7 @@
+import { useEffect, useState } from 'react'
+import { BiSortAlt2 } from 'react-icons/bi'
+import { useQuery } from 'react-query'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   Box,
   Button,
@@ -9,33 +13,30 @@ import {
   MenuList,
   Spacer,
   Stack,
-  VStack,
   Text,
+  VStack,
 } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
-import { BiSortAlt2 } from 'react-icons/bi'
-import { useQuery } from 'react-query'
-import { useNavigate, useLocation, useParams } from 'react-router-dom'
+
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
+import OptionsMenu from '../../components/OptionsMenu/OptionsMenu.component'
+import OptionsSideMenu from '../../components/OptionsMenu/OptionsSideMenu.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import PostQuestionButton from '../../components/PostQuestionButton/PostQuestionButton.component'
 import QuestionsListComponent from '../../components/QuestionsList/QuestionsList.component'
-import OptionsMenu from '../../components/OptionsMenu/OptionsMenu.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
-  getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
+  getAgencyByShortName,
 } from '../../services/AgencyService'
 import {
-  fetchTopics,
   FETCH_TOPICS_QUERY_KEY,
-  getTopicsUsedByAgency,
+  fetchTopics,
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+  getTopicsUsedByAgency,
 } from '../../services/TopicService'
 import { isUserPublicOfficer } from '../../services/user.service'
 import { getTopicsQuery, isSpecified } from '../../util/urlparser'
-import OptionsSideMenu from '../../components/OptionsMenu/OptionsSideMenu.component'
 
 const HomePage = (): JSX.Element => {
   const [hasTopicsKey, setHasTopicsKey] = useState(false)
