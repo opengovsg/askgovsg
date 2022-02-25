@@ -29,7 +29,7 @@ Default.args = {
   sort: 'basic',
   agencyId: 1,
   topics: 'financial support',
-  pageSize: 10,
+  questionsPerPage: 10,
   listAnswerable: true,
   footerControl: (
     <Button

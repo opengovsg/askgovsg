@@ -15,8 +15,8 @@ interface QuestionsListProps {
   sort: string
   agencyId?: number
   tags?: string
-  topics: string
-  pageSize: number
+  topics?: string
+  questionsPerPage: number
   footerControl?: JSX.Element
   listAnswerable?: boolean
 }
@@ -26,7 +26,7 @@ const QuestionsList = ({
   agencyId,
   tags,
   topics,
-  pageSize,
+  questionsPerPage,
   footerControl,
   listAnswerable,
 }: QuestionsListProps): JSX.Element => {
@@ -37,7 +37,7 @@ const QuestionsList = ({
     ? {
         queryKey: [
           LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
-          { sort, tags, topics, page, pageSize },
+          { sort, tags, topics, page, questionsPerPage: questionsPerPage },
         ],
         queryFn: () =>
           listAnswerablePosts({
@@ -46,15 +46,23 @@ const QuestionsList = ({
             tags,
             topics,
             page,
-            size: pageSize,
+            size: questionsPerPage,
           }),
       }
     : {
         queryKey: [
           LIST_POSTS_QUERY_KEY,
-          { sort, agencyId, tags, topics, page, pageSize },
+          {
+            sort,
+            agencyId,
+            tags,
+            topics,
+            page,
+            questionsPerPage: questionsPerPage,
+          },
         ],
-        queryFn: () => listPosts(sort, agencyId, tags, topics, page, pageSize),
+        queryFn: () =>
+          listPosts(sort, agencyId, tags, topics, page, questionsPerPage),
       }
 
   const { data, isLoading } = useQuery(queryKey, queryFn, {
@@ -72,7 +80,7 @@ const QuestionsList = ({
   ) : (
     <>
       <PostListComponent
-        posts={data?.posts.slice(0, pageSize)}
+        posts={data?.posts.slice(0, questionsPerPage)}
         defaultText={undefined}
       />
       <Center my={5}>
@@ -80,10 +88,10 @@ const QuestionsList = ({
           <Flex mt={{ base: '40px', sm: '48px', xl: '58px' }}>
             <Pagination
               totalCount={data?.totalItems ?? 0}
-              pageSize={pageSize}
+              pageSize={questionsPerPage}
               onPageChange={handlePageChange}
               currentPage={page}
-            ></Pagination>
+            />
           </Flex>
         )}
       </Center>
