@@ -24,17 +24,6 @@ module.exports = {
           ['^(~shared)(/.*|$)'],
           ['^(~)(/.*|$)'],
           ['^(~typings)(/.*|$)'],
-          [
-            '^(~assets|~theme)(/.*|$)',
-            '^(~contexts)(/.*|$)',
-            '^(~constants)(/.*|$)',
-            '^(~hooks)(/.*|$)',
-            '^(~utils)(/.*|$)',
-            '^(~services)(/.*|$)',
-            '^(~components)(/.*|$)',
-            '^(~templates)(/.*|$)',
-          ],
-          ['^(~pages)(/.*|$)', '^(~features)(/.*|$)'],
           // Parent imports. Put `..` last.
           ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
           // Other relative imports. Put same-folder imports and `.` last.
