@@ -13,7 +13,7 @@ import {
   useMultiStyleConfig,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
-import { BiRightArrowAlt } from 'react-icons/bi'
+import { BiPlus } from 'react-icons/bi'
 import { LegacyRef, useEffect, useState, ReactElement, createRef } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
@@ -35,6 +35,8 @@ import {
   getTopicsQuery,
 } from '../../util/urlparser'
 import { bySpecifiedOrder } from './util'
+import { useAuth } from '../../contexts/AuthContext'
+import { TopicCard } from '../Topics/TopicCard.component'
 
 /*
  * Actually, to make this component truly extensible (i.e. to support nested topics)
@@ -42,8 +44,7 @@ import { bySpecifiedOrder } from './util'
  * (2) render the level of topics accordingly. The interface should be consistent
  * across both instances (which is not the case now; within topic, menu is folded)
  * */
-const TopicsManagementMenu = (): ReactElement => {
-  const [hasTopicsKey, setHasTopicsKey] = useState(false)
+const TopicsMenu = (): ReactElement => {
   const { agency: agencyShortName } = useParams<'agency'>()
   const { data: agency } = useQuery<Agency>(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
@@ -52,15 +53,19 @@ const TopicsManagementMenu = (): ReactElement => {
     // If agency URL param is not present, agencyShortName is undefined
     { enabled: agencyShortName !== undefined },
   )
+  const { user } = useAuth()
+  const isAgencyMember = user && user.agencyId === agency?.id
 
+  const [hasTopicsKey, setHasTopicsKey] = useState(false)
   const [queryTopicsState, setQueryTopicsState] = useState('')
-  const styles = useMultiStyleConfig('OptionsMenu', { hasTopicsKey })
 
   useEffect(() => {
     setQueryTopicsState(getTopicsQuery(location.search))
     const topicsSpecified = isSpecified(location.search, 'topics')
     setHasTopicsKey(topicsSpecified)
   })
+
+  const styles = useMultiStyleConfig('OptionsMenu', { hasTopicsKey })
 
   const accordionRef: LegacyRef<HTMLButtonElement> = createRef()
 
@@ -95,31 +100,38 @@ const TopicsManagementMenu = (): ReactElement => {
     .sort(bySpecifiedOrder(agency))
 
   const optionsMenu = (
-    // topics mgmt functionality goes here
     <SimpleGrid sx={styles.accordionGrid}>
       {topicsToShow?.map(({ id, name }) => (
+        <TopicCard
+          id={id}
+          name={name}
+          isAgencyMember={isAgencyMember}
+          accordionStyle={styles.accordionItem}
+          url={getRedirectURLTopics(name, agency)}
+          accordionRef={accordionRef}
+          setQueryTopicsState={setQueryTopicsState}
+          sendClickTopicEventToAnalytics={sendClickTopicEventToAnalytics}
+        />
+      ))}
+      {/* TODO factor into a separate NewTopicCard component*/}
+      {isAgencyMember ? (
+        // TODO highlight outline in white and change box color; see figma
         <Flex
-          sx={styles.accordionItem}
+          sx={styles.newAccordionItem}
           _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
           role="group"
-          as={RouterLink}
-          key={id}
-          to={getRedirectURLTopics(name, agency)}
-          onClick={() => {
-            sendClickTopicEventToAnalytics(name)
-            setQueryTopicsState(name)
-            accordionRef.current?.click()
-          }}
+          // key={topicsToShow?.length || 0} // is this needed?
+          m="auto"
+          w="100%"
+          px={8}
         >
-          <Flex m="auto" w="100%" px={8}>
-            <Text>{name}</Text>
-            <Spacer />
-            <Flex alignItems="center">
-              <BiRightArrowAlt />
-            </Flex>
+          <Text>Add a new topic</Text>
+          <Spacer />
+          <Flex alignItems="center">
+            <BiPlus />
           </Flex>
         </Flex>
-      ))}
+      ) : undefined}
     </SimpleGrid>
   )
 
@@ -139,7 +151,7 @@ const TopicsManagementMenu = (): ReactElement => {
           <Flex sx={styles.accordionFlexBox} role="group">
             <Stack spacing={1}>
               <Text sx={styles.accordionHeader}>
-                MANAGE YOUR TOPICS (Agency Homepage; TMM here)
+                {isAgencyMember ? 'MANAGE YOUR TOPICS' : 'EXPLORE A TOPIC'}
               </Text>
             </Stack>
             <Spacer />
@@ -157,4 +169,4 @@ const TopicsManagementMenu = (): ReactElement => {
   return <>{accordionMenu}</>
 }
 
-export default TopicsManagementMenu
+export default TopicsMenu
