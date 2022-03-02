@@ -22,8 +22,6 @@ module.exports = {
           // Root imports
           // Shared imports should be separate from application imports.
           ['^(~shared)(/.*|$)'],
-          ['^(~)(/.*|$)'],
-          ['^(~typings)(/.*|$)'],
           // Parent imports. Put `..` last.
           ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
           // Other relative imports. Put same-folder imports and `.` last.
