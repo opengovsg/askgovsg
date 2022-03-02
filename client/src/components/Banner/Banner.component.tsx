@@ -26,6 +26,7 @@ export const Banner = ({
       justifyContent="center"
       alignItems="center"
       className="banner"
+      fontWeight="medium"
     >
       {data.bannerMessage}
     </Box>
