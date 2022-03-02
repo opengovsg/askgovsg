@@ -1,5 +1,6 @@
-import { MessageResponse } from './common'
 import { Topic } from '~shared/types/base'
+
+import { MessageResponse } from './common'
 
 export type GetTopicsDto = Topic & {
   children?: GetTopicsDto[]

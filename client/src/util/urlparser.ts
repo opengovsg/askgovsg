@@ -1,4 +1,5 @@
 import queryString from 'query-string'
+
 import { Agency } from '../services/AgencyService'
 
 export const getTagsQuery = (search: string): string => {

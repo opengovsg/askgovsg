@@ -1,6 +1,7 @@
 import { Topic } from '~shared/types/base'
-import { Agency } from '../../services/AgencyService'
+
 import { GetTopicsDto } from '../../api'
+import { Agency } from '../../services/AgencyService'
 
 type bySpecifiedOrderComparator =
   | ((a: GetTopicsDto, b: GetTopicsDto) => number)
