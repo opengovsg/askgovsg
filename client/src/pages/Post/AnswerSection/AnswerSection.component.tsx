@@ -1,8 +1,6 @@
-import { Box, SkeletonText, Text } from '@chakra-ui/react'
-
+import { Box, Text, SkeletonText } from '@chakra-ui/react'
 import { GetAnswersForPostDto } from '../../../api'
 import { sortByCreatedAt } from '../../../util/date'
-
 import AnswerItem from './AnswerItem/AnswerItem.component'
 
 const AnswerSection = ({

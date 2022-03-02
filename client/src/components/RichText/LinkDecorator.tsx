@@ -1,8 +1,6 @@
-import './RichTextEditor.styles.scss'
-
-import type { ReactChildren } from 'react'
 import { ContentBlock, ContentState, DraftDecorator } from 'draft-js'
-
+import type { ReactChildren } from 'react'
+import './RichTextEditor.styles.scss'
 import styles from './RichTextEditor.module.scss'
 
 const targetOptions: { [key: string]: string } = {

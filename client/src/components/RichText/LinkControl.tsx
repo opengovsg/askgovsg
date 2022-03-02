@@ -1,9 +1,7 @@
+import { Box, Button, HStack, Input, Text } from '@chakra-ui/react'
 import { ChangeEvent, MouseEvent, MouseEventHandler, useState } from 'react'
 import { BiLink } from 'react-icons/bi'
-import { Box, Button, HStack, Input, Text } from '@chakra-ui/react'
-
 import { useStyledToast } from '../StyledToast/StyledToast'
-
 import styles from './RichTextEditor.module.scss'
 
 // LinkControl replaces the pre-built link popup

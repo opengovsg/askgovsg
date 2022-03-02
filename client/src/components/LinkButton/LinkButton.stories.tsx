@@ -1,5 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react'
-
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import LinkButton from './LinkButton.component'
 
 export default {

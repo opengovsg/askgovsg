@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
-import * as FullStory from '@fullstory/browser'
-
 import { useEnvironment } from './useEnvironment'
+import * as FullStory from '@fullstory/browser'
 
 export const useFullstory = (): void => {
   const { data: { fullStoryOrgId } = {} } = useEnvironment()

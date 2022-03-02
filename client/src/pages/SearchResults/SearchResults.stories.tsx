@@ -1,8 +1,6 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { rest } from 'msw'
-
 import { MockSearchData, MockTopicData } from '../../__mocks__/mockData'
-
 import SearchResults from './SearchResults.component'
 
 export default {

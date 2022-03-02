@@ -1,5 +1,4 @@
 import { ChakraProvider } from '@chakra-ui/react'
-
 import { Banner } from './components/Banner/Banner.component'
 import Footer from './components/Footer/Footer.component'
 import Header from './components/Header/Header.component'

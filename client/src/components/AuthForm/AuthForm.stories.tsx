@@ -1,5 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react'
-
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import AuthForm from './AuthForm.component'
 
 export default {

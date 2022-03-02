@@ -1,12 +1,10 @@
+import { AxiosError } from 'axios'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useMutation, UseMutationResult } from 'react-query'
-import { AxiosError } from 'axios'
-
-import { LoadUserDto } from '~shared/types/api'
-
 import { ApiClient, getApiErrorMessage } from '../api'
-import { useStyledToast } from '../components/StyledToast/StyledToast'
 import * as AuthService from '../services/AuthService'
+import { LoadUserDto } from '~shared/types/api'
+import { useStyledToast } from '../components/StyledToast/StyledToast'
 
 interface AuthContextProps {
   user: LoadUserDto

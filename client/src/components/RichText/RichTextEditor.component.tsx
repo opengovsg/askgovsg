@@ -1,30 +1,31 @@
-import './RichTextEditor.styles.scss'
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-
+import { EditorState, convertToRaw, ContentState, ContentBlock } from 'draft-js'
 import {
-  createContext,
-  Dispatch,
   FC,
-  SetStateAction,
   useEffect,
   useState,
+  createContext,
+  Dispatch,
+  SetStateAction,
 } from 'react'
-import { Editor, EditorProps } from 'react-draft-wysiwyg'
-import { RefCallBack } from 'react-hook-form'
-import { ContentBlock, ContentState, convertToRaw, EditorState } from 'draft-js'
+
+import './RichTextEditor.styles.scss'
+
 import draftToHtml from 'draftjs-to-html'
 import htmlToDraft from 'html-to-draftjs'
+import { Editor, EditorProps } from 'react-draft-wysiwyg'
 
-import { FileUploadDto } from '~shared/types/api'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import styles from './RichTextEditor.module.scss'
+import { RefCallBack } from 'react-hook-form'
 
+import { LinkControl } from './LinkControl'
 import { ApiClient, getApiErrorMessage } from '../../api'
 import { useStyledToast } from '../StyledToast/StyledToast'
-
-import { ImageBlock } from './ImageBlock'
-import { ImageControl } from './ImageControl'
-import { LinkControl } from './LinkControl'
 import { PreviewLinkDecorator } from './LinkDecorator'
-import styles from './RichTextEditor.module.scss'
+import { FileUploadDto } from '~shared/types/api'
+
+import { ImageControl } from './ImageControl'
+import { ImageBlock } from './ImageBlock'
 
 export type UploadCallback = (
   file: File,

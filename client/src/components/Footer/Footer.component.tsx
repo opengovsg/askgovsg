@@ -1,20 +1,20 @@
-import { FaFacebookF, FaLinkedinIn } from 'react-icons/fa'
+import { FaLinkedinIn, FaFacebookF } from 'react-icons/fa'
+import OGPLogo from '../../assets/ogp-logo.svg'
+import { OGP } from '../Icons'
+import { useAuth } from '../../contexts/AuthContext'
 import { Link as RouterLink } from 'react-router-dom'
 import {
-  Container,
   Divider,
   HStack,
   Image,
   Link,
-  Stack,
   Text,
+  Stack,
   VStack,
+  Container,
 } from '@chakra-ui/react'
-import { format } from 'date-fns-tz'
 
-import OGPLogo from '../../assets/ogp-logo.svg'
-import { useAuth } from '../../contexts/AuthContext'
-import { OGP } from '../Icons'
+import { format } from 'date-fns-tz'
 // Credits: CheckFirst
 
 const Footer = (): JSX.Element => {

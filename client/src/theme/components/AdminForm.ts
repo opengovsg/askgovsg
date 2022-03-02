@@ -1,5 +1,4 @@
 import { ComponentMultiStyleConfig } from '@chakra-ui/theme'
-
 import { makeMultiStyleConfig } from './helpers'
 
 const styles = {

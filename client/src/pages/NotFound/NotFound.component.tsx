@@ -1,7 +1,6 @@
+import { Button, Center, Flex, Heading, Spacer, Text } from '@chakra-ui/react'
 import { Fragment } from 'react'
 import { Link as ReachLink } from 'react-router-dom'
-import { Button, Center, Flex, Heading, Spacer, Text } from '@chakra-ui/react'
-
 import { BackToHome } from '../../components/BackToHome/BackToHome'
 
 const NotFound = (): JSX.Element => {

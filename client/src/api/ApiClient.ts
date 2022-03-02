@@ -1,5 +1,4 @@
 import axios, { AxiosError } from 'axios'
-
 import { ErrorDto } from '~shared/types/api'
 
 const API_BASE_URL = '/api/v1'

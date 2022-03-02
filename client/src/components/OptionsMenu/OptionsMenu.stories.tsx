@@ -1,11 +1,9 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { rest } from 'msw'
-
 import {
   MockAgencyShortNameData,
   MockTopicData,
 } from '../../__mocks__/mockData'
-
 import OptionsMenu from './OptionsMenu.component'
 
 export default {

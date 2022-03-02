@@ -1,15 +1,13 @@
+import { Box, Spacer, useMultiStyleConfig } from '@chakra-ui/react'
 import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import { Box, Spacer, useMultiStyleConfig } from '@chakra-ui/react'
-
+import { Navigate, useParams, useNavigate } from 'react-router-dom'
 import { getApiErrorMessage } from '../../api'
 import Spinner from '../../components/Spinner/Spinner.component'
-import { useStyledToast } from '../../components/StyledToast/StyledToast'
 import { useAuth } from '../../contexts/AuthContext'
 import {
-  GET_ANSWERS_FOR_POST_QUERY_KEY,
   getAnswersForPost,
+  GET_ANSWERS_FOR_POST_QUERY_KEY,
   updateAnswer,
 } from '../../services/AnswerService'
 import * as PostService from '../../services/PostService'
@@ -19,12 +17,13 @@ import {
   LIST_POSTS_QUERY_KEY,
 } from '../../services/PostService'
 import {
-  GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
   getTopicsUsedByAgency,
+  GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/TopicService'
 import AskForm, {
   AskFormSubmission,
 } from '../PostForm/AskForm/AskForm.component'
+import { useStyledToast } from '../../components/StyledToast/StyledToast'
 
 const EditForm = (): JSX.Element => {
   const { user } = useAuth()

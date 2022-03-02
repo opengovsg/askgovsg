@@ -1,20 +1,20 @@
-import { useContext, useRef, useState } from 'react'
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Divider,
-  HStack,
-  Image,
-  useMultiStyleConfig,
-} from '@chakra-ui/react'
 import {
   ContentBlock,
   ContentState,
   EditorState,
-  Modifier,
   SelectionState,
+  Modifier,
 } from 'draft-js'
+import { useRef, useState, useContext } from 'react'
+import {
+  useMultiStyleConfig,
+  Button,
+  ButtonGroup,
+  Divider,
+  HStack,
+  Box,
+  Image,
+} from '@chakra-ui/react'
 
 import { EditorContext } from './RichTextEditor.component'
 

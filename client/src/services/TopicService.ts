@@ -1,6 +1,5 @@
-import { Topic } from '~shared/types/base'
-
 import { ApiClient, GetTopicsDto } from '../api'
+import { Topic } from '~shared/types/base'
 
 export const fetchTopics = (): Promise<GetTopicsDto[]> => {
   return ApiClient.get<GetTopicsDto[]>('/topics').then(({ data }) => data)

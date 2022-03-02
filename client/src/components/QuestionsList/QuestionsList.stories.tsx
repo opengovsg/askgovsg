@@ -1,10 +1,8 @@
 import { Button, Text } from '@chakra-ui/react'
-import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { rest } from 'msw'
-
-import { MockPostData } from '../../__mocks__/mockData'
-
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import QuestionsList from './QuestionsList.component'
+import { MockPostData } from '../../__mocks__/mockData'
 
 export default {
   title: 'Components/Posts/QuestionsList',
