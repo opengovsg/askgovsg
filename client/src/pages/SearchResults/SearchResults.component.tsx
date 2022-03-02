@@ -1,19 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
-import { useQuery } from 'react-query'
-import { useLocation } from 'react-router-dom'
 import { Box, Flex, HStack, Spacer, VStack } from '@chakra-ui/react'
 import { useMultiStyleConfig } from '@chakra-ui/system'
-
-import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
-import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
-import { NavBreadcrumb } from '../../components/NavBreadcrumb/NavBreadcrumb'
+import { useQuery } from 'react-query'
+import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import OptionsSideMenu from '../../components/OptionsMenu/OptionsSideMenu.component'
+import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import PostItem from '../../components/PostItem/PostItem.component'
 import Spinner from '../../components/Spinner/Spinner.component'
+import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
+import { NavBreadcrumb } from '../../components/NavBreadcrumb/NavBreadcrumb'
 import {
-  GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
   getAgencyByShortName,
+  GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
 } from '../../services/AgencyService'
 import {
   search as sendSearchRequest,

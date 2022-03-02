@@ -1,7 +1,5 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react'
-
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { MockAnswerData } from '../../../__mocks__/mockData'
-
 import AnswerSection from './AnswerSection.component'
 
 export default {

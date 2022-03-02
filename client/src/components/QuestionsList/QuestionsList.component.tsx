@@ -1,12 +1,11 @@
+import { Center, Flex } from '@chakra-ui/layout'
 import { useState } from 'react'
 import { useQuery } from 'react-query'
-import { Center, Flex } from '@chakra-ui/layout'
-
 import {
-  LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
-  LIST_POSTS_QUERY_KEY,
   listAnswerablePosts,
   listPosts,
+  LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
+  LIST_POSTS_QUERY_KEY,
 } from '../../services/PostService'
 import Pagination from '../Pagination'
 import PostListComponent from '../PostList/PostList.component'

@@ -1,5 +1,4 @@
 import { EnvironmentDto } from '~shared/types/api'
-
 import { ApiClient } from '../api'
 
 export const fetchEnvironment = (): Promise<EnvironmentDto> =>

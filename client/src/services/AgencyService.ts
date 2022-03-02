@@ -1,5 +1,4 @@
 import { Agency } from '~shared/types/base'
-
 import { ApiClient } from '../api'
 
 export { Agency } from '~shared/types/base'

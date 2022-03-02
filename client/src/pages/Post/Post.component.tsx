@@ -1,7 +1,3 @@
-import { useEffect, useRef } from 'react'
-import { BiXCircle } from 'react-icons/bi'
-import { useQuery } from 'react-query'
-import { Link, useParams } from 'react-router-dom'
 import {
   Box,
   Center,
@@ -13,10 +9,12 @@ import {
 } from '@chakra-ui/layout'
 import { useMultiStyleConfig } from '@chakra-ui/system'
 import { format, utcToZonedTime } from 'date-fns-tz'
+import { useEffect, useRef } from 'react'
+import { BiXCircle } from 'react-icons/bi'
+import { useQuery } from 'react-query'
+import { Link, useParams } from 'react-router-dom'
 import sanitizeHtml from 'sanitize-html'
-
 import { PostStatus } from '~shared/types/base'
-
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import EditButton from '../../components/EditButton/EditButton.component'
 import { NavBreadcrumb } from '../../components/NavBreadcrumb/NavBreadcrumb'
@@ -24,22 +22,21 @@ import PageTitle from '../../components/PageTitle/PageTitle.component'
 import Spinner from '../../components/Spinner/Spinner.component'
 import { useAuth } from '../../contexts/AuthContext'
 import {
-  GET_AGENCY_BY_ID_QUERY_KEY,
   getAgencyById,
+  GET_AGENCY_BY_ID_QUERY_KEY,
 } from '../../services/AgencyService'
 import {
-  GET_ANSWERS_FOR_POST_QUERY_KEY,
   getAnswersForPost,
+  GET_ANSWERS_FOR_POST_QUERY_KEY,
 } from '../../services/AnswerService'
 import {
-  GET_POST_BY_ID_QUERY_KEY,
   getPostById,
+  GET_POST_BY_ID_QUERY_KEY,
 } from '../../services/PostService'
 import {
-  GET_TOPIC_BY_ID_QUERY_KEY,
   getTopicById,
+  GET_TOPIC_BY_ID_QUERY_KEY,
 } from '../../services/TopicService'
-
 import AnswerSection from './AnswerSection/AnswerSection.component'
 import QuestionSection from './QuestionSection/QuestionSection.component'
 

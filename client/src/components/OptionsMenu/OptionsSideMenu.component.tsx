@@ -1,19 +1,17 @@
-import { createRef, LegacyRef, ReactElement, useState } from 'react'
-import { useQuery } from 'react-query'
-import { Link as RouterLink } from 'react-router-dom'
 import { Box, Flex, Text, useMultiStyleConfig } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
-
+import { LegacyRef, useState, ReactElement, createRef } from 'react'
+import { useQuery } from 'react-query'
+import { Link as RouterLink } from 'react-router-dom'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import { Agency } from '../../services/AgencyService'
 import {
-  FETCH_TOPICS_QUERY_KEY,
   fetchTopics,
-  GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+  FETCH_TOPICS_QUERY_KEY,
   getTopicsUsedByAgency,
+  GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/TopicService'
 import { getRedirectURLTopics } from '../../util/urlparser'
-
 import { bySpecifiedOrder } from './util'
 
 const OptionsSideMenu = ({

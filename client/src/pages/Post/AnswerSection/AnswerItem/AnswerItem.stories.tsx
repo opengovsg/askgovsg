@@ -1,5 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react'
-
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import AnswerItem from './AnswerItem.component'
 
 export default {

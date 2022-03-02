@@ -1,7 +1,5 @@
 import { AxiosResponse } from 'axios'
-
 import { Tag } from '~shared/types/base'
-
 import { ApiClient } from '../api'
 
 export const fetchTags = async (): Promise<Tag[]> =>

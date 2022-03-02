@@ -1,8 +1,6 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { rest } from 'msw'
-
 import { MockPostData } from '../../__mocks__/mockData'
-
 import PostList from './PostList.component'
 
 export default {

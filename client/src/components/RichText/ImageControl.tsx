@@ -1,36 +1,35 @@
 import {
+  Button,
+  HStack,
+  VStack,
+  Input,
+  Text,
+  Flex,
+  Box,
+  Image,
+  Spinner,
+  Tabs,
+  Tab,
+  TabList,
+  TabPanels,
+  TabPanel,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  Divider,
+  useMultiStyleConfig,
+} from '@chakra-ui/react'
+import {
   ChangeEvent,
   DragEvent,
   MouseEvent,
   MouseEventHandler,
   useState,
 } from 'react'
-import { BiCloudUpload, BiImage, BiTrash } from 'react-icons/bi'
-import {
-  Box,
-  Button,
-  Divider,
-  Flex,
-  HStack,
-  Image,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalOverlay,
-  Spinner,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-  useDisclosure,
-  useMultiStyleConfig,
-  VStack,
-} from '@chakra-ui/react'
-
+import { BiImage, BiTrash, BiCloudUpload } from 'react-icons/bi'
 import { UploadCallback } from './RichTextEditor.component'
 
 // ImageControl replaces the pre-built image popup

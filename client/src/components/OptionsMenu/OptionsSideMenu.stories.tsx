@@ -1,9 +1,7 @@
 //TODO: fix useNavigation -> do not navigate on click
-import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { rest } from 'msw'
-
 import { MockAgencyData, MockTopicData } from '../../__mocks__/mockData'
-
 import OptionsSideMenu from './OptionsSideMenu.component'
 
 export default {

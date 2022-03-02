@@ -12,12 +12,10 @@ import {
   useDisclosure,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
-
-import { Enquiry, EnquiryRequest } from '~shared/types/api'
-
 import { getApiErrorMessage } from '../../api'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import { Agency } from '../../services/AgencyService'
+import { Enquiry, EnquiryRequest } from '~shared/types/api'
 import { postMail } from '../../services/MailService'
 import { EnquiryModal } from '../EnquiryModal/EnquiryModal.component'
 import { RichTextPreview } from '../RichText/RichTextEditor.component'

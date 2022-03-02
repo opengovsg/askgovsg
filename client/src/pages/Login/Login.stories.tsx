@@ -1,6 +1,5 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react'
+import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { rest } from 'msw'
-
 import Login from './Login.component'
 
 export default {

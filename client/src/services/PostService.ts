@@ -1,13 +1,12 @@
 import { AxiosResponse } from 'axios'
-
 import {
   ApiClient,
   CreatePostReqDto,
   CreatePostResDto,
-  GetPostsDto,
   GetSinglePostDto,
   UpdatePostReqDto,
   UpdatePostResDto,
+  GetPostsDto,
 } from '../api'
 
 const POST_API_BASE = '/posts'

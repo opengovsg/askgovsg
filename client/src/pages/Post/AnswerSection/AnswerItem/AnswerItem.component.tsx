@@ -1,6 +1,5 @@
-import { Flex, Text } from '@chakra-ui/react'
-
 import { RichTextPreview } from '../../../../components/RichText/RichTextEditor.component'
+import { Flex, Text } from '@chakra-ui/react'
 
 const AnswerItem = ({
   answer: { body },
