@@ -11,3 +11,8 @@ export type CreateTopicReqDto = Pick<
 >
 
 export type CreateTopicResDto = MessageResponse & { data: number } & Topic
+
+export type UpdateTopicReqRto = Partial<Topic> &
+  Pick<Topic, 'name' | 'description'>
+
+export type UpdateTopicResDto = MessageResponse & { data: number }

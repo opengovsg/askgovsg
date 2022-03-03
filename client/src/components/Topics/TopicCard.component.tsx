@@ -1,4 +1,4 @@
-import React, { FC, useRef, ReactElement } from 'react'
+import React, { FC, useRef, ReactElement, useState } from 'react'
 import {
   Flex,
   Spacer,
@@ -11,6 +11,8 @@ import {
   useDisclosure,
   useOutsideClick,
   IconButton,
+  Editable,
+  useMultiStyleConfig,
 } from '@chakra-ui/react'
 import {
   BiRightArrowAlt,
@@ -24,6 +26,7 @@ import { useStyledToast } from '../StyledToast/StyledToast'
 import { useMutation, useQueryClient } from 'react-query'
 import { getApiErrorMessage } from '../../api'
 import * as TopicService from '../../services/TopicService'
+import { EditTopicCard, NonEditIconNameEnum } from './EditTopicCard.component'
 
 type ActionMenuProps = {
   actions: Array<{
@@ -79,9 +82,11 @@ const ActionMenu: FC<ActionMenuProps> = ({ actions }) => {
 interface TopicCardProps {
   id: number
   name: string
+  description: string | null
+  parentId: number | null
+  agencyId: number
   isAgencyMember: boolean | null
   url: string
-  accordionStyle?: CSSObject
   sendClickTopicEventToAnalytics: (topicName: string) => void
   setQueryTopicsState: (query: string) => void
 }
@@ -89,20 +94,53 @@ interface TopicCardProps {
 export const TopicCard = ({
   id,
   name,
+  description,
+  parentId,
+  agencyId,
   isAgencyMember,
   url,
-  accordionStyle,
   sendClickTopicEventToAnalytics,
   setQueryTopicsState,
 }: TopicCardProps): ReactElement => {
+  const styles = useMultiStyleConfig('OptionsMenu', {})
+
+  const styledToast = useStyledToast()
+  const queryClient = useQueryClient()
+
+  const [isRenaming, setIsRenaming] = useState(false)
+  const onRename = () => {
+    setIsRenaming(true)
+  }
+  const onRenameSubmit = async (newTopicName: string) => {
+    try {
+      await TopicService.updateTopic({
+        id,
+        name: newTopicName,
+        description,
+        parentId,
+        agencyId,
+      })
+      styledToast({
+        status: 'success',
+        description: 'Your topic has been renamed.',
+      })
+      queryClient.invalidateQueries('getTopicsUsedByAgency')
+    } catch (err) {
+      styledToast({
+        status: 'error',
+        description: getApiErrorMessage(err),
+      })
+    }
+  }
+
   const {
     isOpen: isDeleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
   } = useDisclosure()
-  const styledToast = useStyledToast()
-
-  const queryClient = useQueryClient()
+  const onDelete = () => {
+    onDeleteOpen()
+  }
   const deleteTopic = useMutation(TopicService.deleteTopic, {
     onSuccess: () => {
       queryClient.invalidateQueries('getTopicsUsedByAgency')
@@ -118,15 +156,7 @@ export const TopicCard = ({
       })
     },
   })
-  const onDelete = () => {
-    onDeleteOpen()
-  }
-
   const onDeleteConfirm = () => deleteTopic.mutateAsync(id.toString())
-
-  const onRename = () => {
-    console.log('rename')
-  }
 
   const actions = [
     {
@@ -146,13 +176,25 @@ export const TopicCard = ({
   const confirmDialogText = `You are about to delete the topic "${name}". By deleting this topic, all questions under 
   this topic will also be deleted. You cannot undo this action. Are you sure?`
 
-  return (
+  return isRenaming ? (
+    <Editable
+      defaultValue={name}
+      submitOnBlur={false}
+      startWithEditView={true}
+      onSubmit={onRenameSubmit}
+      onCancel={() => setIsRenaming(false)}
+    >
+      <EditTopicCard
+        nonEditIconName={NonEditIconNameEnum.BiDotsVerticalRounded}
+        style={styles.accordionItem}
+      />
+    </Editable>
+  ) : (
     <>
       <Flex
         _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
-        sx={accordionStyle}
+        sx={styles.accordionItem}
         role="group"
-        key={id}
         m="auto"
         w="100%"
         pl={8}

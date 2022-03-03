@@ -1,81 +1,24 @@
-import { ReactElement, useRef } from 'react'
-import {
-  Editable,
-  EditableInput,
-  EditablePreview,
-  Flex,
-  IconButton,
-  Spacer,
-  useEditableState,
-  useMultiStyleConfig,
-  useOutsideClick,
-} from '@chakra-ui/react'
-import { BiCheck, BiPlus } from 'react-icons/bi'
+import { ReactElement } from 'react'
+import { Editable, useMultiStyleConfig } from '@chakra-ui/react'
 import { getApiErrorMessage } from '../../api'
 import { useStyledToast } from '../StyledToast/StyledToast'
 import * as TopicService from '../../services/TopicService'
-import { useNavigate } from 'react-router-dom'
-
-const CreateTopicButton = (): ReactElement => {
-  const { onSubmit } = useEditableState()
-  return (
-    <IconButton
-      aria-label={'Create topic'}
-      icon={<BiCheck />}
-      variant="ghost"
-      onClick={onSubmit}
-    />
-  )
-}
-
-const AddNewTopicCardEditableComponent = (): ReactElement => {
-  const { isEditing, onCancel, onEdit } = useEditableState()
-  const styles = useMultiStyleConfig('OptionsMenu', {})
-  const ref = useRef(null)
-  useOutsideClick({
-    ref,
-    handler: () => onCancel(),
-  })
-  return (
-    <div ref={ref}>
-      <Flex
-        sx={styles.newAccordionItem}
-        _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
-        role="group"
-        m="auto"
-        w="100%"
-        pl={8}
-        pr={isEditing ? 5 : 8}
-        onClick={onEdit}
-      >
-        <Flex>
-          <EditablePreview />
-          <EditableInput sx={styles.accordionInput} />
-        </Flex>
-
-        <Spacer />
-        <Flex alignItems="center">
-          {isEditing ? <CreateTopicButton /> : <BiPlus />}
-        </Flex>
-      </Flex>
-    </div>
-  )
-}
+import { EditTopicCard, NonEditIconNameEnum } from './EditTopicCard.component'
+import { useQueryClient } from 'react-query'
 
 interface AddNewTopicProps {
   agencyId: number
-  agencyShortName: string
 }
 
 export const AddNewTopicCard = ({
   agencyId,
-  agencyShortName,
 }: AddNewTopicProps): ReactElement => {
-  const navigate = useNavigate()
+  const styles = useMultiStyleConfig('OptionsMenu', {})
+  const queryClient = useQueryClient()
   const toast = useStyledToast()
   const onSubmit = async (topicName: string) => {
     try {
-      const data = await TopicService.createTopic({
+      await TopicService.createTopic({
         name: topicName,
         // TODO: pending designer input, need to find a way to update topic description
         description: '',
@@ -84,9 +27,10 @@ export const AddNewTopicCard = ({
       })
       toast({
         status: 'success',
-        description: 'Your post has been created.',
+        description: 'Your topic has been created.',
       })
-      navigate(`/agency/${agencyShortName}?topics=${data.name}`)
+      queryClient.invalidateQueries('getTopicsUsedByAgency')
+      // TODO figure out how to reset values in Editable
     } catch (err) {
       toast({
         status: 'error',
@@ -96,11 +40,15 @@ export const AddNewTopicCard = ({
   }
   return (
     <Editable
+      id="editable-topic-name"
       placeholder="Add new topic"
       submitOnBlur={false}
       onSubmit={onSubmit}
     >
-      <AddNewTopicCardEditableComponent />
+      <EditTopicCard
+        nonEditIconName={NonEditIconNameEnum.BiPlus}
+        style={styles.newAccordionItem}
+      />
     </Editable>
   )
 }

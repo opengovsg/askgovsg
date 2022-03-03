@@ -56,9 +56,11 @@ const TopicsMenu = (): ReactElement => {
   const { user } = useAuth()
   const isAgencyMember = user && user.agencyId === agency?.id
 
+  // TODO after merging: refactor using React Context
   const [hasTopicsKey, setHasTopicsKey] = useState(false)
   const [queryTopicsState, setQueryTopicsState] = useState('')
 
+  // TODO after merging: remove?
   useEffect(() => {
     setQueryTopicsState(getTopicsQuery(location.search))
     const topicsSpecified = isSpecified(location.search, 'topics')
@@ -99,23 +101,22 @@ const TopicsMenu = (): ReactElement => {
 
   const optionsMenu = (
     <SimpleGrid sx={styles.accordionGrid}>
-      {topicsToShow?.map(({ id, name }) => (
+      {topicsToShow?.map(({ id, name, description, parentId, agencyId }) => (
         <TopicCard
           key={id}
           id={id}
           name={name}
+          description={description}
+          parentId={parentId}
+          agencyId={agencyId}
           isAgencyMember={isAgencyMember}
-          accordionStyle={styles.accordionItem}
           url={getRedirectURLTopics(name, agency)}
           setQueryTopicsState={setQueryTopicsState}
           sendClickTopicEventToAnalytics={sendClickTopicEventToAnalytics}
         />
       ))}
       {isAgencyMember ? (
-        <AddNewTopicCard
-          agencyId={user.agencyId}
-          agencyShortName={agencyShortName as string}
-        />
+        <AddNewTopicCard agencyId={user.agencyId} />
       ) : undefined}
     </SimpleGrid>
   )

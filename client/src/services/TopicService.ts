@@ -3,6 +3,8 @@ import {
   CreateTopicReqDto,
   CreateTopicResDto,
   GetTopicsDto,
+  UpdateTopicReqRto,
+  UpdateTopicResDto,
 } from '../api'
 import { Topic } from '~shared/types/base'
 import { AxiosResponse } from 'axios'
@@ -33,6 +35,15 @@ export const createTopic = (
 }
 
 export const CREATE_TOPIC_QUERY_KEY = 'createTopic'
+
+export const updateTopic = (
+  topic: UpdateTopicReqRto,
+): Promise<UpdateTopicResDto> => {
+  return ApiClient.put<UpdateTopicReqRto, AxiosResponse<UpdateTopicResDto>>(
+    `/topics/${topic.id}`,
+    topic,
+  ).then(({ data }) => data)
+}
 
 export const deleteTopic = async (id: string): Promise<void> => {
   return ApiClient.delete(`/topics/${id}`).then(({ data }) => data)
