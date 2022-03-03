@@ -1,5 +1,5 @@
 import { Topic } from '~shared/types/base'
-import { Agency } from '../../services/AgencyService'
+import { Agency } from '~shared/types/base'
 import { GetTopicsDto } from '../../api'
 
 type bySpecifiedOrderComparator =
