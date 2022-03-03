@@ -1,9 +1,8 @@
-import React, { FC, useRef, ReactElement, RefObject } from 'react'
+import React, { FC, useRef, ReactElement } from 'react'
 import {
   Flex,
   Spacer,
   Text,
-  HStack,
   Menu,
   MenuButton,
   MenuList,
@@ -20,6 +19,11 @@ import {
   BiTrash,
 } from 'react-icons/bi'
 import { Link as RouterLink } from 'react-router-dom'
+import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.component'
+import { useStyledToast } from '../StyledToast/StyledToast'
+import { useMutation, useQueryClient } from 'react-query'
+import { getApiErrorMessage } from '../../api'
+import * as TopicService from '../../services/TopicService'
 
 type ActionMenuProps = {
   actions: Array<{
@@ -45,13 +49,11 @@ const ActionMenu: FC<ActionMenuProps> = ({ actions }) => {
           icon={<BiDotsVerticalRounded />}
           onClick={(e) => {
             e.preventDefault()
+            e.stopPropagation() // needed to override onClick in parent component
             onToggle()
-            console.log('onToggle clicked!')
           }}
           variant="ghost"
-        >
-          Click
-        </MenuButton>
+        />
         <MenuList>
           {actions.map(({ onClick, label, icon, style }, i) => (
             <MenuItem
@@ -60,6 +62,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ actions }) => {
               sx={style}
               onClick={(e) => {
                 e.preventDefault()
+                e.stopPropagation() // needed to override onClick in parent component
                 onClose()
                 onClick(e)
               }}
@@ -78,7 +81,6 @@ interface TopicCardProps {
   name: string
   isAgencyMember: boolean | null
   url: string
-  accordionRef: RefObject<HTMLButtonElement>
   accordionStyle?: CSSObject
   sendClickTopicEventToAnalytics: (topicName: string) => void
   setQueryTopicsState: (query: string) => void
@@ -89,21 +91,50 @@ export const TopicCard = ({
   name,
   isAgencyMember,
   url,
-  accordionRef,
   accordionStyle,
   sendClickTopicEventToAnalytics,
   setQueryTopicsState,
 }: TopicCardProps): ReactElement => {
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onClose: onDeleteClose,
+  } = useDisclosure()
+  const styledToast = useStyledToast()
+
+  const queryClient = useQueryClient()
+  const deleteTopic = useMutation(TopicService.deleteTopic, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('getTopicsUsedByAgency')
+      styledToast({
+        status: 'success',
+        description: 'Topic has been successfully deleted',
+      })
+    },
+    onError: (err) => {
+      styledToast({
+        status: 'error',
+        description: getApiErrorMessage(err),
+      })
+    },
+  })
   const onDelete = () => {
-    console.log('delete')
+    onDeleteOpen()
   }
+
+  const onDeleteConfirm = () => deleteTopic.mutateAsync(id.toString())
 
   const onRename = () => {
     console.log('rename')
   }
 
   const actions = [
-    { label: 'Rename', icon: <BiEditAlt />, onClick: onRename },
+    {
+      label: 'Rename',
+      icon: <BiEditAlt />,
+      onClick: onRename,
+      style: { color: 'secondary.900' },
+    },
     {
       label: 'Delete',
       icon: <BiTrash />,
@@ -112,39 +143,44 @@ export const TopicCard = ({
     },
   ]
 
+  const confirmDialogText = `You are about to delete the topic "${name}". By deleting this topic, all questions under 
+  this topic will also be deleted. You cannot undo this action. Are you sure?`
+
   return (
-    <Flex
-      _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
-      sx={accordionStyle}
-      role="group"
-      key={id}
-      as={RouterLink}
-      to={url}
-      onClick={() => {
-        sendClickTopicEventToAnalytics(name)
-        setQueryTopicsState(name)
-        accordionRef?.current?.click()
-      }}
-      m="auto"
-      w="100%"
-      px={8}
-    >
-      <Text>{name}</Text>
-      <Spacer />
-      {isAgencyMember ? (
-        <>
-          <Flex alignItems="center">
-            <BiDotsVerticalRounded />
-            {/*<ActionMenu actions={actions} />*/}
-          </Flex>
-        </>
-      ) : (
-        <>
-          <Flex alignItems="center">
-            <BiRightArrowAlt />
-          </Flex>
-        </>
-      )}
-    </Flex>
+    <>
+      <Flex
+        _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
+        sx={accordionStyle}
+        role="group"
+        key={id}
+        m="auto"
+        w="100%"
+        pl={8}
+        pr={isAgencyMember ? 5 : 8} // because ActionMenu is wider than Icon
+        as={RouterLink}
+        to={url}
+        onClick={() => {
+          sendClickTopicEventToAnalytics(name)
+          setQueryTopicsState(name)
+        }}
+      >
+        <Text>{name}</Text>
+
+        <Spacer />
+        {isAgencyMember ? (
+          <ActionMenu actions={actions} />
+        ) : (
+          <BiRightArrowAlt />
+        )}
+      </Flex>
+      <ConfirmDialog
+        isOpen={isDeleteOpen}
+        onClose={onDeleteClose}
+        onConfirm={onDeleteConfirm}
+        title="Confirm Delete?"
+        description={confirmDialogText}
+        confirmText="Yes, delete"
+      />
+    </>
   )
 }

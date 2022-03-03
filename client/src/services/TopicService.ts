@@ -16,3 +16,7 @@ export const getTopicById = (id: number): Promise<Topic> => {
 }
 
 export const GET_TOPIC_BY_ID_QUERY_KEY = 'getTopicById'
+
+export const deleteTopic = async (id: string): Promise<void> => {
+  return ApiClient.delete(`/topics/${id}`)
+}
