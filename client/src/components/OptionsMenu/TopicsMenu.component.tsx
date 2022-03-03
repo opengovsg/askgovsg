@@ -14,9 +14,9 @@ import {
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiPlus } from 'react-icons/bi'
-import { LegacyRef, useEffect, useState, ReactElement, createRef } from 'react'
+import { useEffect, useState, ReactElement } from 'react'
 import { useQuery } from 'react-query'
-import { Link as RouterLink, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
   Agency,
@@ -67,8 +67,6 @@ const TopicsMenu = (): ReactElement => {
 
   const styles = useMultiStyleConfig('OptionsMenu', { hasTopicsKey })
 
-  const accordionRef: LegacyRef<HTMLButtonElement> = createRef()
-
   const googleAnalytics = useGoogleAnalytics()
 
   const sendClickTopicEventToAnalytics = (topicName: string) => {
@@ -103,12 +101,12 @@ const TopicsMenu = (): ReactElement => {
     <SimpleGrid sx={styles.accordionGrid}>
       {topicsToShow?.map(({ id, name }) => (
         <TopicCard
+          key={id}
           id={id}
           name={name}
           isAgencyMember={isAgencyMember}
           accordionStyle={styles.accordionItem}
           url={getRedirectURLTopics(name, agency)}
-          accordionRef={accordionRef}
           setQueryTopicsState={setQueryTopicsState}
           sendClickTopicEventToAnalytics={sendClickTopicEventToAnalytics}
         />
@@ -143,11 +141,7 @@ const TopicsMenu = (): ReactElement => {
       index={[0]}
     >
       <AccordionItem border="none">
-        <AccordionButton
-          ref={accordionRef}
-          sx={styles.accordionButton}
-          _hover={{ bg: undefined }}
-        >
+        <AccordionButton sx={styles.accordionButton} _hover={{ bg: undefined }}>
           <Flex sx={styles.accordionFlexBox} role="group">
             <Stack spacing={1}>
               <Text sx={styles.accordionHeader}>
