@@ -17,6 +17,11 @@ export const questionsDisplayStates: QuestionsDisplayState[] = [
     label: 'ALL QUESTIONS',
     questionsPerPage: 30,
   },
+  {
+    value: 'topic',
+    label: 'QUESTIONS ON THIS TOPIC',
+    questionsPerPage: 30,
+  },
 ]
 
 export interface QuestionSortState {

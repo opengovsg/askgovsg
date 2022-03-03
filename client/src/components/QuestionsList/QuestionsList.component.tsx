@@ -15,7 +15,7 @@ import {
   questionsDisplayStates,
 } from '../Questions/questions'
 import { Button, Text } from '@chakra-ui/react'
-import { NavigateFunction } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 interface QuestionsListProps {
   sort: string
@@ -24,7 +24,6 @@ interface QuestionsListProps {
   topics?: string
   questionsPerPage: number
   showViewAllQuestionsButton: boolean
-  navigate: NavigateFunction
   setQuestionsDisplayState: (state: QuestionsDisplayState) => void
   listAnswerable?: boolean
 }
@@ -36,12 +35,12 @@ const QuestionsList = ({
   topics,
   questionsPerPage,
   showViewAllQuestionsButton,
-  navigate,
   setQuestionsDisplayState,
   listAnswerable,
 }: QuestionsListProps): JSX.Element => {
   // Pagination
   const [page, setPage] = useState(1)
+  const navigate = useNavigate()
 
   const { queryKey, queryFn } = listAnswerable
     ? {

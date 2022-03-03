@@ -1,7 +1,7 @@
 import { Box, Flex, HStack, Spacer, VStack, Text } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
-import { useNavigate, useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
@@ -23,6 +23,8 @@ import OptionsSideMenu from '../../components/OptionsMenu/OptionsSideMenu.compon
 import {
   DEFAULT_QUESTIONS_DISPLAY_STATE,
   DEFAULT_QUESTIONS_SORT_STATE,
+  QuestionsDisplayState,
+  questionsDisplayStates,
 } from '../../components/Questions/questions'
 import { Questions } from '../../components/Questions/Questions.component'
 
@@ -31,7 +33,6 @@ const AgencyHomePage = (): JSX.Element => {
     DEFAULT_QUESTIONS_DISPLAY_STATE,
   )
   const [sortState, setSortState] = useState(DEFAULT_QUESTIONS_SORT_STATE)
-  const navigate = useNavigate()
   const location = useLocation() // check URL
 
   /*Do we need both hasTopicsKey and topicQueryState? Surely they come together?
@@ -47,12 +48,22 @@ const AgencyHomePage = (): JSX.Element => {
     setTopicQueryState(getTopicsQuery(location.search))
     const topicsSpecified = isSpecified(location.search, 'topics')
     setHasTopicsKey(topicsSpecified)
-  }, [location, hasTopicsKey])
+    // Hacky but this'll have to do until major refactoring to change how topics are shown
+    if (topicQueryState && hasTopicsKey) {
+      setQuestionsDisplayState(
+        questionsDisplayStates.find(
+          (state) => state.value === 'topic',
+        ) as QuestionsDisplayState,
+      )
+    }
+  }, [location, hasTopicsKey, topicQueryState])
+  // TODO React Context Provider to share topicQueryState and hasTopicsKey children component
 
   const { user } = useAuth()
   const isAuthenticatedOfficer = user !== null && isUserPublicOfficer(user)
 
   const { agency: agencyShortName } = useParams()
+  console.log(location)
   const { data: agency } = useQuery(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
     () => getAgencyByShortName({ shortname: `${agencyShortName}` }),
@@ -218,15 +229,16 @@ const AgencyHomePage = (): JSX.Element => {
             setQuestionsDisplayState={setQuestionsDisplayState}
             sortState={sortState}
             setSortState={setSortState}
-            isAuthenticatedOfficer={isAuthenticatedOfficer}
             questionsPerPage={
               isAuthenticatedOfficer
                 ? 50
                 : questionsDisplayState.questionsPerPage
             }
-            navigate={navigate}
             showViewAllQuestionsButton={
               questionsDisplayState.value !== 'all' && !isAuthenticatedOfficer
+            }
+            listAnswerable={
+              isAuthenticatedOfficer && user?.agencyId === agency?.id
             }
           />
         </Flex>

@@ -5,19 +5,22 @@ import {
 import { Flex, Stack, Text } from '@chakra-ui/react'
 import { SortQuestionsMenu } from '../SortQuestionsMenu/SortQuestionsMenu.component'
 import PostQuestionButton from '../PostQuestionButton/PostQuestionButton.component'
+import { isUserPublicOfficer } from '../../services/user.service'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface QuestionsHeaderProps {
   questionsDisplayState: QuestionsDisplayState
   sortState: QuestionSortState
   setSortState: (sortState: QuestionSortState) => void
-  isAuthenticatedOfficer: boolean
 }
 export const QuestionsHeader = ({
   questionsDisplayState,
   sortState,
   setSortState,
-  isAuthenticatedOfficer,
 }: QuestionsHeaderProps): JSX.Element => {
+  const { user } = useAuth()
+  const isAuthenticatedOfficer = user !== null && isUserPublicOfficer(user)
+
   return (
     <Flex
       flexDir={{ base: 'column-reverse', sm: 'row' }}

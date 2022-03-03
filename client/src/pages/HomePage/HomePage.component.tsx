@@ -1,6 +1,5 @@
 import { Flex, HStack, Spacer } from '@chakra-ui/react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import OptionsMenu from '../../components/OptionsMenu/OptionsMenu.component'
 import {
@@ -14,7 +13,6 @@ const HomePage = (): JSX.Element => {
     DEFAULT_QUESTIONS_DISPLAY_STATE,
   )
   const [sortState, setSortState] = useState(DEFAULT_QUESTIONS_SORT_STATE)
-  const navigate = useNavigate()
 
   return (
     <Flex direction="column" height="100%" id="home-page">
@@ -43,9 +41,7 @@ const HomePage = (): JSX.Element => {
             setQuestionsDisplayState={setQuestionsDisplayState}
             sortState={sortState}
             setSortState={setSortState}
-            isAuthenticatedOfficer={false}
             questionsPerPage={questionsDisplayState.questionsPerPage}
-            navigate={navigate}
             showViewAllQuestionsButton={questionsDisplayState.value !== 'all'}
           />
         </Flex>
