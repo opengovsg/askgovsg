@@ -1,5 +1,5 @@
 import { Center, Flex } from '@chakra-ui/layout'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useQuery } from 'react-query'
 import {
   listAnswerablePosts,
@@ -16,31 +16,32 @@ import {
 } from '../Questions/questions'
 import { Button, Text } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
+import { HomePageContext } from '../../contexts/HomePageContext'
 
 interface QuestionsListProps {
-  sort: string
   agencyId?: number
   tags?: string
-  topics?: string
   questionsPerPage: number
   showViewAllQuestionsButton: boolean
-  setQuestionsDisplayState: (state: QuestionsDisplayState) => void
   listAnswerable?: boolean
 }
 
 const QuestionsList = ({
-  sort,
   agencyId,
   tags,
-  topics,
   questionsPerPage,
   showViewAllQuestionsButton,
-  setQuestionsDisplayState,
   listAnswerable,
 }: QuestionsListProps): JSX.Element => {
   // Pagination
   const [page, setPage] = useState(1)
   const navigate = useNavigate()
+  const {
+    sortState,
+    setQuestionsDisplayState,
+    topicQueryState: topics,
+  } = useContext(HomePageContext)
+  const sort = sortState.value
 
   const { queryKey, queryFn } = listAnswerable
     ? {

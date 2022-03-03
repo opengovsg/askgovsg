@@ -1,25 +1,16 @@
-import {
-  QuestionsDisplayState,
-  QuestionSortState,
-} from '../Questions/questions'
 import { Flex, Stack, Text } from '@chakra-ui/react'
 import { SortQuestionsMenu } from '../SortQuestionsMenu/SortQuestionsMenu.component'
 import PostQuestionButton from '../PostQuestionButton/PostQuestionButton.component'
 import { isUserPublicOfficer } from '../../services/user.service'
 import { useAuth } from '../../contexts/AuthContext'
+import { HomePageContext } from '../../contexts/HomePageContext'
+import { useContext } from 'react'
 
-interface QuestionsHeaderProps {
-  questionsDisplayState: QuestionsDisplayState
-  sortState: QuestionSortState
-  setSortState: (sortState: QuestionSortState) => void
-}
-export const QuestionsHeader = ({
-  questionsDisplayState,
-  sortState,
-  setSortState,
-}: QuestionsHeaderProps): JSX.Element => {
+export const QuestionsHeader = (): JSX.Element => {
   const { user } = useAuth()
   const isAuthenticatedOfficer = user !== null && isUserPublicOfficer(user)
+  const { questionsDisplayState, sortState, setSortState } =
+    useContext(HomePageContext)
 
   return (
     <Flex

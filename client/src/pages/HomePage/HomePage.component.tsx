@@ -1,19 +1,9 @@
 import { Flex, HStack, Spacer } from '@chakra-ui/react'
-import { useState } from 'react'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import OptionsMenu from '../../components/OptionsMenu/OptionsMenu.component'
-import {
-  DEFAULT_QUESTIONS_DISPLAY_STATE,
-  DEFAULT_QUESTIONS_SORT_STATE,
-} from '../../components/Questions/questions'
 import { Questions } from '../../components/Questions/Questions.component'
 
 const HomePage = (): JSX.Element => {
-  const [questionsDisplayState, setQuestionsDisplayState] = useState(
-    DEFAULT_QUESTIONS_DISPLAY_STATE,
-  )
-  const [sortState, setSortState] = useState(DEFAULT_QUESTIONS_SORT_STATE)
-
   return (
     <Flex direction="column" height="100%" id="home-page">
       <OptionsMenu />
@@ -36,14 +26,7 @@ const HomePage = (): JSX.Element => {
           px={8}
           direction={{ base: 'column', lg: 'row' }}
         >
-          <Questions
-            questionsDisplayState={questionsDisplayState}
-            setQuestionsDisplayState={setQuestionsDisplayState}
-            sortState={sortState}
-            setSortState={setSortState}
-            questionsPerPage={questionsDisplayState.questionsPerPage}
-            showViewAllQuestionsButton={questionsDisplayState.value !== 'all'}
-          />
+          <Questions />
         </Flex>
       </HStack>
       <Spacer />

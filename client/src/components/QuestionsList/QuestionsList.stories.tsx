@@ -25,9 +25,7 @@ const Template: ComponentStory<typeof QuestionsList> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  sort: 'basic',
   agencyId: 1,
-  topics: 'financial support',
   questionsPerPage: 10,
   listAnswerable: true,
   showViewAllQuestionsButton: true,
