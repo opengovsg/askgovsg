@@ -75,6 +75,11 @@ export const OptionsMenu: ComponentMultiStyleConfig = {
       px: { base: 8, md: 0 },
       textAlign: 'left',
     },
+    accordionInput: {
+      backgroundColor: 'white',
+      color: 'neutral.900',
+      w: '100%',
+    },
     sideMenuBox: {
       position: 'sticky',
       top: '0',

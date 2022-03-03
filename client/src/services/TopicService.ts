@@ -1,5 +1,11 @@
-import { ApiClient, GetTopicsDto } from '../api'
+import {
+  ApiClient,
+  CreateTopicReqDto,
+  CreateTopicResDto,
+  GetTopicsDto,
+} from '../api'
 import { Topic } from '~shared/types/base'
+import { AxiosResponse } from 'axios'
 
 export const getTopicsUsedByAgency = (
   agencyId: number,
@@ -17,6 +23,19 @@ export const getTopicById = (id: number): Promise<Topic> => {
 
 export const GET_TOPIC_BY_ID_QUERY_KEY = 'getTopicById'
 
-export const deleteTopic = async (id: string): Promise<void> => {
-  return ApiClient.delete(`/topics/${id}`)
+export const createTopic = (
+  topic: CreateTopicReqDto,
+): Promise<CreateTopicResDto> => {
+  return ApiClient.post<CreateTopicReqDto, AxiosResponse<CreateTopicResDto>>(
+    '/topics',
+    topic,
+  ).then(({ data }) => data)
 }
+
+export const CREATE_TOPIC_QUERY_KEY = 'createTopic'
+
+export const deleteTopic = async (id: string): Promise<void> => {
+  return ApiClient.delete(`/topics/${id}`).then(({ data }) => data)
+}
+
+export const DELETE_TOPIC_QUERY_KEY = 'deleteTopic'

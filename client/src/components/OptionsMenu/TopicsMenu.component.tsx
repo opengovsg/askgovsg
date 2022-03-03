@@ -13,7 +13,6 @@ import {
   useMultiStyleConfig,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
-import { BiPlus } from 'react-icons/bi'
 import { useEffect, useState, ReactElement } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
@@ -37,6 +36,7 @@ import {
 import { bySpecifiedOrder } from './util'
 import { useAuth } from '../../contexts/AuthContext'
 import { TopicCard } from '../Topics/TopicCard.component'
+import { AddNewTopicCard } from '../Topics/AddNewTopicCard.component'
 
 /*
  * Actually, to make this component truly extensible (i.e. to support nested topics)
@@ -111,24 +111,11 @@ const TopicsMenu = (): ReactElement => {
           sendClickTopicEventToAnalytics={sendClickTopicEventToAnalytics}
         />
       ))}
-      {/* TODO factor into a separate NewTopicCard component*/}
       {isAgencyMember ? (
-        // TODO highlight outline in white and change box color; see figma
-        <Flex
-          sx={styles.newAccordionItem}
-          _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
-          role="group"
-          // key={topicsToShow?.length || 0} // is this needed?
-          m="auto"
-          w="100%"
-          px={8}
-        >
-          <Text>Add a new topic</Text>
-          <Spacer />
-          <Flex alignItems="center">
-            <BiPlus />
-          </Flex>
-        </Flex>
+        <AddNewTopicCard
+          agencyId={user.agencyId}
+          agencyShortName={agencyShortName as string}
+        />
       ) : undefined}
     </SimpleGrid>
   )
