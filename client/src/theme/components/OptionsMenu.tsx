@@ -32,8 +32,6 @@ export const OptionsMenu: ComponentMultiStyleConfig = {
       mx: hasTopicsKey ? undefined : { base: 'auto', md: undefined },
       border: '1px solid',
       borderColor: 'white',
-      // borderTopWidth: hasTopicsKey ? { base: '1px', sm: '0px' } : undefined,
-      // borderTopColor: hasTopicsKey ? 'primary.500' : undefined,
     },
     accordionGrid: {
       'grid-template-columns': { base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },

@@ -34,7 +34,7 @@ export const createTopic = (
   ).then(({ data }) => data)
 }
 
-export const CREATE_TOPIC_QUERY_KEY = 'createTopic'
+export const CREATE_TOPIC_QUERY_KEY = 'createTopic' // unused in codebase
 
 export const updateTopic = (
   topic: UpdateTopicReqRto,
@@ -45,8 +45,10 @@ export const updateTopic = (
   ).then(({ data }) => data)
 }
 
+export const UPDATE_TOPIC_QUERY_KEY = 'updateTopic' // unused in codebase
+
 export const deleteTopic = async (id: string): Promise<void> => {
   return ApiClient.delete(`/topics/${id}`).then(({ data }) => data)
 }
 
-export const DELETE_TOPIC_QUERY_KEY = 'deleteTopic'
+export const DELETE_TOPIC_QUERY_KEY = 'deleteTopic' // unused in codebase
