@@ -52,7 +52,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ actions }) => {
           icon={<BiDotsVerticalRounded />}
           onClick={(e) => {
             e.preventDefault()
-            e.stopPropagation() // needed to override onClick in parent component
+            e.stopPropagation()
             onToggle()
           }}
           variant="ghost"
@@ -65,7 +65,7 @@ const ActionMenu: FC<ActionMenuProps> = ({ actions }) => {
               sx={style}
               onClick={(e) => {
                 e.preventDefault()
-                e.stopPropagation() // needed to override onClick in parent component
+                e.stopPropagation()
                 onClose()
                 onClick(e)
               }}
@@ -125,6 +125,7 @@ export const TopicCard = ({
         description: 'Your topic has been renamed.',
       })
       queryClient.invalidateQueries('getTopicsUsedByAgency')
+      setIsRenaming(false)
     } catch (err) {
       styledToast({
         status: 'error',
