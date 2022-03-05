@@ -200,7 +200,7 @@ const AgencyHomePage = (): JSX.Element => {
                 : questionsDisplayState.questionsPerPage
             }
             showViewAllQuestionsButton={
-              questionsDisplayState.value !== 'all' && !isAuthenticatedOfficer
+              !isAuthenticatedOfficer && !urlHasTopicsParamKey
             }
             listAnswerable={
               isAuthenticatedOfficer && user?.agencyId === agency?.id
