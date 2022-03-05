@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
 import { BiRightArrowAlt } from 'react-icons/bi'
-import { LegacyRef, useEffect, useState, ReactElement, createRef } from 'react'
+import { LegacyRef, ReactElement, createRef, useContext } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
@@ -34,13 +34,11 @@ import {
 import {
   getRedirectURLTopics,
   getRedirectURLAgency,
-  isSpecified,
-  getTopicsQuery,
 } from '../../util/urlparser'
 import { bySpecifiedOrder } from './util'
+import { HomePageContext } from '../../contexts/HomePageContext'
 
 const OptionsMenu = (): ReactElement => {
-  const [hasTopicsKey, setHasTopicsKey] = useState(false)
   const { agency: agencyShortName } = useParams<'agency'>()
   const { data: agency } = useQuery<Agency>(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
@@ -50,14 +48,9 @@ const OptionsMenu = (): ReactElement => {
     { enabled: agencyShortName !== undefined },
   )
 
-  const [queryState, setQueryState] = useState('')
-  const styles = useMultiStyleConfig('OptionsMenu', { hasTopicsKey })
-
-  useEffect(() => {
-    setQueryState(getTopicsQuery(location.search))
-    const topicsSpecified = isSpecified(location.search, 'topics')
-    setHasTopicsKey(topicsSpecified)
-  })
+  const { urlHasTopicsParamKey, topicQueried, setTopicQueried } =
+    useContext(HomePageContext)
+  const styles = useMultiStyleConfig('OptionsMenu', { urlHasTopicsParamKey })
 
   const accordionRef: LegacyRef<HTMLButtonElement> = createRef()
 
@@ -92,7 +85,7 @@ const OptionsMenu = (): ReactElement => {
   )
 
   const topicsToShow = (topics || [])
-    .filter((topic) => topic.name !== queryState)
+    .filter((topic) => topic.name !== topicQueried)
     .sort(bySpecifiedOrder(agency))
 
   const agencyShortNamesToShow = (agencyShortNames || [])
@@ -113,7 +106,7 @@ const OptionsMenu = (): ReactElement => {
                 to={getRedirectURLTopics(name, agency)}
                 onClick={() => {
                   sendClickTopicEventToAnalytics(name)
-                  setQueryState(name)
+                  setTopicQueried(name)
                   accordionRef.current?.click()
                 }}
               >
@@ -154,49 +147,47 @@ const OptionsMenu = (): ReactElement => {
       id="options-menu-accordion"
       allowMultiple
       allowToggle
-      index={hasTopicsKey ? undefined : [0]}
+      index={urlHasTopicsParamKey ? undefined : [0]}
     >
       <AccordionItem border="none">
         <AccordionButton
           ref={accordionRef}
           sx={styles.accordionButton}
           _expanded={
-            hasTopicsKey
+            urlHasTopicsParamKey
               ? { shadow: 'none' }
               : !agency
               ? { color: 'primary.500' }
               : undefined
           }
-          _hover={{ bg: hasTopicsKey ? 'secondary.600' : undefined }}
+          _hover={{ bg: urlHasTopicsParamKey ? 'secondary.600' : undefined }}
         >
           <Flex sx={styles.accordionFlexBox} role="group">
             <Stack spacing={1}>
               <Text sx={styles.accordionHeader}>
                 {agency
-                  ? hasTopicsKey
+                  ? urlHasTopicsParamKey
                     ? 'TOPIC'
                     : 'EXPLORE A TOPIC'
                   : 'AGENCIES'}
               </Text>
-              {hasTopicsKey ? (
+              {urlHasTopicsParamKey && (
                 <Text
                   sx={styles.accordionSubHeader}
-                  fontWeight={queryState ? '600' : '400'}
+                  fontWeight={topicQueried ? '600' : '400'}
                 >
                   {agency
-                    ? queryState
-                      ? queryState
+                    ? topicQueried
+                      ? topicQueried
                       : 'Select a Topic'
                     : 'Select an Agency'}
                 </Text>
-              ) : (
-                <Text></Text>
               )}
             </Stack>
             <Spacer />
             <AccordionIcon
               mt="48px"
-              color={hasTopicsKey ? 'white' : 'secondary.800'}
+              color={urlHasTopicsParamKey ? 'white' : 'secondary.800'}
             />
           </Flex>
         </AccordionButton>

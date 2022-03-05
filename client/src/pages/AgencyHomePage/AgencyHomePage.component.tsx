@@ -169,9 +169,7 @@ const AgencyHomePage = (): JSX.Element => {
         {/* Desktop-only topics options side menu*/}
         {deviceType === device.desktop &&
           urlHasTopicsParamKey &&
-          topicQueried && (
-            <OptionsSideMenu agency={agency} queryStateProp={topicQueried} />
-          )}
+          topicQueried && <OptionsSideMenu agency={agency} />}
         <Flex
           id="questions"
           maxW="680px"

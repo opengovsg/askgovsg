@@ -21,12 +21,6 @@ export default {
   args: {
     agency: MockAgencyData,
   },
-  argTypes: {
-    queryStateProp: {
-      options: MockTopicData.map(({ name }) => name),
-      control: { type: 'select' },
-    },
-  },
 } as ComponentMeta<typeof OptionsSideMenu>
 
 //TODO: fix re-render on argtypes select
@@ -35,11 +29,5 @@ const Template: ComponentStory<typeof OptionsSideMenu> = (args) => (
 )
 
 export const Default = Template.bind({})
-Default.args = {
-  queryStateProp: '',
-}
 
 export const Clicked = Template.bind({})
-Clicked.args = {
-  queryStateProp: 'awards',
-}

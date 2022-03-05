@@ -1,6 +1,6 @@
 import { Box, Flex, Text, useMultiStyleConfig } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
-import { LegacyRef, useState, ReactElement, createRef } from 'react'
+import { LegacyRef, ReactElement, createRef, useContext } from 'react'
 import { useQuery } from 'react-query'
 import { Link as RouterLink } from 'react-router-dom'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
@@ -13,15 +13,10 @@ import {
 } from '../../services/TopicService'
 import { getRedirectURLTopics } from '../../util/urlparser'
 import { bySpecifiedOrder } from './util'
+import { HomePageContext } from '../../contexts/HomePageContext'
 
-const OptionsSideMenu = ({
-  agency,
-  queryStateProp,
-}: {
-  agency?: Agency
-  queryStateProp?: string
-}): ReactElement => {
-  const [queryState, setQueryState] = useState(queryStateProp)
+const OptionsSideMenu = ({ agency }: { agency?: Agency }): ReactElement => {
+  const { topicQueried, setTopicQueried } = useContext(HomePageContext)
   const styles = useMultiStyleConfig('OptionsMenu', {})
 
   const accordionRef: LegacyRef<HTMLButtonElement> = createRef()
@@ -59,13 +54,13 @@ const OptionsSideMenu = ({
         return (
           <Flex
             sx={styles.sideMenuTopicSelect}
-            bg={name === queryState ? 'secondary.100' : undefined}
+            bg={name === topicQueried ? 'secondary.100' : undefined}
             as={RouterLink}
             key={id}
             to={getRedirectURLTopics(name, agency)}
             onClick={() => {
               sendClickTopicEventToAnalytics(name)
-              setQueryState(name)
+              setTopicQueried(name)
               accordionRef.current?.click()
             }}
           >
