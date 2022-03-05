@@ -69,7 +69,7 @@ export const EditTopicCard = ({
       >
         <Flex>
           <EditablePreview />
-          <EditableInput sx={styles.accordionInput} />
+          <EditableInput sx={styles.accordionEditableInput} />
         </Flex>
 
         <Spacer />
