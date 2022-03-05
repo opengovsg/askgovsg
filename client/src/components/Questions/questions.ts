@@ -24,17 +24,17 @@ export const questionsDisplayStates: QuestionsDisplayState[] = [
   },
 ]
 
-export interface QuestionSortState {
+export interface QuestionsSortOrder {
   value: string
   label: string
 }
 
-export const DEFAULT_QUESTIONS_SORT_STATE: QuestionSortState = {
+export const DEFAULT_QUESTIONS_SORT_ORDER: QuestionsSortOrder = {
   value: 'top',
   label: 'Popular',
 }
 
-export const questionSortStates: QuestionSortState[] = [
-  DEFAULT_QUESTIONS_SORT_STATE,
+export const questionsSortOrders: QuestionsSortOrder[] = [
+  DEFAULT_QUESTIONS_SORT_ORDER,
   { value: 'basic', label: 'Most recent' },
 ]

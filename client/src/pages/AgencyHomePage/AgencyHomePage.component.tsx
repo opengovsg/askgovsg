@@ -23,7 +23,7 @@ import { Questions } from '../../components/Questions/Questions.component'
 import { HomePageContext } from '../../contexts/HomePageContext'
 
 const AgencyHomePage = (): JSX.Element => {
-  const { questionsDisplayState, topicQueryState, hasTopicsKey } =
+  const { questionsDisplayState, topicQueried, urlHasTopicsParamKey } =
     useContext(HomePageContext)
 
   const { user } = useAuth()
@@ -39,7 +39,7 @@ const AgencyHomePage = (): JSX.Element => {
     ? useQuery(GET_TOPICS_USED_BY_AGENCY_QUERY_KEY, () =>
         getTopicsUsedByAgency(agency.id),
       )
-    : useQuery(FETCH_TOPICS_QUERY_KEY, () => fetchTopics())
+    : useQuery(FETCH_TOPICS_QUERY_KEY, () => fetchTopics()) // not sure what this line does
 
   // Designer: fair to assume user will almost always edit on desktop
   const device = {
@@ -110,11 +110,11 @@ const AgencyHomePage = (): JSX.Element => {
       <Flex maxW="680px" m="auto" w="100%" minH="224px">
         <VStack alignItems="flex-start" pt="64px">
           <Text textStyle="h2" color="white">
-            {topicQueryState}
+            {topicQueried}
           </Text>
           <Text>
             {(topics ?? [])
-              .filter(({ name }) => name === topicQueryState)
+              .filter(({ name }) => name === topicQueried)
               .map((topic) => {
                 return topic.description ? (
                   <Text textStyle="body-1" color="white" mb="50px">
@@ -142,32 +142,36 @@ const AgencyHomePage = (): JSX.Element => {
         }
       />
       {/* only shown on agency home page before clicking into topics */}
-      {agency && !hasTopicsKey && bannerWithNeedHelpAndAgencyLogo}
+      {agency && !urlHasTopicsParamKey && bannerWithNeedHelpAndAgencyLogo}
       {/*  only visible when clicked into topic; coupled with OptionsSideMenu*/}
       {agency &&
-        hasTopicsKey &&
-        topicQueryState &&
+        urlHasTopicsParamKey &&
+        topicQueried &&
         deviceType === device.desktop &&
         desktopOnlyStaticTopicsBanner}
       {/* Topics Options menu: this is where topics mgmt function will be added*/}
       {/* Currently, this is shown in AgencyHomePage and (topics page + non-desktop view) -> should be decoupled? */}
       {/* In latter, mutually exclusive with (Desktop-only Topic banner + OptionsSideMenu) */}
-      {!(deviceType === device.desktop && hasTopicsKey && topicQueryState) && (
-        <OptionsMenu />
-      )}
+      {!(
+        deviceType === device.desktop &&
+        urlHasTopicsParamKey &&
+        topicQueried
+      ) && <OptionsMenu />}
       <HStack
         id="main"
         alignItems="flex-start"
         display="grid"
         gridTemplateColumns={{
           base: '1fr',
-          xl: hasTopicsKey && topicQueryState ? '1fr 2fr 1fr' : '1fr',
+          xl: urlHasTopicsParamKey && topicQueried ? '1fr 2fr 1fr' : '1fr',
         }}
       >
         {/* Desktop-only topics options side menu*/}
-        {deviceType === device.desktop && hasTopicsKey && topicQueryState && (
-          <OptionsSideMenu agency={agency} queryStateProp={topicQueryState} />
-        )}
+        {deviceType === device.desktop &&
+          urlHasTopicsParamKey &&
+          topicQueried && (
+            <OptionsSideMenu agency={agency} queryStateProp={topicQueried} />
+          )}
         <Flex
           id="questions"
           maxW="680px"
@@ -180,7 +184,7 @@ const AgencyHomePage = (): JSX.Element => {
         >
           {deviceType !== device.desktop &&
             (topics ?? [])
-              .filter(({ name }) => name === topicQueryState)
+              .filter(({ name }) => name === topicQueried)
               .map((topic) => {
                 return topic.description ? (
                   <Text textStyle="body-1" color="neutral.900" mb="50px">

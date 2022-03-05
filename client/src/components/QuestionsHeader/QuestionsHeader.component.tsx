@@ -9,7 +9,7 @@ import { useContext } from 'react'
 export const QuestionsHeader = (): JSX.Element => {
   const { user } = useAuth()
   const isAuthenticatedOfficer = user !== null && isUserPublicOfficer(user)
-  const { questionsDisplayState, sortState, setSortState } =
+  const { questionsDisplayState, questionsSortOrder, setQuestionsSortOrder } =
     useContext(HomePageContext)
 
   return (
@@ -33,8 +33,8 @@ export const QuestionsHeader = (): JSX.Element => {
       >
         <SortQuestionsMenu
           questionsDisplayState={questionsDisplayState}
-          sortState={sortState}
-          setSortState={setSortState}
+          questionsSortOrder={questionsSortOrder}
+          setQuestionsSortOrder={setQuestionsSortOrder}
         />
         {isAuthenticatedOfficer && <PostQuestionButton />}
       </Stack>

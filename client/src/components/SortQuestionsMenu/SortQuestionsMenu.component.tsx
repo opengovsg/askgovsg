@@ -10,20 +10,20 @@ import {
 import { BiSortAlt2 } from 'react-icons/bi'
 import {
   QuestionsDisplayState,
-  QuestionSortState,
-  questionSortStates,
+  QuestionsSortOrder,
+  questionsSortOrders,
 } from '../Questions/questions'
 
 interface SortQuestionsMenuProps {
   questionsDisplayState: QuestionsDisplayState
-  sortState: QuestionSortState
-  setSortState: (sortState: QuestionSortState) => void
+  questionsSortOrder: QuestionsSortOrder
+  setQuestionsSortOrder: (sortOrder: QuestionsSortOrder) => void
 }
 
 export const SortQuestionsMenu = ({
   questionsDisplayState,
-  sortState,
-  setSortState,
+  questionsSortOrder,
+  setQuestionsSortOrder,
 }: SortQuestionsMenuProps): JSX.Element => {
   return (
     <Menu matchWidth autoSelect={false} offset={[0, 0]}>
@@ -44,7 +44,7 @@ export const SortQuestionsMenu = ({
             }}
           >
             <Flex justifyContent="space-between" alignItems="center">
-              <Text textStyle="body-1">{sortState.label}</Text>
+              <Text textStyle="body-1">{questionsSortOrder.label}</Text>
               <BiSortAlt2 />
             </Flex>
           </MenuButton>
@@ -54,22 +54,28 @@ export const SortQuestionsMenu = ({
             borderWidth={0}
             boxShadow="0px 0px 10px rgba(216, 222, 235, 0.5)"
           >
-            {questionSortStates.map(({ value, label }, i) => (
+            {questionsSortOrders.map(({ value, label }, i) => (
               <MenuItem
                 key={i}
                 h="48px"
                 ps={4}
-                textStyle={sortState.value === value ? 'subhead-1' : 'body-1'}
-                fontWeight={sortState.value === value ? '500' : 'normal'}
+                textStyle={
+                  questionsSortOrder.value === value ? 'subhead-1' : 'body-1'
+                }
+                fontWeight={
+                  questionsSortOrder.value === value ? '500' : 'normal'
+                }
                 letterSpacing="-0.011em"
-                bg={sortState.value === value ? 'primary.200' : 'white'}
+                bg={
+                  questionsSortOrder.value === value ? 'primary.200' : 'white'
+                }
                 _hover={
-                  sortState.value === value
+                  questionsSortOrder.value === value
                     ? { bg: 'primary.200' }
                     : { bg: 'primary.100' }
                 }
                 onClick={() => {
-                  setSortState(questionSortStates[i])
+                  setQuestionsSortOrder(questionsSortOrders[i])
                 }}
               >
                 {label}

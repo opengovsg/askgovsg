@@ -24,42 +24,44 @@ export const Questions = ({
   const {
     questionsDisplayState,
     setQuestionsDisplayState,
-    topicQueryState,
-    setTopicQueryState,
-    hasTopicsKey,
-    setHasTopicsKey,
+    topicQueried,
+    setTopicQueried,
+    urlHasTopicsParamKey,
+    setUrlHasTopicsParamKey,
   } = useContext(HomePageContext)
   const location = useLocation()
 
-  // hacky solution to update questionDisplayState based on url
-  // major refactoring required to decouple topics and all posts
-  // current complexity caused by adapting code meant for tags for topics, afaict
+  /*
+  hacky solution to update questionDisplayState based on url
+  major refactoring required to decouple topics and all posts
+  current complexity caused by adapting code meant for tags for topics, afaict
+  */
   useEffect(() => {
-    setTopicQueryState(getTopicsQuery(location.search))
+    setTopicQueried(getTopicsQuery(location.search))
     const topicsSpecified = isSpecified(location.search, 'topics')
-    setHasTopicsKey(topicsSpecified)
-    if (hasTopicsKey) {
-      topicQueryState //  hasTopicsKey && topicQueryState implies specific topic selected
+    setUrlHasTopicsParamKey(topicsSpecified)
+    if (urlHasTopicsParamKey) {
+      topicQueried // urlContainsTopics && topicQueried -> specific topic selected
         ? setQuestionsDisplayState(
             questionsDisplayStates.find(
               (state) => state.value === 'topic',
             ) as QuestionsDisplayState,
           )
-        : // hasTopicsKey && !topicQueryState implies all topics selected
+        : // urlContainsTopics && !topicQueried -> view all questions irrespective of topic
           setQuestionsDisplayState(
             questionsDisplayStates.find(
               (state) => state.value === 'all',
             ) as QuestionsDisplayState,
           )
     } else {
-      // if both are false, only show top questions
+      // !urlContainsTopics && !topicQueried -> on homepage w nothing selected; show top questions
       setQuestionsDisplayState(
         questionsDisplayStates.find(
           (state) => state.value === 'top',
         ) as QuestionsDisplayState,
       )
     }
-  }, [location, hasTopicsKey, topicQueryState])
+  }, [location, urlHasTopicsParamKey, topicQueried])
   return (
     <Box flex="5">
       <QuestionsHeader />

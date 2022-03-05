@@ -37,11 +37,11 @@ const QuestionsList = ({
   const [page, setPage] = useState(1)
   const navigate = useNavigate()
   const {
-    sortState,
+    questionsSortOrder,
     setQuestionsDisplayState,
-    topicQueryState: topics,
+    topicQueried: topics,
   } = useContext(HomePageContext)
-  const sort = sortState.value
+  const sort = questionsSortOrder.value
 
   const { queryKey, queryFn } = listAnswerable
     ? {
