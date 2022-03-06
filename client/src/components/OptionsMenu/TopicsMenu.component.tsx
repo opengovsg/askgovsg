@@ -49,9 +49,6 @@ const TopicsMenu = (): ReactElement => {
   const { data: agency } = useQuery<Agency>(
     [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
     () => getAgencyByShortName({ shortname: `${agencyShortName}` }),
-    // Only getAgencyByShortName if agency param is present in URL
-    // If agency URL param is not present, agencyShortName is undefined
-    { enabled: agencyShortName !== undefined },
   )
   const { user } = useAuth()
   const isAgencyMember = user && user.agencyId === agency?.id
@@ -115,9 +112,7 @@ const TopicsMenu = (): ReactElement => {
           sendClickTopicEventToAnalytics={sendClickTopicEventToAnalytics}
         />
       ))}
-      {isAgencyMember ? (
-        <AddNewTopicCard agencyId={user.agencyId} />
-      ) : undefined}
+      {isAgencyMember && <AddNewTopicCard agencyId={user.agencyId} />}
     </SimpleGrid>
   )
 
