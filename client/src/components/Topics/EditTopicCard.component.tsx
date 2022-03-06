@@ -20,7 +20,10 @@ const ConfirmEditButton = (): ReactElement => {
       aria-label={'Create topic'}
       icon={<BiCheck />}
       variant="ghost"
-      onClick={onSubmit}
+      onClick={(e) => {
+        e.stopPropagation()
+        onSubmit()
+      }}
     />
   )
 }
