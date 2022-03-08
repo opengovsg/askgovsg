@@ -31,3 +31,4 @@ const Template: ComponentStory<typeof OptionsSideMenu> = (args) => (
 export const Default = Template.bind({})
 
 export const Clicked = Template.bind({})
+// TODO previously removed args due to refactoring
