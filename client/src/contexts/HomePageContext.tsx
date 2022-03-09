@@ -1,4 +1,4 @@
-import { createContext, ReactChild, ReactChildren, useState } from 'react'
+import { createContext, ReactNode, useState } from 'react'
 import {
   DEFAULT_QUESTIONS_DISPLAY_STATE,
   DEFAULT_QUESTIONS_SORT_ORDER,
@@ -7,7 +7,7 @@ import {
 } from '../components/Questions/questions'
 
 interface HomePageProps {
-  children: ReactChild | ReactChild[] | ReactChildren | ReactChildren[]
+  children: ReactNode
 }
 
 interface HomePageContextType {
