@@ -1,25 +1,13 @@
-import React, { FC, useRef, ReactElement, useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import {
   Flex,
   Spacer,
   Text,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  CSSObject,
   useDisclosure,
-  useOutsideClick,
-  IconButton,
   Editable,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
-import {
-  BiRightArrowAlt,
-  BiEditAlt,
-  BiDotsVerticalRounded,
-  BiTrash,
-} from 'react-icons/bi'
+import { BiRightArrowAlt, BiEditAlt, BiTrash } from 'react-icons/bi'
 import { Link as RouterLink } from 'react-router-dom'
 import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.component'
 import { useStyledToast } from '../StyledToast/StyledToast'
@@ -27,57 +15,7 @@ import { useMutation, useQueryClient } from 'react-query'
 import { getApiErrorMessage } from '../../api'
 import * as TopicService from '../../services/TopicService'
 import { EditTopicCard, NonEditIconNameEnum } from './EditTopicCard.component'
-
-type ActionMenuProps = {
-  actions: Array<{
-    label: string
-    onClick: (e: React.MouseEvent) => void
-    icon?: JSX.Element
-    style?: CSSObject
-  }>
-}
-
-const ActionMenu: FC<ActionMenuProps> = ({ actions }) => {
-  const ref = useRef(null)
-  const { isOpen, onClose, onToggle } = useDisclosure()
-  useOutsideClick({
-    ref,
-    handler: () => onClose(),
-  })
-  return (
-    <div ref={ref}>
-      <Menu isOpen={isOpen}>
-        <MenuButton
-          as={IconButton}
-          icon={<BiDotsVerticalRounded />}
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            onToggle()
-          }}
-          variant="ghost"
-        />
-        <MenuList>
-          {actions.map(({ onClick, label, icon, style }, i) => (
-            <MenuItem
-              key={i}
-              icon={icon}
-              sx={style}
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                onClose()
-                onClick(e)
-              }}
-            >
-              {label}
-            </MenuItem>
-          ))}
-        </MenuList>
-      </Menu>
-    </div>
-  )
-}
+import ActionMenu from './ActionMenu.component'
 
 interface TopicCardProps {
   id: number
