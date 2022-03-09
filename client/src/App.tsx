@@ -8,6 +8,7 @@ import { useEnvironment } from './hooks/useEnvironment'
 import { useFullstory } from './hooks/useFullstory'
 import Routes from './routes'
 import { theme } from './theme'
+import { HomePageProvider } from './contexts/HomePageContext'
 
 const App = (): JSX.Element => {
   useFullstory()
@@ -17,12 +18,14 @@ const App = (): JSX.Element => {
     <GoogleAnalyticsProvider>
       <ChakraProvider theme={theme}>
         <AuthProvider>
-          <>
-            <Banner data={data} isSuccess={isSuccess} />
-            <Header />
-            <Routes />
-            <Footer />
-          </>
+          <HomePageProvider>
+            <>
+              <Banner data={data} isSuccess={isSuccess} />
+              <Header />
+              <Routes />
+              <Footer />
+            </>
+          </HomePageProvider>
         </AuthProvider>
       </ChakraProvider>
     </GoogleAnalyticsProvider>

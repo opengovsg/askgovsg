@@ -1,5 +1,5 @@
 import { Center, Flex } from '@chakra-ui/layout'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useQuery } from 'react-query'
 import {
   listAnswerablePosts,
@@ -10,34 +10,44 @@ import {
 import Pagination from '../Pagination'
 import PostListComponent from '../PostList/PostList.component'
 import Spinner from '../Spinner/Spinner.component'
+import {
+  QuestionsDisplayState,
+  questionsDisplayStates,
+} from '../Questions/questions'
+import { Button, Text } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
+import { HomePageContext } from '../../contexts/HomePageContext'
 
 interface QuestionsListProps {
-  sort: string
   agencyId?: number
   tags?: string
-  topics: string
-  pageSize: number
-  footerControl?: JSX.Element
+  questionsPerPage: number
+  showViewAllQuestionsButton: boolean
   listAnswerable?: boolean
 }
 
 const QuestionsList = ({
-  sort,
   agencyId,
   tags,
-  topics,
-  pageSize,
-  footerControl,
+  questionsPerPage,
+  showViewAllQuestionsButton,
   listAnswerable,
 }: QuestionsListProps): JSX.Element => {
   // Pagination
   const [page, setPage] = useState(1)
+  const navigate = useNavigate()
+  const {
+    questionsSortOrder,
+    setQuestionsDisplayState,
+    topicQueried: topics,
+  } = useContext(HomePageContext)
+  const sort = questionsSortOrder.value
 
   const { queryKey, queryFn } = listAnswerable
     ? {
         queryKey: [
           LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
-          { sort, tags, topics, page, pageSize },
+          { sort, tags, topics, page, questionsPerPage },
         ],
         queryFn: () =>
           listAnswerablePosts({
@@ -46,15 +56,23 @@ const QuestionsList = ({
             tags,
             topics,
             page,
-            size: pageSize,
+            size: questionsPerPage,
           }),
       }
     : {
         queryKey: [
           LIST_POSTS_QUERY_KEY,
-          { sort, agencyId, tags, topics, page, pageSize },
+          {
+            sort,
+            agencyId,
+            tags,
+            topics,
+            page,
+            questionsPerPage,
+          },
         ],
-        queryFn: () => listPosts(sort, agencyId, tags, topics, page, pageSize),
+        queryFn: () =>
+          listPosts(sort, agencyId, tags, topics, page, questionsPerPage),
       }
 
   const { data, isLoading } = useQuery(queryKey, queryFn, {
@@ -72,18 +90,36 @@ const QuestionsList = ({
   ) : (
     <>
       <PostListComponent
-        posts={data?.posts.slice(0, pageSize)}
+        posts={data?.posts.slice(0, questionsPerPage)}
         defaultText={undefined}
       />
       <Center my={5}>
-        {footerControl ?? (
+        {showViewAllQuestionsButton ? (
+          <Button
+            mt={{ base: '40px', sm: '48px', xl: '58px' }}
+            variant="outline"
+            color="secondary.700"
+            borderColor="secondary.700"
+            onClick={() => {
+              window.scrollTo(0, 0)
+              navigate('?topics=')
+              setQuestionsDisplayState(
+                questionsDisplayStates.find(
+                  (state) => state.value === 'all',
+                ) as QuestionsDisplayState,
+              )
+            }}
+          >
+            <Text textStyle="subhead-1">View all questions</Text>
+          </Button>
+        ) : (
           <Flex mt={{ base: '40px', sm: '48px', xl: '58px' }}>
             <Pagination
               totalCount={data?.totalItems ?? 0}
-              pageSize={pageSize}
+              pageSize={questionsPerPage}
               onPageChange={handlePageChange}
               currentPage={page}
-            ></Pagination>
+            />
           </Flex>
         )}
       </Center>

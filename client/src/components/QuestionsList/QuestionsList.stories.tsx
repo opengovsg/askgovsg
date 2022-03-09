@@ -1,4 +1,3 @@
-import { Button, Text } from '@chakra-ui/react'
 import { rest } from 'msw'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import QuestionsList from './QuestionsList.component'
@@ -26,22 +25,8 @@ const Template: ComponentStory<typeof QuestionsList> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  sort: 'basic',
   agencyId: 1,
-  topics: 'financial support',
-  pageSize: 10,
+  questionsPerPage: 10,
   listAnswerable: true,
-  footerControl: (
-    <Button
-      mt={{ base: '40px', sm: '48px', xl: '58px' }}
-      variant="outline"
-      color="secondary.700"
-      borderColor="secondary.700"
-      onClick={() => {
-        window.scrollTo(0, 0)
-      }}
-    >
-      <Text textStyle="subhead-1">View all questions</Text>
-    </Button>
-  ),
+  showViewAllQuestionsButton: true,
 }

@@ -13,9 +13,14 @@ import Post from './pages/Post/Post.component'
 import PostForm from './pages/PostForm/PostForm.component'
 import SearchResults from './pages/SearchResults/SearchResults.component'
 import withPageTitle from './services/withPageTitle'
+import AgencyHomePage from './pages/AgencyHomePage/AgencyHomePage.component'
 
 const HomePageComponent = withPageTitle({
   component: HomePage,
+})
+
+const AgencyHomePageComponent = withPageTitle({
+  component: AgencyHomePage,
 })
 
 const SearchResultsComponent = withPageTitle({
@@ -71,7 +76,7 @@ const Routes = (): JSX.Element => {
   return (
     <ReactRoutes>
       <Route path="/" element={<HomePageComponent />} />
-      <Route path="/agency/:agency" element={<HomePageComponent />} />
+      <Route path="/agency/:agency" element={<AgencyHomePageComponent />} />
       <Route path="/questions" element={<SearchResultsComponent />} />
       <Route path="/login" element={<LoginComponent />} />
       <Route path="/questions/:id" element={<PostComponent />} />

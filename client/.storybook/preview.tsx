@@ -9,6 +9,7 @@ import { rest } from 'msw'
 import { HelmetProvider } from 'react-helmet-async'
 import { MockUserData } from '../src/__mocks__/mockData'
 import { breakpoints } from '../src/theme/breakpoints'
+import { HomePageProvider } from '../src/contexts/HomePageContext'
 
 // Initialize Mock Service Worker
 initialize()
@@ -22,7 +23,9 @@ const withChakra = (StoryFn: Function) => {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <HelmetProvider>
-              <StoryFn />
+              <HomePageProvider>
+                <StoryFn />
+              </HomePageProvider>
             </HelmetProvider>
           </AuthProvider>
         </QueryClientProvider>

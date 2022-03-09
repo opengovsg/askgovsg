@@ -2,7 +2,7 @@ import { ComponentMultiStyleConfig } from '@chakra-ui/theme'
 
 export const OptionsMenu: ComponentMultiStyleConfig = {
   parts: ['optionAccordionItems'],
-  baseStyle: ({ hasTopicsKey }) => ({
+  baseStyle: ({ urlHasTopicsParamKey }) => ({
     accordionItem: {
       h: '72px',
       alignItems: 'center',
@@ -12,36 +12,40 @@ export const OptionsMenu: ComponentMultiStyleConfig = {
       bg: 'secondary.700',
       color: 'white',
       _hover: { bg: 'secondary.600', boxShadow: 'lg' },
-      w: hasTopicsKey ? '100%' : { base: '87%', sm: '100%' },
-      mx: hasTopicsKey ? undefined : { base: 'auto', md: undefined },
-      borderTopWidth: hasTopicsKey ? { base: '1px', sm: '0px' } : undefined,
-      borderTopColor: hasTopicsKey ? 'secondary.500' : undefined,
+      w: urlHasTopicsParamKey ? '100%' : { base: '87%', sm: '100%' },
+      mx: urlHasTopicsParamKey ? undefined : { base: 'auto', md: undefined },
+      borderTopWidth: urlHasTopicsParamKey
+        ? { base: '1px', sm: '0px' }
+        : undefined,
+      borderTopColor: urlHasTopicsParamKey ? 'secondary.500' : undefined,
     },
     accordionGrid: {
       'grid-template-columns': { base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
       maxW: '620px',
       m: 'auto',
-      'grid-row-gap': hasTopicsKey
+      'grid-row-gap': urlHasTopicsParamKey
         ? { base: undefined, sm: '16px' }
         : { base: '16px' },
-      'grid-column-gap': hasTopicsKey
+      'grid-column-gap': urlHasTopicsParamKey
         ? { base: undefined, sm: '16px' }
         : { base: '16px' },
-      py: hasTopicsKey ? { base: undefined, sm: '48px' } : { base: '48px' },
+      py: urlHasTopicsParamKey
+        ? { base: undefined, sm: '48px' }
+        : { base: '48px' },
     },
     accordionButton: {
       px: '0px',
       py: '0px',
-      pt: hasTopicsKey ? '24px' : undefined,
-      pb: hasTopicsKey ? '16px' : undefined,
+      pt: urlHasTopicsParamKey ? '24px' : undefined,
+      pb: urlHasTopicsParamKey ? '16px' : undefined,
       shadow: 'md',
-      bg: hasTopicsKey ? 'secondary.700' : 'secondary.800',
+      bg: urlHasTopicsParamKey ? 'secondary.700' : 'secondary.800',
     },
     accordionHeader: {
       textStyle: 'subhead-3',
       color: 'primary.400',
-      pt: hasTopicsKey ? '8px' : undefined,
-      mt: hasTopicsKey ? undefined : '36px',
+      pt: urlHasTopicsParamKey ? '8px' : undefined,
+      mt: urlHasTopicsParamKey ? undefined : '36px',
     },
     accordionSubHeader: {
       textStyle: 'h3',
