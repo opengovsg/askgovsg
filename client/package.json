@@ -5,7 +5,7 @@
   "dependencies": {
     "@chakra-ui/react": "^1.8.6",
     "@chakra-ui/storybook-addon": "^1.0.3",
-    "@emotion/react": "^11.8.1",
+    "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
     "@fullstory/browser": "^1.5.1",
     "axios": "^0.26.1",
