@@ -91,11 +91,13 @@ describe('/agencies', () => {
       const response = await request.get(path)
 
       expect(response.status).toEqual(StatusCodes.OK)
-      expect(response.body).toStrictEqual([{
-        ...agency.get(),
-        createdAt: `${(agency.createdAt as Date).toISOString()}`,
-        updatedAt: `${(agency.updatedAt as Date).toISOString()}`,
-      }])
+      expect(response.body).toStrictEqual([
+        {
+          ...agency.get(),
+          createdAt: `${(agency.createdAt as Date).toISOString()}`,
+          updatedAt: `${(agency.updatedAt as Date).toISOString()}`,
+        },
+      ])
     })
   })
 
@@ -105,11 +107,11 @@ describe('/agencies', () => {
       const response = await request.get(path).query({ shortname, longname })
 
       expect(response.status).toEqual(StatusCodes.OK)
-      expect(response.body).toStrictEqual([{
+      expect(response.body).toStrictEqual({
         ...agency.get(),
         createdAt: `${(agency.createdAt as Date).toISOString()}`,
         updatedAt: `${(agency.updatedAt as Date).toISOString()}`,
-      }])
+      })
     })
   })
 

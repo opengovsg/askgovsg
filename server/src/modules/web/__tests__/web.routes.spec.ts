@@ -46,7 +46,7 @@ describe('/', () => {
     findOneByName: jest.fn(),
     findOneById: jest.fn(),
     listAgencyShortNames: jest.fn(),
-    listAllAgencies: jest.fn()
+    listAllAgencies: jest.fn(),
   }
   const answersService = {
     listAnswers: jest.fn(),
