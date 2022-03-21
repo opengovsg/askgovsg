@@ -30,7 +30,7 @@ describe('AgencyService', () => {
     await db.close()
   })
 
-  const expectAgencyMatch = (actualAgency: Agency | null , agency: Agency) => {
+  const expectAgencyMatch = (actualAgency: Agency | null, agency: Agency) => {
     expect(actualAgency?.id).toEqual(agency.id)
     expect(actualAgency?.shortname).toEqual(agency.shortname)
     expect(actualAgency?.longname).toEqual(agency.longname)
@@ -38,7 +38,10 @@ describe('AgencyService', () => {
     expect(actualAgency?.logo).toEqual(agency.logo)
   }
 
-  const expectListOfAgencyMatch = (actualListOfAgencies: Agency[], agency: Agency) => {
+  const expectListOfAgencyMatch = (
+    actualListOfAgencies: Agency[],
+    agency: Agency,
+  ) => {
     expect(actualListOfAgencies).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -46,13 +49,13 @@ describe('AgencyService', () => {
           shortname: agency.shortname,
           longname: agency.longname,
           email: agency.email,
-          logo: agency.logo
-        })
-      ])
+          logo: agency.logo,
+        }),
+      ]),
     )
   }
 
-  describe('listAllAgencies', () => { 
+  describe('listAllAgencies', () => {
     it('returns list of all agencies', async () => {
       const actualAgency = await service.listAllAgencies()
       expectListOfAgencyMatch(actualAgency._unsafeUnwrap(), agency)

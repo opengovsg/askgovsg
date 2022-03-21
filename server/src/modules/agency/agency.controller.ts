@@ -12,41 +12,26 @@ export class AgencyController {
   }
 
   /**
-   * list all agencies
-   * @return 200 with agency
-   * @return 404 if agency is not found
-   * @return 500 if database error
-   */
-
-  listAllAgencies: ControllerHandler<
-    undefined,
-    Agency[] | Message,
-    undefined,
-    AgencyQuery
-  > = async (req, res) => {
-    return this.agencyService
-      .listAllAgencies()
-      .map((data) => res.status(StatusCodes.OK).json(data))
-      .mapErr((error) => {
-        return res.status(error.statusCode).json({ message: error.message })
-      })
-  }
-
-  /**
-   * Find an agency by their shortname or longname
+   * list all agencies, or agency by shortname or longname
    * @param query agency's shortname or longname
    * @return 200 with agency
    * @return 404 if agency is not found
    * @return 500 if database error
    */
-  getSingleAgency: ControllerHandler<
+
+  listAgencies: ControllerHandler<
     undefined,
-    Agency | Message,
+    Agency[] | Agency | Message,
     undefined,
     AgencyQuery
   > = async (req, res) => {
-    return this.agencyService
-      .findOneByName(req.query)
+    const { longname, shortname } = req.query
+
+    const result =
+      longname || shortname
+        ? this.agencyService.findOneByName(req.query)
+        : this.agencyService.listAllAgencies()
+    return result
       .map((data) => res.status(StatusCodes.OK).json(data))
       .mapErr((error) => {
         return res.status(error.statusCode).json({ message: error.message })

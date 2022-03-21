@@ -20,7 +20,11 @@ export const routeAgencies = ({
    * @return 500 if database error
    * @access Public
    */
-  router.get('/', controller.listAllAgencies)
+  router.get(
+    '/',
+    [query('shortname').optional(), query('longname').optional()],
+    controller.listAgencies,
+  )
 
   /**
    * List all agencies' shortnames
