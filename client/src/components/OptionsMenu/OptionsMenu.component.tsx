@@ -26,8 +26,6 @@ import {
   LIST_AGENCY_SHORTNAMES,
 } from '../../services/AgencyService'
 import {
-  fetchTopics,
-  FETCH_TOPICS_QUERY_KEY,
   getTopicsUsedByAgency,
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/TopicService'
@@ -74,11 +72,11 @@ const OptionsMenu = (): ReactElement => {
     })
   }
 
-  const { isLoading, data: topics } = agency
-    ? useQuery(GET_TOPICS_USED_BY_AGENCY_QUERY_KEY, () =>
-        getTopicsUsedByAgency(agency.id),
-      )
-    : useQuery(FETCH_TOPICS_QUERY_KEY, () => fetchTopics())
+  const { isLoading, data: topics } = useQuery(
+    GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+    () => getTopicsUsedByAgency(Number(agency?.id)),
+    { enabled: !!agency },
+  )
 
   const { data: agencyShortNames } = useQuery(LIST_AGENCY_SHORTNAMES, () =>
     listAgencyShortNames(),

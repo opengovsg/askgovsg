@@ -72,7 +72,7 @@ export const Questions = ({
           questionsPerPage || questionsDisplayState.questionsPerPage
         }
         showViewAllQuestionsButton={
-          showViewAllQuestionsButton ?? questionsDisplayState.value !== 'all'
+          showViewAllQuestionsButton ?? questionsDisplayState.value === 'top'
         }
         listAnswerable={listAnswerable}
       />

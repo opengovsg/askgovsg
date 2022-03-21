@@ -1,5 +1,5 @@
 import { Box, Flex, HStack, Spacer, VStack, Text } from '@chakra-ui/react'
-import { useContext, useEffect, useState } from 'react'
+import { ReactNode, useContext, useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
@@ -12,8 +12,6 @@ import {
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
 } from '../../services/AgencyService'
 import {
-  fetchTopics,
-  FETCH_TOPICS_QUERY_KEY,
   getTopicsUsedByAgency,
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
 } from '../../services/TopicService'
@@ -35,11 +33,11 @@ const AgencyHomePage = (): JSX.Element => {
     () => getAgencyByShortName({ shortname: `${agencyShortName}` }),
     { enabled: !!agencyShortName },
   )
-  const { data: topics } = agency
-    ? useQuery(GET_TOPICS_USED_BY_AGENCY_QUERY_KEY, () =>
-        getTopicsUsedByAgency(agency.id),
-      )
-    : useQuery(FETCH_TOPICS_QUERY_KEY, () => fetchTopics()) // not sure what this line does
+  const { data: topics } = useQuery(
+    GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+    () => getTopicsUsedByAgency(Number(agency?.id)),
+    { enabled: !!agency },
+  )
 
   // Designer: fair to assume user will almost always edit on desktop
   const device = {
@@ -102,7 +100,7 @@ const AgencyHomePage = (): JSX.Element => {
       </Flex>
     </HStack>
   )
-  const desktopOnlyStaticTopicsBanner = (
+  const topicBannerWithDescription = (
     <Flex bg="secondary.800" id="hero-landing-page-desktop">
       <Box ml="46px" pt="128px" position="absolute">
         {agency && <AgencyLogo agency={agency} />}
@@ -113,8 +111,8 @@ const AgencyHomePage = (): JSX.Element => {
             {topicQueried}
           </Text>
           <Text>
-            {(topics ?? [])
-              .filter(({ name }) => name === topicQueried)
+            {topics
+              ?.filter(({ name }) => name === topicQueried)
               .map((topic) => {
                 return topic.description ? (
                   <Text textStyle="body-1" color="white" mb="50px">
@@ -127,36 +125,35 @@ const AgencyHomePage = (): JSX.Element => {
       </Flex>
     </Flex>
   )
-  return (
-    <Flex direction="column" height="100%" id="home-page">
-      <PageTitle
-        title={
-          agency ? `${agency?.shortname.toUpperCase()} FAQ - AskGov` : undefined
-        }
-        description={
-          agency
-            ? `Answers from ${
-                agency?.longname
-              } (${agency?.shortname.toUpperCase()})`
-            : undefined
-        }
-      />
-      {/* only shown on agency home page before clicking into topics */}
-      {agency && !urlHasTopicsParamKey && bannerWithNeedHelpAndAgencyLogo}
-      {/*  only visible when clicked into topic; coupled with OptionsSideMenu*/}
-      {agency &&
-        urlHasTopicsParamKey &&
-        topicQueried &&
-        deviceType === device.desktop &&
-        desktopOnlyStaticTopicsBanner}
-      {/* Topics Options menu: this is where topics mgmt function will be added*/}
-      {/* Currently, this is shown in AgencyHomePage and (topics page + non-desktop view) -> should be decoupled? */}
-      {/* In latter, mutually exclusive with (Desktop-only Topic banner + OptionsSideMenu) */}
-      {!(
-        deviceType === device.desktop &&
-        urlHasTopicsParamKey &&
-        topicQueried
-      ) && <OptionsMenu />}
+
+  const topicsDescriptionAboveQuestions = topics
+    ?.filter(({ name }) => name === topicQueried)
+    .map((topic) => {
+      return topic.description ? (
+        <Text textStyle="body-1" color="neutral.900" mb="50px">
+          {topic.description}
+        </Text>
+      ) : null
+    })
+
+  const agencyQuestions = (
+    <Questions
+      agencyId={agency?.id}
+      questionsPerPage={
+        isAuthenticatedOfficer ? 50 : questionsDisplayState.questionsPerPage
+      }
+      showViewAllQuestionsButton={
+        questionsDisplayState.value === 'top' && !isAuthenticatedOfficer
+      }
+      listAnswerable={isAuthenticatedOfficer && user?.agencyId === agency?.id}
+    />
+  )
+
+  type WrapperProps = {
+    children: ReactNode
+  }
+  const HStackWrapper = ({ children }: WrapperProps) => {
+    return (
       <HStack
         id="main"
         alignItems="flex-start"
@@ -166,46 +163,84 @@ const AgencyHomePage = (): JSX.Element => {
           xl: urlHasTopicsParamKey && topicQueried ? '1fr 2fr 1fr' : '1fr',
         }}
       >
-        {/* Desktop-only topics options side menu*/}
-        {deviceType === device.desktop &&
-          urlHasTopicsParamKey &&
-          topicQueried && <OptionsSideMenu agency={agency} />}
-        <Flex
-          id="questions"
-          maxW="680px"
-          m="auto"
-          justifySelf="center"
-          w="100%"
-          pt={{ base: '32px', sm: '80px', xl: '90px' }}
-          px={8}
-          direction={{ base: 'column', lg: 'row' }}
-        >
-          {deviceType !== device.desktop &&
-            (topics ?? [])
-              .filter(({ name }) => name === topicQueried)
-              .map((topic) => {
-                return topic.description ? (
-                  <Text textStyle="body-1" color="neutral.900" mb="50px">
-                    {topic.description}
-                  </Text>
-                ) : null
-              })}
-          <Questions
-            agencyId={agency?.id}
-            questionsPerPage={
-              isAuthenticatedOfficer
-                ? 50
-                : questionsDisplayState.questionsPerPage
-            }
-            showViewAllQuestionsButton={
-              !isAuthenticatedOfficer && !urlHasTopicsParamKey
-            }
-            listAnswerable={
-              isAuthenticatedOfficer && user?.agencyId === agency?.id
-            }
-          />
-        </Flex>
+        {children}
       </HStack>
+    )
+  }
+
+  const FlexWrapper = ({ children }: WrapperProps) => {
+    return (
+      <Flex
+        id="questions"
+        maxW="680px"
+        m="auto"
+        justifySelf="center"
+        w="100%"
+        pt={{ base: '32px', sm: '80px', xl: '90px' }}
+        px={8}
+        direction={{ base: 'column', lg: 'row' }}
+      >
+        {children}
+      </Flex>
+    )
+  }
+
+  const homePageDefaultView = (
+    <>
+      {bannerWithNeedHelpAndAgencyLogo}
+      <OptionsMenu />
+      <HStackWrapper>
+        <FlexWrapper>{agencyQuestions}</FlexWrapper>
+      </HStackWrapper>
+    </>
+  )
+
+  const homePageAllQuestionsView = (
+    <>
+      <OptionsMenu />
+      <HStackWrapper>
+        <FlexWrapper>{agencyQuestions}</FlexWrapper>
+      </HStackWrapper>
+    </>
+  )
+
+  const topicPageDesktopView = (
+    <>
+      {topicBannerWithDescription}
+      <HStackWrapper>
+        <OptionsSideMenu agency={agency} topics={topics} />
+        <FlexWrapper>{agencyQuestions}</FlexWrapper>
+      </HStackWrapper>
+    </>
+  )
+
+  const topicPageMobileView = (
+    <>
+      <OptionsMenu />
+      <HStackWrapper>
+        <FlexWrapper>
+          {topicsDescriptionAboveQuestions}
+          {agencyQuestions}
+        </FlexWrapper>
+      </HStackWrapper>
+    </>
+  )
+
+  return (
+    <Flex direction="column" height="100%" id="home-page">
+      <PageTitle
+        title={`${agency?.shortname.toUpperCase()} FAQ - AskGov`}
+        description={`Answers from ${
+          agency?.longname
+        } (${agency?.shortname.toUpperCase()})`}
+      />
+      {!urlHasTopicsParamKey
+        ? homePageDefaultView // no topics param key -> default homepage
+        : !topicQueried
+        ? homePageAllQuestionsView // topics param key + no topic queried -> all questions
+        : deviceType === device.desktop // specific topic selected
+        ? topicPageDesktopView
+        : topicPageMobileView}
       <Spacer />
       <CitizenRequest agency={agency} />
     </Flex>
