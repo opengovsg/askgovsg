@@ -25,7 +25,7 @@ export class AgencyController {
     AgencyQuery
   > = async (req, res) => {
     return this.agencyService
-      .listAgencies()
+      .listAllAgencies()
       .map((data) => res.status(StatusCodes.OK).json(data))
       .mapErr((error) => {
         return res.status(error.statusCode).json({ message: error.message })

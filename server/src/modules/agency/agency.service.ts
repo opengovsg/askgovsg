@@ -20,20 +20,21 @@ export class AgencyService {
    * @returns err(DatabaseError) if database errors occurs whilst retrieving agency
    * @returns err(MissingAgencyError) if agency does not exist in the database
    */
-  listAgencies = (): ResultAsync<
-    Agency[],
-    DatabaseError | MissingAgencyError
-  > => {
-    return ResultAsync.fromPromise(this.Agency.findAll({}), (error) => {
-      logger.error({
-        message: 'Database error while retrieving list of all agencies.',
-        meta: {
-          function: 'listAgencies',
-        },
-        error,
-      })
-      return new DatabaseError()
-    }).andThen((agencies) => {
+  listAllAgencies = (): 
+  ResultAsync<Agency[], DatabaseError | MissingAgencyError> => {
+    return ResultAsync.fromPromise(
+      this.Agency.findAll({}),
+      (error) => {
+        logger.error({
+          message: 'Database error while retrieving list of all agencies.',
+          meta: {
+            function: 'listAgencies'
+          },
+          error,
+        })
+        return new DatabaseError()
+      },
+    ).andThen((agencies) => {
       if (!agencies) {
         return errAsync(new MissingAgencyError())
       }
