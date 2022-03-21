@@ -15,6 +15,34 @@ export class AgencyService {
   }
 
   /**
+   * List of all agencies
+   * @returns ok(agency) if retrieval is successful
+   * @returns err(DatabaseError) if database errors occurs whilst retrieving agency
+   * @returns err(MissingAgencyError) if agency does not exist in the database
+   */
+  listAllAgencies = (): 
+  ResultAsync<Agency[], DatabaseError | MissingAgencyError> => {
+    return ResultAsync.fromPromise(
+      this.Agency.findAll({}),
+      (error) => {
+        logger.error({
+          message: 'Database error while retrieving list of all agencies.',
+          meta: {
+            function: 'listAgencies'
+          },
+          error,
+        })
+        return new DatabaseError()
+      },
+    ).andThen((agencies) => {
+      if (!agencies) {
+        return errAsync(new MissingAgencyError())
+      }
+      return okAsync(agencies)
+    })
+  }
+
+  /**
    * Find an agency by their shortname or longname
    * @param query agency's shortname or longname
    * @returns ok(agency) if retrieval is successful
