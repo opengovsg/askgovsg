@@ -7,7 +7,7 @@ export type AgencyQuery = {
 }
 
 export const getListOfAllAgencies = (): Promise<Agency[]> => {
-  return ApiClient.get<Agency[]>('/').then(({ data }) => data)
+  return ApiClient.get<Agency[]>('/agencies/').then(({ data }) => data)
 }
 
 export const getAgencyByShortName = (query: AgencyQuery): Promise<Agency> => {
