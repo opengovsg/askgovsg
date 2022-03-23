@@ -22,8 +22,6 @@ import {
   Agency,
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
-  listAgencyShortNames,
-  LIST_AGENCY_SHORTNAMES,
   getListOfAllAgencies,
   GET_LIST_OF_ALL_AGENCIES,
 } from '../../services/AgencyService'
