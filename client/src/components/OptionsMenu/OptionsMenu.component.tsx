@@ -22,8 +22,8 @@ import {
   Agency,
   getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
-  listAgencyShortNames,
-  LIST_AGENCY_SHORTNAMES,
+  getListOfAllAgencies,
+  GET_LIST_OF_ALL_AGENCIES,
 } from '../../services/AgencyService'
 import {
   getTopicsUsedByAgency,
@@ -78,17 +78,20 @@ const OptionsMenu = (): ReactElement => {
     { enabled: !!agency },
   )
 
-  const { data: agencyShortNames } = useQuery(LIST_AGENCY_SHORTNAMES, () =>
-    listAgencyShortNames(),
+  const { data: listOfAllAgencies } = useQuery(GET_LIST_OF_ALL_AGENCIES, () =>
+    getListOfAllAgencies(),
   )
 
   const topicsToShow = (topics || [])
     .filter((topic) => topic.name !== topicQueried)
     .sort(bySpecifiedOrder(agency))
 
-  const agencyShortNamesToShow = (agencyShortNames || [])
-    .map((agency) => agency.shortname)
-    .filter((shortname) => shortname !== agencyShortName)
+  const agencyNamesToShow = (listOfAllAgencies || []).map((agency) => {
+    return {
+      shortname: agency.shortname,
+      longname: agency.longname,
+    }
+  })
 
   const optionsMenu = (
     <SimpleGrid sx={styles.accordionGrid}>
@@ -118,17 +121,19 @@ const OptionsMenu = (): ReactElement => {
               </Flex>
             )
           })
-        : agencyShortNamesToShow.map((shortname) => {
+        : agencyNamesToShow.map((agency) => {
             return (
               <Flex
                 sx={styles.accordionItem}
                 role="group"
                 as={RouterLink}
-                key={shortname}
-                to={getRedirectURLAgency(shortname)}
+                key={agency.shortname}
+                to={getRedirectURLAgency(agency.shortname)}
               >
                 <Flex m="auto" w="100%" px={8}>
-                  <Text>{shortname.toUpperCase()}</Text>
+                  <Text>
+                    {agency.longname} ({agency.shortname.toUpperCase()})
+                  </Text>
                   <Spacer />
                   <Flex alignItems="center">
                     <BiRightArrowAlt />
