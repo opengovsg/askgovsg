@@ -40,6 +40,7 @@ describe('/agencies', () => {
     db = await createTestDatabase()
     Agency = getModel<Agency & Model>(db, ModelName.Agency)
     Topic = getModel<Topic & Model>(db, ModelName.Topic)
+
     agency = await Agency.create({
       shortname: 'was',
       longname: 'Work Allocation Singapore',
@@ -83,6 +84,21 @@ describe('/agencies', () => {
 
   afterAll(async () => {
     await db.close()
+  })
+
+  describe('/', () => {
+    it('returns list of all agencies', async () => {
+      const response = await request.get(path)
+
+      expect(response.status).toEqual(StatusCodes.OK)
+      expect(response.body).toStrictEqual([
+        {
+          ...agency.get(),
+          createdAt: `${(agency.createdAt as Date).toISOString()}`,
+          updatedAt: `${(agency.updatedAt as Date).toISOString()}`,
+        },
+      ])
+    })
   })
 
   describe('?shortname=<shortname>&longname=<longname>', () => {

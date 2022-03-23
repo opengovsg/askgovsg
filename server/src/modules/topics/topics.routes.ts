@@ -62,11 +62,11 @@ export const routeTopics = ({
   )
 
   /**
-   * Delete a post
-   * @route  DELETE /api/posts/:id
+   * Delete a topic
+   * @route  DELETE /api/topics/:id
    * @return 200 if successful
    * @return 401 if user is not logged in
-   * @return 403 if user does not have permission to delete post
+   * @return 403 if user does not have permission to delete topic
    * @return 500 if database error
    * @access Private
    */
@@ -77,12 +77,12 @@ export const routeTopics = ({
   )
 
   /**
-   * Update a post
-   * @route  PUT /api/posts/:id
+   * Update a topic
+   * @route  PUT /api/topics/:id
    * @return 200 if successful
    * @return 400 if title and description is too short or long
    * @return 401 if user is not logged in
-   * @return 403 if user does not have permission to delete post
+   * @return 403 if user does not have permission to delete topic
    * @return 500 if database error
    * @access Private
    */

@@ -1,27 +1,22 @@
 import { Box, Flex, Text, useMultiStyleConfig } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
-import { LegacyRef, useState, ReactElement, createRef } from 'react'
-import { useQuery } from 'react-query'
+import { LegacyRef, ReactElement, createRef, useContext } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
-import { Agency } from '../../services/AgencyService'
-import {
-  fetchTopics,
-  FETCH_TOPICS_QUERY_KEY,
-  getTopicsUsedByAgency,
-  GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
-} from '../../services/TopicService'
+import { Agency } from '~shared/types/base'
 import { getRedirectURLTopics } from '../../util/urlparser'
 import { bySpecifiedOrder } from './util'
+import { HomePageContext } from '../../contexts/HomePageContext'
+import { GetTopicsDto } from '../../api'
 
 const OptionsSideMenu = ({
   agency,
-  queryStateProp,
+  topics,
 }: {
   agency?: Agency
-  queryStateProp?: string
+  topics?: GetTopicsDto[] | undefined
 }): ReactElement => {
-  const [queryState, setQueryState] = useState(queryStateProp)
+  const { topicQueried, setTopicQueried } = useContext(HomePageContext)
   const styles = useMultiStyleConfig('OptionsMenu', {})
 
   const accordionRef: LegacyRef<HTMLButtonElement> = createRef()
@@ -46,12 +41,6 @@ const OptionsSideMenu = ({
     })
   }
 
-  const { data: topics } = agency
-    ? useQuery(GET_TOPICS_USED_BY_AGENCY_QUERY_KEY, () =>
-        getTopicsUsedByAgency(agency.id),
-      )
-    : useQuery(FETCH_TOPICS_QUERY_KEY, () => fetchTopics())
-
   const sideMenu = agency && (
     <Box id="options-menu-side" sx={styles.sideMenuBox}>
       <Text sx={styles.sideMenuTopicHeader}>Topics</Text>
@@ -59,13 +48,13 @@ const OptionsSideMenu = ({
         return (
           <Flex
             sx={styles.sideMenuTopicSelect}
-            bg={name === queryState ? 'secondary.100' : undefined}
+            bg={name === topicQueried ? 'secondary.100' : undefined}
             as={RouterLink}
             key={id}
             to={getRedirectURLTopics(name, agency)}
             onClick={() => {
               sendClickTopicEventToAnalytics(name)
-              setQueryState(name)
+              setTopicQueried(name)
               accordionRef.current?.click()
             }}
           >
