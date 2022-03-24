@@ -130,7 +130,7 @@ const AgencyHomePage = (): JSX.Element => {
     ?.filter(({ name }) => name === topicQueried)
     .map((topic) => {
       return topic.description ? (
-        <Text textStyle="body-1" color="neutral.900" mb="50px">
+        <Text textStyle="body-1" color="neutral.900" mb={{ sm: '50px' }}>
           {topic.description}
         </Text>
       ) : null
