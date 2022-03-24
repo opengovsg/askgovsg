@@ -178,7 +178,7 @@ const AgencyHomePage = (): JSX.Element => {
         w="100%"
         pt={{ base: '32px', sm: '80px', xl: '90px' }}
         px={8}
-        direction={{ base: 'column', lg: 'row' }}
+        direction={{ base: 'column', xl: 'row' }}
       >
         {children}
       </Flex>
@@ -217,12 +217,10 @@ const AgencyHomePage = (): JSX.Element => {
   const topicPageMobileView = (
     <>
       <OptionsMenu />
-      <HStackWrapper>
-        <FlexWrapper>
-          {topicsDescriptionAboveQuestions}
-          {agencyQuestions}
-        </FlexWrapper>
-      </HStackWrapper>
+      <FlexWrapper>
+        {topicsDescriptionAboveQuestions}
+        {agencyQuestions}
+      </FlexWrapper>
     </>
   )
 
