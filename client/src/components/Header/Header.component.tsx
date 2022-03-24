@@ -10,7 +10,7 @@ import {
   useDisclosure,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { useDetectDevice } from '../../hooks/useDetectDevice'
