@@ -1,5 +1,5 @@
 import { Box, Flex, HStack, Spacer, VStack, Text } from '@chakra-ui/react'
-import { ReactNode, useContext, useEffect, useState } from 'react'
+import { ReactNode, useContext } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 import { useDetectDevice } from '../../hooks/useDetectDevice'

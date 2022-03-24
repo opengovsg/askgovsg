@@ -1,7 +1,7 @@
 import { Box, Flex, HStack, Spacer, VStack } from '@chakra-ui/react'
 import { useMultiStyleConfig } from '@chakra-ui/system'
 import { useQuery } from 'react-query'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDetectDevice } from '../../hooks/useDetectDevice'
 import { useLocation } from 'react-router-dom'
 import OptionsSideMenu from '../../components/OptionsMenu/OptionsSideMenu.component'
