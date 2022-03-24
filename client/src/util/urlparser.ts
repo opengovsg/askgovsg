@@ -1,5 +1,4 @@
 import queryString from 'query-string'
-import { Agency } from '../services/AgencyService'
 
 export const getTagsQuery = (search: string): string => {
   const query = queryString.parse(search)
@@ -24,12 +23,13 @@ export const getTopicsQuery = (search: string): string => {
 export const isSpecified = (search: string, key: string): boolean =>
   key in queryString.parse(search)
 
-export const getRedirectURLTopics = (name: string, agency?: Agency): string => {
-  return agency
-    ? `/agency/${encodeURIComponent(
-        agency.shortname,
-      )}?topics=${encodeURIComponent(name)}`
-    : `/?topics=${encodeURIComponent(name)}`
+export const getRedirectURLTopics = (
+  topic: string,
+  agencyShortName: string,
+): string => {
+  return `/agency/${encodeURIComponent(
+    agencyShortName,
+  )}?topics=${encodeURIComponent(topic)}`
 }
 
 export const getRedirectURLAgency = (agencyShortName: string): string => {
