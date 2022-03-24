@@ -21,7 +21,7 @@ export const OptionsMenu: ComponentMultiStyleConfig = {
     },
     accordionGrid: {
       'grid-template-columns': { base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
-      maxW: '620px',
+      maxW: '680px',
       m: 'auto',
       'grid-row-gap': urlHasTopicsParamKey
         ? { base: undefined, sm: '16px' }
