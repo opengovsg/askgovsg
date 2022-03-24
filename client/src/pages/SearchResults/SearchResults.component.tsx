@@ -2,6 +2,7 @@ import { Box, Flex, HStack, Spacer, VStack } from '@chakra-ui/react'
 import { useMultiStyleConfig } from '@chakra-ui/system'
 import { useQuery } from 'react-query'
 import { useEffect, useRef, useState } from 'react'
+import { useDetectDevice } from '../../hooks/useDetectDevice'
 import { useLocation } from 'react-router-dom'
 import OptionsSideMenu from '../../components/OptionsMenu/OptionsSideMenu.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
@@ -37,32 +38,8 @@ const SearchResults = (): JSX.Element => {
     () => sendSearchRequest({ query: searchQuery, agencyId: agency?.id }),
   )
 
-  const device = {
-    mobile: 'mobile',
-    tablet: 'tablet',
-    desktop: 'desktop',
-  }
+  const deviceType = useDetectDevice()
 
-  const [deviceType, setDeviceType] = useState(
-    window.innerWidth < 480
-      ? device.mobile
-      : window.innerWidth < 1440
-      ? device.tablet
-      : device.desktop,
-  )
-  const checkViewportSize = () => {
-    setDeviceType(
-      window.innerWidth < 480
-        ? device.mobile
-        : window.innerWidth < 1440
-        ? device.tablet
-        : device.desktop,
-    )
-  }
-  useEffect(() => {
-    window.addEventListener('resize', checkViewportSize)
-    return () => window.removeEventListener('resize', checkViewportSize)
-  }, [])
   const breadcrumbContentRef = useRef<{ text: string; link: string }[]>([])
 
   useEffect(() => {
@@ -106,7 +83,7 @@ const SearchResults = (): JSX.Element => {
         ) : (
           ''
         )}
-        {deviceType === device.desktop && (
+        {deviceType === 'desktop' && (
           <>
             <Box ml="46px" position="absolute">
               {agency && <AgencyLogo agency={agency} />}
