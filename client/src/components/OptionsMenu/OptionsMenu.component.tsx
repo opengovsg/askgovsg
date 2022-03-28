@@ -93,6 +93,18 @@ const OptionsMenu = (): ReactElement => {
     }
   })
 
+  const OptionsItem = (option: string) => {
+    return (
+      <Flex m="auto" w="100%" px={8}>
+        <Text maxW="244px">{option}</Text>
+        <Spacer />
+        <Flex alignItems="center">
+          <BiRightArrowAlt />
+        </Flex>
+      </Flex>
+    )
+  }
+
   const optionsMenu = (
     <SimpleGrid sx={styles.accordionGrid}>
       {agency
@@ -100,24 +112,17 @@ const OptionsMenu = (): ReactElement => {
             return (
               <Flex
                 sx={styles.accordionItem}
-                _hover={{ bg: 'secondary.600', boxShadow: 'lg' }}
                 role="group"
                 as={RouterLink}
                 key={id}
-                to={getRedirectURLTopics(name, agency)}
+                to={getRedirectURLTopics(name, agency.shortname)}
                 onClick={() => {
                   sendClickTopicEventToAnalytics(name)
                   setTopicQueried(name)
                   accordionRef.current?.click()
                 }}
               >
-                <Flex m="auto" w="100%" px={8}>
-                  <Text>{name}</Text>
-                  <Spacer />
-                  <Flex alignItems="center">
-                    <BiRightArrowAlt />
-                  </Flex>
-                </Flex>
+                {OptionsItem(name)}
               </Flex>
             )
           })
@@ -130,15 +135,9 @@ const OptionsMenu = (): ReactElement => {
                 key={agency.shortname}
                 to={getRedirectURLAgency(agency.shortname)}
               >
-                <Flex m="auto" w="100%" px={8}>
-                  <Text>
-                    {agency.longname} ({agency.shortname.toUpperCase()})
-                  </Text>
-                  <Spacer />
-                  <Flex alignItems="center">
-                    <BiRightArrowAlt />
-                  </Flex>
-                </Flex>
+                {OptionsItem(
+                  `${agency.longname} (${agency.shortname.toUpperCase()})`,
+                )}
               </Flex>
             )
           })}

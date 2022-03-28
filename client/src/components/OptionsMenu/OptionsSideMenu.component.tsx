@@ -51,7 +51,7 @@ const OptionsSideMenu = ({
             bg={name === topicQueried ? 'secondary.100' : undefined}
             as={RouterLink}
             key={id}
-            to={getRedirectURLTopics(name, agency)}
+            to={getRedirectURLTopics(name, agency.shortname)}
             onClick={() => {
               sendClickTopicEventToAnalytics(name)
               setTopicQueried(name)

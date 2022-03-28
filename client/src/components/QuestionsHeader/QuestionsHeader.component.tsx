@@ -15,14 +15,13 @@ export const QuestionsHeader = (): JSX.Element => {
   return (
     <Flex
       flexDir={{ base: 'column-reverse', sm: 'row' }}
-      mb={5}
       justifyContent="space-between"
     >
       <Text
         color="primary.500"
         textStyle="subhead-3"
-        mt={{ base: '32px', sm: 0 }}
-        mb={{ sm: '20px' }}
+        mt={{ base: '32px', sm: '50px', xl: '58px' }}
+        mb={{ sm: '18px' }}
         d="block"
       >
         {questionsDisplayState.label}

@@ -130,7 +130,7 @@ const AgencyHomePage = (): JSX.Element => {
     ?.filter(({ name }) => name === topicQueried)
     .map((topic) => {
       return topic.description ? (
-        <Text textStyle="body-1" color="neutral.900" mb="50px">
+        <Text textStyle="body-1" color="neutral.900" pt={{ base: 8, sm: 10 }}>
           {topic.description}
         </Text>
       ) : null
@@ -176,9 +176,8 @@ const AgencyHomePage = (): JSX.Element => {
         m="auto"
         justifySelf="center"
         w="100%"
-        pt={{ base: '32px', sm: '80px', xl: '90px' }}
-        px={8}
-        direction={{ base: 'column', lg: 'row' }}
+        px={{ base: 8, sm: 0 }}
+        direction={{ base: 'column', xl: 'row' }}
       >
         {children}
       </Flex>
@@ -217,12 +216,10 @@ const AgencyHomePage = (): JSX.Element => {
   const topicPageMobileView = (
     <>
       <OptionsMenu />
-      <HStackWrapper>
-        <FlexWrapper>
-          {topicsDescriptionAboveQuestions}
-          {agencyQuestions}
-        </FlexWrapper>
-      </HStackWrapper>
+      <FlexWrapper>
+        {topicsDescriptionAboveQuestions}
+        {agencyQuestions}
+      </FlexWrapper>
     </>
   )
 
