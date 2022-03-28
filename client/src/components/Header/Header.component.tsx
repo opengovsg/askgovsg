@@ -13,8 +13,7 @@ import {
 import { useEffect } from 'react'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useQuery } from 'react-query'
-import { useDetectDevice } from '../../hooks/useDetectDevice'
-import { device } from '../../util/devicetype'
+import { useDetectDevice, DeviceType } from '../../hooks/useDetectDevice'
 import { Link as RouterLink, matchPath, useLocation } from 'react-router-dom'
 import { TagType } from '~shared/types/base'
 import { ReactComponent as Ask } from '../../assets/ask.svg'
@@ -156,7 +155,7 @@ const Header = (): JSX.Element => {
   return (
     <Flex direction="column" sx={styles.root}>
       <Masthead />
-      {deviceType === device.mobile ? (
+      {deviceType === DeviceType.Mobile ? (
         <>
           {!matchQuestions ? (
             <Collapse in={headerIsOpen} animateOpacity={false}>

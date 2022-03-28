@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react'
-import { device } from '../util/devicetype'
+
+export enum DeviceType {
+  Mobile = 'mobile',
+  Tablet = 'tablet',
+  Desktop = 'desktop',
+}
 
 export const useDetectDevice = () => {
   const getCurrentDeviceSize = () => {
     return window.innerWidth < 480
-      ? device.mobile
+      ? DeviceType.Mobile
       : window.innerWidth < 1440
-      ? device.tablet
-      : device.desktop
+      ? DeviceType.Tablet
+      : DeviceType.Desktop
   }
 
   const [deviceType, setDeviceType] = useState(getCurrentDeviceSize())
