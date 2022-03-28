@@ -1,7 +1,9 @@
 import { Box, Flex, HStack, Spacer, VStack, Text } from '@chakra-ui/react'
-import { ReactNode, useContext, useEffect, useState } from 'react'
+import { ReactNode, useContext } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
+import { useDetectDevice } from '../../hooks/useDetectDevice'
+import { device } from '../../util/devicetype'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
@@ -40,34 +42,7 @@ const AgencyHomePage = (): JSX.Element => {
   )
 
   // Designer: fair to assume user will almost always edit on desktop
-  const device = {
-    mobile: 'mobile',
-    tablet: 'tablet',
-    desktop: 'desktop',
-  }
-
-  const [deviceType, setDeviceType] = useState(
-    window.innerWidth < 480
-      ? device.mobile
-      : window.innerWidth < 1440
-      ? device.tablet
-      : device.desktop,
-  )
-
-  const checkViewportSize = () => {
-    setDeviceType(
-      window.innerWidth < 480
-        ? device.mobile
-        : window.innerWidth < 1440
-        ? device.tablet
-        : device.desktop,
-    )
-  }
-
-  useEffect(() => {
-    window.addEventListener('resize', checkViewportSize)
-    return () => window.removeEventListener('resize', checkViewportSize)
-  }, [])
+  const deviceType = useDetectDevice()
 
   const bannerWithNeedHelpAndAgencyLogo = (
     <HStack

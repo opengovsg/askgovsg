@@ -10,9 +10,10 @@ import {
   useDisclosure,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { BiLinkExternal } from 'react-icons/bi'
 import { useQuery } from 'react-query'
+import { useDetectDevice, DeviceType } from '../../hooks/useDetectDevice'
 import { Link as RouterLink, matchPath, useLocation } from 'react-router-dom'
 import { TagType } from '~shared/types/base'
 import { ReactComponent as Ask } from '../../assets/ask.svg'
@@ -116,39 +117,7 @@ const Header = (): JSX.Element => {
     else if (window.pageYOffset < 5) openHeader()
   }
 
-  const device = {
-    mobile: 'mobile',
-    tablet: 'tablet',
-    desktop: 'desktop',
-  }
-
-  // Responsive styling based on viewport width is implemented with window.innerWidth
-  // instead of useBreakpointValue as useBreakpointValue switches value to true between
-  // 345px - 465px for some reason.
-  // 480 px = 30em if the breakpoint for mobile
-  // 1440px = 90em is the breakpoint for desktop
-  const [deviceType, setDeviceType] = useState(
-    window.innerWidth < 480
-      ? device.mobile
-      : window.innerWidth < 1440
-      ? device.tablet
-      : device.desktop,
-  )
-
-  const checkViewportSize = () => {
-    setDeviceType(
-      window.innerWidth < 480
-        ? device.mobile
-        : window.innerWidth < 1440
-        ? device.tablet
-        : device.desktop,
-    )
-  }
-
-  useEffect(() => {
-    window.addEventListener('resize', checkViewportSize)
-    return () => window.removeEventListener('resize', checkViewportSize)
-  }, [])
+  const deviceType = useDetectDevice()
 
   // attach to matchQuestions?.path instead of matchQuestions because matchQuestions is
   // an object and will trigger the callback without values within the object changing
@@ -186,7 +155,7 @@ const Header = (): JSX.Element => {
   return (
     <Flex direction="column" sx={styles.root}>
       <Masthead />
-      {deviceType === device.mobile ? (
+      {deviceType === DeviceType.Mobile ? (
         <>
           {!matchQuestions ? (
             <Collapse in={headerIsOpen} animateOpacity={false}>
