@@ -3,6 +3,7 @@ import { ReactNode, useContext } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 import { useDetectDevice } from '../../hooks/useDetectDevice'
+import { device } from '../../util/devicetype'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
@@ -212,7 +213,7 @@ const AgencyHomePage = (): JSX.Element => {
         ? homePageDefaultView // no topics param key -> default homepage
         : !topicQueried
         ? homePageAllQuestionsView // topics param key + no topic queried -> all questions
-        : deviceType === 'desktop' // specific topic selected
+        : deviceType === device.desktop // specific topic selected
         ? topicPageDesktopView
         : topicPageMobileView}
       <Spacer />

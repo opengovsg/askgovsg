@@ -3,6 +3,7 @@ import { useMultiStyleConfig } from '@chakra-ui/system'
 import { useQuery } from 'react-query'
 import { useEffect, useRef } from 'react'
 import { useDetectDevice } from '../../hooks/useDetectDevice'
+import { device } from '../../util/devicetype'
 import { useLocation } from 'react-router-dom'
 import OptionsSideMenu from '../../components/OptionsMenu/OptionsSideMenu.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
@@ -83,7 +84,7 @@ const SearchResults = (): JSX.Element => {
         ) : (
           ''
         )}
-        {deviceType === 'desktop' && (
+        {deviceType === device.desktop && (
           <>
             <Box ml="46px" position="absolute">
               {agency && <AgencyLogo agency={agency} />}

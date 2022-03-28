@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react'
+import { device } from '../util/devicetype'
 
 export const useDetectDevice = () => {
-  const device = {
-    mobile: 'mobile',
-    tablet: 'tablet',
-    desktop: 'desktop',
-  }
-
   const getCurrentDeviceSize = () => {
     return window.innerWidth < 480
       ? device.mobile
