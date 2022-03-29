@@ -23,7 +23,7 @@ const HomePage = (): JSX.Element => {
           justifySelf="center"
           w="100%"
           pt={{ sm: '30px', xl: '22px' }}
-          px={{ base: 8, sm: 0 }}
+          px={{ base: 8, md: 0 }}
           direction={{ base: 'column', lg: 'row' }}
         >
           <Questions />

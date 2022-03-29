@@ -150,7 +150,7 @@ const AgencyHomePage = (): JSX.Element => {
         m="auto"
         justifySelf="center"
         w="100%"
-        px={{ base: 8, sm: 0 }}
+        px={{ base: 8, md: 0 }}
         direction={{ base: 'column', xl: 'row' }}
       >
         {children}
