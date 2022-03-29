@@ -56,7 +56,7 @@ export const OptionsMenu: ComponentMultiStyleConfig = {
       maxW: '680px',
       m: 'auto',
       w: '100%',
-      px: { base: 8, sm: 0 },
+      px: { base: 8, md: 0 },
       textAlign: 'left',
     },
     sideMenuBox: {
