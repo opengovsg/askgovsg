@@ -1,7 +1,8 @@
 import { Box, Flex, HStack, Spacer, VStack, Text } from '@chakra-ui/react'
-import { ReactNode, useContext, useEffect, useState } from 'react'
+import { ReactNode, useContext } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
+import { useDetectDevice, DeviceType } from '../../hooks/useDetectDevice'
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
@@ -40,34 +41,7 @@ const AgencyHomePage = (): JSX.Element => {
   )
 
   // Designer: fair to assume user will almost always edit on desktop
-  const device = {
-    mobile: 'mobile',
-    tablet: 'tablet',
-    desktop: 'desktop',
-  }
-
-  const [deviceType, setDeviceType] = useState(
-    window.innerWidth < 480
-      ? device.mobile
-      : window.innerWidth < 1440
-      ? device.tablet
-      : device.desktop,
-  )
-
-  const checkViewportSize = () => {
-    setDeviceType(
-      window.innerWidth < 480
-        ? device.mobile
-        : window.innerWidth < 1440
-        ? device.tablet
-        : device.desktop,
-    )
-  }
-
-  useEffect(() => {
-    window.addEventListener('resize', checkViewportSize)
-    return () => window.removeEventListener('resize', checkViewportSize)
-  }, [])
+  const deviceType = useDetectDevice()
 
   const bannerWithNeedHelpAndAgencyLogo = (
     <HStack
@@ -130,7 +104,7 @@ const AgencyHomePage = (): JSX.Element => {
     ?.filter(({ name }) => name === topicQueried)
     .map((topic) => {
       return topic.description ? (
-        <Text textStyle="body-1" color="neutral.900" mb="50px">
+        <Text textStyle="body-1" color="neutral.900" pt={{ base: 8, sm: 10 }}>
           {topic.description}
         </Text>
       ) : null
@@ -176,9 +150,8 @@ const AgencyHomePage = (): JSX.Element => {
         m="auto"
         justifySelf="center"
         w="100%"
-        pt={{ base: '32px', sm: '80px', xl: '90px' }}
-        px={8}
-        direction={{ base: 'column', lg: 'row' }}
+        px={{ base: 8, md: 0 }}
+        direction={{ base: 'column', xl: 'row' }}
       >
         {children}
       </Flex>
@@ -217,12 +190,10 @@ const AgencyHomePage = (): JSX.Element => {
   const topicPageMobileView = (
     <>
       <OptionsMenu />
-      <HStackWrapper>
-        <FlexWrapper>
-          {topicsDescriptionAboveQuestions}
-          {agencyQuestions}
-        </FlexWrapper>
-      </HStackWrapper>
+      <FlexWrapper>
+        {topicsDescriptionAboveQuestions}
+        {agencyQuestions}
+      </FlexWrapper>
     </>
   )
 
@@ -238,7 +209,7 @@ const AgencyHomePage = (): JSX.Element => {
         ? homePageDefaultView // no topics param key -> default homepage
         : !topicQueried
         ? homePageAllQuestionsView // topics param key + no topic queried -> all questions
-        : deviceType === device.desktop // specific topic selected
+        : deviceType === DeviceType.Desktop // specific topic selected
         ? topicPageDesktopView
         : topicPageMobileView}
       <Spacer />
