@@ -30,7 +30,7 @@
     "react-scripts": "^5.0.0",
     "react-select": "^5.2.2",
     "sanitize-html": "^2.7.0",
-    "sass": "^1.49.9",
+    "sass": "^1.49.11",
     "styled-components": "^5.3.5",
     "uuid": "^8.3.2"
   },
