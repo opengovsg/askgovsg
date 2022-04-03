@@ -83,11 +83,11 @@
     "lint-staged": "12.3",
     "msw": "^0.39.2",
     "msw-storybook-addon": "^1.6.1",
-    "prettier": "^2.6.1",
+    "prettier": "^2.6.2",
     "react-app-rewire-alias": "^1.1.7",
     "react-app-rewired": "^2.2.1",
     "typescript": "^4.6.3",
-    "webpack": "^5.70.0"
+    "webpack": "^5.71.0"
   },
   "eslintConfig": {
     "overrides": [
