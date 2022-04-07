@@ -157,6 +157,19 @@ Optionally [DBeaver](https://dbeaver.io/download/) to view database with GUI
 
 - If you need to delete search_entries index, run `curl -XDELETE 'https://localhost:9200/search_entries' --insecure -u 'admin:admin'`
 
+### SQLite-related error during npm i
+
+```bash
+npm ERR! command failed
+npm ERR! command sh -c node-pre-gyp install --fallback-to-build
+npm ERR! CC(target) Release/obj.target/nothing/../node-addon-api/nothing.o
+npm ERR!   LIBTOOL-STATIC Release/nothing.a
+npm ERR!   ACTION deps_sqlite3_gyp_action_before_build_target_unpack_sqlite_dep Release/obj/gen/sqlite-autoconf-3340000/sqlite3.c
+npm ERR! Failed to execute 
+```
+
+- SQLite error during `npm i`. Since macOS 12.3, python2 is not supported anymore but the bundled sqlite3 tar file contains calls to a hardcoded `python` command. Simplest fix is to run: `npm config set python python3`.
+
 ## API Endpoints
 
 #### Base Url - `http://localhost:6174/api/v1`
