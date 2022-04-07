@@ -26,7 +26,7 @@ interface TopicCardProps {
   isAgencyMember: boolean | null
   url: string
   sendClickTopicEventToAnalytics: (topicName: string) => void
-  setQueryTopicsState: (query: string) => void
+  setTopicQueried: (query: string) => void
 }
 
 export const TopicCard = ({
@@ -38,7 +38,7 @@ export const TopicCard = ({
   isAgencyMember,
   url,
   sendClickTopicEventToAnalytics,
-  setQueryTopicsState,
+  setTopicQueried,
 }: TopicCardProps): ReactElement => {
   const styles = useMultiStyleConfig('OptionsMenu', {})
 
@@ -142,7 +142,7 @@ export const TopicCard = ({
         to={url}
         onClick={() => {
           sendClickTopicEventToAnalytics(name)
-          setQueryTopicsState(name)
+          setTopicQueried(name)
         }}
       >
         <Text>{name}</Text>

@@ -13,30 +13,20 @@ import {
   useMultiStyleConfig,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
-import { useEffect, useState, ReactElement } from 'react'
-import { useQuery } from 'react-query'
-import { useParams } from 'react-router-dom'
+import { ReactElement, useContext } from 'react'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
-import {
-  Agency,
-  getAgencyByShortName,
-  GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
-} from '../../services/AgencyService'
-import {
-  fetchTopics,
-  FETCH_TOPICS_QUERY_KEY,
-  getTopicsUsedByAgency,
-  GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
-} from '../../services/TopicService'
-import {
-  getRedirectURLTopics,
-  isSpecified,
-  getTopicsQuery,
-} from '../../util/urlparser'
+import { Agency } from '~shared/types/base'
+import { getRedirectURLTopics } from '../../util/urlparser'
 import { bySpecifiedOrder } from './util'
 import { useAuth } from '../../contexts/AuthContext'
 import { TopicCard } from '../Topics/TopicCard.component'
 import { AddNewTopicCard } from '../Topics/AddNewTopicCard.component'
+import { HomePageContext } from '../../contexts/HomePageContext'
+import { useQuery } from 'react-query'
+import {
+  GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+  getTopicsUsedByAgency,
+} from '../../services/TopicService'
 
 /*
  * Actually, to make this component truly extensible (i.e. to support nested topics)
@@ -44,27 +34,16 @@ import { AddNewTopicCard } from '../Topics/AddNewTopicCard.component'
  * (2) render the level of topics accordingly. The interface should be consistent
  * across both instances (which is not the case now; within topic, menu is folded)
  * */
-const TopicsMenu = (): ReactElement => {
-  const { agency: agencyShortName } = useParams<'agency'>()
-  const { data: agency } = useQuery<Agency>(
-    [GET_AGENCY_BY_SHORTNAME_QUERY_KEY, agencyShortName],
-    () => getAgencyByShortName({ shortname: `${agencyShortName}` }),
-  )
+const TopicsMenu = ({ agency }: { agency?: Agency }): ReactElement => {
   const { user } = useAuth()
   const isAgencyMember = user && user.agencyId === agency?.id
 
-  // TODO after merging: refactor using React Context
-  const [hasTopicsKey, setHasTopicsKey] = useState(false)
-  const [queryTopicsState, setQueryTopicsState] = useState('')
+  const { topicQueried, setTopicQueried, urlHasTopicsParamKey } =
+    useContext(HomePageContext)
 
-  // TODO after merging: remove?
-  useEffect(() => {
-    setQueryTopicsState(getTopicsQuery(location.search))
-    const topicsSpecified = isSpecified(location.search, 'topics')
-    setHasTopicsKey(topicsSpecified)
+  const styles = useMultiStyleConfig('OptionsMenu', {
+    urlHasTopicsParamKey,
   })
-
-  const styles = useMultiStyleConfig('OptionsMenu', { hasTopicsKey })
 
   const googleAnalytics = useGoogleAnalytics()
 
@@ -86,14 +65,14 @@ const TopicsMenu = (): ReactElement => {
     })
   }
 
-  const { isLoading, data: topics } = agency
-    ? useQuery(GET_TOPICS_USED_BY_AGENCY_QUERY_KEY, () =>
-        getTopicsUsedByAgency(agency.id),
-      )
-    : useQuery(FETCH_TOPICS_QUERY_KEY, () => fetchTopics())
+  const { isLoading, data: topics } = useQuery(
+    GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+    () => getTopicsUsedByAgency(Number(agency?.id)),
+    { enabled: !!agency },
+  )
 
   const topicsToShow = topics
-    ?.filter((topic) => topic.name !== queryTopicsState)
+    ?.filter((topic) => topic.name !== topicQueried)
     .sort(bySpecifiedOrder(agency))
 
   const optionsMenu = (
@@ -107,8 +86,8 @@ const TopicsMenu = (): ReactElement => {
           parentId={parentId}
           agencyId={agencyId}
           isAgencyMember={isAgencyMember}
-          url={getRedirectURLTopics(name, agency)}
-          setQueryTopicsState={setQueryTopicsState}
+          url={getRedirectURLTopics(name, `${agency?.shortname}`)}
+          setTopicQueried={setTopicQueried}
           sendClickTopicEventToAnalytics={sendClickTopicEventToAnalytics}
         />
       ))}
