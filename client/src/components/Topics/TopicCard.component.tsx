@@ -11,15 +11,17 @@ import { BiRightArrowAlt, BiEditAlt, BiTrash } from 'react-icons/bi'
 import { Link as RouterLink } from 'react-router-dom'
 import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.component'
 import { useStyledToast } from '../StyledToast/StyledToast'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { getApiErrorMessage } from '../../api'
 import * as TopicService from '../../services/TopicService'
 import { EditTopicCard, NonEditIconNameEnum } from './EditTopicCard.component'
 import ActionMenu from './ActionMenu.component'
+import { FailureDialog } from '../FailureDialog/FailureDialog.component'
+import { LIST_POSTS_QUERY_KEY, listPosts } from '../../services/PostService'
 
 interface TopicCardProps {
   id: number
-  name: string
+  topicName: string
   description: string | null
   parentId: number | null
   agencyId: number
@@ -31,7 +33,7 @@ interface TopicCardProps {
 
 export const TopicCard = ({
   id,
-  name,
+  topicName,
   description,
   parentId,
   agencyId,
@@ -71,6 +73,18 @@ export const TopicCard = ({
       })
     }
   }
+  const queryKey = [
+    LIST_POSTS_QUERY_KEY,
+    {
+      agencyId: agencyId,
+      topics: topicName,
+    },
+  ]
+  const queryFn = () =>
+    listPosts(undefined, agencyId, undefined, topicName, undefined, undefined)
+
+  const { data } = useQuery(queryKey, queryFn)
+  const numberOfQuestions = data?.totalItems
 
   const {
     isOpen: isDeleteOpen,
@@ -112,12 +126,9 @@ export const TopicCard = ({
     },
   ]
 
-  const confirmDialogText = `You are about to delete the topic "${name}". By deleting this topic, all questions under 
-  this topic will also be deleted. You cannot undo this action. Are you sure?`
-
   return isRenaming ? (
     <Editable
-      defaultValue={name}
+      defaultValue={topicName}
       submitOnBlur={false}
       startWithEditView={true}
       onSubmit={onRenameSubmit}
@@ -141,11 +152,11 @@ export const TopicCard = ({
         as={RouterLink}
         to={url}
         onClick={() => {
-          sendClickTopicEventToAnalytics(name)
-          setTopicQueried(name)
+          sendClickTopicEventToAnalytics(topicName)
+          setTopicQueried(topicName)
         }}
       >
-        <Text>{name}</Text>
+        <Text>{topicName}</Text>
 
         <Spacer />
         {isAgencyMember ? (
@@ -154,14 +165,24 @@ export const TopicCard = ({
           <BiRightArrowAlt />
         )}
       </Flex>
-      <ConfirmDialog
-        isOpen={isDeleteOpen}
-        onClose={onDeleteClose}
-        onConfirm={onDeleteConfirm}
-        title="Confirm Delete?"
-        description={confirmDialogText}
-        confirmText="Yes, delete"
-      />
+      {numberOfQuestions === 0 ? (
+        <ConfirmDialog
+          isOpen={isDeleteOpen}
+          onClose={onDeleteClose}
+          onConfirm={onDeleteConfirm}
+          title="Confirm Delete?"
+          description={`Are you sure you want to delete the topic '${topicName}'? You cannot undo this action.`}
+          confirmText="Yes, delete"
+        />
+      ) : (
+        <FailureDialog
+          title={`Unable to delete the topic '${topicName}'`}
+          plainMessage="Please delete or move existing questions to another topic before deleting this topic."
+          failureMessage={`There are ${numberOfQuestions} questions under '${topicName}'.`}
+          isOpen={isDeleteOpen}
+          onClose={onDeleteClose}
+        />
+      )}
     </>
   )
 }

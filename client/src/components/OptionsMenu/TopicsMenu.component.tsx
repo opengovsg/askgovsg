@@ -81,7 +81,7 @@ const TopicsMenu = ({ agency }: { agency?: Agency }): ReactElement => {
         <TopicCard
           key={id}
           id={id}
-          name={name}
+          topicName={name}
           description={description}
           parentId={parentId}
           agencyId={agencyId}
