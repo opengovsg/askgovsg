@@ -20,6 +20,7 @@ import { isUserPublicOfficer } from '../../services/user.service'
 import OptionsSideMenu from '../../components/OptionsMenu/OptionsSideMenu.component'
 import { Questions } from '../../components/Questions/Questions.component'
 import { HomePageContext } from '../../contexts/HomePageContext'
+import TopicsMenu from '../../components/OptionsMenu/TopicsMenu.component'
 
 const AgencyHomePage = (): JSX.Element => {
   const { questionsDisplayState, topicQueried, urlHasTopicsParamKey } =
@@ -161,7 +162,7 @@ const AgencyHomePage = (): JSX.Element => {
   const homePageDefaultView = (
     <>
       {bannerWithNeedHelpAndAgencyLogo}
-      <OptionsMenu />
+      <TopicsMenu agency={agency} />
       <HStackWrapper>
         <FlexWrapper>{agencyQuestions}</FlexWrapper>
       </HStackWrapper>
