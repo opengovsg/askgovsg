@@ -1,4 +1,5 @@
 import React from 'react'
+import { BiDotsVerticalRounded } from 'react-icons/bi'
 import {
   CSSObject,
   IconButton,
@@ -6,7 +7,7 @@ import {
   MenuItem,
   MenuList,
 } from '@chakra-ui/react'
-import { BiDotsVerticalRounded } from 'react-icons/bi'
+
 import NonBubblingMenuButton from './NonBubblingMenuButton.component'
 
 interface MenuActions {

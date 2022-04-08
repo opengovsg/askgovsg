@@ -1,4 +1,5 @@
 import { Topic } from '~shared/types/base'
+
 import { MessageResponse } from './common'
 
 export type GetTopicsDto = Topic & {

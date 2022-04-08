@@ -1,10 +1,12 @@
-import { QuestionsHeader } from '../QuestionsHeader/QuestionsHeader.component'
-import { Box } from '@chakra-ui/react'
-import QuestionsList from '../QuestionsList/QuestionsList.component'
 import { useContext, useEffect } from 'react'
-import { HomePageContext } from '../../contexts/HomePageContext'
 import { useLocation } from 'react-router-dom'
+import { Box } from '@chakra-ui/react'
+
+import { HomePageContext } from '../../contexts/HomePageContext'
 import { getTopicsQuery, isSpecified } from '../../util/urlparser'
+import { QuestionsHeader } from '../QuestionsHeader/QuestionsHeader.component'
+import QuestionsList from '../QuestionsList/QuestionsList.component'
+
 import { QuestionsDisplayState, questionsDisplayStates } from './questions'
 
 interface QuestionsProps {

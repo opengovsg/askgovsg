@@ -1,5 +1,7 @@
 import { AxiosResponse } from 'axios'
-import { ErrorDto as ResponseDto, EnquiryRequest } from '~shared/types/api'
+
+import { EnquiryRequest, ErrorDto as ResponseDto } from '~shared/types/api'
+
 import { ApiClient } from '../api'
 
 export const postMail = (request: EnquiryRequest): Promise<ResponseDto> => {

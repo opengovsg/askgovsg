@@ -1,40 +1,42 @@
+import { createRef, LegacyRef, ReactElement, useContext } from 'react'
+import { BiRightArrowAlt } from 'react-icons/bi'
+import { useQuery } from 'react-query'
+import { Link as RouterLink, useParams } from 'react-router-dom'
 import {
   Accordion,
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Spinner,
-  Text,
   Flex,
-  Spacer,
-  Stack,
   SimpleGrid,
+  Spacer,
+  Spinner,
+  Stack,
+  Text,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
-import { BiRightArrowAlt } from 'react-icons/bi'
-import { LegacyRef, ReactElement, createRef, useContext } from 'react'
-import { useQuery } from 'react-query'
-import { Link as RouterLink, useParams } from 'react-router-dom'
+
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
+import { HomePageContext } from '../../contexts/HomePageContext'
 import {
   Agency,
-  getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
-  getListOfAllAgencies,
   GET_LIST_OF_ALL_AGENCIES,
+  getAgencyByShortName,
+  getListOfAllAgencies,
 } from '../../services/AgencyService'
 import {
-  getTopicsUsedByAgency,
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+  getTopicsUsedByAgency,
 } from '../../services/TopicService'
 import {
-  getRedirectURLTopics,
   getRedirectURLAgency,
+  getRedirectURLTopics,
 } from '../../util/urlparser'
+
 import { bySpecifiedOrder } from './util'
-import { HomePageContext } from '../../contexts/HomePageContext'
 
 const OptionsMenu = (): ReactElement => {
   const { agency: agencyShortName } = useParams<'agency'>()

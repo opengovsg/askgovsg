@@ -1,6 +1,7 @@
 // TODO: fix compatibility issue with useParams
 // stories and related questions not loading
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
+
 import Post from './Post.component'
 
 export default {

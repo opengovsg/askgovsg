@@ -1,3 +1,4 @@
+import React, { FC, useRef } from 'react'
 import {
   Alert,
   AlertDescription,
@@ -13,7 +14,6 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import React, { FC, useRef } from 'react'
 
 interface FailureDialogProps
   extends Pick<AlertDialogProps, 'isOpen' | 'onClose'> {

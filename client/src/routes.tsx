@@ -1,10 +1,12 @@
 import { Route, Routes as ReactRoutes } from 'react-router-dom'
+
 import {
   AgencyPrivacy,
   AgencyTerms,
   CitizenPrivacy,
   CitizenTerms,
 } from './components/PrivacyTerms'
+import AgencyHomePage from './pages/AgencyHomePage/AgencyHomePage.component'
 import EditForm from './pages/EditForm/EditForm.component'
 import HomePage from './pages/HomePage/HomePage.component'
 import Login from './pages/Login/Login.component'
@@ -13,7 +15,6 @@ import Post from './pages/Post/Post.component'
 import PostForm from './pages/PostForm/PostForm.component'
 import SearchResults from './pages/SearchResults/SearchResults.component'
 import withPageTitle from './services/withPageTitle'
-import AgencyHomePage from './pages/AgencyHomePage/AgencyHomePage.component'
 
 const HomePageComponent = withPageTitle({
   component: HomePage,
