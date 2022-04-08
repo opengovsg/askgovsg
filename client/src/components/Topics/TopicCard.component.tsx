@@ -180,7 +180,7 @@ export const TopicCard = ({
         <FailureDialog
           title={`Unable to delete the topic '${topicName}'`}
           plainMessage="Please delete or move existing questions to another topic before deleting this topic."
-          failureMessage={`There are ${numberOfQuestions} questions under '${topicName}'.`}
+          failureMessage={`There are <b>${numberOfQuestions} questions</b> under '${topicName}'.`}
           isOpen={isDeleteOpen}
           onClose={onDeleteClose}
         />

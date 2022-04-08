@@ -11,6 +11,7 @@ import {
   AlertDialogProps,
   AlertIcon,
   Button,
+  chakra,
   Text,
   VStack,
 } from '@chakra-ui/react'
@@ -44,7 +45,9 @@ export const FailureDialog: FC<FailureDialogProps> = ({
               <Text>{plainMessage}</Text>
               <Alert status="error">
                 <AlertIcon />
-                <AlertDescription>{failureMessage}</AlertDescription>
+                <AlertDescription
+                  dangerouslySetInnerHTML={{ __html: failureMessage }}
+                />
               </Alert>
             </VStack>
           </AlertDialogBody>
