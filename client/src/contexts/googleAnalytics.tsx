@@ -1,5 +1,6 @@
-import { FC, createContext, useContext, useEffect } from 'react'
+import { createContext, FC, useContext, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+
 import { useEnvironment } from '../hooks/useEnvironment'
 import { GoogleAnalyticsService } from '../services/googleAnalytics'
 

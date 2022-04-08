@@ -1,3 +1,7 @@
+import { AxiosResponse } from 'axios'
+
+import { Topic } from '~shared/types/base'
+
 import {
   ApiClient,
   CreateTopicReqDto,
@@ -6,8 +10,6 @@ import {
   UpdateTopicReqRto,
   UpdateTopicResDto,
 } from '../api'
-import { Topic } from '~shared/types/base'
-import { AxiosResponse } from 'axios'
 
 export const getTopicsUsedByAgency = (
   agencyId: number,

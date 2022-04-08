@@ -1,4 +1,6 @@
 import { ReactElement, useRef } from 'react'
+import { IconType } from 'react-icons'
+import { BiCheck, BiDotsVerticalRounded, BiPlus } from 'react-icons/bi'
 import {
   CSSObject,
   EditableInput,
@@ -10,8 +12,6 @@ import {
   useMultiStyleConfig,
   useOutsideClick,
 } from '@chakra-ui/react'
-import { BiCheck, BiPlus, BiDotsVerticalRounded } from 'react-icons/bi'
-import { IconType } from 'react-icons'
 
 const ConfirmEditButton = (): ReactElement => {
   const { onSubmit } = useEditableState()

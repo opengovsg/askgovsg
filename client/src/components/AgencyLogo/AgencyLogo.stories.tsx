@@ -1,5 +1,7 @@
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
+
 import { MockAgencyData } from '../../__mocks__/mockData'
+
 import AgencyLogo from './AgencyLogo.component'
 
 export default {

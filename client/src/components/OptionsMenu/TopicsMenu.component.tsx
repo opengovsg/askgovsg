@@ -1,32 +1,35 @@
+import { ReactElement, useContext } from 'react'
+import { useQuery } from 'react-query'
 import {
   Accordion,
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Spinner,
-  Text,
   Flex,
-  Spacer,
-  Stack,
   SimpleGrid,
+  Spacer,
+  Spinner,
+  Stack,
+  Text,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
-import { ReactElement, useContext } from 'react'
-import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
+
 import { Agency } from '~shared/types/base'
-import { getRedirectURLTopics } from '../../util/urlparser'
-import { bySpecifiedOrder } from './util'
+
 import { useAuth } from '../../contexts/AuthContext'
-import { TopicCard } from '../Topics/TopicCard.component'
-import { AddNewTopicCard } from '../Topics/AddNewTopicCard.component'
+import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import { HomePageContext } from '../../contexts/HomePageContext'
-import { useQuery } from 'react-query'
 import {
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
   getTopicsUsedByAgency,
 } from '../../services/TopicService'
+import { getRedirectURLTopics } from '../../util/urlparser'
+import { AddNewTopicCard } from '../Topics/AddNewTopicCard.component'
+import { TopicCard } from '../Topics/TopicCard.component'
+
+import { bySpecifiedOrder } from './util'
 
 /*
  * Actually, to make this component truly extensible (i.e. to support nested topics)

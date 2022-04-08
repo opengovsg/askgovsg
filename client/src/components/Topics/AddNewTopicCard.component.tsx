@@ -1,10 +1,12 @@
 import { ReactElement, useState } from 'react'
-import { Editable, useMultiStyleConfig } from '@chakra-ui/react'
-import { getApiErrorMessage } from '../../api'
-import { useStyledToast } from '../StyledToast/StyledToast'
-import * as TopicService from '../../services/TopicService'
-import { EditTopicCard, NonEditIconNameEnum } from './EditTopicCard.component'
 import { useQueryClient } from 'react-query'
+import { Editable, useMultiStyleConfig } from '@chakra-ui/react'
+
+import { getApiErrorMessage } from '../../api'
+import * as TopicService from '../../services/TopicService'
+import { useStyledToast } from '../StyledToast/StyledToast'
+
+import { EditTopicCard, NonEditIconNameEnum } from './EditTopicCard.component'
 
 interface AddNewTopicProps {
   agencyId: number

@@ -1,10 +1,11 @@
+import { useContext } from 'react'
 import { Flex, Stack, Text } from '@chakra-ui/react'
-import { SortQuestionsMenu } from '../SortQuestionsMenu/SortQuestionsMenu.component'
-import PostQuestionButton from '../PostQuestionButton/PostQuestionButton.component'
-import { isUserPublicOfficer } from '../../services/user.service'
+
 import { useAuth } from '../../contexts/AuthContext'
 import { HomePageContext } from '../../contexts/HomePageContext'
-import { useContext } from 'react'
+import { isUserPublicOfficer } from '../../services/user.service'
+import PostQuestionButton from '../PostQuestionButton/PostQuestionButton.component'
+import { SortQuestionsMenu } from '../SortQuestionsMenu/SortQuestionsMenu.component'
 
 export const QuestionsHeader = (): JSX.Element => {
   const { user } = useAuth()

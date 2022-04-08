@@ -1,26 +1,27 @@
-import { Box, Flex, HStack, Spacer, VStack, Text } from '@chakra-ui/react'
 import { ReactNode, useContext } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
-import { useDetectDevice, DeviceType } from '../../hooks/useDetectDevice'
+import { Box, Flex, HStack, Spacer, Text, VStack } from '@chakra-ui/react'
+
 import AgencyLogo from '../../components/AgencyLogo/AgencyLogo.component'
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
-import PageTitle from '../../components/PageTitle/PageTitle.component'
 import OptionsMenu from '../../components/OptionsMenu/OptionsMenu.component'
+import OptionsSideMenu from '../../components/OptionsMenu/OptionsSideMenu.component'
+import TopicsMenu from '../../components/OptionsMenu/TopicsMenu.component'
+import PageTitle from '../../components/PageTitle/PageTitle.component'
+import { Questions } from '../../components/Questions/Questions.component'
 import { useAuth } from '../../contexts/AuthContext'
+import { HomePageContext } from '../../contexts/HomePageContext'
+import { DeviceType, useDetectDevice } from '../../hooks/useDetectDevice'
 import {
-  getAgencyByShortName,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
+  getAgencyByShortName,
 } from '../../services/AgencyService'
 import {
-  getTopicsUsedByAgency,
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+  getTopicsUsedByAgency,
 } from '../../services/TopicService'
 import { isUserPublicOfficer } from '../../services/user.service'
-import OptionsSideMenu from '../../components/OptionsMenu/OptionsSideMenu.component'
-import { Questions } from '../../components/Questions/Questions.component'
-import { HomePageContext } from '../../contexts/HomePageContext'
-import TopicsMenu from '../../components/OptionsMenu/TopicsMenu.component'
 
 const AgencyHomePage = (): JSX.Element => {
   const { questionsDisplayState, topicQueried, urlHasTopicsParamKey } =

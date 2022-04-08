@@ -1,3 +1,6 @@
+import { BiChevronDown, BiTrash } from 'react-icons/bi'
+import { useMutation, useQueryClient } from 'react-query'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import {
   Button,
   Icon,
@@ -8,14 +11,12 @@ import {
   MenuList,
   useDisclosure,
 } from '@chakra-ui/react'
-import { BiChevronDown, BiTrash } from 'react-icons/bi'
-import { useMutation, useQueryClient } from 'react-query'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+
 import { getApiErrorMessage } from '../../api'
 import {
   deletePost,
-  LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
   GET_POST_BY_ID_QUERY_KEY,
+  LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
 } from '../../services/PostService'
 import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.component'
 import { useStyledToast } from '../StyledToast/StyledToast'

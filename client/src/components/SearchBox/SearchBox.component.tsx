@@ -1,3 +1,8 @@
+import { useState } from 'react'
+import { RefCallBack } from 'react-hook-form'
+import { BiSearch } from 'react-icons/bi'
+import { useQuery } from 'react-query'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   Input,
   InputGroup,
@@ -12,16 +17,13 @@ import Downshift, {
   GetItemPropsOptions,
   StateChangeOptions,
 } from 'downshift'
-import { useState } from 'react'
-import { RefCallBack } from 'react-hook-form'
-import { BiSearch } from 'react-icons/bi'
-import { useQuery } from 'react-query'
-import { Link, useNavigate } from 'react-router-dom'
+
 import { SearchEntryWithHighlight } from '~shared/types/api'
+
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import {
-  getAgencyById,
   GET_AGENCY_BY_ID_QUERY_KEY,
+  getAgencyById,
 } from '../../services/AgencyService'
 import { search, SEARCH_QUERY_KEY } from '../../services/SearchService'
 

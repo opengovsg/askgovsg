@@ -1,22 +1,23 @@
-import { Center, Flex } from '@chakra-ui/layout'
 import { useContext, useState } from 'react'
 import { useQuery } from 'react-query'
+import { useNavigate } from 'react-router-dom'
+import { Center, Flex } from '@chakra-ui/layout'
+import { Button, Text } from '@chakra-ui/react'
+
+import { HomePageContext } from '../../contexts/HomePageContext'
 import {
-  listAnswerablePosts,
-  listPosts,
   LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
   LIST_POSTS_QUERY_KEY,
+  listAnswerablePosts,
+  listPosts,
 } from '../../services/PostService'
 import Pagination from '../Pagination'
 import PostListComponent from '../PostList/PostList.component'
-import Spinner from '../Spinner/Spinner.component'
 import {
   QuestionsDisplayState,
   questionsDisplayStates,
 } from '../Questions/questions'
-import { Button, Text } from '@chakra-ui/react'
-import { useNavigate } from 'react-router-dom'
-import { HomePageContext } from '../../contexts/HomePageContext'
+import Spinner from '../Spinner/Spinner.component'
 
 interface QuestionsListProps {
   agencyId?: number

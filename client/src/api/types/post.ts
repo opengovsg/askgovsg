@@ -1,6 +1,7 @@
+import { PostStatus, User } from '~shared/types/base'
+
 import { BaseModelParams, MessageResponse } from './common'
 import { BaseTagDto } from './tag'
-import { User, PostStatus } from '~shared/types/base'
 
 export type BasePostDto = BaseModelParams & {
   userId: number

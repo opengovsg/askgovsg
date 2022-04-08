@@ -1,3 +1,4 @@
+import { BiSortAlt2 } from 'react-icons/bi'
 import {
   Button,
   Flex,
@@ -7,7 +8,7 @@ import {
   MenuList,
   Text,
 } from '@chakra-ui/react'
-import { BiSortAlt2 } from 'react-icons/bi'
+
 import {
   QuestionsDisplayState,
   QuestionsSortOrder,

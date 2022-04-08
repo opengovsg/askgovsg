@@ -1,23 +1,25 @@
 import React, { ReactElement, useState } from 'react'
+import { BiEditAlt, BiRightArrowAlt, BiTrash } from 'react-icons/bi'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { Link as RouterLink } from 'react-router-dom'
 import {
+  Editable,
   Flex,
   Spacer,
   Text,
   useDisclosure,
-  Editable,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
-import { BiRightArrowAlt, BiEditAlt, BiTrash } from 'react-icons/bi'
-import { Link as RouterLink } from 'react-router-dom'
-import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.component'
-import { useStyledToast } from '../StyledToast/StyledToast'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+
 import { getApiErrorMessage } from '../../api'
-import * as TopicService from '../../services/TopicService'
-import { EditTopicCard, NonEditIconNameEnum } from './EditTopicCard.component'
-import ActionMenu from './ActionMenu.component'
-import { FailureDialog } from '../FailureDialog/FailureDialog.component'
 import { LIST_POSTS_QUERY_KEY, listPosts } from '../../services/PostService'
+import * as TopicService from '../../services/TopicService'
+import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.component'
+import { FailureDialog } from '../FailureDialog/FailureDialog.component'
+import { useStyledToast } from '../StyledToast/StyledToast'
+
+import ActionMenu from './ActionMenu.component'
+import { EditTopicCard, NonEditIconNameEnum } from './EditTopicCard.component'
 
 interface TopicCardProps {
   id: number
