@@ -10,8 +10,9 @@ import {
   AlertDialogOverlay,
   AlertDialogProps,
   AlertIcon,
+  Box,
   Button,
-  chakra,
+  CloseButton,
   Text,
   VStack,
 } from '@chakra-ui/react'
@@ -39,6 +40,15 @@ export const FailureDialog: FC<FailureDialogProps> = ({
     >
       <AlertDialogOverlay>
         <AlertDialogContent>
+          <Box paddingBottom="8px">
+            <CloseButton
+              position="absolute"
+              right="4px"
+              top="4px"
+              onClick={onClose}
+              _focus={{ border: 'none' }}
+            />
+          </Box>
           <AlertDialogHeader>{title}</AlertDialogHeader>
           <AlertDialogBody>
             <VStack spacing={4}>

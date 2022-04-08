@@ -8,6 +8,7 @@ import {
   AlertDialogOverlay,
   AlertDialogProps,
   Button,
+  CloseButton,
   HStack,
 } from '@chakra-ui/react'
 
@@ -44,6 +45,13 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
     >
       <AlertDialogOverlay>
         <AlertDialogContent>
+          <CloseButton
+            position="absolute"
+            right="4px"
+            top="4px"
+            onClick={onClose}
+            _focus={{ border: 'none' }}
+          />
           <AlertDialogHeader>{title}</AlertDialogHeader>
           <AlertDialogBody>{description}</AlertDialogBody>
           <AlertDialogFooter>
