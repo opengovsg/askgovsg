@@ -173,7 +173,7 @@ export const TopicCard = ({
           onClose={onDeleteClose}
           onConfirm={onDeleteConfirm}
           title="Confirm Delete?"
-          description={`Are you sure you want to delete the topic '${topicName}'? You cannot undo this action.`}
+          description={`Are you sure you want to delete the topic <b>'${topicName}'</b>? You cannot undo this action.`}
           confirmText="Yes, delete"
         />
       ) : (

@@ -16,6 +16,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
+import sanitizeHtml from 'sanitize-html'
 
 interface FailureDialogProps
   extends Pick<AlertDialogProps, 'isOpen' | 'onClose'> {
@@ -56,7 +57,12 @@ export const FailureDialog: FC<FailureDialogProps> = ({
               <Alert status="error">
                 <AlertIcon />
                 <AlertDescription
-                  dangerouslySetInnerHTML={{ __html: failureMessage }}
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml(failureMessage, {
+                      allowedTags: ['b'],
+                      allowedAttributes: {},
+                    }),
+                  }}
                 />
               </Alert>
             </VStack>

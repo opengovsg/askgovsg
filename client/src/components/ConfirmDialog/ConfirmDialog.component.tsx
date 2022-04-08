@@ -11,6 +11,7 @@ import {
   CloseButton,
   HStack,
 } from '@chakra-ui/react'
+import sanitizeHtml from 'sanitize-html'
 
 interface ConfirmDialogProps
   extends Pick<AlertDialogProps, 'isOpen' | 'onClose'> {
@@ -53,7 +54,14 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
             _focus={{ border: 'none' }}
           />
           <AlertDialogHeader>{title}</AlertDialogHeader>
-          <AlertDialogBody>{description}</AlertDialogBody>
+          <AlertDialogBody
+            dangerouslySetInnerHTML={{
+              __html: sanitizeHtml(description, {
+                allowedTags: ['b'],
+                allowedAttributes: {},
+              }),
+            }}
+          />
           <AlertDialogFooter>
             <HStack spacing={4}>
               <Button variant="ghost" onClick={onClose}>
