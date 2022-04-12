@@ -32,6 +32,6 @@ export const PostItem = makeMultiStyleConfig({
     mt: { base: '16px', sm: '8px' },
   },
   editWrapper: {
-    alignItems: 'center',
+    alignSelf: 'flex-end',
   },
 })

@@ -1,19 +1,18 @@
 import { BiPlus } from 'react-icons/bi'
+import { ButtonProps as ChakraButtonProps } from '@chakra-ui/react'
 
 import LinkButton from '../LinkButton/LinkButton.component'
 
-const PostQuestionButton = (): JSX.Element => {
+const PostQuestionButton = ({ ...props }: ChakraButtonProps): JSX.Element => {
   return (
     <LinkButton
-      text={'Post Question'}
-      link={'/add/question'}
-      leftIcon={
-        <BiPlus
-          size="24"
-          color="var(--chakra-colors-secondary-700)"
-          style={{ marginRight: '10px' }}
-        />
-      }
+      text="Post Question"
+      link="/add/question"
+      color="white"
+      bgColor="secondary.700"
+      variant="solid"
+      leftIcon={<BiPlus size="24" />}
+      {...props}
     />
   )
 }
