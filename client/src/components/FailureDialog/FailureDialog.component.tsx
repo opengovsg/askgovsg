@@ -10,10 +10,13 @@ import {
   AlertDialogOverlay,
   AlertDialogProps,
   AlertIcon,
+  Box,
   Button,
+  CloseButton,
   Text,
   VStack,
 } from '@chakra-ui/react'
+import sanitizeHtml from 'sanitize-html'
 
 interface FailureDialogProps
   extends Pick<AlertDialogProps, 'isOpen' | 'onClose'> {
@@ -38,13 +41,29 @@ export const FailureDialog: FC<FailureDialogProps> = ({
     >
       <AlertDialogOverlay>
         <AlertDialogContent>
+          <Box paddingBottom="8px">
+            <CloseButton
+              position="absolute"
+              right="4px"
+              top="4px"
+              onClick={onClose}
+              _focus={{ border: 'none' }}
+            />
+          </Box>
           <AlertDialogHeader>{title}</AlertDialogHeader>
           <AlertDialogBody>
             <VStack spacing={4}>
               <Text>{plainMessage}</Text>
               <Alert status="error">
                 <AlertIcon />
-                <AlertDescription>{failureMessage}</AlertDescription>
+                <AlertDescription
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml(failureMessage, {
+                      allowedTags: ['b'],
+                      allowedAttributes: {},
+                    }),
+                  }}
+                />
               </Alert>
             </VStack>
           </AlertDialogBody>
