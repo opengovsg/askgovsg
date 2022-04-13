@@ -6,7 +6,8 @@ import { HighlightSearchEntry } from '~shared/types/api'
 
 import { BasePostDto } from '../../api'
 import { useAuth } from '../../contexts/AuthContext'
-import EditButton from '../EditButton/EditButton.component'
+import DeleteButton from '../EditQuestion/DeleteButton.component'
+import EditButton from '../EditQuestion/EditButton.component'
 
 // Note: PostItem is the component for the homepage
 const PostItem = ({
@@ -53,6 +54,10 @@ const PostItem = ({
       {isAgencyMember && (
         <Flex sx={styles.editWrapper}>
           <EditButton postId={id} />
+          <DeleteButton
+            postId={id}
+            onDeleteLink={`/agency/${user.agency.shortname}`}
+          />
         </Flex>
       )}
     </Flex>

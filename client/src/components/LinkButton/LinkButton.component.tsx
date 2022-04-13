@@ -1,17 +1,20 @@
 import { Link } from 'react-router-dom'
-import { Button } from '@chakra-ui/react'
+import { Button, ButtonProps as ChakraButtonProps } from '@chakra-ui/react'
+
+interface LinkButtonProps extends ChakraButtonProps {
+  text: string
+  link: string
+  handleClick?: () => void
+  leftIcon?: JSX.Element
+}
 
 const LinkButton = ({
   text,
   link,
   handleClick,
   leftIcon,
-}: {
-  text: string
-  link: string
-  handleClick?: () => void
-  leftIcon?: JSX.Element
-}): JSX.Element => {
+  ...props
+}: LinkButtonProps): JSX.Element => {
   return (
     <Link onClick={handleClick} to={link}>
       <Button
@@ -23,6 +26,7 @@ const LinkButton = ({
         borderRadius="3px"
         textStyle="subhead-1"
         leftIcon={leftIcon}
+        {...props}
       >
         {text}
       </Button>

@@ -17,13 +17,14 @@ export const QuestionsHeader = (): JSX.Element => {
     <Flex
       flexDir={{ base: 'column-reverse', sm: 'row' }}
       justifyContent="space-between"
+      mt={{ base: '32px', sm: '50px', xl: '58px' }}
+      mb={{ sm: '18px' }}
     >
       <Text
         color="primary.500"
         textStyle="subhead-3"
-        mt={{ base: '32px', sm: '50px', xl: '58px' }}
-        mb={{ sm: '18px' }}
         d="block"
+        my={{ base: '16px', sm: '0px' }}
       >
         {questionsDisplayState.label}
       </Text>
@@ -36,7 +37,9 @@ export const QuestionsHeader = (): JSX.Element => {
           questionsSortOrder={questionsSortOrder}
           setQuestionsSortOrder={setQuestionsSortOrder}
         />
-        {isAuthenticatedOfficer && <PostQuestionButton />}
+        {isAuthenticatedOfficer && (
+          <PostQuestionButton mb={{ base: '16px', sm: '0px' }} />
+        )}
       </Stack>
     </Flex>
   )

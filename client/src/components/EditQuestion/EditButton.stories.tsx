@@ -14,5 +14,4 @@ const Template: ComponentStory<typeof EditButton> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   postId: 1,
-  onDeleteLink: '/delete',
 }

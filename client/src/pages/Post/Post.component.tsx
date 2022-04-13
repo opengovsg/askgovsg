@@ -18,7 +18,8 @@ import sanitizeHtml from 'sanitize-html'
 import { PostStatus } from '~shared/types/base'
 
 import CitizenRequest from '../../components/CitizenRequest/CitizenRequest.component'
-import EditButton from '../../components/EditButton/EditButton.component'
+import DeleteButton from '../../components/EditQuestion/DeleteButton.component'
+import EditButton from '../../components/EditQuestion/EditButton.component'
 import { NavBreadcrumb } from '../../components/NavBreadcrumb/NavBreadcrumb'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import Spinner from '../../components/Spinner/Spinner.component'
@@ -146,10 +147,13 @@ const Post = (): JSX.Element => {
               </Flex>
               <Spacer />
               {isAgencyMember && agency && (
-                <EditButton
-                  postId={Number(postId)}
-                  onDeleteLink={`/agency/${agency.shortname}`}
-                />
+                <>
+                  <EditButton postId={Number(postId)} />
+                  <DeleteButton
+                    postId={Number(postId)}
+                    onDeleteLink={`/agency/${agency.shortname}`}
+                  />
+                </>
               )}
             </Flex>
             <Text sx={styles.title}>{post?.title}</Text>
