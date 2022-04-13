@@ -1,52 +1,51 @@
 .toolbar {
-    .form {
-      z-index: 2;
-      position: absolute;
-      top: 35px;
-      left: -20px;
-      background: white;
-      border-radius: 3px;
-      box-shadow: 0px 0px 20px rgba(193, 199, 205, 0.7);
-
-      &:after {
-        content: " ";
-        position: absolute;
-        right: 323px;
-        top: -10px;
-        border-top: none;
-        border-right: 15px solid transparent;
-        border-left: 15px solid transparent;
-        border-bottom: 15px solid white;
-      }
-    }
-
-    .linkControl {
-      position: relative;
-    }
-  }
-
-  .wrapper {
-    border: 1px solid var(--chakra-colors-neutral-400);
-    background-color: white;
+  .form {
+    z-index: 2;
+    position: absolute;
+    top: 35px;
+    left: -20px;
+    background: white;
     border-radius: 3px;
-  }
+    box-shadow: 0px 0px 20px rgba(193, 199, 205, 0.7);
 
-  .editor {
-    padding: 0 0.5rem 1rem 0.5rem;
-    height: 250px;
+    &:after {
+      content: " ";
+      position: absolute;
+      right: 323px;
+      top: -10px;
+      border-top: none;
+      border-right: 15px solid transparent;
+      border-left: 15px solid transparent;
+      border-bottom: 15px solid white;
+    }
   }
+}
 
-  .toolbar {
-    border-width: 0 0 1px 0;
-  }
+.wrapper {
+  border: 1px solid var(--chakra-colors-neutral-400);
+  background-color: white;
+  border-radius: 3px;
+}
 
-  .previewEditor {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    // no IE support, no support for EDGE 12-16, firefox 2-67
-    // 0.94% global impact (IE users)
-    // https://caniuse.com/?search=web-kit%20line%20clamp
-    -webkit-line-clamp: 3; /* number of lines to show */
-    -webkit-box-orient: vertical;
-  }
+.editor {
+  padding: 0 0.5rem 1rem 0.5rem;
+  height: 250px;
+}
+
+.toolbar {
+  min-height: 48px;
+  background: #bdbdbd;
+  border-width: 0 0 1px 0;
+  align-items: center;
+}
+
+.previewEditor {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  // no IE support, no support for EDGE 12-16, firefox 2-67
+  // 0.94% global impact (IE users)
+  // https://caniuse.com/?search=web-kit%20line%20clamp
+  -webkit-line-clamp: 3; /* number of lines to show */
+  -webkit-box-orient: vertical;
+}

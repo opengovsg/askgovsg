@@ -90,11 +90,11 @@ export const LinkControl = ({
     </div>
   )
   return (
-    <div className={styles.linkControl}>
-      <div onClick={signalExpandShowModal} className="rdw-option-wrapper">
+    <Box position="relative" mb="6px">
+      <Box onClick={signalExpandShowModal} className="rdw-option-wrapper">
         <BiLink size="18px" />
-      </div>
+      </Box>
       {expanded ? renderModal() : undefined}
-    </div>
+    </Box>
   )
 }

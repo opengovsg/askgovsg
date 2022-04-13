@@ -318,7 +318,7 @@ export const ImageControl = ({
   )
 
   return (
-    <Box display={{ base: 'none', xl: 'block' }}>
+    <Box display={{ base: 'none', xl: 'block' }} mb="6px">
       <Box onClick={onImageModalOpen} className="rdw-option-wrapper">
         <BiImage size="18px" />
       </Box>

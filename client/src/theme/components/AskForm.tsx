@@ -61,7 +61,7 @@ export const AskForm: ComponentMultiStyleConfig = {
         height: '148px',
       },
       editorStyle: {
-        height: `${148 - (26 + 6 * 2)}px`,
+        height: `${148 - (48 + 6 * 2)}px`,
       },
     },
   }),
