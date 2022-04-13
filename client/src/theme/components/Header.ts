@@ -19,6 +19,7 @@ export const Header: ComponentMultiStyleConfig = {
       top: 0,
       zIndex: 999,
       bg: 'white',
+      boxShadow: 'sm',
     },
     compactSearch: {
       h: '56px',
