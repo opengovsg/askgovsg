@@ -33,9 +33,12 @@ export type UploadCallback = (
 const ExtendedEditor = (props: EditorProps) => <Editor {...props} />
 
 const TOOLBAR_OPTIONS = {
-  options: ['inline', 'list', 'link'],
+  options: ['inline', 'textAlign', 'list', 'link'],
   inline: {
-    options: ['bold', 'italic'],
+    options: ['bold', 'italic', 'strikethrough'],
+  },
+  textAlign: {
+    inDropdown: true,
   },
   link: {
     defaultTargetOption: '_blank',
