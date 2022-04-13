@@ -15,8 +15,6 @@ import {
   HStack,
   Icon,
   Input,
-  InputGroup,
-  InputRightElement,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
 
@@ -126,25 +124,18 @@ const AskForm = ({
         <FormHelperText sx={styles.formHelperText}>
           Give your question a short and relevant title
         </FormHelperText>
-        <InputGroup>
-          <Input
-            placeholder="Field Empty"
-            focusBorderColor={
-              isTitleCharsExceeded ? 'error.500' : 'secondary.700'
-            }
-            isInvalid={isTitleCharsExceeded}
-            {...register('postTitle', {
-              minLength: 15,
-              maxLength: TITLE_MAX_LEN,
-              required: true,
-            })}
-          />
-          {isTitleCharsExceeded && (
-            <InputRightElement
-              children={<Icon as={MdError} color="error.500" />}
-            />
-          )}
-        </InputGroup>
+        <Input
+          placeholder="Field Empty"
+          focusBorderColor={
+            isTitleCharsExceeded ? 'error.500' : 'secondary.700'
+          }
+          isInvalid={isTitleCharsExceeded}
+          {...register('postTitle', {
+            minLength: 15,
+            maxLength: TITLE_MAX_LEN,
+            required: true,
+          })}
+        />
         {formErrors.postTitle && (
           <Alert status="error" sx={styles.alert}>
             <AlertIcon />
