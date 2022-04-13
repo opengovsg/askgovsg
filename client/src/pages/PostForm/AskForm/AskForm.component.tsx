@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { MdError } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import Select from 'react-select'
 import {
@@ -12,6 +13,7 @@ import {
   FormHelperText,
   FormLabel,
   HStack,
+  Icon,
   Input,
   useMultiStyleConfig,
 } from '@chakra-ui/react'
@@ -99,10 +101,8 @@ const AskForm = ({
 
   const watchTitle = watch('postTitle')
 
-  const titleCharsRemaining =
-    watchTitle && typeof watchTitle === 'string'
-      ? Math.max(TITLE_MAX_LEN - watchTitle.length, 0)
-      : TITLE_MAX_LEN
+  const titleCharsRemaining = TITLE_MAX_LEN - watchTitle.length
+  const isTitleCharsExceeded = titleCharsRemaining < 0
 
   const internalOnSubmit = handleSubmit((formData) =>
     onSubmit({
@@ -126,20 +126,29 @@ const AskForm = ({
         </FormHelperText>
         <Input
           placeholder="Field Empty"
+          focusBorderColor={
+            isTitleCharsExceeded ? 'error.500' : 'secondary.700'
+          }
+          isInvalid={isTitleCharsExceeded}
           {...register('postTitle', {
             minLength: 15,
             maxLength: TITLE_MAX_LEN,
             required: true,
           })}
         />
-        {formErrors.postTitle ? (
+        {formErrors.postTitle && (
           <Alert status="error" sx={styles.alert}>
             <AlertIcon />
             Please enter a title with 15-150 characters.
           </Alert>
+        )}
+        {isTitleCharsExceeded ? (
+          <Box sx={styles.charsOverBox}>
+            <Icon as={MdError} /> {-titleCharsRemaining} characters over
+          </Box>
         ) : (
           <Box sx={styles.charsRemainingBox}>
-            {titleCharsRemaining} characters left
+            {titleCharsRemaining} characters remaining
           </Box>
         )}
       </FormControl>
