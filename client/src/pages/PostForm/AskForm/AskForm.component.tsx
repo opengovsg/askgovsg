@@ -196,6 +196,14 @@ const AskForm = ({
           rules={{ validate: isTopicChosen }}
           render={({ field: { onChange, value } }) => (
             <Select
+              className="select-menu"
+              styles={{
+                // Fixes the overlapping problem where the menu overlay goes under the RTE
+                menuPortal: (provided) => ({
+                  ...provided,
+                  zIndex: 9999,
+                }),
+              }}
               options={optionsForTopicSelect}
               value={optionsForTopicSelect.find(
                 (topic) => topic.value === value.value,

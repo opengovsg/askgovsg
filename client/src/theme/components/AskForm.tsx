@@ -57,11 +57,8 @@ export const AskForm: ComponentMultiStyleConfig = {
       mt: '4px',
     },
     richTextEditor: {
-      wrapperStyle: {
-        height: '148px',
-      },
       editorStyle: {
-        height: `${148 - (48 + 6 * 2)}px`,
+        minHeight: '148px',
       },
     },
   }),
