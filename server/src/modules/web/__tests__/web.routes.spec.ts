@@ -65,6 +65,7 @@ describe('/', () => {
     createPost: jest.fn(),
     deletePost: jest.fn(),
     updatePost: jest.fn(),
+    getPostsOfTopic: jest.fn(),
   }
   const webService = {
     getAgencyPage: jest.fn(),

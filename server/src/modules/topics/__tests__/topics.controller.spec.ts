@@ -27,9 +27,25 @@ describe('TopicsController', () => {
     listTopics: jest.fn(),
     getTopicById: jest.fn(),
   }
+
+  const postService = {
+    getExistingTagsFromRequestTags: jest.fn(),
+    getExistingTopicFromRequestTopic: jest.fn(),
+    getExistingTopicsFromRequestTopics: jest.fn(),
+    getChildTopicsFromRequestTopics: jest.fn(),
+    listPosts: jest.fn(),
+    listAnswerablePosts: jest.fn(),
+    getSinglePost: jest.fn(),
+    createPost: jest.fn(),
+    deletePost: jest.fn(),
+    updatePost: jest.fn(),
+    getPostsOfTopic: jest.fn(),
+  }
+
   const topicsController = new TopicsController({
     authService,
     topicsService,
+    postService,
   })
 
   // Set up auth middleware to inject user
@@ -331,6 +347,10 @@ describe('TopicsController', () => {
       topicsService.updateTopicById.mockReturnValue(
         errAsync(new DatabaseError()),
       )
+      postService.getPostsOfTopic.mockResolvedValue({
+        posts: [],
+        totalItems: 0,
+      })
 
       const app = express()
       app.use(express.json())
@@ -417,6 +437,10 @@ describe('TopicsController', () => {
       topicsService.deleteTopicById.mockReturnValue(
         errAsync(new DatabaseError()),
       )
+      postService.getPostsOfTopic.mockResolvedValue({
+        posts: [],
+        totalItems: 0,
+      })
 
       const app = express()
       app.use(express.json())
@@ -432,6 +456,10 @@ describe('TopicsController', () => {
     })
     it('returns 200 on successful deletion', async () => {
       authService.verifyUserCanModifyTopic.mockResolvedValue(true)
+      postService.getPostsOfTopic.mockResolvedValue({
+        posts: [],
+        totalItems: 0,
+      })
 
       const app = express()
       app.use(express.json())

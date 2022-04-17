@@ -28,6 +28,7 @@ describe('PostController', () => {
     updatePost: jest.fn(),
     getSinglePost: jest.fn(),
     listPosts: jest.fn(),
+    getPostsOfTopic: jest.fn(),
   }
 
   const userService = {
