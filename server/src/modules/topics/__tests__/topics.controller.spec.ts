@@ -395,7 +395,26 @@ describe('TopicsController', () => {
       topicsService.deleteTopicById.mockReturnValue(okAsync(1))
       errors = noErrors
     })
+    it('returns 400 on topic that still has posts', async () => {
+      authService.verifyUserCanModifyTopic.mockResolvedValue(true)
+      const data = { rows: ['1', '2'], totalItems: 1 }
+      postService.getPostsByTopic.mockResolvedValue(data)
 
+      const app = express()
+      app.use(express.json())
+      app.use(middleware)
+      app.use(invalidateIfHasErrors)
+      app.delete(path + '/:id', topicsController.deleteTopic)
+      const request = supertest(app)
+
+      const response = await request.delete(path + `/${mockTopicId}`)
+
+      expect(response.status).toEqual(StatusCodes.BAD_REQUEST)
+      expect(response.body).toStrictEqual({
+        message: 'You cannot delete a topic that has posts',
+      })
+      expect(topicsService.deleteTopicById).not.toHaveBeenCalled()
+    })
     it('returns 401 on no user', async () => {
       user = undefined
 
@@ -429,26 +448,6 @@ describe('TopicsController', () => {
       expect(response.status).toEqual(StatusCodes.FORBIDDEN)
       expect(response.body).toStrictEqual({
         message: 'You do not have permission to delete this topic',
-      })
-      expect(topicsService.deleteTopicById).not.toHaveBeenCalled()
-    })
-    it('returns 403 on topic that still has posts', async () => {
-      authService.verifyUserCanModifyTopic.mockResolvedValue(true)
-      const data = { rows: ['1', '2'], totalItems: 1 }
-      postService.getPostsByTopic.mockResolvedValue(data)
-
-      const app = express()
-      app.use(express.json())
-      app.use(middleware)
-      app.use(invalidateIfHasErrors)
-      app.delete(path + '/:id', topicsController.deleteTopic)
-      const request = supertest(app)
-
-      const response = await request.delete(path + `/${mockTopicId}`)
-
-      expect(response.status).toEqual(StatusCodes.FORBIDDEN)
-      expect(response.body).toStrictEqual({
-        message: 'You cannot delete a topic that has posts',
       })
       expect(topicsService.deleteTopicById).not.toHaveBeenCalled()
     })

@@ -180,7 +180,7 @@ export class TopicsController {
 
     if (hasPosts) {
       return res
-        .status(StatusCodes.FORBIDDEN)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ message: 'You cannot delete a topic that has posts' })
     }
 
