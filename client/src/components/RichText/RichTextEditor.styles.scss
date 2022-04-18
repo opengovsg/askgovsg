@@ -1,5 +1,3 @@
-
-
 .rdw-editor-wrapper {
   .rdw-link-decorator-wrapper {
     a {
@@ -37,5 +35,21 @@
         content: "";
       }
     }
+  }
+
+  .rdw-dropdown-wrapper {
+    margin-bottom: 6px;
+  }
+
+  .rdw-option-wrapper,
+  .rdw-dropdown-wrapper {
+    background: #bdbdbd;
+    border-color: transparent;
+  }
+
+  .rdw-option-wrapper:active,
+  .rdw-dropdown-wrapper:hover,
+  .rdw-dropdown-optionwrapper {
+    background: #e6e7ea;
   }
 }

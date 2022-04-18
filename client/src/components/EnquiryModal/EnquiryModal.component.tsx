@@ -1,31 +1,34 @@
+import { useState } from 'react'
+import ReCAPTCHA from 'react-google-recaptcha'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { BiErrorCircle } from 'react-icons/bi'
 import {
   Box,
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  ModalProps,
+  Flex,
   HStack,
   Input,
-  Text,
-  VStack,
-  Textarea,
-  Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  ModalProps,
   Spacer,
+  Text,
+  Textarea,
+  VStack,
 } from '@chakra-ui/react'
-import { useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { Agency } from '../../services/AgencyService'
-import { BiErrorCircle } from 'react-icons/bi'
-import { Enquiry } from '~shared/types/api'
-import ReCAPTCHA from 'react-google-recaptcha'
-import { SearchBox } from '../SearchBox/SearchBox.component'
-import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
 import * as FullStory from '@fullstory/browser'
+
+import { Enquiry } from '~shared/types/api'
+
+import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
+import { Agency } from '../../services/AgencyService'
+import { SearchBox } from '../SearchBox/SearchBox.component'
+
 interface EnquiryModalProps extends Pick<ModalProps, 'isOpen' | 'onClose'> {
   onConfirm: (enquiry: Enquiry, captchaResponse: string) => Promise<void>
   agency?: Agency

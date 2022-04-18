@@ -7,6 +7,7 @@ import { BiChevronLeft, BiChevronRight } from 'react-icons/bi'
 import { Box, IconButton, Text, useMultiStyleConfig } from '@chakra-ui/react'
 
 import { PAGINATION_THEME_KEY } from '../../theme/components/Pagination'
+
 import { PaginationProps } from './Pagination'
 
 type PaginationMobileProps = Omit<PaginationProps, 'siblingCount'>

@@ -1,4 +1,5 @@
 import { Box, Text } from '@chakra-ui/react'
+
 import { RichTextPreview } from '../../../components/RichText/RichTextEditor.component'
 
 const QuestionSection = ({

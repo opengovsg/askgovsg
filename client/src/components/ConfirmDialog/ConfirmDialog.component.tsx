@@ -1,15 +1,17 @@
-import React, { FC, useState, useRef } from 'react'
+import React, { FC, useRef, useState } from 'react'
 import {
-  Button,
   AlertDialog,
   AlertDialogBody,
+  AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
   AlertDialogProps,
+  Button,
+  CloseButton,
   HStack,
 } from '@chakra-ui/react'
+import sanitizeHtml from 'sanitize-html'
 
 interface ConfirmDialogProps
   extends Pick<AlertDialogProps, 'isOpen' | 'onClose'> {
@@ -44,8 +46,22 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
     >
       <AlertDialogOverlay>
         <AlertDialogContent>
+          <CloseButton
+            position="absolute"
+            right="4px"
+            top="4px"
+            onClick={onClose}
+            _focus={{ border: 'none' }}
+          />
           <AlertDialogHeader>{title}</AlertDialogHeader>
-          <AlertDialogBody>{description}</AlertDialogBody>
+          <AlertDialogBody
+            dangerouslySetInnerHTML={{
+              __html: sanitizeHtml(description, {
+                allowedTags: ['b'],
+                allowedAttributes: {},
+              }),
+            }}
+          />
           <AlertDialogFooter>
             <HStack spacing={4}>
               <Button variant="ghost" onClick={onClose}>

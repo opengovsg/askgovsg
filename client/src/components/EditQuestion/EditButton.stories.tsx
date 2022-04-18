@@ -1,4 +1,5 @@
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
+
 import EditButton from './EditButton.component'
 
 export default {
@@ -13,5 +14,4 @@ const Template: ComponentStory<typeof EditButton> = (args) => (
 export const Default = Template.bind({})
 Default.args = {
   postId: 1,
-  onDeleteLink: '/delete',
 }

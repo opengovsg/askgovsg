@@ -1,5 +1,6 @@
-import { Box, Spacer, Text } from '@chakra-ui/react'
 import { Navigate } from 'react-router-dom'
+import { Box, Spacer, Text } from '@chakra-ui/react'
+
 import AuthForm from '../../components/AuthForm/AuthForm.component'
 import { useAuth } from '../../contexts/AuthContext'
 

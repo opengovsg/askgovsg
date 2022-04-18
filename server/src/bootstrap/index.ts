@@ -145,7 +145,11 @@ const searchController = new SearchController({
 const apiOptions = {
   agency: {
     controller: new AgencyController({ agencyService }),
-    topicsController: new TopicsController({ topicsService, authService }),
+    topicsController: new TopicsController({
+      topicsService,
+      authService,
+      postService,
+    }),
   },
   answers: {
     controller: new AnswersController({
@@ -184,6 +188,7 @@ const apiOptions = {
     controller: new TopicsController({
       topicsService,
       authService,
+      postService,
     }),
     authMiddleware,
   },

@@ -1,11 +1,11 @@
+import { BiChevronRight } from 'react-icons/bi'
+import { Link } from 'react-router-dom'
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   Text,
 } from '@chakra-ui/react'
-import { BiChevronRight } from 'react-icons/bi'
-import { Link } from 'react-router-dom'
 
 export const NavBreadcrumb = ({
   navOrder,

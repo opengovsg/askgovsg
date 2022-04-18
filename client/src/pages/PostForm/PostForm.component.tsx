@@ -1,17 +1,19 @@
-import { Box, Spacer, useMultiStyleConfig } from '@chakra-ui/react'
 import { Fragment } from 'react'
 import { useQuery } from 'react-query'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { getApiErrorMessage } from '../../api/ApiClient'
+import { Box, Spacer, useMultiStyleConfig } from '@chakra-ui/react'
+
+import { getApiErrorMessage } from '../../api'
 import Spinner from '../../components/Spinner/Spinner.component'
 import { useStyledToast } from '../../components/StyledToast/StyledToast'
 import { useAuth } from '../../contexts/AuthContext'
 import * as AnswerService from '../../services/AnswerService'
 import * as PostService from '../../services/PostService'
 import {
-  getTopicsUsedByAgency,
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
+  getTopicsUsedByAgency,
 } from '../../services/TopicService'
+
 import AskForm, { AskFormSubmission } from './AskForm/AskForm.component'
 
 const PostForm = (): JSX.Element => {

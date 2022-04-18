@@ -19,6 +19,20 @@ export const OptionsMenu: ComponentMultiStyleConfig = {
         : undefined,
       borderTopColor: urlHasTopicsParamKey ? 'secondary.500' : undefined,
     },
+    newAccordionItem: {
+      h: '72px',
+      alignItems: 'center',
+      textAlign: 'left',
+      textStyle: 'h4',
+      boxShadow: 'base',
+      bg: 'secondary.800',
+      color: 'white',
+      _hover: { bg: 'secondary.600', boxShadow: 'lg' },
+      w: urlHasTopicsParamKey ? '100%' : { base: '87%', sm: '100%' },
+      mx: urlHasTopicsParamKey ? undefined : { base: 'auto', md: undefined },
+      border: '1px solid',
+      borderColor: 'white',
+    },
     accordionGrid: {
       'grid-template-columns': { base: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
       maxW: '680px',
@@ -58,6 +72,11 @@ export const OptionsMenu: ComponentMultiStyleConfig = {
       w: '100%',
       px: { base: 8, md: 0 },
       textAlign: 'left',
+    },
+    accordionEditableInput: {
+      backgroundColor: 'white',
+      color: 'neutral.900',
+      w: '100%',
     },
     sideMenuBox: {
       position: 'sticky',

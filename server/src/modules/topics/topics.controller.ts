@@ -7,20 +7,25 @@ import { Message } from '../../types/message-type'
 import { StatusCodes } from 'http-status-codes'
 import { ControllerHandler } from '../../types/response-handler'
 import { TopicWithChildRelations } from './topics.service'
+import { PostService } from '../post/post.service'
 
 export class TopicsController {
   private authService: Public<AuthService>
   private topicsService: Public<TopicsService>
+  private postService: Public<PostService>
 
   constructor({
     authService,
     topicsService,
+    postService,
   }: {
     authService: Public<AuthService>
     topicsService: Public<TopicsService>
+    postService: Public<PostService>
   }) {
     this.authService = authService
     this.topicsService = topicsService
+    this.postService = postService
   }
 
   /**
@@ -167,6 +172,16 @@ export class TopicsController {
       return res
         .status(StatusCodes.FORBIDDEN)
         .json({ message: 'You do not have permission to delete this topic' })
+    }
+
+    // Check if topic has posts
+    const posts = await this.postService.getPostsByTopic(topicId)
+    const hasPosts = posts.totalItems !== 0
+
+    if (hasPosts) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: 'You cannot delete a topic that has posts' })
     }
 
     return this.topicsService

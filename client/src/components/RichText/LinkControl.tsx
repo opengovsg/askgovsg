@@ -1,7 +1,9 @@
-import { Box, Button, HStack, Input, Text } from '@chakra-ui/react'
 import { ChangeEvent, MouseEvent, MouseEventHandler, useState } from 'react'
 import { BiLink } from 'react-icons/bi'
+import { Box, Button, HStack, Input, Text } from '@chakra-ui/react'
+
 import { useStyledToast } from '../StyledToast/StyledToast'
+
 import styles from './RichTextEditor.module.scss'
 
 // LinkControl replaces the pre-built link popup
@@ -88,11 +90,11 @@ export const LinkControl = ({
     </div>
   )
   return (
-    <div className={styles.linkControl}>
-      <div onClick={signalExpandShowModal} className="rdw-option-wrapper">
+    <Box position="relative" mb="6px">
+      <Box onClick={signalExpandShowModal} className="rdw-option-wrapper">
         <BiLink size="18px" />
-      </div>
+      </Box>
       {expanded ? renderModal() : undefined}
-    </div>
+    </Box>
   )
 }

@@ -30,6 +30,11 @@ export const AskForm: ComponentMultiStyleConfig = {
       color: 'secondary.600',
       pt: '8px',
     },
+    charsOverBox: {
+      textStyle: 'body-2',
+      textColor: 'error.500',
+      pt: '8px',
+    },
     submitButton: {
       //textStyle is not used due to a bug in Chakra UI (Issue #3884)
       font: 'inter',
@@ -52,11 +57,8 @@ export const AskForm: ComponentMultiStyleConfig = {
       mt: '4px',
     },
     richTextEditor: {
-      wrapperStyle: {
-        height: '148px',
-      },
       editorStyle: {
-        height: `${148 - (26 + 6 * 2)}px`,
+        minHeight: '148px',
       },
     },
   }),

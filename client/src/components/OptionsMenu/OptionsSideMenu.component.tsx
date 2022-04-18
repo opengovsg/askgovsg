@@ -1,13 +1,16 @@
+import { createRef, LegacyRef, ReactElement, useContext } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
 import { Box, Flex, Text, useMultiStyleConfig } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
-import { LegacyRef, ReactElement, createRef, useContext } from 'react'
-import { Link as RouterLink } from 'react-router-dom'
-import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
+
 import { Agency } from '~shared/types/base'
-import { getRedirectURLTopics } from '../../util/urlparser'
-import { bySpecifiedOrder } from './util'
-import { HomePageContext } from '../../contexts/HomePageContext'
+
 import { GetTopicsDto } from '../../api'
+import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
+import { HomePageContext } from '../../contexts/HomePageContext'
+import { getRedirectURLTopics } from '../../util/urlparser'
+
+import { bySpecifiedOrder } from './util'
 
 const OptionsSideMenu = ({
   agency,

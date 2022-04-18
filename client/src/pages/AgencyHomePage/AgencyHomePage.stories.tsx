@@ -1,12 +1,14 @@
-import { ComponentStory, ComponentMeta } from '@storybook/react'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { rest } from 'msw'
-import AgencyHomePage from './AgencyHomePage.component'
+
 import {
   MockAgencyShortNameData,
   MockPostData,
   MockTopicData,
   MockUserData,
 } from '../../__mocks__/mockData'
+
+import AgencyHomePage from './AgencyHomePage.component'
 
 export default {
   title: 'Pages/AgencyHomePage',

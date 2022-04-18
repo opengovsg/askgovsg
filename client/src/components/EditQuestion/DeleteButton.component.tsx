@@ -1,31 +1,28 @@
-import {
-  Button,
-  Icon,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  useDisclosure,
-} from '@chakra-ui/react'
-import { BiChevronDown, BiTrash } from 'react-icons/bi'
+import { BiTrash } from 'react-icons/bi'
 import { useMutation, useQueryClient } from 'react-query'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { Button, useDisclosure } from '@chakra-ui/react'
+
 import { getApiErrorMessage } from '../../api'
+import { DeviceType, useDetectDevice } from '../../hooks/useDetectDevice'
 import {
   deletePost,
-  LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
   GET_POST_BY_ID_QUERY_KEY,
+  LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
 } from '../../services/PostService'
 import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.component'
 import { useStyledToast } from '../StyledToast/StyledToast'
 
-interface EditButtonProps {
+interface DeleteButtonProps {
   postId: number
-  onDeleteLink?: string
+  onDeleteLink: string
 }
 
-const EditButton = ({ postId, onDeleteLink }: EditButtonProps): JSX.Element => {
+const DeleteButton = ({
+  postId,
+  onDeleteLink,
+}: DeleteButtonProps): JSX.Element => {
+  const deviceType = useDetectDevice()
   const {
     onOpen: onDeleteDialogOpen,
     onClose: onDeleteDialogClose,
@@ -60,43 +57,17 @@ const EditButton = ({ postId, onDeleteLink }: EditButtonProps): JSX.Element => {
 
   const onDeleteConfirm = () => deletePostMutation.mutate(postId)
 
-  // post prop is injected into button
   return (
     <>
-      <RouterLink to={`/edit/question/${postId}`}>
-        <Button
-          variant="outline"
-          borderRadius="3px"
-          borderTopRightRadius="0"
-          borderBottomRightRadius="0"
-          borderColor="secondary.700"
-          color="secondary.700"
-        >
-          Edit
-        </Button>
-      </RouterLink>
-      <Menu placement="bottom-end">
-        <MenuButton
-          as={IconButton}
-          aria-label="Options"
-          icon={<Icon as={BiChevronDown} color="secondary.700" />}
-          variant="outline"
-          borderRadius="3px"
-          borderTopLeftRadius="0"
-          borderBottomLeftRadius="0"
-          borderLeft="none"
-          borderColor="secondary.700"
-        />
-        <MenuList minW={105} color="error.500">
-          <MenuItem
-            onClick={onDeleteDialogOpen}
-            icon={<Icon as={BiTrash} w={4} h={4} color="error.500" />}
-          >
-            Delete
-          </MenuItem>
-        </MenuList>
-      </Menu>
-
+      <Button
+        variant="clear"
+        color="error.600"
+        leftIcon={<BiTrash />}
+        onClick={onDeleteDialogOpen}
+        aria-label="Delete post"
+      >
+        {deviceType !== DeviceType.Mobile ? 'Delete' : ''}
+      </Button>
       <ConfirmDialog
         title="Delete this post"
         description="You’re about to delete this post. Are you sure you want to delete it?"
@@ -109,4 +80,4 @@ const EditButton = ({ postId, onDeleteLink }: EditButtonProps): JSX.Element => {
   )
 }
 
-export default EditButton
+export default DeleteButton
