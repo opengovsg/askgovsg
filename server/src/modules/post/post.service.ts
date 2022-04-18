@@ -509,6 +509,50 @@ export class PostService {
   }
 
   /**
+   * Get all posts belonging to that topic
+   * @param topicId
+   */
+  getPostsByTopic = async (
+    topicId: number,
+  ): Promise<{
+    posts: Post[]
+    totalItems: number
+  }> => {
+    const posts = (await this.Post.findAll({
+      where: {
+        topicId,
+        status: { [Op.ne]: PostStatus.Archived },
+      },
+      include: [
+        // not sure about this
+        {
+          model: this.Tag,
+          required: false,
+          attributes: ['tagname', 'description', 'tagType'],
+        },
+        { model: this.User, required: true, attributes: ['username'] },
+        { model: this.Answer, required: false },
+      ],
+      attributes: [
+        'id',
+        'userId',
+        'agencyId',
+        'title',
+        'description',
+        'createdAt',
+        'views',
+        this.answerCountLiteral,
+        'topicId',
+      ],
+    })) as PostWithUserTopicTagRelations[]
+    if (!posts) {
+      return { posts: [], totalItems: 0 }
+    } else {
+      return { posts, totalItems: posts.length }
+    }
+  }
+
+  /**
    * Get a single post and all the tags, topic and users associated with it
    * @param postId Id of the post
    * @param noOfRelatedPosts number of related posts to show

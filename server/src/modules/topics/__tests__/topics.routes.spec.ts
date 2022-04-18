@@ -37,6 +37,20 @@ describe('/topics', () => {
     verifyUserInAgency: jest.fn(),
   }
 
+  const postService = {
+    getExistingTagsFromRequestTags: jest.fn(),
+    getExistingTopicFromRequestTopic: jest.fn(),
+    getExistingTopicsFromRequestTopics: jest.fn(),
+    getChildTopicsFromRequestTopics: jest.fn(),
+    listPosts: jest.fn(),
+    listAnswerablePosts: jest.fn(),
+    getSinglePost: jest.fn(),
+    createPost: jest.fn(),
+    deletePost: jest.fn(),
+    updatePost: jest.fn(),
+    getPostsByTopic: jest.fn(),
+  }
+
   // Set up auth middleware to inject user
   let authUser: Express.User | undefined = undefined
   const authenticate: ControllerHandler = (req, _res, next) => {
@@ -58,6 +72,7 @@ describe('/topics', () => {
     controller = new TopicsController({
       authService,
       topicsService,
+      postService,
     })
 
     mockAgency = await Agency.create({
@@ -297,6 +312,10 @@ describe('/topics', () => {
       authService.verifyUserCanModifyTopic.mockResolvedValue(true)
     })
     it('returns 200 if topic is deleted successfully', async () => {
+      postService.getPostsByTopic.mockResolvedValue({
+        posts: [],
+        totalItems: 0,
+      })
       const router = routeTopics({ controller, authMiddleware })
       const app = express()
       app.use(express.json())

@@ -46,6 +46,7 @@ describe('WebController', () => {
     createPost: jest.fn(),
     deletePost: jest.fn(),
     updatePost: jest.fn(),
+    getPostsByTopic: jest.fn(),
   }
   const webService = {
     getAgencyPage: jest.fn(),
