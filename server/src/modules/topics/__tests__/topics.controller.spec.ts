@@ -39,7 +39,7 @@ describe('TopicsController', () => {
     createPost: jest.fn(),
     deletePost: jest.fn(),
     updatePost: jest.fn(),
-    getPostsOfTopic: jest.fn(),
+    getPostsByTopic: jest.fn(),
   }
 
   const topicsController = new TopicsController({
@@ -347,7 +347,7 @@ describe('TopicsController', () => {
       topicsService.updateTopicById.mockReturnValue(
         errAsync(new DatabaseError()),
       )
-      postService.getPostsOfTopic.mockResolvedValue({
+      postService.getPostsByTopic.mockResolvedValue({
         posts: [],
         totalItems: 0,
       })
@@ -437,7 +437,7 @@ describe('TopicsController', () => {
       topicsService.deleteTopicById.mockReturnValue(
         errAsync(new DatabaseError()),
       )
-      postService.getPostsOfTopic.mockResolvedValue({
+      postService.getPostsByTopic.mockResolvedValue({
         posts: [],
         totalItems: 0,
       })
@@ -456,7 +456,7 @@ describe('TopicsController', () => {
     })
     it('returns 200 on successful deletion', async () => {
       authService.verifyUserCanModifyTopic.mockResolvedValue(true)
-      postService.getPostsOfTopic.mockResolvedValue({
+      postService.getPostsByTopic.mockResolvedValue({
         posts: [],
         totalItems: 0,
       })

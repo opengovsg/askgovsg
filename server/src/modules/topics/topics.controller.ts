@@ -175,7 +175,7 @@ export class TopicsController {
     }
 
     // Check if topic has posts
-    const posts = await this.postService.getPostsOfTopic(topicId)
+    const posts = await this.postService.getPostsByTopic(topicId)
     const hasPosts = posts.totalItems !== 0
 
     if (hasPosts) {

@@ -512,7 +512,7 @@ export class PostService {
    * Get all posts belonging to that topic
    * @param topicId
    */
-  getPostsOfTopic = async (
+  getPostsByTopic = async (
     topicId: number,
   ): Promise<{
     posts: Post[]

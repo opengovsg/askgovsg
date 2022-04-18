@@ -48,7 +48,7 @@ describe('/topics', () => {
     createPost: jest.fn(),
     deletePost: jest.fn(),
     updatePost: jest.fn(),
-    getPostsOfTopic: jest.fn(),
+    getPostsByTopic: jest.fn(),
   }
 
   // Set up auth middleware to inject user
@@ -312,7 +312,7 @@ describe('/topics', () => {
       authService.verifyUserCanModifyTopic.mockResolvedValue(true)
     })
     it('returns 200 if topic is deleted successfully', async () => {
-      postService.getPostsOfTopic.mockResolvedValue({
+      postService.getPostsByTopic.mockResolvedValue({
         posts: [],
         totalItems: 0,
       })
