@@ -432,6 +432,26 @@ describe('TopicsController', () => {
       })
       expect(topicsService.deleteTopicById).not.toHaveBeenCalled()
     })
+    it('returns 403 on topic that still has posts', async () => {
+      authService.verifyUserCanModifyTopic.mockResolvedValue(true)
+      const data = { rows: ['1', '2'], totalItems: 1 }
+      postService.getPostsByTopic.mockResolvedValue(data)
+
+      const app = express()
+      app.use(express.json())
+      app.use(middleware)
+      app.use(invalidateIfHasErrors)
+      app.delete(path + '/:id', topicsController.deleteTopic)
+      const request = supertest(app)
+
+      const response = await request.delete(path + `/${mockTopicId}`)
+
+      expect(response.status).toEqual(StatusCodes.FORBIDDEN)
+      expect(response.body).toStrictEqual({
+        message: 'You cannot delete a topic that has posts',
+      })
+      expect(topicsService.deleteTopicById).not.toHaveBeenCalled()
+    })
     it('returns 500 on topicsService problem', async () => {
       authService.verifyUserCanModifyTopic.mockResolvedValue(true)
       topicsService.deleteTopicById.mockReturnValue(
