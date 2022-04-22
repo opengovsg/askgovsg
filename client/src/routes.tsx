@@ -6,7 +6,7 @@ import {
   CitizenPrivacy,
   CitizenTerms,
 } from './components/PrivacyTerms'
-import AgencyHomePage from './pages/AgencyHomePage/AgencyHomePage.component'
+import AgencyHomePageWrapper from './pages/AgencyHomePage/AgencyHomePageWrapper.component'
 import EditForm from './pages/EditForm/EditForm.component'
 import HomePage from './pages/HomePage/HomePage.component'
 import Login from './pages/Login/Login.component'
@@ -21,7 +21,7 @@ const HomePageComponent = withPageTitle({
 })
 
 const AgencyHomePageComponent = withPageTitle({
-  component: AgencyHomePage,
+  component: AgencyHomePageWrapper,
 })
 
 const SearchResultsComponent = withPageTitle({

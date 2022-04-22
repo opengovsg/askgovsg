@@ -1,4 +1,4 @@
-import { ReactNode, useContext } from 'react'
+import { ReactNode } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 import { Box, Flex, HStack, Spacer, Text, VStack } from '@chakra-ui/react'
@@ -11,7 +11,7 @@ import TopicsMenu from '../../components/OptionsMenu/TopicsMenu.component'
 import PageTitle from '../../components/PageTitle/PageTitle.component'
 import { Questions } from '../../components/Questions/Questions.component'
 import { useAuth } from '../../contexts/AuthContext'
-import { HomePageContext } from '../../contexts/HomePageContext'
+import { useHomePageData } from '../../contexts/HomePageContext'
 import { DeviceType, useDetectDevice } from '../../hooks/useDetectDevice'
 import {
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
@@ -25,7 +25,7 @@ import { isUserPublicOfficer } from '../../services/user.service'
 
 const AgencyHomePage = (): JSX.Element => {
   const { questionsDisplayState, topicQueried, urlHasTopicsParamKey } =
-    useContext(HomePageContext)
+    useHomePageData()
 
   const { user } = useAuth()
   const isAuthenticatedOfficer = user !== null && isUserPublicOfficer(user)

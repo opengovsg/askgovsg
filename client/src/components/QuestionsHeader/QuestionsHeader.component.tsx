@@ -1,8 +1,7 @@
-import { useContext } from 'react'
 import { Flex, Stack, Text } from '@chakra-ui/react'
 
 import { useAuth } from '../../contexts/AuthContext'
-import { HomePageContext } from '../../contexts/HomePageContext'
+import { useHomePageData } from '../../contexts/HomePageContext'
 import { isUserPublicOfficer } from '../../services/user.service'
 import PostQuestionButton from '../PostQuestionButton/PostQuestionButton.component'
 import { SortQuestionsMenu } from '../SortQuestionsMenu/SortQuestionsMenu.component'
@@ -11,7 +10,7 @@ export const QuestionsHeader = (): JSX.Element => {
   const { user } = useAuth()
   const isAuthenticatedOfficer = user !== null && isUserPublicOfficer(user)
   const { questionsDisplayState, questionsSortOrder, setQuestionsSortOrder } =
-    useContext(HomePageContext)
+    useHomePageData()
 
   return (
     <Flex

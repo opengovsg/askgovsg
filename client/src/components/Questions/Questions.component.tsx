@@ -1,8 +1,8 @@
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Box } from '@chakra-ui/react'
 
-import { HomePageContext } from '../../contexts/HomePageContext'
+import { useHomePageData } from '../../contexts/HomePageContext'
 import { getTopicsQuery, isSpecified } from '../../util/urlparser'
 import { QuestionsHeader } from '../QuestionsHeader/QuestionsHeader.component'
 import QuestionsList from '../QuestionsList/QuestionsList.component'
@@ -30,7 +30,7 @@ export const Questions = ({
     setTopicQueried,
     urlHasTopicsParamKey,
     setUrlHasTopicsParamKey,
-  } = useContext(HomePageContext)
+  } = useHomePageData()
   const location = useLocation()
 
   /*

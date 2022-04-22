@@ -1,4 +1,4 @@
-import { createRef, LegacyRef, ReactElement, useContext } from 'react'
+import { createRef, LegacyRef, ReactElement } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import { Box, Flex, Text, useMultiStyleConfig } from '@chakra-ui/react'
 import * as FullStory from '@fullstory/browser'
@@ -7,7 +7,7 @@ import { Agency } from '~shared/types/base'
 
 import { GetTopicsDto } from '../../api'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
-import { HomePageContext } from '../../contexts/HomePageContext'
+import { useHomePageData } from '../../contexts/HomePageContext'
 import { getRedirectURLTopics } from '../../util/urlparser'
 
 import { bySpecifiedOrder } from './util'
@@ -19,7 +19,7 @@ const OptionsSideMenu = ({
   agency?: Agency
   topics?: GetTopicsDto[] | undefined
 }): ReactElement => {
-  const { topicQueried, setTopicQueried } = useContext(HomePageContext)
+  const { topicQueried, setTopicQueried } = useHomePageData()
   const styles = useMultiStyleConfig('OptionsMenu', {})
 
   const accordionRef: LegacyRef<HTMLButtonElement> = createRef()

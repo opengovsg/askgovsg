@@ -1,10 +1,10 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import { Center, Flex } from '@chakra-ui/layout'
 import { Button, Text } from '@chakra-ui/react'
 
-import { HomePageContext } from '../../contexts/HomePageContext'
+import { useHomePageData } from '../../contexts/HomePageContext'
 import {
   LIST_ANSWERABLE_POSTS_WITH_ANSWERS_QUERY_KEY,
   LIST_POSTS_QUERY_KEY,
@@ -41,7 +41,7 @@ const QuestionsList = ({
     questionsSortOrder,
     setQuestionsDisplayState,
     topicQueried: topics,
-  } = useContext(HomePageContext)
+  } = useHomePageData()
   const sort = questionsSortOrder.value
 
   const { queryKey, queryFn } = listAnswerable

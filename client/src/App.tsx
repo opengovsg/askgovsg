@@ -5,7 +5,6 @@ import Footer from './components/Footer/Footer.component'
 import Header from './components/Header/Header.component'
 import { AuthProvider } from './contexts/AuthContext'
 import { GoogleAnalyticsProvider } from './contexts/googleAnalytics'
-import { HomePageProvider } from './contexts/HomePageContext'
 import { useEnvironment } from './hooks/useEnvironment'
 import { useFullstory } from './hooks/useFullstory'
 import Routes from './routes'
@@ -19,14 +18,12 @@ const App = (): JSX.Element => {
     <GoogleAnalyticsProvider>
       <ChakraProvider theme={theme}>
         <AuthProvider>
-          <HomePageProvider>
-            <>
-              <Banner data={data} isSuccess={isSuccess} />
-              <Header />
-              <Routes />
-              <Footer />
-            </>
-          </HomePageProvider>
+          <>
+            <Banner data={data} isSuccess={isSuccess} />
+            <Header />
+            <Routes />
+            <Footer />
+          </>
         </AuthProvider>
       </ChakraProvider>
     </GoogleAnalyticsProvider>

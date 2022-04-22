@@ -1,4 +1,4 @@
-import { ReactElement, useContext } from 'react'
+import { ReactElement } from 'react'
 import { useQuery } from 'react-query'
 import {
   Accordion,
@@ -20,7 +20,7 @@ import { Agency } from '~shared/types/base'
 
 import { useAuth } from '../../contexts/AuthContext'
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
-import { HomePageContext } from '../../contexts/HomePageContext'
+import { useHomePageData } from '../../contexts/HomePageContext'
 import {
   GET_TOPICS_USED_BY_AGENCY_QUERY_KEY,
   getTopicsUsedByAgency,
@@ -42,7 +42,7 @@ const TopicsMenu = ({ agency }: { agency?: Agency }): ReactElement => {
   const isAgencyMember = user && user.agencyId === agency?.id
 
   const { topicQueried, setTopicQueried, urlHasTopicsParamKey } =
-    useContext(HomePageContext)
+    useHomePageData()
 
   const styles = useMultiStyleConfig('OptionsMenu', {
     urlHasTopicsParamKey,
