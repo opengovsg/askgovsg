@@ -95,7 +95,7 @@
     "prettier": "^2.6.2",
     "sequelize-cli": "^6.4.1",
     "sqlite3": "^5.0.5",
-    "supertest": "^6.2.2",
+    "supertest": "^6.2.3",
     "supertest-session": "^4.1.0",
     "ts-jest": "^27.1.4",
     "ts-node-dev": "^1.1.6",
