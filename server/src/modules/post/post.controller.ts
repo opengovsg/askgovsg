@@ -1,5 +1,6 @@
 import { validationResult } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
+import { stringify } from 'querystring'
 import { Post } from '~shared/types/base'
 import { createLogger } from '../../bootstrap/logging'
 import { Message } from '../../types/message-type'
@@ -9,6 +10,7 @@ import { SortType } from '../../types/sort-type'
 import { createValidationErrMessage } from '../../util/validation-error'
 import { AuthService } from '../auth/auth.service'
 import { UserService } from '../user/user.service'
+import { MissingPublicPostError } from './post.errors'
 import {
   PostService,
   PostWithUserTopicTagRelatedPostRelations,
@@ -196,6 +198,7 @@ export class PostController {
    * @param postId Id of the post
    * @query relatedPosts if true, return related posts
    * @return 200 with post
+   * @return 404 if post not found
    * @return 403 if user does not have permission to access post
    * @return 500 for database error
    */
@@ -225,9 +228,14 @@ export class PostController {
         },
         error,
       })
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: 'Server Error' })
+      const { statusCode, message } =
+        error instanceof MissingPublicPostError
+          ? error
+          : {
+              statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+              message: 'Server Error',
+            }
+      return res.status(statusCode).json({ message })
     }
 
     try {
