@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import supertest from 'supertest'
 import { ControllerHandler } from '../../../types/response-handler'
 import { PostController } from '../post.controller'
+import { MissingPublicPostError } from '../post.errors'
 
 describe('PostController', () => {
   const path = '/posts'
@@ -246,6 +247,36 @@ describe('PostController', () => {
       expect(response.body).toStrictEqual({
         message: 'Sorry, something went wrong. Please try again.',
       })
+    })
+  })
+
+  describe('getSinglePost', () => {
+    const agencyId = 21
+    const postId = 13
+    const post = {}
+
+    beforeEach(() => {
+      userService.loadUser.mockResolvedValue({ agencyId })
+      postService.getSinglePost.mockResolvedValue(post)
+    })
+
+    it('should return 404 on post not found', async () => {
+      // Arrange
+      const error = new MissingPublicPostError()
+      postService.getSinglePost.mockRejectedValue(error)
+
+      const app = express()
+      app.use(express.json())
+      app.use(middleware)
+      app.get(path + '/:id', controller.getSinglePost)
+      const request = supertest(app)
+
+      // Act
+      const response = await request.get(`${path}/${postId}`)
+
+      // Assert
+      expect(response.status).toEqual(error.statusCode)
+      expect(response.body).toStrictEqual({ message: error.message })
     })
   })
 
