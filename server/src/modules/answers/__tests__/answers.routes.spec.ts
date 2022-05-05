@@ -98,7 +98,7 @@ describe('/answers', () => {
       views: 0,
       agencyId: agency.id,
     })
-    await User.update({ id: 1 }, { where: { id: null } })
+    await User.update({ id: 1 }, { where: {} })
 
     const Topic = getModelDef<Topic>(db, ModelName.Topic)
     topic = await Topic.create({
@@ -107,7 +107,7 @@ describe('/answers', () => {
       description: null,
       parentId: null,
     })
-    await Topic.update({ id: 1 }, { where: { id: null } })
+    await Topic.update({ id: 1 }, { where: {} })
   })
 
   beforeEach(async () => {
