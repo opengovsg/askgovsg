@@ -27,7 +27,7 @@
     "config": "^3.3.7",
     "connect-datadog": "0.0.9",
     "connect-session-sequelize": "^7.1.3",
-    "convict": "^6.2.2",
+    "convict": "^6.2.3",
     "convict-format-with-validator": "^6.2.0",
     "cors": "2.8.5",
     "datadog-winston": "^1.5.1",
