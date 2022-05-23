@@ -1,4 +1,4 @@
-import { createRef, LegacyRef, ReactElement, useContext } from 'react'
+import { createRef, LegacyRef, ReactElement } from 'react'
 import { BiRightArrowAlt } from 'react-icons/bi'
 import { useQuery } from 'react-query'
 import { Link as RouterLink, useParams } from 'react-router-dom'
@@ -19,7 +19,7 @@ import {
 import * as FullStory from '@fullstory/browser'
 
 import { useGoogleAnalytics } from '../../contexts/googleAnalytics'
-import { HomePageContext } from '../../contexts/HomePageContext'
+import { useHomePageData } from '../../contexts/HomePageContext'
 import {
   Agency,
   GET_AGENCY_BY_SHORTNAME_QUERY_KEY,
@@ -49,7 +49,7 @@ const OptionsMenu = (): ReactElement => {
   )
 
   const { urlHasTopicsParamKey, topicQueried, setTopicQueried } =
-    useContext(HomePageContext)
+    useHomePageData()
   const styles = useMultiStyleConfig('OptionsMenu', { urlHasTopicsParamKey })
 
   const accordionRef: LegacyRef<HTMLButtonElement> = createRef()

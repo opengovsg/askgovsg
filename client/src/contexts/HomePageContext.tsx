@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from 'react'
+import { createContext, ReactNode, useContext, useState } from 'react'
 
 import {
   DEFAULT_QUESTIONS_DISPLAY_STATE,
@@ -22,7 +22,9 @@ interface HomePageContextType {
   setUrlHasTopicsParamKey: (state: boolean) => void
 }
 
-export const HomePageContext = createContext({} as HomePageContextType)
+const HomePageContext = createContext<HomePageContextType | undefined>(
+  undefined,
+)
 
 export const HomePageProvider = ({ children }: HomePageProps) => {
   const [questionsDisplayState, setQuestionsDisplayState] = useState(
@@ -50,4 +52,12 @@ export const HomePageProvider = ({ children }: HomePageProps) => {
       {children}
     </HomePageContext.Provider>
   )
+}
+
+export const useHomePageData = (): HomePageContextType => {
+  const context = useContext(HomePageContext)
+  if (!context) {
+    throw new Error(`useHomePageData must be used within a HomePageProvider`)
+  }
+  return context
 }
