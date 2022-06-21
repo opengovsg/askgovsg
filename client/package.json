@@ -14,7 +14,7 @@
     "downshift": "^6.1.7",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
-    "framer-motion": "^6.3.11",
+    "framer-motion": "^6.3.12",
     "prop-types": "^15.8.1",
     "query-string": "^7.1.1",
     "react": "^17.0.2",
