@@ -64,7 +64,7 @@
     "@types/cors": "^2.8.10",
     "@types/datadog-winston": "^1.0.5",
     "@types/express": "^4.17.11",
-    "@types/express-session": "^1.17.4",
+    "@types/express-session": "^1.17.5",
     "@types/express-sitemap-xml": "^3.0.1",
     "@types/jest": "^27.5.0",
     "@types/jsonwebtoken": "^8.5.8",
