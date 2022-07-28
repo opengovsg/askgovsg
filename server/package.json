@@ -87,7 +87,7 @@
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "find-my-way": "^7.0.0",
+    "find-my-way": "^7.0.1",
     "into-stream": "^6.0.0",
     "jest": "^27.5.1",
     "lint-staged": "13.0",
