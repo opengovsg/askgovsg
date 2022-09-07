@@ -1,4 +1,7 @@
 .toolbar {
+  > div {
+    display: inherit;
+  }
   .form {
     z-index: 2;
     position: absolute;
