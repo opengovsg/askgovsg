@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@chakra-ui/react": "^1.8.8",
+    "@chakra-ui/react": "^1.8.9",
     "@chakra-ui/storybook-addon": "^1.0.3",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
@@ -82,7 +82,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "lint-staged": "13.0",
-    "msw": "^0.47.1",
+    "msw": "^0.47.3",
     "msw-storybook-addon": "^1.6.3",
     "prettier": "^2.7.1",
     "react-app-rewire-alias": "^1.1.7",
