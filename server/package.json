@@ -24,7 +24,7 @@
     "body-parser": "^1.20.0",
     "cheerio": "^1.0.0-rc.12",
     "compression": "1.7.4",
-    "config": "^3.3.7",
+    "config": "^3.3.8",
     "connect-datadog": "0.0.9",
     "connect-session-sequelize": "^7.1.5",
     "convict": "^6.2.3",
