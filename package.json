@@ -29,7 +29,7 @@
   "devDependencies": {
     "concurrently": "^7.5.0",
     "cz-conventional-changelog": "^3.3.0",
-    "husky": "^8.0.1",
+    "husky": "^8.0.2",
     "lint-staged": "^13.0.3"
   },
   "config": {
