@@ -107,7 +107,7 @@ jobs:
       - run: docker build -t ${{ steps.extract_tag.outputs.tag }} -f Dockerfile --build-arg REACT_APP_RECAPTCHA_SITE_KEY=$REACT_APP_RECAPTCHA_SITE_KEY .
       - name: Push to ECR
         if: needs.gatekeep.outputs.proceed == 'true'
-        uses: opengovsg/gh-ecr-push@v1
+        uses: jwalton/gh-ecr-push@v1
         with:
           access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
