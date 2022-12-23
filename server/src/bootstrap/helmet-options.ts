@@ -1,7 +1,8 @@
+import type { HelmetOptions } from 'helmet'
 import { baseConfig } from './config/base'
 import { fileConfig } from './config/file'
 
-export const helmetOptions = {
+export const helmetOptions: HelmetOptions = {
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
