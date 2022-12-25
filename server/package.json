@@ -93,7 +93,7 @@
     "lint-staged": "13.1",
     "neat-csv": "^7.0.0",
     "prettier": "^2.7.1",
-    "sequelize-cli": "^6.4.1",
+    "sequelize-cli": "^6.5.2",
     "sqlite3": "^5.1.4",
     "supertest": "^6.2.4",
     "supertest-session": "^4.1.0",
