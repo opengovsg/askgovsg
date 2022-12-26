@@ -61,7 +61,7 @@
     "@types/connect-datadog": "0.0.6",
     "@types/convict": "^6.1.1",
     "@types/convict-format-with-validator": "^6.0.2",
-    "@types/cors": "^2.8.10",
+    "@types/cors": "^2.8.13",
     "@types/datadog-winston": "^1.0.5",
     "@types/express": "^4.17.11",
     "@types/express-session": "^1.17.5",
