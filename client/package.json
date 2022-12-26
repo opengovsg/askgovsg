@@ -87,7 +87,7 @@
     "prettier": "^2.7.1",
     "react-app-rewire-alias": "^1.1.7",
     "react-app-rewired": "^2.2.1",
-    "typescript": "^4.8.4",
+    "typescript": "^4.9.4",
     "webpack": "^5.75.0"
   },
   "eslintConfig": {
