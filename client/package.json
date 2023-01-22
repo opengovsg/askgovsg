@@ -80,7 +80,7 @@
     "@types/styled-components": "^5.1.26",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "eslint-plugin-simple-import-sort": "^9.0.0",
     "lint-staged": "13.1",
     "msw": "^0.49.3",
     "msw-storybook-addon": "^1.7.0",
