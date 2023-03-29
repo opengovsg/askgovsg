@@ -29,7 +29,7 @@
     "react-router-dom": "^6.7.0",
     "react-scripts": "^5.0.1",
     "react-select": "^5.7.0",
-    "sanitize-html": "^2.7.2",
+    "sanitize-html": "^2.10.0",
     "sass": "^1.57.1",
     "styled-components": "^5.3.6",
     "uuid": "^9.0.0"
@@ -76,7 +76,7 @@
     "@types/react-draft-wysiwyg": "^1.13.4",
     "@types/react-google-recaptcha": "^2.1.5",
     "@types/react-router-dom": "^5.3.3",
-    "@types/sanitize-html": "^2.6.2",
+    "@types/sanitize-html": "^2.8.0",
     "@types/styled-components": "^5.1.26",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
